@@ -1,0 +1,275 @@
+<script type="text/javascript">
+<!-- hide
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+var tempStr = '<%ejGetOtherBig(getAclLst)%>';
+var entryNum = '<%ejGet(ruleEntryNum)%>';
+var errMsg = '<%ejGetOther(errMsg)%>';
+var Rule_limit = 32;
+function addClick() {
+      var link = 'pages/security/firewall/accessControl_add.html';
+
+      var db1 = window.parent.$.zyUiDialog({
+                 width:  '75%',
+                 height: 500,
+                 title: '<%ejGetML(MLG_Security_FirewallACL_Str49)%>',
+
+                 buttons: {
+                    "<%ejGetML(MLG_Common_Cancel)%>": function(){ db1.dialog('close') },
+                    "<%ejGetML(MLG_Common_Apply)%>":function(){}
+                 }
+                });
+      db1.load(link);
+      db1.dialog('open');
+}
+
+function editClick(name) {
+   var link = '/pages/tabFW/firewall-accessControl.cmd?action=view&lst=' + name;
+   link += '&sessionKey=' + glbSessionKey;
+
+   var db1 = window.parent.$.zyUiDialog({
+              width:  '75%',
+              height: 500,
+              //title: 'ACL Edit',
+              title: "<%ejGetML(MLG_Security_FirewallACL_Str52)%>",
+
+              buttons: {
+                 "<%ejGetML(MLG_Common_Cancel)%>": function(){ db1.dialog('close') },
+                 "<%ejGetML(MLG_Common_Apply)%>":function(){}
+              }
+             });
+   db1.load(link);
+   db1.dialog('open');
+}
+function removeClick(name) {
+   var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 200,
+              //title: 'ACL Delete',
+              title: "<%ejGetML(MLG_Security_FirewallACL_Str53)%>",
+              buttons: {
+                 "<%ejGetML(MLG_Common_No)%>": function(){ db1.dialog('close'); },
+                 "<%ejGetML(MLG_Common_Yes)%>": function(){ db1.dialog('close'); $.openLoadingMask(1); rmlClick(name); }
+              }
+             });
+   db1.load('/pages/delete.html');
+   db1.dialog('open');
+}
+function rmlClick(name)
+{   
+      document.forms[0].sessionKey.value = glbSessionKey;
+      document.forms[0].action.value = "remove";
+      document.forms[0].rml.value = name;
+      document.forms[0].submit();
+}
+function showRuleUsg()
+{
+   var usg = entryNum*(100/Rule_limit);
+	var tempStr = '<table width="'+usg+'%" border="0" cellspacing="0" cellpadding="0">';
+	tempStr += '<tr><td height="18" background="../../images/i_percentage_blue.gif">&nbsp;</td></tr></table>';                                                                                                                                                                                                                   		
+	document.getElementById("RuleUsgBar").innerHTML = tempStr;
+	document.getElementById("RuleUsg").innerHTML = "&nbsp;"+usg+"%";
+}
+
+function orderClick(e,currvalue)
+{
+   var keycode;
+   if(window.event) keycode = window.event.keyCode;
+   else if (e) keycode = e.which;
+   else return true;
+   
+   if(keycode==13) // Enter is 13
+   {
+      document.forms[0].currValue.value = currvalue;
+      document.forms[0].rml.value = document.getElementById("Priority").value;
+      document.forms[0].sessionKey.value = glbSessionKey;
+      document.forms[0].action.value = "priority";
+      document.forms[0].Priority.disabled = true;
+      document.forms[0].submit();
+      return false;
+   }
+}
+$(document).ready(function() {
+   showRuleUsg();
+   if (errMsg != '')
+   {
+      hciAlert(errMsg, 2);
+   }
+});
+// done hiding -->
+</script>
+<form action="/pages/tabFW/firewall-accessControl.cmd" method="post" target="mainFrame">
+<input type=hidden name="sessionKey" id="sessionKey" value="">
+<input type=hidden name="action" id="action" value="">
+<input type=hidden name="rml" id="rml" value="">
+<input type=hidden name="currValue" id="currValue" value="">
+
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Security_FirewallACL_Str1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame">
+<ul>
+<li class="set1">
+   <div class="w_table">
+      <table width="100%" cellpadding="0" cellspacing="0"  >
+         <tr>
+         <td width="25%" ><%ejGetML(MLG_Security_Rules_Storage)%>(%) :</td>
+         <td  width="50%">
+            <table width="100%" border="1" cellpadding="0" cellspacing="0" bordercolor="#7895c8" style=" line-height:18px;">
+               <tr><td background="../../images/i_percentage_center.gif">
+               <span id='RuleUsgBar'>
+                  <table width="50%"  border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                     <td background="../../images/i_percentage_blue.gif" >&nbsp;</td>
+                  </tr>
+                  </table>
+               </span>
+               </td></tr>
+            </table>
+         </td>
+         <td ><span id='RuleUsg'>45%</span></td>
+         </tr>
+      </table>
+   </div>
+</li>
+</br>
+<li class="set1">
+  <div class="w_table"><input name="Fw_Add" id="Fw_Add" type="button" value="<%ejGetML(MLG_Security_FirewallACL_Str8)%>" onclick="addClick();"/></div>
+  </li>
+<li class="set1">
+<div class="w_table">
+  <!--Table define start-->
+    <table width="100%" cellpadding="0" cellspacing="0" id='accesscontrolTable' class="table_frame">
+			<tr align="center">
+         <td width="5%" valign="top" class="top_font">#</td>
+			<td width="10%" valign="top" class="top_font"><%ejGetML(MLG_Security_FirewallACL_Str9)%></td>
+			<td width="25%" valign="top" class="top_font"><%ejGetML(MLG_Security_FirewallACL_Str10)%></td>
+			<td width="25%" valign="top" class="top_font"><%ejGetML(MLG_Security_FirewallACL_Str11)%></td>
+         <td width="25%" valign="top" class="top_font"><%ejGetML(MLG_Security_Service)%></td>
+			<td width="10%" valign="top" class="top_font"><%ejGetML(MLG_Security_FirewallACL_Str14)%></td>
+			<td class="top_font" width="60" style="border-right:0px;"><%ejGetML(MLG_Common_Modify)%></td>
+			</tr>
+<script>
+<!-- hide
+
+var strA = tempStr.split('@');
+var newStr = '';
+
+if (parseInt(entryNum) >= Rule_limit){
+	$("#Fw_Add").attr("disabled",true);
+}
+var found = 0;
+for (i=1; i<strA.length; i++)
+{
+   if (strA[i] == '' || strA[i] == undefined)
+      break;
+   found = 0;
+   for(j=1;j<strA.length;j++)
+   {
+      var tmp = strA[j].split('|');
+      if(tmp[14]==i)
+         found = j;
+   }
+   if(found==0)
+      continue;
+   var strB = strA[found].split('|');
+	//for (j=1;j<strB.length;j++)
+	{
+		newStr += '<tr>\n';
+      newStr += '<td align=\'center\' class="table_font order">'+strB[14]+'</td>\n';
+		newStr += '<td align=\'center\' class="table_font">'+getPartialString(strB[0],6)+'</td>\n';
+      
+		if (strB[1].indexOf('empty') == -1 && strB[1] != undefined)
+			newStr += '<td align=\'center\' class="table_font ">'+strB[1]+'</td>\n';
+		else{
+			if (strB[2].indexOf('empty') != -1 || strB[2] == undefined)
+				newStr += '<td align=\'center\' class="table_font ">Any</td>\n';
+			else
+				newStr += '<td align=\'center\' class="table_font textOverflow">'+strB[2]+'</td>\n';
+		}
+		if (strB[3].indexOf('empty') == -1 && strB[3] != undefined)
+			newStr += '<td align=\'center\' class="table_font">'+strB[3]+'</td>\n';
+		else{
+			if (strB[4].indexOf('empty') != -1 || strB[4] == undefined)
+				newStr += '<td align=\'center\' class="table_font">Any</td>\n';
+			else
+				newStr += '<td align=\'center\' class="table_font textOverflow">'+strB[4]+'</td>\n';
+		}
+		if (strB[5].indexOf('empty') == -1 && strB[5] != undefined) {//proto
+//			newStr += '<td class="table_font">'+strB[5]+'</td>\n'; //custom protocol
+			newStr += '<td align=\'center\' class="table_font"><table><tr><td align=\'center\'>'+getPartialString(strB[5],15)+'</td></tr></table></td>\n';
+		}else{
+				var cmdStr='';
+				if (strB[7] == 'empty')
+					strB[7] = 'Any';
+				if (strB[8] == 'empty')
+					strB[8] = 'Any';
+				if (strB[6].indexOf('ICMP') != -1)
+					cmdStr += '<tr><td rowspan="2" align=\'center\'>'+strB[6]+'</td></tr>\n';		
+				else if (strB[6] == 'TCP or UDP'){
+					cmdStr += '<tr><td align=\'center\'>TCP:&nbsp;'+strB[7]+'->'+strB[8]+'</td></tr>\n';						
+					cmdStr += '<tr><td align=\'center\'>UDP:&nbsp;'+strB[7]+'->'+strB[8]+'</td></tr>\n';	
+				}else{
+					cmdStr += '<tr><td  align=\'center\'>'+strB[6]+':&nbsp;'+strB[7]+'->'+strB[8]+'</td></tr>\n';	
+				}
+				newStr += '<td align=\'center\' class="table_font"><table>'+cmdStr+'</table></td>\n';
+		}		
+
+		newStr += '<td align=\'center\' class="table_font">'+strB[10]+'</td>';
+		newStr += "<td class='table_font'><div class='i_modify'><ul>";
+      newStr += "<li><a href='#' class='edit' id='editBtn' title='Edit' onclick=\"editClick('"+strB[0]+"')\"></a></li>";
+      newStr += "<li><a href='#' class='delete' id='deleteBtn' title='Delete' onclick=\"removeClick('"+strB[0]+"')\"></a></li>";
+      //newStr += "<li><a href=\"javascript:void(0);\" class='move' id='move' title='Move To' onclick=\"moveClick('"+strB[0]+"')\"></a></li>";
+      newStr += "<li><a href=\"javascript:void(0);\" class=\"move\" title=\"Move To\"></a></li>";
+      newStr += "</ul></div></td>\n";
+		newStr += '</tr>\n';
+	}
+
+}
+$('#accesscontrolTable').append(newStr);
+
+$(function(){
+	$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );    
+	$('.textOverflow').ellipsis(true); 
+   
+    $('.move').click(function(){
+        if($(this).parents('tr').children('td').find('.disabled').length > 0){
+        } else {
+            $('.move').addClass('disabled');
+            var $order = $(this).parents('tr').children('.order');
+            
+            if($order.find(".orderbox").length > 0) {
+                $('.move').removeClass('disabled');
+                var $currentVal = $order.children('.orderbox').val();
+                $order.empty().text($currentVal);
+                $order.parents('tr').children('td').removeClass('rowSelect');
+            } else {
+                $(this).removeClass('disabled');
+                var $currentVal = $order.text();
+                $order.empty().append('<input type="text" size="2" maxlength="2" class="orderbox" id="Priority" value="'+$currentVal+'" onKeyPress=\"orderClick(event,'+$currentVal+')\"/>');
+                $order.parents('tr').children('td').addClass('rowSelect');
+            }
+        }
+        
+    });
+});
+// done hiding -->
+</script>
+</table>
+</div><!--Table define end-->
+</li>
+<li class="space"> </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Security_FirewallProtocol_Str7)%>:</span></div>
+<div class="note_text"><%ejGetML(MLG_Security_ServiceControl_Str22)%></div></li>
+<!--Note define end-->
+<li class="space"> </li>
+</ul>
+</div>
+</div>
+<br /><br />
+</form>

@@ -1,0 +1,135 @@
+<script language="javascript">
+<!-- hide
+
+var enbl = <%ejGetOther(sysInfo, enblEthWanToLan)%>;
+var ethWanType = '<%ejGetOther(sysInfo, isEthWanBrobandExist)%>';
+var upprocess = '<%ejGet(UpdateProcess)%>';
+
+function frmLoad () {
+   if(enbl == 1){
+      $("input[name='enblEthwanlan']").get(0).checked = true;
+   }else{
+      $("input[name='enblEthwanlan']").get(1).checked = true;
+   }
+   	if (upprocess == '2') {
+	   alert("The device will reboot after changing wan to lan");
+       setTimeout("$.openLoadingMask(2)", 1500);
+	   setTimeout("BackgroundUrl('reboot-rebootpost.cgi')", 1500);
+	   setTimeout('reboot()', 150000);
+	}
+}
+
+function reboot() {
+	var loc = '/login/login.html';
+	var code = 'window.top.location="' + loc + '"';
+	eval(code);
+}
+
+function BackgroundUrl(url)
+{
+	var objXMLHTTP = null;
+
+	if (window.XMLHttpRequest){
+		objXMLHTTP=new XMLHttpRequest();
+	}// code for IE
+	else if (window.ActiveXObject){
+		objXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	else{
+		alert("The browser no support XMLHttp Object");
+		return;
+	}
+
+	if ( objXMLHTTP != null ){
+		objXMLHTTP.open("GET","./"+url,true);
+		objXMLHTTP.onreadystatechange = function()
+		{
+		}
+		objXMLHTTP.send(null);
+	}
+}
+
+function btnApply(){
+   if(ethWanType == '1'){
+      msg = 'Can not set when there is a wan interface for ethernet wan in <a href="#" onClick="$(\'.ui-dialog-titlebar-close\').trigger(\'click\'); window.parent.document.activePage(\'network-broadband\', 0);" >Broadband</a> page.';
+      hciAlert(msg, {height: 180,type: 0, title: 'Message'});
+      //AlertOpen("Can not set when there is a wan interface for ethernet wan in <a href=\"#\" onClick= \"$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('network-broadband', 0);\">Broadband</a> page.", 2);
+      return false
+   }
+
+   return true;
+}
+
+function doSubmit(){
+   if (btnApply()) {
+      document.forms[0].submit();
+      $.openLoadingMask(1);
+   }
+}
+
+$(document).ready(function() {
+   frmLoad();
+});
+
+// done hiding -->
+</script>
+
+<form action="/pages/tabFW/homeNetworking-ethwanlan.cgi" method="post" onSubmit="return false;">
+  <input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">
+  <input type="hidden" name="connMode" id="connMode" value="1">
+
+  
+  <div class="content_frame" >
+    <!--Unit Explain start-->
+    <div class="explain">
+      <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+      <div class="explain_text"><%ejGetML(MLG_Network_Ethwanlan_Explain)%></div>
+      <div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+    </div>
+    <!--Unit Explain End-->
+
+    <!--Set area start-->
+    <div class="data_frame"><ul>
+      <!--level 1 start-->
+      <li class="space"></li>
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Common_State)%> :</li>
+            <li class="right_table" id="someone">
+              <input name="enblEthwanlan" type="radio" value="1" /> <%ejGetML(MLG_Common_Enable)%>
+              <input name="enblEthwanlan" type="radio" value="0" /> <%ejGetML(MLG_Common_Disabled)%> 
+            </li>
+          </ul>
+        </div>
+      </li>
+      <!--level 1 end-->
+
+      <li class="space"> </li>
+      <!--Note define start-->
+      <li class="noteframe">
+        <div class="w_text">
+          <span class="i_note"><%ejGetML(MLG_Common_Notes)%>:</span>
+        </div>
+        <div class="note_text">
+          1. <%ejGetML(MLG_Network_Ethwanlan_Str1)%><br>
+          2. <%ejGetML(MLG_Network_Ethwanlan_Str2)%>
+        </div>
+      </li>
+      <!--Note define end-->
+
+      <li class="space"> </li>
+      <!--Button define start-->
+      <li class="buttonframe">
+        <div class="button_position">
+          <input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="doSubmit();" />
+          &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+          <input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick="frmLoad();" />
+        </div>
+      </li>
+      <!--Button define end-->
+    </ul></div>
+    <!--Set area end-->
+  </div>
+</form>
+

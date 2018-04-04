@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/aes
+END
+fingerprint.sha1
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/aes/fingerprint.sha1
+END
+fips_aes_core.c
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/aes/fips_aes_core.c
+END
+fips_aes_selftest.c
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/aes/fips_aes_selftest.c
+END
+fips_aesavs.c
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/aes/fips_aesavs.c
+END
+fips_aes_locl.h
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/aes/fips_aes_locl.h
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/aes/Makefile
+END

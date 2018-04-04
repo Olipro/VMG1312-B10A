@@ -1,0 +1,17 @@
+./bcmcrypto/libwlbcmcrypto.so
+./router/libupnp/libwlupnp.so
+./router/eapd/eapd
+./router/eapd/eapd_wapi
+./router/lltd/lld2d
+./router/nas/nas
+./router/shared/libwlbcmshared.so
+./router/shared/libwlbcmshared_wapi.so
+./router/wapi/openssl/openssl-0.9.8e/libcrypto.so.0.9.8
+./router/wapi/wapid/wapid
+./wapi/ias
+./wps/libwps.so
+./wps/wps_ap.lib
+./wps/wps_enr.lib
+./wps/wps_monitor.lib
+./wps/wps_wfa.lib
+./router/hspot_ap/libhspotap.so

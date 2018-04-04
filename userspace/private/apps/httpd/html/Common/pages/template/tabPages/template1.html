@@ -1,0 +1,43 @@
+<script type="text/javascript" src="../../js/jquery.text-overflow.js"></script>
+<script type="text/javascript">
+        $(function()
+        {
+ $('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );    
+ $('.textOverflow').ellipsis(true); 
+        });
+    </script> 
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">Something about self-diagnostic page</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1">
+<div class="title">Test <%ejGetML(MLG_Common_Time)%>: Nov 24 14:00:05</div>
+<div class="w_table">
+  <table width="100%" cellpadding="0" cellspacing="0"  class="table_frame" id="testTable">
+    <tr align="center">
+      <td width="5%" class="top_font">#</td>
+      <td class="top_font"><%ejGetML(MLG_Common_Time)%></td>
+      <td class="top_font">Test Case</td>
+      <td class="top_font" style="border-right:0px;"><%ejGetML(MLG_System_SystemLog_Str20)%></td>
+    </tr>
+    <tr align="center">
+      <td class="table_font">1</td>
+      <td class="table_font textOverflow">Nov 24 14:00:05</td>
+      <td class="table_font textOverflow">Internal System Resources</td>
+      <td class='table_font textOverflow'>TBHR=3%,91%,56%,40,WMOCALED=0,WETHLED=1,LANMOCALED=0,LANETHLED=0,LANWIFILED=0,httpd=6.0%,ssk=5.1%,consoled=3.7%,upnp=2.7%,sdera=2.5% sdera=0.9%,kthreadd=0.0%,sirq-high/0=0.0%,sirq-timer/0=0.0%,init=0.0%</td>
+    </tr>
+    <tr align="center">
+      <td class="table_font">2</td>
+      <td class="table_font textOverflow">Nov 24 14:01:05</td>
+      <td class="table_font textOverflow">WAN Interface Typ</td>
+      <td class="table_font textOverflow">TWANTYPE=ETH=T,MOCA=F</td>
+    </tr>
+  </table>
+</div>
+</li>
+</ul></div>
+</div><br /><br />

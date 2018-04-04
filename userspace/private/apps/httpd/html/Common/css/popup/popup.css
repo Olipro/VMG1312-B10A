@@ -1,0 +1,51 @@
+/*
+* jQuery UI CSS Framework
+* Copyright (c) 2009 AUTHORS.txt (http://jqueryui.com/about)
+* Dual licensed under the MIT (MIT-LICENSE.txt) and GPL (GPL-LICENSE.txt) licenses.
+*/
+
+.ui-widget-overlay { background: #000;opacity: .60;filter:Alpha(Opacity=60); }
+.ui-widget-header { border: 1px solid #308799; background:url(images/top_bg.gif) repeat-x; color: #ffffff; font-weight: bold; }
+.ui-dialog { position: relative; padding:0px 0px 5px 0px; }
+.ui-dialog .ui-dialog-titlebar { padding: 0px .3em .3em 1em; position: relative; height:35px; line-height:35px; }
+.ui-draggable .ui-dialog-titlebar { cursor: move; }
+.ui-widget-content { border: 1px dotted #aca9a9; background:#d5d5d5 50% repeat-x; background-position:top px; color: #333333; }
+.ui-widget-content a { color: #333333; }
+.ui-widget-header a { color: #000; }
+.ui-widget-header .ui-icon {background-image:url(images/i_close.gif); display:block; width:18px; height:18px;}
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus { font-weight: bold; cursor:pointer; }
+.ui-icon-minusthick { background-position: 0px 0px; }
+
+.ui-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; font-size:1px; }
+.ui-icon-closethick { background-position: 0px 0px; }
+.ui-dialog .ui-dialog-title { float: left; margin: .1em 0 .2em; } 
+.ui-dialog .ui-dialog-titlebar-close { position: absolute; right: .3em; top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height: 18px; }
+.ui-dialog .ui-dialog-titlebar-close span { display: block; margin: 1px; }
+.ui-dialog .ui-dialog-titlebar-close:hover, .ui-dialog .ui-dialog-titlebar-close:focus { padding: 0; }
+
+
+/* required comment for clearfix to work in Opera \*/
+* html .ui-helper-clearfix { height:1%; }
+.ui-helper-clearfix { display:block; }
+/* end clearfix */
+.ui-helper-zfix { width: 100%; height: 100%; top: 0; left: 0; position: absolute; opacity: 0; filter:Alpha(Opacity=0); }
+.ui-dialog .ui-dialog-content { border: 0; padding: .5em 1em; background: none; overflow: auto; zoom: 1; }
+
+/* Interaction Cues
+----------------------------------*/
+.ui-state-disabled { cursor: default !important; }
+
+/* Overlays */
+.ui-widget-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+/* Button
+----------------------------------*/
+.ui-dialog .ui-dialog-buttonpane { text-align: left; border-width: 1px 0 0 0; background-image: none; margin: .5em 0 0 0; padding: .3em 1em .5em .4em; }
+.ui-dialog .ui-dialog-buttonpane button { float: right;  cursor: pointer;margin: .5em .4em .5em 0; padding: 1px 3px; line-height: 1.4em; width:auto; overflow:visible; }
+.ui-state-default, .ui-widget-content .ui-state-default { font-family:Century Gothic, Arial, Helvetica, sans-serif; font-weight: bold; /*color:#000;*/  }
+
+
+
+
+
+

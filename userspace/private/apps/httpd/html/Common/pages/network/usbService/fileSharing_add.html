@@ -1,0 +1,277 @@
+<script language="javascript">
+<!-- hide
+/*
+function btnSave()
+{	
+	with (document.forms[0]) {
+		doAddShareName();
+		sessionKey.value = mainFrame.glbSessionKey;
+	}
+	return true;
+}
+*/
+
+function doAddShareName() {
+	var obj = document.getElementById("select2");
+	var index = obj.selectedIndex;
+	var name = obj.options[index].text;
+	
+	var obj2 = document.getElementById("AddShareName");
+	obj2.value = name;
+}
+
+function doSecurityAllowUser() {
+	if (document.getElementById("AddShareAccess").value == '0') {
+		var f = document.forms[0];
+		var obj = f.AllowUsers;
+		var text = "";
+
+		for (i = 0; i < obj.length; i++) {
+			if (i == 0) {
+				text = obj.options[i].text;
+				continue;
+			}
+			text = text + "," + obj.options[i].text;
+		}
+
+		if (text == "") {
+			var msg = "Please select Allow Users at least one.";
+			hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return false;
+		}
+
+		f.SecurityAllowUser.value = text;
+		return true;
+	}
+}
+
+function showbrowse() {
+       var db1 = window.parent.$.zyUiDialog({
+            width: 800,
+            height:350,
+            title: 'Browse Directory',
+            buttons: {
+        		'<%ejGetML(MLG_Common_Back)%>':function(){db1.dialog('close');},
+      			'<%ejGetML(MLG_Common_Apply)%>':function(){}
+            }
+
+        });
+   		var link = 'pages/network/usbService/fileSharing_browse.html';
+   		db1.load(link);
+   		db1.dialog('open');
+}
+
+function doAccessChange(value) {
+        if(value == '1'){
+                document.getElementById("userlist").style.display = "none";
+        }
+        else{
+                document.getElementById("userlist").style.display = "block";
+        }
+        return;
+}
+
+function doMoveElement(srcBox,destBox) {
+        var i = srcBox.selectedIndex;
+        if(i == -1){
+                submitFlag = true;
+                return;
+        }
+        while(i >= 0) {
+                if(srcBox.options[i].text != "") {
+                        newElem=new Option(srcBox.options[i].text, srcBox.options[i].value);
+                        destBox.options.add(newElem);
+                        srcBox.options[i] = null;
+                }
+                i = srcBox.selectedIndex;
+        }
+        submitFlag = false;
+        return;
+}
+
+function submitchk(){
+	path = document.getElementById("AddSharePath");
+	desc = document.getElementById("AddShareDesc").value.replace(/(^\s*)|(\s*$)/g, "");
+    chreg =  /[^A-Za-z0-9 ]/i ;
+	var msg = "";
+	
+	if (path.value == "") {
+		msg = "Please select a directory.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        path.focus();
+        return false;
+    }
+	
+	if (desc == "") {
+		msg = "Please enter some description for this directory.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        desc.focus();
+        return false;
+	}
+	if (desc.search(chreg) >= 0) {
+		msg = "Description must be English alphabet, digit, space.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        desc.focus();
+        return false;
+	}
+
+	document.getElementById("AddShareDesc").value = desc;
+	return true;
+}
+
+function doSubmit() {
+/*
+   if (btnSave()) {
+      document.forms[0].submit();
+      $('.ui-dialog-titlebar-close').trigger('click');
+      $.openLoadingMask(1);
+	  return;
+   }
+*/
+	if(submitchk() == false){
+		return false;
+	}
+
+	with (document.forms[0]) {
+		doAddShareName();
+		if (doSecurityAllowUser() == false)
+			return;
+		sessionKey.value = mainFrame.glbSessionKey;
+		submit();
+		$('.ui-dialog-titlebar-close').trigger('click');
+		$.openLoadingMask(1);
+		return;
+	}
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var OkBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+OkBtn.click(function(){ doSubmit(); });
+// done hiding -->
+</script>
+<script type="text/javascript">
+</script>
+<form action="/pages/tabFW/usbService-fileSharing_add.cmd" method="post" target="mainFrame">
+<input size="15" type="hidden" name="action" value="add" />
+<input size="15" type="hidden" name="sessionKey" />
+<div id="setting_div">
+<div class="popup_frame" >
+<div class="data_frame2">
+<ul>
+<li class="set1">
+<div class="w_text">
+<ul>
+<li class="left_table">Volume :</li>
+<li class="right_table"><span class="cfig_word">
+  <select name="select2" id="select2" style="width:179">
+    <option select="selected" value="1"><%ejGet(logicalVolumeName)%></option>
+<script language="javascript">
+<!-- hide
+{
+	var i = 0;
+	var volumeName = '<%ejGet(logicalVolumeName2)%>';
+	var str = 'usb2_1';
+	
+	if (!str.localeCompare(volumeName)) {
+		str += ' <option select="" value="2">' + volumeName + '</option>';
+	}
+	
+	$('#select2').append(str);
+}
+// done hiding -->
+</script>
+  </select>
+</span></li>
+</ul>
+<ul>
+<li class="left_table"><%ejGetML(MLG_Common_Path)%> :</li>
+<li class="right_table"><span class="cfig_word">
+  <input type="text" name="AddSharePath" id="AddSharePath" size="30" maxlength="50" />
+  <input type="button" name="CIFS_Browse" value="<%ejGetML(MLG_Common_Browse)%>" onclick="showbrowse()" />
+</span></li>
+</ul>
+<ul>
+<li class="left_table"><%ejGetML(MLG_Common_Description)%> :</li>
+<li class="right_table"><span class="cfig_word">
+  <input type="text" name="AddShareDesc" id="AddShareDesc" size="30" maxlength="50" />
+</span></li>
+</ul>
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Common_Access_Level)%> :</li>
+    <li class="right_table"><span class="cfig_word">
+      <select style="width:179" name="AddShareAccess" id="AddShareAccess" onchange="doAccessChange(this.value);">
+        <option value="1">Public</option>
+        <option value="0"><%ejGetML(MLG_Common_Security)%></option>
+      </select>
+    </span></li>
+  </ul>
+</div>
+            </li>
+         </ul></div>
+      </div>
+<div id="userlist" style="display:none; width:575px">
+	<div class="space"></div>
+	<li class="set1">
+		<div class="w_text">
+			<table width="98%" border="0" cellpadding="0" cellspacing="0" >
+				<tr>
+					<td valign="top" width="45%">
+						<div class="w_text3">
+							<table width="100%" cellpadding="0" cellspacing="0" class="table_frame" id="alluserlistTable">
+								<tr align="center">
+									<td class="top_font">Available Users</td>
+								</tr>
+                                <tr>
+									<td>
+									<select id="AllUsers" name="AllUsers" size="5" multiple="multiple" style="width:100%">
+<script language="javascript">
+<!-- hide
+{
+	var i = 0;
+	var allUsers = '<%ejGetOther(allUsers)%>';
+	var info = allUsers.split('|');
+	var str = '';
+	
+	if (info != '') {
+		for (i = 0; i < info.length; i++) {
+			str += ' <option value="">' + info[i] + '</option>';
+		}
+	}
+	
+	$('#AllUsers').append(str);
+}
+// done hiding -->
+</script>
+                                    </select>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+					<td align="center" class="blod">
+						<input type="button" name="rightbtn" style="background:url(../../../images/i_right_bn.gif) no-repeat; width:32px; height:27px;border:none; display:block; cursor:pointer;" onClick="doMoveElement(this.form.AllUsers, this.form.AllowUsers)" >
+						<input type="button" name="leftbtn" style="background:url(../../../images/i_left_bn.gif) no-repeat; width:32px; height:27px;border:none; display:block; cursor:pointer;" onClick="doMoveElement(this.form.AllowUsers, this.form.AllUsers)" >
+					</td>
+					<td valign="top" width="45%">
+						<div class="w_text3">
+							<table width="100%" cellpadding="0" cellspacing="0" class="table_frame" >
+								<tr align="center">
+									<td class="top_font">Allow Users</td>
+								</tr>
+								<tr>
+									<td>
+									<select id="AllowUsers" name="AllowUsers" size="5" multiple="multiple" style="width:100%">
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</li>
+</div>
+</div>
+<input type="hidden" name="AddShareName" id="AddShareName" value="" />
+<input type="hidden" name="SecurityAllowUser" id="SecurityAllowUser" value="" />
+</form>

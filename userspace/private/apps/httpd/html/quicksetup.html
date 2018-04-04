@@ -1,0 +1,179 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+
+var sessionKey='<%ejGetOther(sessionKey)%>';
+var isWirelessEnbld='<%ejGet(enblWireless)%>';
+
+function skipQsetupClick(cb) {
+   if ( cb.checked == true ) {
+      hideQsetupInfo(1);
+      hideWirelessInfo(1);
+   }
+   else {
+      hideQsetupInfo(0);
+      if (isWirelessEnbld == 0) 
+         hideWirelessInfo(1);
+      else
+         hideWirelessInfo(0);
+   }
+}
+   
+function hideQsetupInfo(hide) {
+   var status = 'visible';
+
+   if ( hide == 1 )
+      status = 'hidden';
+
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('hideinfo').style.visibility = status;
+   else {
+      if (document.layers == false) // IE4
+         document.all.hideinfo.style.visibility = status;
+   }
+}
+
+function hideWirelessInfo(hide) {
+   var status = 'visible';
+
+   if ( hide == 1 )
+      status = 'hidden';
+
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('hideWireless').style.visibility = status;
+   else {
+      if (document.layers == false) // IE4
+         document.all.hideWireless.style.visibility = status;
+   }
+}
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+      pppUserName.value = '<%ejGet(pppUserName)%>';
+      pppPassword.value = '<%ejGet(pppPassword)%>';
+   }
+
+   if(isWirelessEnbld == 0 )
+      hideWirelessInfo(1);
+   else
+      hideWirelessInfo(0);
+}
+
+function btnApply() {
+   var loc = 'quicksetup.cmd?';
+
+   with ( document.forms[0] ) {
+
+      if(skipQsetup.checked == true){
+         loc += 'action=skip';
+         loc += '&sessionKey=' + sessionKey;
+         var code = 'parent.location="' + loc + '"';
+      } else{
+
+         // validate user name
+         var len = pppUserName.value.length;
+         if ( len > 256 ) {
+            msg = 'The length of user name (' + len + ') is too long [0-256].';
+            alert(msg);
+            return;
+         }
+         // validate password
+         len = pppPassword.value.length;
+         if ( len > 32 ) {
+            msg = 'The length of password (' + len + ') is too long [0-32].';
+            alert(msg);
+            return;
+         }
+
+         if (isWirelessEnbld == 1 ) {
+            if ( wlSsid.value == '' ) {
+               alert('SSID should not be empty.');
+               return;
+            }
+
+            var str = new String();
+            str = wlSsid.value;
+            if ( str.length > 32 ) {
+               alert('SSID "' + wlSsid.value + '" should not be longer than 32 characters.');
+               return;
+            }
+         }
+
+         loc += 'action=add';
+
+         loc += '&pppUserName=' + encodeUrl(pppUserName.value);
+         loc += '&pppPassword=' + encodeUrl(pppPassword.value);
+         if (isWirelessEnbld == 1 ) {
+         loc += '&wlSsid=' + encodeUrl(wlSsid.value);
+         }
+         loc += '&sessionKey=' + sessionKey;
+        var code = 'location="' + loc + '"';
+      }
+   }
+
+   // disable save button to avoid bugs while clicking this button too fast
+   //document.forms[0].btnSave.disabled = 1;
+   eval(code);
+}
+
+// done hiding -->
+
+</script>
+   </head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <form>
+            <b>Quick Setup</b><br>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td valign="center" align="middle" colspan="2" width="30" height="30">
+                     <input type='checkbox' name='skipQsetup' onClick='skipQsetupClick(this)'></td>
+                  <td colspan="2">
+                    Skip Quick setup.</td>
+               </tr>
+            </table>
+            <br>
+            <br>
+            <br>
+            <div id='hideinfo'>               
+            In the boxes below, enter the PPP user name and password that your ISP 
+            has provided to you.<br>
+            <br>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td>PPP Username:&nbsp;&nbsp;</td>
+                  <td><input type='text' name='pppUserName'></td>
+               </tr>
+               <tr>
+                  <td>PPP Password:&nbsp;&nbsp;</td>
+                  <td><input type='password' name='pppPassword' autocomplete="new-password"></td>
+               </tr>
+            </table>
+               <br>
+               <br>
+            <div id='hideWireless'>               
+	    Enter the wireless SSID <br>
+            <table border="0" cellpadding="4" cellspacing="0">
+                <tr>
+                  <td width="50">SSID:</td>
+                  <td>
+                     <input type='text' name='wlSsid' maxlength="32" size="32"></td>
+                </tr>
+               </table>              
+            </div>            
+            </div>            
+            <br>
+            <br>
+            <br>
+            <center>
+                <input type='button' onClick='btnApply()' value='Apply/Save'>
+            </center>
+         </form>
+      </blockquote>
+   </body>
+</html>

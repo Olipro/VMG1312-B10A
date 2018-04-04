@@ -1,0 +1,126 @@
+<script language="javascript">
+<!-- hide
+
+var vd_lan1;
+var vd_lan2;
+var vd_lan3;
+var vd_lan4;
+var vd_lan5;
+var vd_wifiSignal;
+var vd_dslLine1;
+var wanLevel;
+var vd_usb;
+var enblLan4ToWan;
+var vd_lan4_wan;
+
+vd_lan1 = '<%ejGetOther(ifStatus,LAN,eth0,status2)%>';
+vd_lan2 = '<%ejGetOther(ifStatus,LAN,eth1,status2)%>';
+vd_lan3 = '<%ejGetOther(ifStatus,LAN,eth2,status2)%>';
+vd_lan4 = '<%ejGetOther(ifStatus,LAN,eth3,status2)%>';
+vd_wifiSignal = '<%ejGetOther(ifStatus,WLAN,wifiSignal,status2)%>';
+vd_dslLine1 = '<%ejGetOther(ifStatus,WAN,DSL,0)%>';
+wanLevel = '<%ejGetOther(sysInfo, wanStatus)%>';
+vd_usb = '<%ejGetOther(ifStatus,USB,undefined,status2)%>';
+
+enblLan4ToWan = '<%ejGetOther(sysInfo, enblEthLanToWan)%>';
+vd_lan4_wan = '<%ejGetOther(ifStatus,WAN,eth3,status2)%>';
+
+function initVirtualDevice()
+{
+   var vd_lan1_msg = '';
+   var vd_lan2_msg = '';
+   var vd_lan3_msg = '';
+   var vd_lan4_msg = '';
+   var vd_wifiSignal_msg = '';
+   var vd_dslLine1_msg = '';
+   var vd_ethWAN_msg = '';
+   var vd_usb_msg = '';
+
+   // init msg
+   if(vd_lan1 == 'on'){
+      vd_lan1_msg = 'LAN1 on';
+   }
+   if(vd_lan2 == 'on'){
+      vd_lan2_msg = 'LAN2 on';
+   }
+   if(vd_lan3 == 'on'){
+      vd_lan3_msg = 'LAN3 on';
+   }
+   if(vd_lan4 == 'on'){
+      vd_lan4_msg = 'LAN4 on';
+   }
+   if(vd_wifiSignal == 'on'){
+      vd_wifiSignal_msg = 'wifi Signal on';
+   }
+   if(vd_dslLine1 == 'on'){
+      vd_dslLine1_msg = 'dsl line on';
+   }
+   if(vd_usb == 'on'){
+      vd_usb_msg = 'USB on';
+   }
+
+   var VDdate = {
+      dslline: {status: vd_dslLine1, msg: vd_dslLine1_msg },
+      lan1: {status: vd_lan1, msg: vd_lan1_msg},
+      lan2: {status: vd_lan2, msg: vd_lan2_msg},
+      lan3: {status: vd_lan3, msg: vd_lan3_msg},
+      lan4: {status: vd_lan4, msg: vd_lan4_msg},
+      usb: {status: vd_usb, msg: vd_usb_msg},
+      wifiSignal: {status: vd_wifiSignal, msg: vd_wifiSignal_msg}
+   };
+
+   if( enblLan4ToWan=='1' && vd_lan4_wan=='on' ){
+      VDdate.lan4.status = vd_lan4_wan;
+      VDdate.lan4.msg = 'WAN on';
+   }
+   
+   var $VDObj = $('#vdContainer').VDcomponent({
+      vdHtml: '/pages/VD/vd/VD.html',
+      vdCss: ['/pages/VD/vd/css/css.css'],
+      portDef:'/pages/VD/vd/portDef.js'
+   });
+
+   $VDObj.setValue(VDdate);
+}
+
+function updateValue(msg){
+   var upDate = msg.replace(/\r\n/ig, "");
+   upDate = upDate.replace(/\n/ig, "");
+   var upDates = upDate.split('@');
+
+   vd_lan1 = (((upDates[0] == undefined) || (upDates[0] == '')) ? 'off' : upDates[0]);
+   vd_lan2 = (((upDates[1] == undefined) || (upDates[1] == '')) ? 'off' : upDates[1]);
+   vd_lan3 = (((upDates[2] == undefined) || (upDates[2] == '')) ? 'off' : upDates[2]);
+   vd_lan4 = (((upDates[3] == undefined) || (upDates[3] == '')) ? 'off' : upDates[3]);
+   vd_wifiSignal = (((upDates[4] == undefined) || (upDates[4] == '')) ? 'off' : upDates[4]);
+   vd_dslLine1 = (((upDates[5] == undefined) || (upDates[5] == '')) ? 'off' : upDates[5]);
+   wanLevel = upDates[6];
+   vd_usb = (((upDates[7] == undefined) || (upDates[7] == '')) ? 'off' : upDates[7]);
+
+   enblLan4ToWan = (((upDates[8] == undefined) || (upDates[8] == '')) ? '0' : upDates[8]);
+   vd_lan4_wan = (((upDates[9] == undefined) || (upDates[9] == '')) ? 'off' : upDates[9]);
+
+   frmLoad();
+}
+
+function frmLoad() {
+   // init Virtual Device
+   initVirtualDevice();
+
+   if(wanLevel == '0') {
+      connection(true, wanLevel);
+   } else {
+      connection(false, wanLevel);
+   }
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+// done hiding -->
+</script>
+
+<div id='VDView' class='naviView' style='position: relative;'>
+  <div id='vdContainer' style='position:relative; left:4%;right:4%; top:100px; '></div> 
+</div>

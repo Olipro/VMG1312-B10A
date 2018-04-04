@@ -1,0 +1,11 @@
+
+  {
+         "networkMap": {"title": "<%ejGetML(MLG_ConnStatus_NetworkMap_Str1)%>", "url":"content/networkMap.html"},
+		 //"networkMap_bridge": {"title": "Network Map", "url":"content/networkMapb.html"}, //Device Mode : Bridge 
+         "status": {"title": "<%ejGetML(MLG_ConnStatus_Status_Str21)%>", "url":"content/status.html"},
+         //"test": {"title": "Demo View", "url":"content/test.html"},
+         "vd": {"title": "<%ejGetML(MLG_ConnStatus_VD_Str5)%>", "url":"content/vd.html"}
+         
+  }
+
+    

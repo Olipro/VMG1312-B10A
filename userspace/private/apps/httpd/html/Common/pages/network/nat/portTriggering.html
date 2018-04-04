@@ -1,0 +1,197 @@
+<script language="javascript">
+<!-- hide
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+var errMsg='<%ejGetOther(errMsg)%>';
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; 
+
+if(errMsg!='')
+	hciAlert (errMsg, {height: 180, type: 2, title: ''});
+
+function frmLoad () {
+	var i = 0;
+	var TriggerPort = '<%ejGetOther(trigport)%>';
+	var info = TriggerPort.split('|');
+	var str = '';
+	
+	if (info != '') {
+		for ( i = 0; i < info.length; i++ ) {
+			if (info[i] == '')
+				break;
+			var names = info[i].split('/');
+			str += "<tr align=\"center\">";
+			str += "<td class=\"table_font\">" + (i + 1) + "</td>";
+			if (names[0] == "1")
+				str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onclick=\"enblProcess('"+i+ "')\" class=\"active_on\" title=\"On\" id='activeoffBtn'></a></li></ul></div></td>";
+			else
+				str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onclick=\"enblProcess('"+i+ "')\" class=\"active_off\" title=\"Off\" id='activeonBtn'></a></li></ul></div></td>";
+			str +=("<td class=\"table_font\">"+names[1]+"</td>");
+			str +=("<td class=\"table_font textOverflow\">"+names[9]+"</td>");
+			str +=("<td class=\"table_font\">"+names[3]+"</td>");
+			str +=("<td class=\"table_font\">"+names[4]+"</td>");
+			str +=("<td class=\"table_font\">"+names[10]+"</td>");
+			str +=("<td class=\"table_font\">"+names[6]+"</td>");
+			str +=("<td class=\"table_font\">"+names[7]+"</td>");
+			str +=("<td class=\"table_font\">"+names[11]+"</td>");
+			str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editClick('" +i+ "')\" class=\"edit\" title=\"<%ejGetML(MLG_Common_Edit)%> .\" id='editBtn'></a></li><li><a href=\"#\" onclick=\"removeClick('"+i+ "')\" class=\"delete\" title=\"<%ejGetML(MLG_Common_Delete)%> .\" id='deleteBtn'></a></li></ul></div></td>";
+			str += "</tr>";
+		}
+	}
+
+	$('#portTriggeringTable').append(str);
+
+//ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+     if((customizationFlag & 0x00080000)){
+ 	     $('#portfwrd_txt').hide();
+     }
+}
+
+function addClick() {
+  
+      var db1 = window.parent.$.zyUiDialog({
+                 width: 500,
+                 height: 370,
+                 title: '<%ejGetML(MLG_NAT_PortTriggering_Str16)%>',
+
+                 buttons: {
+                    '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+                    '<%ejGetML(MLG_Common_OK)%>':function(){}
+                 }
+                });
+		var link = 'pages/network/nat/portTrigger_add.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+}
+
+function editClick(index) {
+ 
+	var loc = 'nat-portTriggering.cmd?action=view&tempNatIndex=' + index;
+       loc += '&sessionKey=' + glbSessionKey;
+
+	var db1 = window.parent.$.zyUiDialog({
+                 width: 500,
+                 height: 370,
+                 title: '<%ejGetML(MLG_NAT_PortTriggering_Str21)%>',
+
+                 buttons: {
+                    '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+                    '<%ejGetML(MLG_Common_OK)%>':function(){}
+                 }
+                });
+      db1.load(loc);
+      db1.dialog('open');
+}
+
+function removeClick(index) {
+   var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 190,
+              title: '<%ejGetML(MLG_Common_Delete)%> .',
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+                 '<%ejGetML(MLG_Common_OK)%>': function(){ db1.dialog('close'); deleteProcess(index); }
+              }
+             });
+		var link = 'pages/delete.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+}
+
+function deleteProcess(index) {
+	with ( document.forms[0] ) {
+		var TriggerPort = '<%ejGetOther(trigport)%>';
+		var info = TriggerPort.split('|');
+		var names = info[index].split('/');
+		var ifc;
+		
+		appName.value = names[1];
+		
+		ifc = names[2];
+		
+		sessionKey.value = glbSessionKey;
+		tStart.value = names[3];
+		tEnd.value = names[4];
+		tProto.value = names[5];
+		dstWanIf.value = ifc;
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+function enblProcess(index) {
+	with ( document.forms[0] ) {
+		var TriggerPort = '<%ejGetOther(trigport)%>';
+		var info = TriggerPort.split('|');
+		var names = info[index].split('/');
+		var ifc;
+		
+		appName.value = names[1];
+		
+		ifc = names[2];
+		
+		sessionKey.value = glbSessionKey;
+		tStart.value = names[3];
+		tEnd.value = names[4];
+		tProto.value = names[5];
+		dstWanIf.value = ifc;
+		action.value="enbl";
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+// done hiding -->
+</script>
+   <form action="/pages/tabFW/nat-portTriggering.cmd" method="post">
+   <input type=hidden name="sessionKey" id="sessionKey" value="">
+   <input type=hidden name="action" id="action" value="remove">
+   <input type=hidden name="tStart" id="tStart" value="">
+   <input type=hidden name="tEnd" id="tEnd" value="">
+   <input type=hidden name="tProto" id="tProto" value="">
+   <input type=hidden name="dstWanIf" id="dstWanIf" value="">
+   <input type=hidden name="appName" id="appName" value="">
+   </form>
+<div class="content_frame">
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_NAT_PortTriggering_Explain)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame">
+		 <ul>
+		 <li class="set1"> <div class="w_table"><input type="button" value=<%ejGetML(MLG_NAT_PortTriggering_Str16)%> id='addnewshareBtn' onclick="addClick();" /></div></li>
+            <li class="set1">
+              <div class="w_table">
+           <table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame" id="portTriggeringTable">
+                                    <tr align="center" valign="top">
+                                      <td width="5%" class="top_font ">#</td>
+                                      <td class="top_font "><%ejGetML(MLG_Common_Status)%></td>
+                                      <td class="top_font "><%ejGetML(MLG_NAT_PortForwarding_Str3)%></td>
+                                      <td class="top_font "><%ejGetML(MLG_NAT_PortTriggering_Str4)%></td>
+                                      <td class="top_font "><%ejGetML(MLG_NAT_PortTriggering_Str5)%> </td>
+                                      <td class="top_font "><%ejGetML(MLG_NAT_PortTriggering_Str6)%></td>
+                                      <td  class="top_font "><%ejGetML(MLG_NAT_PortTriggering_Str7)%></td>
+                                      <td  class="top_font "><%ejGetML(MLG_NAT_PortTriggering_Str8)%></td>
+                                      <td  class="top_font "><%ejGetML(MLG_NAT_PortTriggering_Str9)%></td>
+                                      <td  class="top_font "><%ejGetML(MLG_NAT_PortTriggering_Str10)%></td>
+                                      <td width="60"  class="top_font " style="border-right:0px;"><%ejGetML(MLG_Network_StaticRoute_Str9)%></td>
+                                    </tr>
+                                </table>
+              </div>
+            </li>
+<li class="space"> </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Network_Note)%>:</span></div>
+<div class="note_text">&nbsp;&nbsp;1. <%ejGetML(MLG_NAT_PortTriggering_Str25)%><br /> </div>
+<div class="note_text" id ="portfwrd_txt">&nbsp;&nbsp;2. <%ejGetML(MLG_NAT_PortForwarding_Str19)%> . </div></li><li class="space"> </li>    
+
+</ul>
+</div>
+<br /><br />

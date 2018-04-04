@@ -1,0 +1,123 @@
+<script type='text/javascript'>
+/*   
+    $(function(){
+        $('input[name="sysSubmit"]').click(function(){
+           window.parent.$.openLoadingMask(2);
+           
+           //close loading mask by calling window.parent.$.closeLoadingMask();
+           setTimeout(function(){ window.parent.$.closeLoadingMask();}, 2000);
+        });
+    });*/
+</script>
+<script language="javascript">
+var upprocess = '<%ejGet(UpdateProcess)%>';
+var glbSessionKey = '<%ejGetOther(sessionKey)%>';
+
+var curUserName = '<%ejGet(curUserName)%>';
+var customer = '<%ejGetOther(customer)%>';
+
+function btnReset() {
+	var loc = 'reboot-rebootinfo.cgi?';
+	loc += 'sessionKey=' + glbSessionKey;
+	var code = 'location="' + loc + '"';
+//	window.parent.$.openLoadingMask(2);
+	eval(code);
+}
+
+function reboot() {
+	var loc = '/login/login.html';
+	var code = 'window.top.location="' + loc + '"';
+	eval(code);
+}
+
+function BackgroundUrl(url)
+{
+	var objXMLHTTP = null;
+
+	if (window.XMLHttpRequest){
+		objXMLHTTP=new XMLHttpRequest();
+	}// code for IE
+	else if (window.ActiveXObject){
+		objXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	else{
+		alert("<%ejGetML(MLG_Common_XMLHttp)%>");
+		return;
+	}
+
+	if ( objXMLHTTP != null ){
+		objXMLHTTP.open("GET","./"+url,true);
+		objXMLHTTP.onreadystatechange = function()
+		{
+		}
+		objXMLHTTP.send(null);
+	}
+}
+
+function frmLoad () {
+
+    // __ZyXEL__, Tresia, Iskon customiztion, only show reset to default button to admin & supervisor
+	if(customer == "ISKON") {
+		if ( (curUserName != "admin") && (curUserName != "supervisor") )
+			$('#Iskon_FactoryReset').css('display','inline');
+		else
+			$('#Iskon_FactoryReset').css('display','none');
+	} else {
+		$('#Iskon_FactoryReset').css('display','none');    
+	}
+
+	if (upprocess == '2') {
+		setTimeout("$.openLoadingMask(2)", 1500);
+		setTimeout("BackgroundUrl('reboot-rebootpost.cgi')", 1500);
+		setTimeout('reboot()', 150000);
+	}
+}
+
+function restoreClick() {
+	var loc = '/pages/tabFW/reboot-restoreinfo.cgi?';
+	loc += 'sessionKey=' + glbSessionKey;
+	var code = 'location="' + loc + '"';
+	$.openLoadingMask(1);
+	eval(code);
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+</script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Maintenance_Reboot_Str1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame">
+<ul>
+<li class="set1">
+<div class="w_text">
+<div>
+    <ul>
+        <li class="left_table"><%ejGetML(MLG_Maintenance_Reboot_Str2)%> :</li>
+        <li class="right_table">
+            <span class="none_right"><input name="sysSubmit" value="<%ejGetML(MLG_Maintenance_Reboot_Btn1)%>" type="button" onClick='btnReset()'/></span></li>
+    </ul>
+</div>
+<div id="Iskon_FactoryReset" >
+    <ul>
+        <li class="left_table">Back to Factory Defaults :</li>
+        <li class="right_table">
+            <span class="none_right"><input name="ROMReset22" value=" Reset " onclick="ConfirmOpen('Are you sure you want to restore factory default settings?', restoreClick );" type="button" /></span></li>
+    </ul>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<!--Set area end-->
+
+<br />
+<br />
+</ul>
+</div>

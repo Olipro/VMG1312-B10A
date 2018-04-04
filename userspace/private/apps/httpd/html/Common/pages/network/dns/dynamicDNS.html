@@ -1,0 +1,419 @@
+<script language="javascript">
+
+var customer = '<%ejGetOther(customer)%>'; // __ZyXEL__, Albert, 20140115, add myzyxel.in.th for Thailand
+var dydnsentry = '<%ejGetOther(dynamicdnsentry)%>';
+
+function ddnsChange() {
+  with ( document.forms[0] ) {
+    var ddns = service[service.selectedIndex].value;
+
+    if(ddns=="5") {
+      showhide("server_display","1");
+    }
+    else {
+      showhide("server_display","0");
+    }
+  }
+}
+function updateCurStatus() {
+  var delay = 2000;
+//  setTimeout(function(){
+  setInterval(function(){
+    if (window.XMLHttpRequest) {
+      objChScanXMLHTTP=new XMLHttpRequest();
+      postCurStatusCmd();
+    } else if (window.ActiveXObject) {
+//  code for IE
+      objChScanXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+      postCurStatusCmd();
+    }
+    function postCurStatusCmd()
+    {
+      if ( objChScanXMLHTTP != null ) {
+        objChScanXMLHTTP.open("POST","dns-status.cmd", true);
+        objChScanXMLHTTP.onreadystatechange = function() 
+      {
+        if(objChScanXMLHTTP.readyState == 4) {
+          var result = objChScanXMLHTTP.responseText;						
+	  if (result != "") {
+            var result2 = result.split('/');
+            var str = '';
+            str += '<table width="97%" border="0" align="center" cellspacing="0" cellpadding="0">';
+            str += '<tr><th colspan="2" height="28" style="font-size:14px;font-weight:bold"><%ejGetML(MLG_Network_DynamicDNS_Str21)%></th></tr>';
+            str += '<tr><td width="36%" height="28"><%ejGetML(MLG_Network_DynamicDNS_Str22)%> :</td><td>' + result2[0] + '</td></tr>';
+            str += '<tr><td width="36%" height="28"><%ejGetML(MLG_Network_DynamicDNS_Str23)%> :</td><td>' + result2[1] + '</td></tr>';
+            str += '<tr><td width="36%" height="28"><%ejGetML(MLG_Network_DynamicDNS_Str24)%> :</td><td>' + result2[2] + '</td></tr>';
+            str += '</table>';
+            delay = 0;
+            document.getElementById("info2").innerHTML = str;						
+          }
+        }
+      }
+      objChScanXMLHTTP.send(null);				  
+      }
+    }
+  },delay);
+}
+
+function frmLoad() {
+   with (document.forms[0]) {
+      var errMsg = "<%ejGetOther(errMsg)%>";
+      if (errMsg != '') {
+              hciAlert(errMsg, {height: 180,type: 2, title: ''});
+      }
+//  alert(dydnsentry);
+      showhide("server_display","0");	  
+
+      // __ZyXEL__, Albert, 20140115, add myzyxel.in.th for Thailand 
+/*	  
+      var serviceopt = document.getElementById("service");		
+      var noipindex = 5;
+
+      if (customer == "Thailand"){
+          var noiptext = serviceopt.options[noipindex].text;
+          var noipvalue = serviceopt.options[noipindex].value ;
+          var option = document.createElement("option");
+		  
+          serviceopt.remove(noipindex);
+          option.text = noiptext;
+          option.value = noipvalue;
+          serviceopt.add(option,serviceopt[0]);
+
+      }else{
+	      serviceopt.remove(1);         
+	      serviceopt.remove(0);      
+      }
+*/
+/*
+ // __ZyXEL__, Albert, 20140414, hide myzyxel.in.th for generic 
+      var serviceopt = document.getElementById("service");		
+      	
+      if (customer != "Thailand"){
+	    for (var i=0; i < serviceopt.options.length; i++) {
+		    if( serviceopt.options[i].text == "MyZyXEL.in.th")
+				serviceopt.remove(i);
+		}
+      }
+*/
+      if (dydnsentry == "") {
+         if (customer == "Thailand"){
+            service.selectedIndex = 3;
+            showhide("server_display","0");
+            DDNSEnable[1].checked = true;
+         }else{
+         service.selectedIndex = 0;
+         DDNSEnable[1].checked = true;
+      }
+      } else {
+//  Zyxel, 20131119, Albert, for fix bug #131021199, modify split char from "/" to "\x1F"
+         var info = dydnsentry.split("\x1F");
+         dyndnsHostname.value = info[0];
+         dyndnsUsername.value = info[1];
+         dyndnsPassword.value = info[2];
+         
+
+
+         if (info[3] == "dyndns") {
+            service.selectedIndex = 0;
+            showhide("server_display","0");
+         } else if (info[3] == "freedns") {
+            service.selectedIndex = 1; 
+            showhide("server_display","0");
+         } else if (info[3] == "zoneedit") {
+            service.selectedIndex = 2;
+            showhide("server_display","0");
+         } else if (info[3] == "noip") {
+            service.selectedIndex = 3;
+            showhide("server_display","0");
+         } else if (info[3] == "gnudip") {
+            service.selectedIndex = 4;
+            dyndnsServer.value = info[5];
+            showhide("server_display","1");
+         } else if (info[3] == "dtdns") {
+            service.selectedIndex = 5;
+            showhide("server_display","0");
+         } else if (info[3] == "myzyxel") {      
+            service.selectedIndex = 6;
+            showhide("server_display","0");
+         } else if (info[3] == "dyndnsorg") {
+// __ZyXEL__, Albert, 20140414, hide myzyxel.in.th for generic 
+//            if (customer == "Thailand")
+                service.selectedIndex = 7;
+//            else
+//                service.selectedIndex = 6;
+            showhide("server_display","0");
+         } else {
+            service.selectedIndex = 0;
+            showhide("server_display","0");
+         }
+
+         
+         if (info[4] == "1") {
+            DDNSEnable[0].checked = true;
+         } else {
+            DDNSEnable[1].checked = true;
+         }
+      }
+//ZyXEL, Add WAN interface option on DDNS page, Albert
+      var i=0;
+      var info = dydnsentry.split("\x1F");
+      var interfaceInfo = '<%ejGetOther(wanInterfaceInfo, route)%>';
+      var interfaces = interfaceInfo.split('|');
+      $('#waninterface').empty();
+      if(interfaces.length>0){  
+        for ( i = 0; i < interfaces.length; i++ ) {
+            var names = interfaces[i].split('/');
+            if(names[1] != "(null)"){
+                if(info[5] == names[1]){
+                    $('#waninterface').append('<option value="'+names[1]+'" selected>'+interfaces[i]+'</option>');
+                }else{
+                    $('#waninterface').append('<option value="'+names[1]+'">'+interfaces[i]+'</option>'); 
+                }
+            }
+        }
+      }
+   }
+
+   ddnsChange();
+   var str = '';
+   str += '<table width="97%" border="0" align="center" cellspacing="0" cellpadding="0">';
+   str += '<tr><th colspan="2" height="28" style="font-size:14px;font-weight:bold"><%ejGetML(MLG_Network_DynamicDNS_Str21)%></th></tr>';
+   str += '<tr><td width="36%" height="28"><%ejGetML(MLG_Network_DynamicDNS_Str22)%> :</td><td> </td></tr>';
+   str += '<tr><td width="36%" height="28"><%ejGetML(MLG_Network_DynamicDNS_Str23)%> :</td><td> </td></tr>';
+   str += '<tr><td width="36%" height="28"><%ejGetML(MLG_Network_DynamicDNS_Str24)%> :</td><td> </td></tr>';
+   str += '</table>';
+   document.getElementById("info2").innerHTML = str;	
+   if (info[4] == "1") {
+      updateCurStatus();
+   }
+}
+
+function isPassFormat(value, msg){
+   var alphaExp = /^(?=^.{6,}$)((?=.*[0-9])(?=.*[a-zA-Z]))^[0-9a-zA-Z_#@!=+-.]+$/;
+   if (value.match(alphaExp)) {
+       return true;
+   } else {
+       //AlertOpen(msg,2);
+       hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+       return false;
+   }
+}
+
+function btnSave() {
+   with ( document.forms[0] ) {
+           username.value = dyndnsUsername.value;
+           password.value = dyndnsPassword.value;
+           iface.value = waninterface.value;
+      var msg = "";
+
+/*
+      if ( isValidName(username.value) == false ) {
+                 msg = 'Username  is invalid';
+                 hciAlert(msg, {height: 180, type: 2, title: ''});
+                 return;
+      }
+      if(isPassFormat(password.value,"password must require a minimum length of 6 characters(mixed alphabetic and numeric).") == false)
+                 return;
+*/
+
+     //+++ Zyxel, 20131119, Albert, for fix bug #131021199, modify split char from "/" to "\x1F"+++
+      var usermsg = username.value;
+      var pwdmsg = password.value;
+
+      if((usermsg.indexOf("\\x1F") > -1) || (usermsg.indexOf("\\x1f") > -1) ){
+          msg = "<%ejGetML(MLG_Network_DynamicDNS_AlertMsg_Str9)%>";
+          hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return;
+      }
+
+      if((pwdmsg.indexOf("\\x1F") > -1) || (pwdmsg.indexOf("\\x1f") > -1) ){
+          msg = "<%ejGetML(MLG_Network_DynamicDNS_AlertMsg_Str9)%>";
+          hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return;
+      }
+     //---  Zyxel, 20131119, Albert, for fix bug #131021199, modify split char from "/" to "\x1F"---
+  
+      //if ( username.value.length == 0 ) {//Adam
+      if ( username.value.length == 0 || username.value.indexOf(" ") > -1) {
+         if ( service[service.selectedIndex].value != "0" ) {
+            msg = '<%ejGetML(MLG_Network_DynamicDNS_AlertMsg_Str1)%>';
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+//        } else {
+//            msg = '<%ejGetML(MLG_Network_DynamicDNS_AlertMsg_Str2)%>';
+//			 hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         }
+         return;
+      }
+
+      //if ( password.value.length == 0 ) {//Adam
+      if ( password.value.length == 0 || password.value.indexOf(" ") > -1) {
+         if ( service[service.selectedIndex].value != "0" ) {
+            msg = '<%ejGetML(MLG_Network_DynamicDNS_AlertMsg_Str3)%>';
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+//         } else {
+//            msg = '<%ejGetML(MLG_Network_DynamicDNS_AlertMsg_Str4)%>';
+//			 hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         }
+         return;
+      }
+			hostname.value=dyndnsHostname.value;
+
+      //+++  Zyxel, 20131119, Albert, for fix bug #131021199, modify split char from "/" to "\x1F"+++
+      var hostmsg = hostname.value;
+      if((hostmsg.indexOf("\\x1F") > -1) || (hostmsg.indexOf("\\x1f") > -1) ){
+          msg = "<%ejGetML(MLG_Network_DynamicDNS_AlertMsg_Str9)%>";
+          hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return;
+      }
+/*
+      if ( isValidName(hostname.value) == false ) {
+                 msg = 'Hostname  is invalid';
+                 hciAlert(msg, {height: 180, type: 2, title: ''});
+                 return;
+      }		
+*/
+      //---  Zyxel, 20131119, Albert, for fix bug #131021199, modify split char from "/" to "\x1F"---
+
+        /*ZyXEL, Adam, add white space character check*/
+      if ( hostname.value.length == 0 || hostname.value.indexOf(" ") > -1) {
+         msg = '<%ejGetML(MLG_Network_DynamicDNS_AlertMsg_Str5)%>';
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if(service[service.selectedIndex].value =="5") {
+         servername.value=dyndnsServer.value;
+         if ( servername.value.length == 0 ) {
+            msg = '<%ejGetML(MLG_Network_DynamicDNS_AlertMsg_Str8)%>';
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }
+      }
+      sessionKey.value = "<%ejGetOther(sessionKey)%>";
+      $.openLoadingMask(1);
+       document.forms[0].submit();
+      return;
+   }
+}
+
+$(document).ready(function() {
+    frmLoad();
+});
+
+</script>
+
+ <form action="/pages/tabFW/dns-ddnsmngr.cmd" method="post">
+      <input size="15" type="hidden" name="action" value="update"/>
+      <input size="15" type="hidden" name="hostname" />
+      <input size="15" type="hidden" name="username" />
+      <input size="15" type="hidden" name="password" />
+      <input size="15" type="hidden" name="sessionKey" />
+      <input size="15" type="hidden" name="iface" />
+      <input size="15" type="hidden" name="servername" />
+      
+<div class="content_frame">
+  <!--Unit Explain start-->
+  <div class="explain">
+    <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+    <div class="explain_text"><%ejGetML(MLG_Network_DynamicDNS_Str2)%></div>
+    <div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+  </div>
+  <!--Unit Explain End-->
+  <div class="data_frame">
+    <ul>
+      <li class="set1">
+        <div class="title"><%ejGetML(MLG_Network_DynamicDNS_Setup)%></div>
+        <div class="w_text">
+          <ul>
+            <li class="left_table" ><%ejGetML(MLG_Network_DynamicDNS_Str4)%></li>
+            <li class="right_table">
+           	<input name="DDNSEnable" type="radio" value = "1" /><%ejGetML(MLG_Common_Enable)%>
+            <input name="DDNSEnable" type="radio" value = "0" /><%ejGetML(MLG_Common_Disable)%>
+            </li>
+          </ul>
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_DynamicDNS_Str5)%>  : </li>
+            <li class="right_table">
+              <select name="service" id = "service" onChange='ddnsChange();'>
+               <!--  <option value="0">None</option>  -->
+                 <option value="1"><%ejGetML(MLG_Network_DynamicDNS_Str10)%></option>
+                 <option value="2"><%ejGetML(MLG_Network_DynamicDNS_Str14)%></option>
+                 <option value="3"><%ejGetML(MLG_Network_DynamicDNS_Str15)%></option>
+                 <option value="4"><%ejGetML(MLG_Network_DynamicDNS_Str16)%></option>
+                 <option value="5"><%ejGetML(MLG_Network_DynamicDNS_Str17)%></option>
+                 <option value="8"><%ejGetML(MLG_Network_DynamicDNS_Str20)%></option>
+             <!--  // __ZyXEL__, Albert, 20140115, add myzyxel.in.th for Thailand    -->                   
+                 <option value="6"><%ejGetML(MLG_Network_DynamicDNS_Str18)%></option> 
+                 <option value="7"><%ejGetML(MLG_Network_DynamicDNS_Str19)%></option>                                   
+<!--
+                 <option value="1"><%ejGetML(MLG_Network_DynamicDNS_Str10)%></option>
+                 <option value="0"><%ejGetML(MLG_Network_DynamicDNS_Str11)%></option>
+-->
+              </select>
+            </li>
+          </ul>
+<!--ZyXEL, Add WAN interface option on DDNS page, Albert-->
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_StaticRoute_Str18)%>  : </li>
+            <li class="right_table">
+              <select name="waninterface" id = "waninterface" size="1">
+              </select>
+            </li>
+          </ul>
+      
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_DNSEntry_Str4)%>  : </li>
+            <li class="right_table">
+              <input type="text" name="dyndnsHostname" maxlength="160" />
+            </li>
+          </ul>
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Common_Username)%>  : </li>
+            <li class="right_table">
+              <input type="text" name="dyndnsUsername" maxlength="32" />
+            </li>
+          </ul>
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Common_Password)%>  : </li>
+            <li class="right_table">
+              <input autocomplete="new-password" type="password" name="dyndnsPassword" maxlength="32" />
+            </li>
+          </ul>
+          <div id="server_display">
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_Network_DNS_Server)%>  : </li>
+              <li class="right_table">
+                <input type="text" name="dyndnsServer" maxlength="40" />
+              </li>
+            </ul>
+          </div> 
+<!--
+         <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_DynamicDNS_Str9)%>  : </li>
+            <li class="right_table">
+            <input type="text" name="tzoEmail" maxlength="128">
+            </li>
+         </ul>
+         <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_DynamicDNS_Str6)%>  : </li>
+            <li class="right_table">
+            <input type="text" name="tzoKey" maxlength="32">
+          </li>
+        </ul>
+-->
+        </div>        
+      </li>
+      <li class="space"></li>
+      <li class="buttonframe">
+        <div class="button_position">
+          <input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onclick="btnSave();"/>
+          &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+          <input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onclick="frmLoad();" />
+        </div>
+      </li>
+      <div id="info2"></div>
+    </ul>
+  </div>
+</div>
+<br/><br/>
+</form>

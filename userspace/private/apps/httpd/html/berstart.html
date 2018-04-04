@@ -1,0 +1,61 @@
+<html>
+<head>
+<meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+<link rel=stylesheet href='stylemain.css' type='text/css'>
+<link rel=stylesheet href='colors.css' type='text/css'>
+<script language="javascript">
+<!-- hide
+
+function btnStart() {
+   var loc = 'berrun.tst?';
+
+   with ( document.forms[0] ) {
+      var idx = berTime.selectedIndex;
+      var val = berTime.options[idx].value;
+      loc += 'berTime=' + val;
+   }
+
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function btnClose() {
+   window.close();
+}
+
+// done hiding -->
+</script>
+<base target="_self">
+</head>
+
+<body>
+<blockquote>
+<form>
+<b>ADSL BER Test - Start</b><br><br>
+The ADSL Bit Error Rate (BER) test determines the quality of the ADSL connection.
+The test is done by transferring idle cells containing a known pattern and
+comparing the received data with this known pattern to check for any errors.&nbsp;<br><br>
+Select the test duration below and click &quot;Start&quot;.<br>
+<br>
+<table border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="120">Tested Time (sec):  </td>
+    <td><select name='berTime' size=1>
+      <option value=1>1
+      <option value=5>5
+      <option value=10>10
+      <option value=20 selected>20
+      <option value=60>60
+      <option value=120>120
+      <option value=180>180
+      <option value=240>240
+      <option value=300>300
+      <option value=360>360
+    </select></td>
+  </tr>
+</table>
+<p align="center"><input type='button' onClick='btnStart()' value='Start'><input type='button' onClick='btnClose()' value='Close'>
+</form>
+</blockquote>
+</body>
+</html>

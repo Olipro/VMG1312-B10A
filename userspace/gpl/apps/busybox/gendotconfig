@@ -1,0 +1,24 @@
+#!/bin/bash
+
+BRCMCONFIG=brcm.config
+
+# This script needs at least need one SEDCMD to be defined, fortunately,
+# we always need to replace CONFIG_PREFIX.
+# use , as separator because / is present in the INSTALL_PATH
+SEDCMD="$SEDCMD -e 's,CONFIG_PREFIX set by gendotconfig,CONFIG_PREFIX=\"$INSTALL_DIR\",'"
+
+#echo "=======BRCM_BUSYBOX_WGET_HTTPS=$BUILD_WGET_HTTPS======"
+if [ "$BUILD_WGET_HTTPS" == "y" ] ; then
+    SEDCMD="$SEDCMD -e 's/# CONFIG_FEATURE_WGET_HTTPS is not set/CONFIG_FEATURE_WGET_HTTPS=y/'"
+    SEDCMD="$SEDCMD -e 's/# CONFIG_FEATURE_WGET_AUTHENTICATION is not set/CONFIG_FEATURE_WGET_AUTHENTICATION=y/'"
+fi
+
+#echo "=======BUILD_TRACEROUTE=$BUILD_GPONCTL======"
+if [ "$BUILD_GPONCTL" != "" ] ; then
+    SEDCMD="$SEDCMD -e 's/# CONFIG_TRACEROUTE is not set/CONFIG_TRACEROUTE=y/'"
+    SEDCMD="$SEDCMD -e 's/# CONFIG_TRACEROUTE6 is not set/CONFIG_TRACEROUTE6=y/'"
+    SEDCMD="$SEDCMD -e 's/# CONFIG_FEATURE_TRACEROUTE_USE_ICMP is not set/CONFIG_FEATURE_TRACEROUTE_USE_ICMP=y/'"
+fi
+
+gen="sed $SEDCMD $BRCMCONFIG"
+eval $gen > .config

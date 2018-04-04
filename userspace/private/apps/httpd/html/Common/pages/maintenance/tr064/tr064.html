@@ -1,0 +1,47 @@
+<script language="javascript"> 
+var enableTr64 = '<%ejGetOther(sysInfo, enblTR64)%>';
+
+function frmLoad () {
+	if (enableTr64 == 1)
+		$("input[name='enblTR64']").get(0).checked = true;
+	else 
+		$("input[name='enblTR64']").get(1).checked = true;
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+</script>
+
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Maintenance_TR064_Str1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<form action="/pages/tabFW/tr064-tr064.cgi" method="post" onSubmit="$.openLoadingMask(1);return true;">
+<input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">
+<div class="data_frame"><ul>
+<!--level 1 start--><li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Common_State)%> :</li>
+     <li class="right_table">
+      <input name="enblTR64" id="enblTR64" type="radio" value="1" />
+      <%ejGetML(MLG_Common_Enable)%>
+      <input name="enblTR64" id="enblTR64" type="radio" value="0" />
+      <%ejGetML(MLG_Common_Disable)%> </li>
+  </ul>
+</div>
+</li>
+<!--level 1 end-->
+<li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="submit" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();'/></div></li>
+<!--Button define end-->
+</ul></div>
+</form>
+<!--Set area end-->
+</div>
+

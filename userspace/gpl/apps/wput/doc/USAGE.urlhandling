@@ -1,0 +1,30 @@
+Prior to Wput 0.5:
+ftp://host/directory/ dir/file 	      => ftp://host/directory/file
+Now!
+ftp://host/directory/ dir/file 	      => ftp://host/directory/dir/file
+See the difference?
+The old behaviour can be accomplished by specifiing the --basename flag:
+ftp://host/directory/ dir/file --basename dir/ => ftp://host/directory/file
+
+============================================
+How wput handles its input-urls / filenames:
+
+ftp://host/file       wput.exe        => ftp://host/file
+ftp://host/directory/ wput.exe        => ftp://host/directory/wput.exe
+ftp://host/directory  wput/           !!! don't do this! won't work !!!
+ftp://host/directory/ wput/           => ftp://host/directory/wput/
+ftp://host/directory/ wput/source/    => ftp://host/directory/wput/source/
+
+ftp://host/directory/ wput/source/ --basename wput/ => ftp://host/directory/source/
+
+Wput does not know, whether it is ftp://host/directory or ftp://host/file
+so if there is no trailing slash, a file is assumed.
+If the URL ends with a slash, Wput is sure to have an remote directory as
+destination, and uploads the given input-file/-dir into this directory.
+
+Assuming the following directory-structure:
+	./dir
+	./dir/file
+ftp://host/directory/file dir/file will create ftp://host/directory/file
+ftp://host/directory/     dir/file will create ftp://host/directory/dir/file
+ftp://host/directory/     dir/     will create ftp://host/directory/dir/file

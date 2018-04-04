@@ -1,0 +1,174 @@
+# Broadcom 802.11abg Networking Device Driver Configuration file
+#
+# Copyright 2007, Broadcom Corporation
+# All Rights Reserved.
+# 
+# THIS SOFTWARE IS OFFERED "AS IS", AND BROADCOM GRANTS NO WARRANTIES OF ANY
+# KIND, EXPRESS OR IMPLIED, BY STATUTE, COMMUNICATION OR OTHERWISE. BROADCOM
+# SPECIFICALLY DISCLAIMS ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A SPECIFIC PURPOSE OR NONINFRINGEMENT CONCERNING THIS SOFTWARE.
+#
+# $Id$
+#
+# src/wl/linux driver config file
+
+# IMPL0/9/11 are only for Internal Nightly Build. No Security and WPS feature are included. 
+# Security will be removed when building impl0/9/11
+NIGHTLY_IMPLS := 0 9 11
+
+ifneq ($(WLAN_USERSPACE_CFG),1)
+override WL=1
+#no need to PIO
+WLPIO=0
+
+#disable this, platform dependent
+ROUTER_COMA=0
+
+#sample collect feature, enabled by default  
+SAMPLE_COLLECT=1
+
+#WirelessOnChip
+BRCM_WOC_SUPPORTED = 6362 63268
+ifneq ($(strip $(filter $(BRCM_WOC_SUPPORTED),$(strip $(BRCM_CHIP)))),)
+EXTRA_CFLAGS	+= -DDSLCPE_WOC  -DSI_ENUM_BASE_VARIABLE
+#DSLCPEWOC=1
+DSLCPE_WLFILES += ubutils.c
+endif
+
+#extra files
+DSLCPE_WLFILES += nvramstubs.c bcmsromio.c si_dslcpe.c
+
+ifeq ($(strip $(CONFIG_BCM_WLAN)),y) 
+DSLCPE_WLFILES += bcm4318_map.c bcm4312_map.c bcm4322_map.c bcm4306_map.c bcm4321_map.c bcm43222_map.c
+DSLCPE_WLFILES += bcm6362_map.c bcm43226_map.c
+WLFLAGS += -DDSLCPE_WOMBO_BUILTIN_SROM
+endif
+
+ifeq ($(DSLCPE),1)
+	WLFILES_SRC += wl_linux_dslcpe.c wl_dslcpe_pktc.c
+	WLFLAGS += -DDSLCPE
+	ifeq ($(DSLCPE_SCBLIST),1)
+		WLFLAGS += -DDSLCPE_SCBLIST
+	endif
+endif	
+
+
+
+#ifdef WMF
+ifeq ($(WMF), 1)
+    DSLCPE_WLFILES += emfc.c
+    DSLCPE_WLFILES += igsc.c
+    DSLCPE_WLFILES += osl_linux.c
+    DSLCPE_WLFILES += igsc_sdb.c
+    DSLCPE_WLFILES += igsc_ipv6.c
+    DSLCPE_WLFILES += igsc_sdb_ipv6.c
+    DSLCPE_WLFILES += emfc_ipv6.c
+endif 
+#endif
+
+ifeq ($(strip $(PROFILE)),ikos)
+BCMQT=1
+EXTRA_CFLAGS	+= -DDSLCPE_CANNEDTX
+else
+#EXTRA_CFLAGS	+= -DDSLCPE_DELAY 
+endif
+
+
+#$(warning Copy $(WLTUNEFILE))
+#$(shell cp -f $(WLCFGDIR)/$(WLTUNEFILE) $(WLCFGDIR)/../sys/wlconf.h)
+
+#
+# compiler flags
+#
+#define wl ifname
+EXTRA_CFLAGS	+=-DBRCM_WLAN_IFNAME=wl%d
+
+ifneq ($(strip $(OVERRIDEBASE)),)
+DSLCPEOVERRIDE=1
+EXTRA_CFLAGS	+= -I$(WLSRCBASE)/$(OVERRIDEBASE)
+endif
+EXTRA_CFLAGS	+= -I$(WLSRCBASE)/include
+EXTRA_CFLAGS    += -I$(WLSRCBASE)/shared
+EXTRA_CFLAGS    += -I$(WLSRCBASE)/wl/sys
+EXTRA_CFLAGS    += -I$(WLSRCBASE)/wl/phy
+EXTRA_CFLAGS    += -I$(WLSRCBASE)/shared/bcmwifi/include
+EXTRA_CFLAGS    += -I$(WLSRCBASE)/wl/clm/include
+EXTRA_CFLAGS    += -I$(WLSRCBASE)/wl/ppr/include
+EXTRA_CFLAGS    += -I$(WLSRCBASE)/emf/emf
+EXTRA_CFLAGS    += -I$(WLSRCBASE)/emf/igs
+EXTRA_CFLAGS    += -I$(WLSRCBASE)/router/shared
+EXTRA_CFLAGS    += -I$(WLSRCBASE)/router/emf/emf
+EXTRA_CFLAGS    += -I$(WLSRCBASE)/router/emf/igs
+EXTRA_CFLAGS    += -I$(WLSRCBASE)/include/emf/emf
+EXTRA_CFLAGS    += -I$(WLSRCBASE)/include/emf/igs
+EXTRA_CFLAGS 	+= -I$(INC_BRCMDRIVER_PUB_PATH)/$(BRCM_BOARD)
+EXTRA_CFLAGS    += -I$(INC_BRCMDRIVER_PRIV_PATH)/$(BRCM_BOARD)
+EXTRA_CFLAGS    += -I$(INC_BRCMSHARED_PUB_PATH)/$(BRCM_BOARD)
+EXTRA_CFLAGS    += -I$(INC_BRCMSHARED_PRIV_PATH)/$(BRCM_BOARD)
+EXTRA_CFLAGS    += -I$(INC_BRCMBOARDPARMS_PATH)/$(BRCM_BOARD)
+EXTRA_CFLAGS	+= -I$(TOOLCHAIN)/include
+EXTRA_CFLAGS	+= -DIL_BIGENDIAN
+EXTRA_CFLAGS	+= -DBCMDRIVER
+EXTRA_CFLAGS	+= -DDSLCPE_DGASP
+EXTRA_CFLAGS	+= -DDSLCPE_WOMBO
+EXTRA_CFLAGS	+= $(WLFLAGS)
+
+EXTRA_CFLAGS	+= -DDSLCPE_WDSSEC
+EXTRA_CFLAGS   += -DDSLCPE_FAST_TIMEOUT
+
+include $(KERNEL_DIR)/.config
+ifneq ($(NIGHTLY_WL),)
+IMPL := $(patsubst IMPL%,%,$(NIGHTLY_WL))
+else
+IMPL := $(CONFIG_BCM_WLAN_IMPL)
+endif
+ifeq ($(findstring $(IMPL),$(NIGHTLY_IMPLS)),) 
+EXTRA_CFLAGS	+= -DNAPI_POLL
+#EXTRA_CFLAGS	+= -DWLTEST
+else 
+EXTRA_CFLAGS	+= -DBCMDBG -DBCMDBG_ERR -DBCMDBG_DUMP
+endif
+EXTRA_CFLAGS	+= -DDSLCPE_PREALLOC_SKB -DDSLCPE_TX_PRIO
+EXTRA_CFLAGS	+= -DDSLCPE_CACHE_SMARTFLUSH
+
+EXTRA_CFLAGS	+= -DDSLCPE_PHYCAL_OVERRIDE_ON_TRAFFIC
+
+ifneq ($(strip $(CONFIG_SMP)),y)
+#EXTRA_CFLAGS	+= -DDSLCPE_YIELD_DELAY
+endif
+
+EXTRA_CFLAGS	+= -DSUPPORT_IGMP_V3
+#EXTRA_CFLAGS	+= -DBCMDBG -DBCMDBG_ERR -DBCMDBG_DUMP
+#EXTRA_CFLAGS	+= -DBCMDBG -DBCMDBG_ERR 
+
+#
+# For 4331mch5
+#
+EXTRA_CFLAGS	+= -DBCMHOSTVARS
+
+#
+# For Packet Chaining 
+#
+EXTRA_CFLAGS    += -DPKTC
+
+#
+# For WAR
+#
+
+# tssi measure for DFS: fix DFS-enabled high/low channel performance issues
+EXTRA_CFLAGS	+= -DDSLCPE_C590068
+# fix low throughput issue exiting from rxchain pwrsave
+EXTRA_CFLAGS	+= -DDSLCPE_C601911
+# fix the problem about stability of wifi
+EXTRA_CFLAGS	+= -DDSLCPE_C583851
+# for AES IOT performance
+EXTRA_CFLAGS    += -DDSLCPE_C610384
+else
+#
+# WLAN_USERSPACE_CFG
+#
+EXT_ACS=y
+EXT_WPS_VER2=y
+EXT_WL11AC=y
+
+endif

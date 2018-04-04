@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/md5/asm
+END
+md5-586.pl
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/md5/asm/md5-586.pl
+END
+md5-sparcv9.S
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/md5/asm/md5-sparcv9.S
+END

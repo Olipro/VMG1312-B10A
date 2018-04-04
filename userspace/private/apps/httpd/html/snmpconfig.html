@@ -1,0 +1,133 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+var sessionKey='<%ejGetOther(sessionKey)%>';
+var state = '<%ejGet(snmpRefresh)%>';
+if ( state == '1' ) {
+   var loc = 'snmpconfig.cgi?snmpRefresh=0&sessionKey='+ sessionKey;
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+      status[<%ejGet(snmpStatus)%>].checked = true;
+      rocommunity.value = '<%ejGet(snmpRoCommunity)%>';
+      rwcommunity.value = '<%ejGet(snmpRwCommunity)%>';
+      sysName.value = '<%ejGet(snmpSysName)%>';
+      sysContact.value = '<%ejGet(snmpSysContact)%>';
+      sysLocation.value = '<%ejGet(snmpSysLocation)%>';
+      trapIp.value = '<%ejGet(snmpTrapIp)%>';
+   }
+}
+
+function btnApply() {
+   var loc = 'snmpconfig.cgi?';
+   with ( document.forms[0] ) {
+      if (rocommunity.value == '') {
+         alert('Read community is required.');
+         return;
+      }
+      if (rwcommunity.value == '') {
+         alert('Set community is required.');
+         return;
+      }
+      if ( status[1].checked == true )
+         loc += 'snmpStatus=1';
+      else
+         loc += 'snmpStatus=0';
+      if (rocommunity.value.length > 15) {
+         alert('The length of read community (' + rocommunity.value.length + ') is too long [0-15].');
+         return;
+      }
+      loc += '&snmpRoCommunity=' + encodeUrl(rocommunity.value);
+      if (rwcommunity.value.length > 15) {
+         alert('The length of set community (' + rwcommunity.value.length + ') is too long [0-15].');
+         return;
+      }
+      loc += '&snmpRwCommunity=' + encodeUrl(rwcommunity.value);
+      if (sysName.value.length > 15) {
+         alert('The length of sysName (' + sysName.value.length + ') is too long [0-15].');
+         return;
+      }
+      loc += '&snmpSysName=' + encodeUrl(sysName.value);
+      if (sysContact.value.length > 15) {
+         alert('The length of sysContact (' + sysContact.value.length + ') is too long [0-15].');
+         return;
+      }
+      loc += '&snmpSysContact=' + encodeUrl(sysContact.value);
+      if (sysLocation.value.length > 15) {
+         alert('The length of sysLocation (' + sysLocation.value.length + ') is too long [0-15].');
+         return;
+      }
+      loc += '&snmpSysLocation=' + encodeUrl(sysLocation.value);
+      if ( isValidIpAddress(trapIp.value) == false &&  trapIp.value != '0.0.0.0') {
+         alert('Trap Management IP address "' + trapIp.value + '" is invalid IP address.');
+         return;
+      }
+      loc += '&snmpTrapIp=' + trapIp.value;
+   }
+   loc += '&sessionKey=' + sessionKey;
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+// done hiding -->
+</script>
+   </head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <form>
+            <b>SNMP - Configuration<br>
+            </b>
+            <br>
+            Simple Network Management Protocol (SNMP) allows a management application to 
+            retrieve statistics and status from the SNMP agent in this device.<br>
+            <br>
+            Select the desired values and click "Apply" to configure the SNMP options.<br>
+            <br>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width="80">SNMP&nbsp;Agent</td>
+                  <td><input name='status' type='radio'>Disable</td>
+                  <td><input name='status' type='radio'>Enable</td>
+               </tr>
+            </table>
+            <br>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width="133">Read&nbsp;Community:&nbsp;</td>
+                  <td><input type='text' name='rocommunity' size="20"></td>
+               </tr>
+               <tr>
+                  <td width="133">Set&nbsp;Community:&nbsp;</td>
+                  <td><input type='text' name='rwcommunity' size="20"></td>
+               </tr>
+               <tr>
+                  <td width="133">System&nbsp;Name:&nbsp;</td>
+                  <td><input type='text' name='sysName' size="20"></td>
+               </tr>
+               <tr>
+                  <td width="133">System&nbsp;Location:</td>
+                  <td><input type='text' name='sysLocation' size="20"></td>
+               </tr>
+               <tr>
+                  <td width="133">System&nbsp;Contact:</td>
+                  <td><input type='text' name='sysContact' size="20"></td>
+               </tr>
+               <tr>
+                  <td width="133">Trap&nbsp;Manager&nbsp;IP:</td>
+                  <td><input type='text' name='trapIp' size="20"></td>
+               </tr>
+            </table>
+            <p align="center">
+               <input type='button' onClick='btnApply()' value='Save/Apply'>
+         </form>
+         </P> </blockquote>
+   </body>
+</html>

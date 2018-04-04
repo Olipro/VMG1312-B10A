@@ -1,0 +1,73 @@
+<html>
+<head>
+<meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+<link rel=stylesheet href='stylemain.css' type='text/css'>
+<link rel=stylesheet href='colors.css' type='text/css'>
+<script language="javascript">
+<!-- hide
+
+function frmLoad() {
+   document.forms[0].mode[eval('<%ejGetTest(adslTestMode)%>')].checked = true;
+}
+
+function applyClick() {
+   var loc = 'adslcfgadv.cmd?adslTestMode=';
+   
+   for (i = 0; i < 5; i++)
+      if (document.forms[0].mode[i].checked == true)
+         break;
+   loc += i;
+   loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function toneClick() {
+   var options;
+
+   options = 'menubar=no,resizable=no,scrollbars=no,titlebar=yes,toolbar=no,width=680,height=460';
+
+   window.open('adslcfgtone.html', 'BCM963xxDSLCfgTone', options);
+}
+
+// done hiding -->
+</script>
+</head>
+
+<body onLoad='frmLoad()'>
+<blockquote>
+<form>
+<b>DSL Advanced Settings</b><br><br>
+Select the test mode below.<br><br>
+<table border="0" cellpadding="4" cellspacing="0">
+  <tr>
+    <td width='20'>&nbsp;</td>
+    <td><input type="radio" name="mode" checked>Normal</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><input type="radio" name="mode">Reverb</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><input type="radio" name="mode">Medley</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><input type="radio" name="mode">No retrain</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><input type="radio" name="mode">L3</td>
+  </tr>
+</table><br><br>
+<center>
+<input type='button' onClick='applyClick()' value='Apply'>
+<input type='button' onClick='toneClick()' value='Tone Selection'>
+</center>
+</form>
+</blockquote>
+</body>
+</html>
+
+

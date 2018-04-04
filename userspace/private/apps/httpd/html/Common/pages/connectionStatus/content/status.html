@@ -1,0 +1,2426 @@
+<script language="javascript">
+<!-- hide
+var SysUpTime;
+
+// wlan 
+var enbl;
+var syncNvram;
+var channel;
+var phy;
+var gmode;
+var nmode;
+var wmode;
+var nbwcap;
+var band;
+var nreqd;
+var wlanInfo;
+var wl_mode;
+var wl_wep;
+var wps;
+var wpsAP;
+var currChannel;
+var wlSSID;
+var wanLevel;
+
+var MemUsgInfo;
+var ResolveDnsInfo;
+var dhcpEnbl;
+var currfwLevel;
+var supportwlan;
+var wanInfo;
+var timestamp;
+
+var timeNow;
+var ntp_enabled;
+
+var sendUrl;
+
+var supportVoip = '<%ejGetOther(sysInfo, buildVoip)%>';
+var supportdsl = '<%ejGetOther(sysInfo, buildAtm)%>' | '<%ejGetOther(sysInfo, buildPtm)%>';
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; //ZyXEL, Albert add for Etisalat, hide DSL 20131118	                 
+var supportethwan = '<%ejGetOther(sysInfo, buildEthWan)%>';
+var support3GBackup ='<%ejGetOther(sysInfo, build3GBackup)%>';
+var dslStatus = '<%ejGetOther(sysInfo, dslStatus)%>';
+//var dslInfo1 = 'RX:<%ejGetOther(lineRate, 1, 0)%>/ TX:<%ejGetOther(lineRate, 0, 0)%> (Kbps)';
+var dslInfo1= '<%ejGetOther(lineRate, 1, 0)%>';
+var dslInfo0= '<%ejGetOther(lineRate, 0, 0)%>';
+
+var AllifVarStr = '<%ejGetOther(ifStatusForStatus)%>';
+var AllVarStrArr = AllifVarStr.split("|", 20);
+
+var eth0portStatus = AllVarStrArr[1];
+var eth0maxBitRate =  AllVarStrArr[2];
+var eth0duplexMode =  AllVarStrArr[3];
+var eth1portStatus =  AllVarStrArr[4];
+var eth1maxBitRate =  AllVarStrArr[5];
+var eth1duplexMode =  AllVarStrArr[6];
+var eth2portStatus =  AllVarStrArr[7];
+var eth2maxBitRate = AllVarStrArr[8];
+var eth2duplexMode =  AllVarStrArr[9];
+var eth3portStatus =  AllVarStrArr[10];
+var eth3maxBitRate =  AllVarStrArr[11];
+var eth3duplexMode = AllVarStrArr[12];
+var ethWanportStatus =  AllVarStrArr[13];
+var ethWanmaxBitRate = AllVarStrArr[14];
+var ethWanduplexMode =  AllVarStrArr[15];
+
+
+var wwanStatus ='<%ejGetOther(sysInfo, wwan)%>';
+var wwanquality ='<%ejGetOther(sysInfo, wwanquality)%>';
+var maxSp = '<%ejGetVoice(maxSp)%>'; // MaxProfileCount
+var maxLines = '<%ejGetVoice(maxLines)%>'; //MaxLineCount
+var currentSp = '<%ejGetVoice(numSp)%>'; //current Profile count
+var currentAcnt = '<%ejGetVoice(numLines)%>'; //current sip accounts
+var tmpvpn = '<%ejGetVoice(VPName)%>';
+var tmplc = '<%ejGetVoice(linesPerVP)%>'; //number of lines per profile
+var tmpuad  = '<%ejGetVoice(domainName)%>';
+
+var tmpacntNum = '<%ejGetVoice(linecmaNum)%>';
+var tmpphonenum   = '<%ejGetVoice(extension)%>';
+var tmplineStatus = '<%ejGetVoice(lineStatus)%>'; // get line register status
+
+var customer = '<%ejGetOther(customer)%>';  //__ZyXEL__, Ryan ,get customer 
+var curUserName = '<%ejGet(curUserName)%>';  //__ZyXEL__, Tresia: get current user name.
+
+//ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+var currentGroup = '<%ejGet(currentGroup)%>'; 
+
+
+wanLevel = '<%ejGetOther(sysInfo, wanStatus)%>';
+dhcpEnbl = '<%ejGet(enblDhcpSrv)%>';
+currfwLevel = '<%ejGet(fwLevel)%>';
+supportwlan = '<%ejGetOther(sysInfo, numWlAdaptor)%>';
+wanInfo = '<%ejGetOther(sysInfo, wanInfo)%>';
+SysUpTime = '<%ejGetOther(sysUptime)%>';
+MemUsgInfo = '<%ejGetOther(memUsgInfo)%>';
+ResolveDnsInfo = '<%ejGetOther(resolveDnsInfo)%>';
+NatSessionUsgInfo = '<%ejGetOther(NatSessionUsgInfo)%>';
+timeNow = '<%ejGetOther(sysInfo, dateTime)%>';
+ntp_enabled = "<%ejGetSntp(ntp_enabled)%>";
+var WlschedulEnbl = "<%ejGetOther(wlschedule_Enable)%>"; 
+
+//ipv6 start
+var buildMstcIPv6 = '<%ejGetOther(sysInfo, buildMstcIPv6)%>';
+var IPv6Addr = '<%ejGetOther(lanIpv6Addr)%>';
+var enblLanIPv6 = '<%ejGetOther(enblIpv6Lan, all)%>';
+//ipv6 end
+
+var forEircom  = '0';
+var enblParentCtl = "<%ejGetOther(activeParentCtl)%>";
+
+//ZyXEL, Albert, 20160511, Get the Power Management Status
+var ethWanEn = "<%ejGetOther(pmEthWanEn, all)%>";
+var dslEn = "<%ejGetOther(pmDslEn, all)%>";
+var lan1En = "<%ejGetOther(pmLanPort1En, all)%>";
+var lan2En = "<%ejGetOther(pmLanPort2En, all)%>";
+var lan3En = "<%ejGetOther(pmLanPort3En, all)%>";
+var lan4En = "<%ejGetOther(pmLanPort4En, all)%>";
+
+//ZyXEL, Get the Lan Port Connect Status, Ricky, 2015/8/6
+var vd_lan1;
+var vd_lan2;
+var vd_lan3;
+var vd_lan4;
+
+vd_lan1 = '<%ejGetOther(ifStatus,LAN,eth0,status2)%>';
+vd_lan2 = '<%ejGetOther(ifStatus,LAN,eth1,status2)%>';
+vd_lan3 = '<%ejGetOther(ifStatus,LAN,eth2,status2)%>';
+vd_lan4 = '<%ejGetOther(ifStatus,LAN,eth3,status2)%>';
+//ZyXEL, Get the Lan Port Connect Status, Ricky, 2015/8/6
+
+var wlinfo = '<%ejGetWl(wlAllinfo)%>';
+var wlinfo2 = wlinfo.split('|');
+var wlDevice = wlinfo2[1];
+var wlKeyBit = wlinfo2[2];
+var wl128Key1 = wlinfo2[3];
+var wl64Key1 = wlinfo2[4];
+var wlWpaPsk = wlinfo2[5];
+var wlEnbl_wl0v0 = wlinfo2[6];
+var wlEnbl_wl0v1 = wlinfo2[7];
+var wlEnbl_wl0v2 = wlinfo2[8];
+var wlEnbl_wl0v3 = wlinfo2[9];
+var wlSyncNvram = wlinfo2[10];
+
+var wlChannel = wlinfo2[11];
+var wlPhyType = wlinfo2[12];
+var wlgMode = wlinfo2[13];
+var wlNmode = wlinfo2[14];
+var wlNBwCap = wlinfo2[15];
+var wlBand = wlinfo2[16];
+var wlNReqd = wlinfo2[17];
+var wlAuthMode_wl0v0 = wlinfo2[18];
+var wlWep_wl0v0 = wlinfo2[19];
+var wlWscMode = wlinfo2[20];
+
+var wlWscAPMode = wlinfo2[21];
+var wlCurrentChannel = wlinfo2[22];
+var wlSsid_wl0v0 = wlinfo2[23];
+var wlBssid_wl0v0 = wlinfo2[24];
+var wlBands = wlinfo2[25];
+
+var swlinfo = '<%ejGetWl(swlAllinfo)%>';
+var swlinfo2 = swlinfo.split('|');
+var SwlEnbl_wl0v0 = swlinfo2[1];
+var SwlEnbl_wl0v1 = swlinfo2[2];
+var SwlEnbl_wl0v2 = swlinfo2[3];
+var SwlEnbl_wl0v3 = swlinfo2[4];
+var SwlChannel = swlinfo2[5];
+var SwlBssid_wl0v0 = swlinfo2[6];
+var SwlPhyType = swlinfo2[7];
+var SwlgMode = swlinfo2[8];
+var SwlNmode = swlinfo2[9];
+var SwlNBwCap = swlinfo2[10];
+
+var SwlBand = swlinfo2[11];
+var SwlNReqd = swlinfo2[12];
+var SwlAuthMode_wl0v0 = swlinfo2[13];
+var SwlWep_wl0v0 = swlinfo2[14];
+var SwlWscMode = swlinfo2[15];
+var SwlWscAPMode = swlinfo2[16];
+var SwlCurrentChannel = swlinfo2[17];
+var SwlSsid_wl0v0 = swlinfo2[18];
+var SwlBands = swlinfo2[19];
+
+
+for (var i = 0; i < currentSp; i++) {
+
+	eval( "var vpn" + i + " \= \"\" " ); //vpName
+	eval( "var lc" + i + " \= \"\" " );  //line count per profile
+	eval( "var uad" + i + " \= \"\" " ); //domainName
+	eval(tmplc);  
+	for (var m = 0; m < eval("lc"+i); m++) {
+		eval( "var ex" + i + "_" + m + " \= \"\" " );   //phone number
+		eval( "var ls" + i + "_" + m + " \= \"\" " );   //line status
+		eval( "var lcma" + i + "_" + m + " \= \"\" ");   //linecmaNum  		
+	}
+}
+if ( tmpvpn.search("ejGetVoice") < 0 ){
+	eval(tmpvpn);
+}
+if ( tmplc.search("ejGetVoice") < 0 ){
+	eval(tmplc);
+}
+if ( tmpuad.search("ejGetVoice") < 0 ){
+	eval(tmpuad);
+}
+if ( tmpphonenum.search("ejGetVoice") < 0 ) {
+   eval( tmpphonenum );
+}
+if ( tmplineStatus.search("ejGetVoice") < 0 ) {
+   eval( tmplineStatus );
+}
+if ( tmpacntNum.search("ejGetVoice") < 0 ) {
+   eval( tmpacntNum );
+}
+
+
+// dhcp info
+function initDHCPInfo()
+{
+   var str = '';
+
+   if (dhcpEnbl == '0')
+      str = "<%ejGetML(MLG_Common_DHCPDisable)%>";
+   else if (dhcpEnbl == '1')
+      str = "<%ejGetML(MLG_Common_DHCPServer)%>";
+   else if (dhcpEnbl == '2')
+      str = "<%ejGetML(MLG_Common_DHCPRelay)%>";
+
+   $('#dhcpInfo').html(str);
+}
+
+// wireless status
+function initWLANinfo()
+{
+   if ( supportwlan == '0' )
+   {
+      //$('#wlanStatus').hide();
+      $('#wpsinfoview').hide();
+      $('#WlanStatusInfo').hide();
+      $('#wpsinfoview').css('visibility', 'hidden');
+      $('#WlanStatusInfo').css('visibility', 'hidden');
+   }
+   else 
+   {
+      if (enbl == '0') {
+        if(WlschedulEnbl == '0') 
+         $('#wlEnbl').html("<%ejGetML(MLG_Common_Off)%>");
+        else
+         $('#wlEnbl').html("<%ejGetML(MLG_Common_Off)%>(Scheduling)");
+      } else if (enbl == '1') {
+         $('#wlEnbl').html("<%ejGetML(MLG_Common_On)%>");
+      }
+
+      var channelInfo = '';
+      if (channel == '0') {
+         channelInfo = MLG_Makestring("<%ejGetML(MLG_ConnStatus_Status_Str14)%>", currChannel);
+      } else {
+         channelInfo = channel;
+      }
+      $('#channelInfo').html(channelInfo);
+
+
+      $('#wlBssid').html(wlBssid);
+
+      $('#wlSSID').html(wlSSID);
+
+
+	  var securityInfo = '';
+	  switch (wl_mode) {
+		 case 'open': 
+			if (wl_wep == 'enabled') {
+			   securityInfo += "<%ejGetML(MLG_Common_WEP)%>";
+			} else {
+			   securityInfo += "No Security";
+			}
+			break;
+		 case 'wpa':
+		 case 'WPA':
+			securityInfo += "<%ejGetML(MLG_Common_WPA)%>";
+			break;
+		 case 'wpa2':
+		 case 'WPA2':
+			securityInfo += "<%ejGetML(MLG_Common_WPA2)%>";
+			break;
+		 case 'wpa wpa2':
+		 case 'WPA1WPA2':
+			securityInfo += "<%ejGetML(MLG_Common_MixedWPAWPA2)%>";
+			break;
+		 case 'psk':
+		 case 'WPAPSK':
+			securityInfo += "<%ejGetML(MLG_Common_WPAPSK)%>";
+			break;
+		 case 'psk2':
+		 case 'WPA2PSK':
+			securityInfo += "<%ejGetML(MLG_Common_WPA2PSK)%>";
+			break;
+		 case 'psk psk2':
+		 case 'WPAPSKWPA2PSK':
+			securityInfo += "<%ejGetML(MLG_Common_MixedWPAWPA2PSK)%>";
+			break;
+	  }
+	
+	  $('#securityInfo').html(securityInfo);
+
+      var modeInfo = '';
+      if (phy == 'n') 
+      {
+         if (nmode == 'off' && gmode == '0') { // 54g b only
+            modeInfo = "<%ejGetML(MLG_Common_80211b)%>";
+         } else if (nmode == 'off' && gmode == '4') { // 54g performance
+            modeInfo = "<%ejGetML(MLG_Common_80211g)%>";
+         } else if (nmode == 'off' && gmode == '1') { // 54g auto
+            modeInfo = "<%ejGetML(MLG_Common_80211bg)%>";
+         } else if (nmode == 'auto' && nreqd == '1') { // 11n only
+            modeInfo = "<%ejGetML(MLG_Common_80211n)%>";
+         } else if (nmode == 'auto' && nreqd == '0') { // 11b/g/n
+            modeInfo = "<%ejGetML(MLG_Common_80211bgn)%>"
+         }
+      }
+      else 
+      {
+         if (gmode == '0') {
+            modeInfo = "<%ejGetML(MLG_Common_80211b)%>";
+         } else if (gmode == '1') {
+            modeInfo = "<%ejGetML(MLG_Common_80211bg)%>";
+         } else if (gmode == '4') {
+            modeInfo = "<%ejGetML(MLG_Common_80211g)%>";
+         }
+      }
+   	$('#modeInfo').html(modeInfo);
+
+
+      //$('#WlanStatusInfo').show();
+      $("#wlanInfo").html(wlanInfo);
+      if (enbl != '0') 
+      {
+         var wlanRate='';
+
+         if ((phy == 'n') && (nmode == 'auto')) 
+         {
+            // 11n mode
+            switch (nbwcap) {
+               case '0':
+                  wlanRate = '144.5M';
+                  break;
+               case '1':
+                  wlanRate = '300M';
+                  break;
+               case '2':
+                  if (band == '1') {
+                     // 5G
+                     wlanRate = '300M';
+                  } else {
+                     wlanRate = '144.5M';
+                  }
+                  break;
+               default:
+                  break;
+            } 
+         } 
+         else if (gmode == '0') 
+         { 
+            // 11b mode
+            wlanRate = '11M';
+         } else { 
+            // 11g mode
+            wlanRate = '54M';
+         }
+         $("#wlanRate").html(wlanRate);
+      }
+      else 
+      {
+         $("#wlanRate").html("N/A");
+      }
+
+      if (enbl == '1') {	  	        
+         $('#wlanInfo').html("<%ejGetML(MLG_Common_UP)%>");       
+      } else if (enbl == '0') {
+         $('#wlanInfo').html("Disabled");
+      }
+
+      $('#wpsinfoview').show();
+      var wpsInfo = '';
+
+      if (wps == 'disabled') {
+         wpsInfo = "Off";
+      } else if (wps == 'enabled') {
+         if ( wpsAP == '1' ) {
+            wpsInfo = "<%ejGetML(MLG_Common_Configured)%>";
+         } else {
+            wpsInfo = "<%ejGetML(MLG_Common_Unconfigured)%>";
+         }
+      }
+      $('#wpsInfo').html(wpsInfo);
+	}
+}
+
+if(parseInt(supportwlan) > 0 && wlDevice == '0'){
+   // BRCM WLAN adpter 1
+   enbl = wlEnbl_wl0v0 | wlEnbl_wl0v1 | wlEnbl_wl0v2 | wlEnbl_wl0v3 ;
+   syncNvram = wlSyncNvram;
+   channel = wlChannel;
+   phy = wlPhyType;
+   gmode = wlgMode;
+   nmode = wlNmode;
+   nbwcap = wlNBwCap;
+   band = wlBand;
+   nreqd = wlNReqd;
+   wl_mode = wlAuthMode_wl0v0;
+   wl_wep = wlWep_wl0v0;
+   wps = wlWscMode;
+   wpsAP = wlWscAPMode;
+   currChannel = wlCurrentChannel;
+   wlSSID = wlSsid_wl0v0;
+   var wlBssid = wlBssid_wl0v0;
+   var wl0_bands = wlBands;
+
+   if(supportwlan == '2'){
+   // BRCM WLAN adpter 2
+   var wl1_enbl = SwlEnbl_wl0v0 | SwlEnbl_wl0v1 | SwlEnbl_wl0v2| SwlEnbl_wl0v3;
+   var wl1_channel = SwlChannel;
+   var wl1_Bssid =  SwlBssid_wl0v0;
+   var wl1_phy  = SwlPhyType;
+   var wl1_gmode = SwlgMode;
+   var wl1_nmode = SwlNmode;
+   var wl1_nbwcap = SwlNBwCap;
+   var wl1_band = SwlBand;
+   var wl1_nreqd = SwlNReqd;
+   var wlan2Info;
+   var wl1_mode = SwlAuthMode_wl0v0;
+   var wl1_wep = SwlWep_wl0v0;
+   var wl1_wps = SwlWscMode;
+   var wl1_wpsAP = SwlWscAPMode;
+   var wl1_currChannel = SwlCurrentChannel;
+   var wl1_SSID = SwlSsid_wl0v0;
+   var wl1_bands = SwlBands;
+   }
+}else if (supportwlan == '2' && wlDevice == '1'){
+   // BRCM WLAN adpter 2
+   var wl1_enbl = wlEnbl_wl0v0 | wlEnbl_wl0v1 | wlEnbl_wl0v2 | wlEnbl_wl0v3;
+   syncNvram = wlSyncNvram;
+   var wl1_channel = wlChannel;
+   var wl1_Bssid = wlBssid_wl0v0;
+   var wl1_phy  = wlPhyType;
+   var wl1_gmode = wlgMode;
+   var wl1_nmode = wlNmode;
+   var wl1_nbwcap = wlNBwCap;
+   var wl1_band = wlBand;
+   var wl1_nreqd= wlNReqd;
+   var wlan2Info;
+   var wl1_mode = wlAuthMode_wl0v0;
+   var wl1_wep = wlWep_wl0v0;
+   var wl1_wps = wlWscMode;
+   var wl1_wpsAP = wlWscAPMode;
+   var wl1_currChannel = wlCurrentChannel;
+   var wl1_SSID = wlSsid_wl0v0;
+   var wl1_bands = wlBands;
+
+   enbl = SwlEnbl_wl0v0 | SwlEnbl_wl0v1 | SwlEnbl_wl0v2 | SwlEnbl_wl0v3 ;
+   channel = SwlChannel;
+   phy = SwlPhyType;
+   gmode = SwlgMode;
+   nmode = SwlNmode;
+   nbwcap = SwlNBwCap;
+   band = SwlBand;
+   nreqd = SwlNReqd;
+   wl_mode = SwlAuthMode_wl0v0;
+   wl_wep = SwlWep_wl0v0;
+   wps = SwlWscMode;
+   wpsAP = SwlWscAPMode;
+   currChannel = SwlCurrentChannel;
+   wlSSID = SwlSsid_wl0v0;
+   var wlBssid = SwlBssid_wl0v0;
+   var wl0_bands = SwlBands;
+   
+}
+
+function initWLAN2info()
+{
+   if ( supportwlan != '2' )
+   {
+      //$('#wlanStatus').hide();
+      $('#wl1_wpsinfoview').hide();
+      $('#Wlan2StatusInfo').hide();
+      $('#wl1_wpsinfoview').css('visibility', 'hidden');
+      $('#Wlan2StatusInfo').css('visibility', 'hidden');
+   }
+   else 
+   {
+      $("#wlan2Info").html(wlan2Info);
+      $('#wl1Bssid').html(wl1_Bssid);
+      $('#wl1SSID').html(wl1_SSID);
+
+      if (wl1_enbl == '0') {
+        if(WlschedulEnbl == '0') 
+         $('#wl1Enbl').html("<%ejGetML(MLG_Common_Off)%>");
+        else
+         $('#wl1Enbl').html("<%ejGetML(MLG_Common_Off)%>(Scheduling)");
+      } else if (wl1_enbl == '1') {
+         $('#wl1Enbl').html("<%ejGetML(MLG_Common_On)%>");
+      }
+
+      var channelInfo = '';
+      if (wl1_channel == '0') {
+         channelInfo = MLG_Makestring("<%ejGetML(MLG_ConnStatus_Status_Str14)%>", wl1_currChannel);
+      } else {
+         channelInfo = wl1_channel;
+      }
+      $('#wl1_channelInfo').html(channelInfo);
+
+
+
+      var securityInfo = '';
+      switch (wl1_mode) {
+         case 'open': 
+            if (wl1_wep == 'enabled') {
+               securityInfo += "<%ejGetML(MLG_Common_WEP)%>";
+            } else {
+               securityInfo += "No Security";
+            }
+            break;
+         case 'wpa':
+         case 'WPA':
+            securityInfo += "<%ejGetML(MLG_Common_WPA)%>";
+            break;
+         case 'wpa2':
+         case 'WPA2':
+            securityInfo += "<%ejGetML(MLG_Common_WPA2)%>";
+            break;
+         case 'wpa wpa2':
+         case 'WPA1WPA2':
+            securityInfo += "<%ejGetML(MLG_Common_MixedWPAWPA2)%>";
+            break;
+         case 'psk':
+         case 'WPAPSK':
+            securityInfo += "<%ejGetML(MLG_Common_WPAPSK)%>";
+            break;
+         case 'psk2':
+         case 'WPA2PSK':
+            securityInfo += "<%ejGetML(MLG_Common_WPA2PSK)%>";
+            break;
+         case 'psk psk2':
+         case 'WPAPSKWPA2PSK':
+            securityInfo += "<%ejGetML(MLG_Common_MixedWPAWPA2PSK)%>";
+            break;
+      }
+      $('#wl1_securityInfo').html(securityInfo);
+
+      var modeInfo = '';
+      if (wl1_phy == 'v' && wl1_band == '1') 
+      {
+         if (wl1_nmode == 'off' && wl1_gmode == '0') { // a only
+            modeInfo = "<%ejGetML(MLG_Common_80211a)%>";
+         } else if (wl1_nmode == 'auto' && wl1_nreqd == '0' && wl1_nbwcap !='3' ) { // 11a/n
+            modeInfo = "<%ejGetML(MLG_Common_80211an)%>";
+         } else if (wl1_nmode == 'auto' && wl1_nreqd == '1' && wl1_nbwcap !='3' ) { // 11n only
+            modeInfo = "<%ejGetML(MLG_Common_80211n)%>"
+         }else if (wl1_nmode == 'auto' && wl1_nreqd == '0' && wl1_nbwcap =='3' ) { 
+            modeInfo = "<%ejGetML(MLG_Common_80211anac)%>"
+         }else if (wl1_nmode == 'auto' && wl1_nreqd == '1' && wl1_nbwcap =='3' ) { 
+            modeInfo = "<%ejGetML(MLG_Common_80211nac)%>"
+         }
+      }
+      else 
+      {
+       modeInfo = "N/A";
+	  }
+
+   	$('#wl1_modeInfo').html(modeInfo);
+
+
+      //$('#WlanStatusInfo').show();
+	  
+
+      if (wl1_enbl != '0') 	  		  	
+      {
+         var wlanRate='';
+
+         if ((wl1_phy == 'v') && (wl1_nmode == 'auto')) 
+         {
+            // 11n mode
+            switch (wl1_nbwcap) {
+               case '0':
+                  wlanRate = '225M';
+                  break;
+               case '1':
+                  wlanRate = '450M';
+                  break;
+               case '2':
+                  if (wl1_band == '1') {
+                     // 5G
+                     wlanRate = '450M';
+                  } else {
+                     wlanRate = '225M';
+                  }
+                  break;
+			   case '3':
+                     wlanRate = '1.3G';
+                  break;
+               default:
+                  break;
+            } 
+         } 
+         else{ 
+            // 11a mode
+            wlanRate = '54M';
+         }
+         $("#wlan2Rate").html(wlanRate);
+      }
+      else 
+      {
+         $("#wlan2Rate").html("N/A");
+      }
+
+      if (wl1_enbl == '1') {	  	        
+         $('#wlan2Info').html("<%ejGetML(MLG_Common_UP)%>");       
+      } else if (wl1_enbl == '0') {
+         $('#wlan2Info').html("Disabled");
+      }
+
+      $('#wpsinfoview').show();
+      var wpsInfo = '';
+
+      if (wl1_wps == 'disabled') {
+         wpsInfo = "Off";
+      } else if (wl1_wps == 'enabled') {
+         if ( wpsAP == '1' ) {
+            wpsInfo = "<%ejGetML(MLG_Common_Configured)%>";
+         } else {
+            wpsInfo = "<%ejGetML(MLG_Common_Unconfigured)%>";
+         }
+      }
+      $('#wl1_wpsInfo').html(wpsInfo);
+	}
+}
+function sendControl () {
+   BackgroundUrl(sendUrl);
+   updateValue_take();
+}
+
+function IPoEControl( cmd, intf) {
+   var msg = MLG_Makestring("<%ejGetML(MLG_ConnStatus_ConnectionStatus_AlertMsg_Str2)%>",intf)+'\n'+'<%ejGetML(MLG_ConnStatus_ConnectionStatus_AlertMsg_Str5)%>';
+
+   sendUrl = 'connectionStatus-setipoerenew.cgi?intfName=' + intf + '&ipoeRenewAct=' + cmd + '&sessionKey=' + glbSessionKey;
+   ConfirmOpen(msg , sendControl, frmLoad);
+}
+
+function PPPControl( cmd, intf ) {
+   var msg = MLG_Makestring("<%ejGetML(MLG_ConnStatus_ConnectionStatus_AlertMsg_Str3)%>",intf, cmd)+'\n'+'<%ejGetML(MLG_ConnStatus_ConnectionStatus_AlertMsg_Str5)%>';
+
+   sendUrl = 'connectionStatus-Setppp'+cmd+'.cgi?intfName='+intf + "&sessionKey=" + glbSessionKey;
+   ConfirmOpen(msg , sendControl, frmLoad);
+}
+
+// wan info
+function initWanInfo () {
+   //Routing: WAN Type|IfName|connection status|Encapsulation|MAC addr|DHCP or Static|IP addr|<IP Mask>| uptime |
+   //         IPv6 ConnStatus| IPv6 Uptime| WAN type@
+   // Bridge: WAN Type|IfName|connection status|Encapsulation
+   // if defined MSTC_IPV6
+   // Routing and IPv4 only: WAN Type|IfName|connection status|Encapsulation|MAC addr|DHCP or Static|IP addr|IP Mask|
+   //                        IPv6 mode|6RD|<6RD relay server addr>@
+   // Routing and Dual Stack: WAN Type|IfName|connection status|Encapsulation|MAC addr|DHCP or Static|IP addr|IP Mask|
+   //                        IPv6 mode|IPv6 global addr(s)|<IPv6 link local addr>@
+   // Routing and IPv6 only: WAN Type|IfName|connection status|Encapsulation|MAC addr|DHCP or Static|IP addr|IP Mask|
+   //                        IPv6 mode|IPv6 global addr(s)|IPv6 link local addr|DS-Lite|<DS-Lite relay server addr>@
+   // Bridge: WAN Type|<Encapsulation>@
+
+   wanInfo = wanInfo.replace(/%/ig, '/');
+   var i = 0;
+   var wan = wanInfo.split('@');
+   var str = '';
+
+   for ( i = 0; i < wan.length; i++ ) {
+      if (wan[i] != '') {
+         var fields = wan[i].split('|');
+
+         if (fields != '') {
+//ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+	         if((customizationFlag & 0x00080000) && (currentGroup == 2)){
+			 	if(fields[8] == 'VoIP_MNGT' || fields[17] == 'VoIP_MNGT')
+					continue;
+	         }
+			
+            if (fields[3] == 'Bridge'){   //__ZyXEL__, Curtis, Fix WAN name showing "undefined" when the device works under bridge mode
+               // Bridge
+               str += '<tr>';
+               str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str6)%></td>';
+               str += '  <td class="table_font w_blue">' + fields[0] + '</td>';
+               str += '</tr>';
+			   str += '<tr>';
+               str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_WanName)%></td>';
+               str += '  <td class="table_font w_blue">' + fields[8]+'/'+fields[1] + '</td>'; //__ZyXEL, Curtis, The WAN name should be in fields[8]
+               str += '</tr>';
+               str += '<tr>';
+               str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str7)%>:</td>';
+               str += '  <td class="table_font w_blue">' + fields[3] + '</td>';
+               str += '</tr>';
+            } else {
+               // Routing
+               str += '<tr>';
+               str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str6)%></td>';
+               str += '  <td class="table_font w_blue">' + fields[0] + '</td>';
+               str += '</tr>';
+			   str += '<tr>';
+               str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_WanName)%></td>';
+			   if(fields[0]=='ATM')
+                 str += '  <td class="table_font w_blue">' + 'ADSL/'+fields[1] + '</td>';
+			   else if(fields[0]=='PTM')
+			     str += '  <td class="table_font w_blue">' + 'VDSL/'+fields[1] + '</td>';
+			   else
+			   	 str += '  <td class="table_font w_blue">' + fields[17]+'/'+fields[1] + '</td>';
+               str += '</tr>';
+			   //__ZyXEL__, Ricky, Fix  [WAN] Setting WAN interface to ADSL IPoA mode, WAN information in Connection Status page is incorrect.
+			   if(fields[3] == 'IPoA'){
+			   	 str += '<tr>';
+               	 str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_MACAddress)%>:</td>';
+               	 str += '  <td class="table_font w_blue">' + 'N/A' + '</td>';
+               	 str += '</tr>';
+               	 str += '<tr>';
+               	 str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_IP_Address)%>:</td>';
+               	 str += '  <td class="table_font w_blue">' + fields[5] + '</td>';
+               	 str += '</tr>';
+               	 str += '<tr>';
+               	 str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_IP_SubnetMask)%>:</td>';
+               	 str += '  <td class="table_font w_blue">' + fields[6] + '</td>';
+               	 str += '</tr>';
+               	 str += '<tr>';
+               	 str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_Primary_DNS_server)%>:</td>';
+               	 str += '  <td class="table_font w_blue">' + fields[7] + '</td>';
+               	 str += '</tr>'
+               	 str += '<tr>';
+               	 str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_Secondary_DNS_server)%>:</td>';
+               	 str += '  <td class="table_font w_blue">' + fields[8] +  '</td>';
+               	 str += '</tr>';
+               	 str += '<tr>';
+               	 str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str7)%>:</td>';
+               	 str += '  <td class="table_font w_blue">' + fields[3] + '</td>';
+               	 str += '</tr>';
+			   }
+			   //__ZyXEL__, Ricky, Fix  [WAN] Setting WAN interface to ADSL IPoA mode, WAN information in Connection Status page is incorrect.
+			   else{
+			   if(fields[0]!='Cellular')
+			   {
+               str += '<tr>';
+               str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_MACAddress)%>:</td>';
+               str += '  <td class="table_font w_blue">' + fields[4] + '</td>';
+               str += '</tr>';
+			   }
+               if( buildMstcIPv6 == '1' )
+               {
+               	if(fields[11] == 'IPv4')
+                  {
+               		if(forEircom==1) /*jennifer*/
+			   		{
+               		str += '<tr>';
+               		str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_EircomBoardband)%></td>';
+               		str += '  <td class="table_font w_blue">' + fields[2] + '</td>';
+               		str += '</tr>';
+					
+						if(fields[0]=='ATM' || fields[0]=='PTM')
+						{
+							var adslMode = "<%ejGetOther(adslMode)%>";
+         					var adslModeField = adslMode.split('|');
+							if(adslModeField != '')
+							{
+               					str += '<tr>';
+               					str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_WanName)%></td>';
+               					str += '  <td class="table_font w_blue">' + adslModeField[0] + '</td>';
+               					str += '</tr>';
+               					str += '<tr>';
+               					str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_LineAttenuation)%></td>';
+               					str += '  <td class="table_font w_blue">' + adslModeField[1] + '</td>';
+               					str += '</tr>';
+							}
+							
+							
+						}
+					
+			   		}
+                    str += '<tr>';
+                     str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_IPAddress)%>:</td>';
+                     if(!((fields[3] == 'PPPoA') || (fields[3] == 'PPPoE')))
+                     {
+                        // IPoE, use Release, Renew
+                        if(fields[5] == 'DHCP') {
+                           if(fields[6] == '0.0.0.0') {
+                              // renew
+                              str += '  <td class="table_font w_blue">' + fields[6];
+                              if ((customer != "ISKON") || ((curUserName == "admin") || (curUserName == "supervisor")))
+                              {
+                              str += '    &nbsp;&nbsp;<input type=button value="<%ejGetML(MLG_Common_Renew)%>" onClick="IPoEControl(\'1\',\'' + fields[1] + '\');" >';
+                              }
+                              //str += '    &nbsp;&nbsp;<input type=button value="Release" onClick="IPoEControl(\'0\',\'' + fields[1] + '\');" disabled>';
+                              str += '  </td>';
+                           } else {
+                              // release
+                              str += '  <td class="table_font w_blue">' + fields[6];
+                              //str += '    &nbsp;&nbsp;<input type="button" value="Renew" onClick="IPoEControl(\'1\',\'' + fields[1] + '\');" disabled />';
+                              if ((customer != "ISKON") || ((curUserName == "admin") || (curUserName == "supervisor"))) 
+                              {
+                              str += '    &nbsp;&nbsp;<input type="button" value="<%ejGetML(MLG_Common_Release)%>" onClick="IPoEControl(\'0\',\'' + fields[1] + '\');" />';
+                              }
+                              str += '  </td>';
+                           }
+                        } else {
+                           str += '  <td class="table_font w_blue">' + fields[6] + '</td>';
+                        }
+                     }
+                     else
+                     {
+                        // PPP, use Up, Down
+                        if(fields[2] == 'Connected') {
+                           str += '  <td class="table_font w_blue">' + fields[6];
+                           str += '    &nbsp;&nbsp;<input type=button onClick="PPPControl(\'Down\', \'' + fields[1] + '\');" value="<%ejGetML(MLG_Common_Disconnect)%>" />';
+                           str += '  </td>';
+                        } else {
+                           str += '  <td class="table_font w_blue">' + fields[6];
+                           str += '    &nbsp;&nbsp;<input type=button  onClick="PPPControl(\'Up\', \'' + fields[1] + '\');" value="<%ejGetML(MLG_Common_Connect)%>" />';
+                           str += '  </td>';
+                        }
+                     }
+                     str += '</tr>';
+
+                    if(!((fields[3] == 'PPPoA') || (fields[3] == 'PPPoE')))	{
+                        str += '<tr>';
+                        str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_IPSubnetMask)%>:</td>';
+                        str += '  <td class="table_font w_blue">' + fields[7] + '</td>';
+                        str += '</tr>';
+                     }
+
+                    //Add uptime
+                    if(fields[2] == 'Connected') {
+                        str += '<tr>';
+                        str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_UpTime)%>:</td>';
+                        str += '  <td class="table_font w_blue">' + fields[14];
+                        str += '  </td>';
+                        str += '</tr>';
+                     }
+
+                     if(fields[12] == '1'){
+                        str += '<tr>';
+                        str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str98)%>:</td>';
+                        str += '  <td class="table_font w_blue">' + fields[13] + '</td>';
+                        str += '</tr>';
+                     }
+
+					//IPv6 uptime
+					 if(fields[15] == 'Connected') {
+                        str += '<tr>';
+                        str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_v6UpTime)%>:</td>';
+                        str += '  <td class="table_font w_blue">' + fields[16];
+                        str += '  </td>';
+                        str += '</tr>';
+                     }
+					 if(fields[10] == 'y'){
+						str += '<tr>';
+						str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_Primary_DNS_server)%>:</td>';
+						str += '  <td class="table_font w_blue">' + fields[8] + '</td>';
+                        str += '</tr>';
+
+						str += '<tr>';
+						str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_Secondary_DNS_server)%>:</td>';
+						str += '  <td class="table_font w_blue">' + fields[9] + '</td>';
+						str += '</tr>';
+
+                     }
+                  }
+                  else if(fields[11] == 'DualStack')
+                  {
+               		if(forEircom==1) /*jennifer*/
+			   		{
+               		str += '<tr>';
+               		str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_EircomBoardband)%></td>';
+               		str += '  <td class="table_font w_blue">' + fields[2] + '</td>';
+               		str += '</tr>';
+
+					if(fields[0]=='ATM' || fields[0]=='PTM')
+						{
+							var adslMode = "<%ejGetOther(adslMode)%>";
+         					var adslModeField = adslMode.split('|');
+							if(adslModeField != '')
+							{
+               					str += '<tr>';
+               					str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_WanName)%></td>';
+               					str += '  <td class="table_font w_blue">' + adslModeField[0] + '</td>';
+               					str += '</tr>';
+               					str += '<tr>';
+               					str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_LineAttenuation)%></td>';
+               					str += '  <td class="table_font w_blue">' + adslModeField[1] + '</td>';
+               					str += '</tr>';
+							}
+							
+							
+						}
+			   		}
+                   str += '<tr>';
+                     str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_IPAddress)%>:</td>';
+                     if(!((fields[3] == 'PPPoA') || (fields[3] == 'PPPoE')))
+                     {
+                        // IPoE, use Release, Renew
+                        if(fields[5] == 'DHCP') {
+                           if(fields[6] == '0.0.0.0') {
+                              // renew
+                              str += '  <td class="table_font w_blue">' + fields[6];
+                              str += '    &nbsp;&nbsp;<input type=button value="<%ejGetML(MLG_Common_Renew)%>" onClick="IPoEControl(\'1\',\'' + fields[1] + '\');" >';
+                              //str += '    &nbsp;&nbsp;<input type=button value="Release" onClick="IPoEControl(\'0\',\'' + fields[1] + '\');" disabled>';
+                              str += '  </td>';
+                           } else {
+                              // release
+                              str += '  <td class="table_font w_blue">' + fields[6];
+                              //str += '    &nbsp;&nbsp;<input type="button" value="Renew" onClick="IPoEControl(\'1\',\'' + fields[1] + '\');" disabled />';
+                              str += '    &nbsp;&nbsp;<input type="button" value="<%ejGetML(MLG_Common_Release)%>" onClick="IPoEControl(\'0\',\'' + fields[1] + '\');" />';
+                              str += '  </td>';
+                           }
+                        } else {
+                           str += '  <td class="table_font w_blue">' + fields[6] + '</td>';
+                        }
+                     }
+                     else
+                     {
+                        // PPP, use Up, Down
+                        if(fields[2] == 'Connected') {
+                           str += '  <td class="table_font w_blue">' + fields[6];
+                           str += '    &nbsp;&nbsp;<input type=button onClick="PPPControl(\'Down\', \'' + fields[1] + '\');" value="<%ejGetML(MLG_Common_Disconnect)%>" />';
+                           str += '  </td>';
+                        } else {
+                           str += '  <td class="table_font w_blue">' + fields[6];
+                           str += '    &nbsp;&nbsp;<input type=button  onClick="PPPControl(\'Up\', \'' + fields[1] + '\');" value="<%ejGetML(MLG_Common_Connect)%>" />';
+                           str += '  </td>';
+                        }
+                     }
+                     str += '</tr>';
+
+                    if(!((fields[3] == 'PPPoA') || (fields[3] == 'PPPoE'))) {
+                        str += '<tr>';
+                        str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_IPSubnetMask)%>:</td>';
+                        str += '  <td class="table_font w_blue">' + fields[7] + '</td>';
+                        str += '</tr>';
+                     }
+
+                    //Add uptime
+                    if(fields[2] == 'Connected') {
+                        str += '<tr>';
+                        str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_UpTime)%>:</td>';
+                        str += '  <td class="table_font w_blue">' + fields[14];
+                        str += '  </td>';
+                        str += '</tr>';
+                     }
+
+                     //var globalAddr = fields[9].split(',');
+                     str += '<tr>';
+                     str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_IPv6Address)%>:</td>';
+                     /*if(globalAddr != ''){
+                        if(globalAddr.length == 1)
+                        {
+                           str += '  <td class="table_font w_blue">' + globalAddr + '</td>';
+                        }
+                        else
+                        {
+                           str += '  <table border=\"0\">';
+                           for(var i = 0;i < globalAddr.length; i++)
+                           {
+                              str += '<tr><td>&nbsp;&nbsp;' + globalAddr[i] + '</td></tr>';
+                           }
+                        }
+                        str += '  </table>';
+                     }*/
+                     /*if(globalAddr != ''){
+                        str += '  <table border=\"0\">';
+                        for(var i = 0;i < globalAddr.length; i++)
+                        {
+                           str += '<tr><td>&nbsp;&nbsp;' + globalAddr[i] + '</td></tr>';
+                        }
+                        str += '  </table>';
+                     }*/
+                     if(fields[12] != ''){
+                        str += '  <td class="table_font w_blue textOverflow">' + fields[12] + '</td>';
+                     }
+                     else{
+                        str += '  <td class="table_font w_blue textOverflow">' + '::' + '</td>';
+                     }
+                     str += '</tr>';
+
+                     str += '<tr>';
+                     str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str81)%>:</td>';
+                     if(fields[13] != ''){
+                        str += '  <td class="table_font w_blue textOverflow">' + fields[13] + '</td>';
+                     }
+                     else{
+                        str += '  <td class="table_font w_blue textOverflow">' + '::' + '</td>';
+                     }
+                     str += '</tr>';
+
+					//IPv6 uptime
+					 if(fields[15] == 'Connected') {
+                        str += '<tr>';
+                        str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_v6UpTime)%>:</td>';
+                        str += '  <td class="table_font w_blue">' + fields[16];
+                        str += '  </td>';
+                        str += '</tr>';
+                     }
+					 
+					 if(fields[10] == 'y'){
+						str += '<tr>';
+						str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_Primary_DNS_server)%>:</td>';
+						str += '  <td class="table_font w_blue">' + fields[8] + '</td>';
+						str += '</tr>';
+
+						str += '<tr>';
+						str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_Secondary_DNS_server)%>:</td>';
+						str += '  <td class="table_font w_blue">' + fields[9] + '</td>';
+						str += '</tr>';
+                  	}
+                  }
+                  else if(fields[11] == 'IPv6')
+                  {
+                	if(forEircom==1) /*jennifer*/
+			   		{
+               		str += '<tr>';
+               		str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_EircomBoardband)%></td>';
+               		str += '  <td class="table_font w_blue">' + fields[2] + '</td>';
+               		str += '</tr>';
+					if(fields[0]=='ATM' || fields[0]=='PTM')
+						{
+							var adslMode = "<%ejGetOther(adslMode)%>";
+         					var adslModeField = adslMode.split('|');
+							if(adslModeField != '')
+							{
+               					str += '<tr>';
+               					str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_WanName)%></td>';
+               					str += '  <td class="table_font w_blue">' + adslModeField[0] + '</td>';
+               					str += '</tr>';
+               					str += '<tr>';
+               					str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_LineAttenuation)%></td>';
+               					str += '  <td class="table_font w_blue">' + adslModeField[1] + '</td>';
+               					str += '</tr>';
+							}
+							
+							
+						}
+			   		}
+                   //Add uptime
+                    if(fields[2] == 'Connected') {
+                        str += '<tr>';
+                        str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_UpTime)%>:</td>';
+                        str += '  <td class="table_font w_blue">' + fields[16];
+                        str += '  </td>';
+                        str += '</tr>';
+                    }
+
+         //var globalAddr = fields[12].split(',');
+                     str += '<tr>';
+                     str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_IPv6Address)%>:</td>';
+                     /*if(globalAddr != ''){
+                        str += '  <table border=\"0\">';
+                        for(var i = 0;i < globalAddr.length; i++)
+                        {
+                           str += '<tr><td>&nbsp;&nbsp;' + globalAddr[i] + '</td></tr>';
+                        }
+                        str += '  </table>';
+                     }*/
+                     if(fields[12] != ''){
+                        str += '  <td class="table_font w_blue textOverflow">' + fields[12] + '</td>';
+                     }
+                     else{
+                        str += '  <td class="table_font w_blue textOverflow">' + '::' + '</td>';
+                     }
+                     str += '</tr>';
+
+                     str += '<tr>';
+                      str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str81)%>:</td>';
+                     if(fields[13] != ''){
+                        str += '  <td class="table_font w_blue textOverflow">' + fields[13] + '</td>';
+                     }
+                     else{
+                        str += '  <td class="table_font w_blue textOverflow">' + '::' + '</td>';
+                     }
+                     str += '</tr>';
+
+					//IPv6 uptime
+					if(fields[17] == 'Connected') {
+                        str += '<tr>';
+                        str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_v6UpTime)%>:</td>';
+                        str += '  <td class="table_font w_blue">' + fields[18];
+                        str += '  </td>';
+                        str += '</tr>';
+                    }
+
+                     if(fields[14] == '1'){
+                        str += '<tr>';
+                        str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str82)%>:</td>';
+                        str += '  <td class="table_font w_blue textOverflow">' + fields[15] + '</td>';
+                        str += '</tr>';
+                     }
+                  }
+               }
+               else
+               {
+                 str += '<tr>';
+                  str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_IPAddress)%>:</td>';
+
+                  if(!((fields[3] == 'PPPoA') || (fields[3] == 'PPPoE')))
+                  {
+                     // IPoE, use Release, Renew
+                     if(fields[5] == 'DHCP') {
+                        if(fields[6] == '0.0.0.0') {
+                           // renew
+                           str += '  <td class="table_font w_blue">' + fields[6];
+                           str += '    &nbsp;&nbsp;<input type=button value="<%ejGetML(MLG_Common_Renew)%>" onClick="IPoEControl(\'1\',\'' + fields[1] + '\');" >';
+                           //str += '    &nbsp;&nbsp;<input type=button value="Release" onClick="IPoEControl(\'0\',\'' + fields[1] + '\');" disabled>';
+                           str += '  </td>';
+                        } else {
+                           // release
+                           str += '  <td class="table_font w_blue">' + fields[6];
+                           //str += '    &nbsp;&nbsp;<input type="button" value="Renew" onClick="IPoEControl(\'1\',\'' + fields[1] + '\');" disabled />';
+                           str += '    &nbsp;&nbsp;<input type="button" value="<%ejGetML(MLG_Common_Release)%>" onClick="IPoEControl(\'0\',\'' + fields[1] + '\');" />';
+                           str += '  </td>';
+                        }
+                     } else {
+                        str += '  <td class="table_font w_blue">' + fields[6] + '</td>';
+                     }
+                  }
+                  else
+                  {
+                     // PPP, use Up, Down
+                     if(fields[2] == 'Connected') {
+                        str += '  <td class="table_font w_blue">' + fields[6];
+                        str += '    &nbsp;&nbsp;<input type=button onClick="PPPControl(\'Down\', \'' + fields[1] + '\');" value="<%ejGetML(MLG_Common_Disconnect)%>" />';
+                        str += '  </td>';
+                     } else {
+                        str += '  <td class="table_font w_blue">' + fields[6];
+                        str += '    &nbsp;&nbsp;<input type=button  onClick="PPPControl(\'Up\', \'' + fields[1] + '\');" value="<%ejGetML(MLG_Common_Connect)%>" />';
+                        str += '  </td>';
+                     }
+                  }
+
+                  str += '</tr>';
+
+                  if(!((fields[3] == 'PPPoA') || (fields[3] == 'PPPoE'))) {
+                     str += '<tr>';
+                     str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_IPSubnetMask)%>:</td>';
+                     str += '  <td class="table_font w_blue">' + fields[7] + '</td>';
+                     str += '</tr>';
+                  }
+                    //Add uptime
+                    if(fields[2] == 'Connected') {
+                        str += '<tr>';
+                        str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_UpTime)%>:</td>';
+                        str += '  <td class="table_font w_blue">' + fields[14];
+                        str += '  </td>';
+                        str += '</tr>';
+                    }
+
+				 if(fields[10] == 'y'){	
+					str += '<tr>';
+					str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_Primary_DNS_server)%>:</td>';
+					str += '  <td class="table_font w_blue">' + fields[8] + '</td>';
+					str += '</tr>';
+
+					str += '<tr>';
+					str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_Secondary_DNS_server)%>:</td>';
+					str += '  <td class="table_font w_blue">' + fields[9] + '</td>';
+					str += '</tr>';
+				 }  
+               }
+               str += '<tr>';
+               str += '  <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str7)%>:</td>';
+               str += '  <td class="table_font w_blue">' + fields[3] + '</td>';
+               str += '</tr>';
+            }
+         	}
+             str += '<tr>';
+             str += '  <td class="table_font" colspan="2" >&nbsp;</td>';
+             str += '</tr>';
+         }
+      }
+   }
+
+	$('#wanInfo').html(str);
+}
+
+function doOpenWindow(id){
+
+	switch (id)
+	{
+		case 16:
+			var loc = '/pages/connectionStatus/connectionStatus-wwan.cmd?action=Puk';
+			loc += '&sessionKey=' + glbSessionKey;
+			var db1 = window.parent.$.zyUiDialog({
+		width: 500,
+		height: 450,
+		title: '<%ejGetML(MLG_ConnStatus_Status_InterfaceStatus_Need_PUK)%>',
+		
+		buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+                 '<%ejGetML(MLG_Common_Apply)%>':function(){}
+		}
+		});
+		db1.load(loc);
+		db1.dialog('open');
+			break;
+		case 17:
+			var loc = '/pages/connectionStatus/connectionStatus-wwan.cmd?action=DamagedSIM';
+			loc += '&sessionKey=' + glbSessionKey;
+			var db1 = window.parent.$.zyUiDialog({
+		width: 450,
+		height: 300,
+		title: '<%ejGetML(MLG_ConnStatus_Status_InterfaceStatus_Damaged_SIM)%>',
+		
+		buttons: {
+		   '<%ejGetML(MLG_Common_OK)%>': function(){ db1.dialog('close'); }
+		}
+		});
+		db1.load(loc);
+		db1.dialog('open');
+			break;
+		case 20:
+			var loc = '/pages/connectionStatus/connectionStatus-wwan.cmd?action=NoResp';
+			loc += '&sessionKey=' + glbSessionKey;
+			var db1 = window.parent.$.zyUiDialog({
+		width: 450,
+		height: 300,
+		title: '<%ejGetML(MLG_ConnStatus_Status_InterfaceStatus_No_Response)%>',
+
+		buttons: {
+		   '<%ejGetML(MLG_Common_OK)%>': function(){ db1.dialog('close'); }
+		}
+		});
+		db1.load(loc);
+		db1.dialog('open');
+			break;
+		case 21:
+			var loc = '/pages/connectionStatus/connectionStatus-wwan.cmd?action=Pin';
+			loc += '&sessionKey=' + glbSessionKey;
+			var db1 = window.parent.$.zyUiDialog({
+		width: 500,
+		height: 400,
+		title: '<%ejGetML(MLG_ConnStatus_Status_InterfaceStatus_Need_PIN)%>',
+		
+		buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+                 '<%ejGetML(MLG_Common_Apply)%>':function(){}
+		}
+		});
+		db1.load(loc);
+		db1.dialog('open');
+			break;
+	}
+}
+
+// VoIP info
+function initVoipInfo()
+{
+//ZyXEL, Albert add for Thailand, hide voipTable 20140212	
+	if ( supportVoip != '1' || customizationFlag & 0x00000200) {
+		$("#voipTable").hide();
+		return;
+	}
+	else {
+		$("#voipTable").show();
+		
+//ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+        if((customizationFlag & 0x00080000) && (currentGroup == 2)){	
+			$('#txt_sipuri').hide();
+			$('#txt_sipaction').hide();			
+       	}
+			
+		eval(tmplineStatus);	// update lineStatus for updatenetworkMapInfo()
+		
+		var sp , j ;
+		for (sp = 0; sp < currentSp; sp++) {
+			for(j = 0; j < eval("lc"+sp); j++){	
+				var acntNum = eval("lcma" + sp+"_" +j); 
+				// Show lineStatus
+				var idName = "lineStatus"+acntNum;
+				document.getElementById(idName).innerHTML = eval("ls"+sp+"_"+j);
+				// Show registerBtn
+
+				//ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+				if(((customizationFlag & 0x00080000) == 0) || (currentGroup != 2)){					
+					idName = "registerBtn" + acntNum;
+					var registerBtn = document.getElementById( idName );
+				
+					if(eval("ls"+sp+"_"+j) == 'OnRegister'){
+						registerBtn.disabled = false;
+						registerBtn.value = 'UnRegister';
+					}
+					else if(eval("ls"+sp+"_"+j) == 'Inactive'){
+						registerBtn.disabled = true;
+					}
+					else{
+						registerBtn.disabled = false;
+						registerBtn.value = 'Register';			
+					}
+				}
+				
+				// __ZyXEL__, Tresia: for iskon customization, disable registerBtn for user account.
+				if (customer == "ISKON")
+				{
+					if ( (curUserName != "admin") && (curUserName != "supervisor") )
+						registerBtn.disabled = true;
+				}
+				
+				//ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+				if(((customizationFlag & 0x00080000) == 0) || (currentGroup != 2)){						
+    				// Show sipUrl
+    				idName = "sipUri" + acntNum;			
+    				document.getElementById(idName).innerHTML = eval("ex"+ sp+"_" +j) + '@' + eval("uad"+ sp);			
+                }
+			}		
+		}
+	}
+}
+
+// VoIP Register function
+function btnStartReg(acnt) {
+	 var current_view='home';
+	 var loc;
+	 var i,j,found = 0;
+	 var code ;
+	 for(i=0;i<currentSp;i++){
+		for(j=0;j<eval("lc"+i);j++){
+			if(parseInt(eval('lcma'+i+"_"+j)) == acnt ){	
+				found = 1;
+				if(eval('ls'+i+"_"+j) == 'OnRegister'){
+					loc = 'status-voicesipderegister.cmd?';
+				}
+				else{
+					loc = 'status-voicesipregister.cmd?';
+				}
+				loc += 'currentview='+ current_view;
+				loc += '&cmacnt='+acnt;
+				loc += '&sessionKey='+ glbSessionKey;
+			}
+		}
+	 }
+	 
+	 if(!(found == 1)){
+		alert("Wrong SIP Account Number");
+	 }else{
+		   BackgroundUrl(loc);
+		   updateValue_take();
+	 }
+}
+
+// VoIP Registration Status
+function createSipAccountList() {
+	var cont="";
+	var i,j;
+	for (i = 0; i < currentSp; i++) {
+		for(j = 0; j < eval("lc"+i); j++){
+			var acntNum = eval("lcma"+ i + "_" + j);
+			var acntNum_new = parseInt(acntNum) + 1;	// from SIP1, SIP2, ...
+			cont += "<tr align='center'>";
+			cont += "<td class='table_font'>SIP " + acntNum_new + "</td>";
+//ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+	        if(((customizationFlag & 0x00080000) == 0) || (currentGroup != 2)){					
+			    cont +="<td class='table_font'><input value='Register' onClick='btnStartReg(" + acntNum +")' type='button' id='registerBtn"+ acntNum +"'> </td>";
+	        }
+			cont +="<td class='table_font' id='lineStatus" + acntNum + "'>Inactive</td>";
+			cont +="<td class='table_font' id='SPsipAcntNum" + acntNum + "'>" + eval("vpn"+i) + " / " + eval("ex"+ i + "_" + j) + "</td>";	
+//ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+	        if(((customizationFlag & 0x00080000) == 0) || (currentGroup != 2)){			
+			    cont +="<td class='table_font' id='sipUri" + acntNum + "'>ChangeMe@ChangeMe</td>";			
+	        }
+			cont +="</tr>";
+		}
+	}
+	
+   $('#registrationStatus').append(cont);
+}
+
+// firewall info
+function initFWInfo()
+{
+   if(currfwLevel=="Low")
+	{
+		currfwLevel = "<%ejGetML(MLG_Security_Low)%>";
+	}
+	else if(currfwLevel=="Medium")
+	{
+		currfwLevel = "<%ejGetML(MLG_Security_Medium)%>";
+	}
+	else if(currfwLevel=="High")
+	{
+		currfwLevel = "<%ejGetML(MLG_Security_High)%>";
+	}
+	else
+	{
+		currfwLevel = "<%ejGetML(MLG_Common_Disabled)%>";
+	}
+	  
+   $('#fwInfo').html(currfwLevel);
+
+	if(forEircom==1)
+	{
+		$('#contentFilter').fadeIn(0);
+   		if(enblParentCtl==1)
+   		{
+      		$('#fwContent').html("Enabled");
+   		}
+   		else
+   		{
+      		$('#fwContent').html("Disabled");
+   		}
+	}
+	else
+	{
+		$('#contentFilter').fadeOut(0);
+	}
+
+
+   
+}
+
+//IPv6 LAN
+function initIPv6Info () {
+   $('#IPv6Addr').html(IPv6Addr);
+}
+
+//systime
+var objTimeXMLHTTP = null;
+
+function strFormat(str,iLen) {   
+	if (str.length < iLen) {
+		for (iIndex = 0 ; iIndex < iLen-str.length ; iIndex++) {
+			str = "0" + str;   
+		}
+		return str;
+	}
+	else {
+		return str;
+	}
+}
+
+function IncreaseSec() {
+	var now = new Date(timestamp);
+	var days = strFormat(now.getDate().toString(),2);
+	var years = now.getFullYear();
+	var months = now.toString().substr(4,3);
+	var hr = strFormat(now.getHours().toString(),2);
+	var min = strFormat(now.getMinutes().toString(),2);
+	var sec = strFormat(now.getSeconds().toString(),2);
+	document.getElementById("clock1").innerHTML = days + " " + changeMonthString(months) + "  " + years;
+	document.getElementById("showTime").innerHTML = hr + ":" + min + ":" + sec;
+    //ZyXEL, Ryan
+	SysUpTime = SysUpTime.replace("days", '<%ejGetML(MLG_ConnStatus_Status_Str107)%>');
+    SysUpTime = SysUpTime.replace("hours", '<%ejGetML(MLG_ConnStatus_Status_Str108)%>');
+    SysUpTime = SysUpTime.replace("minutes", '<%ejGetML(MLG_ConnStatus_Status_Str109)%>');
+	
+	document.getElementById("uptime").innerHTML = SysUpTime;
+	timestamp += 1000;
+	inctimetask = setTimeout('IncreaseSec()', 1000);
+}
+
+function changeMonthString(month)
+{
+	switch (month)
+	{
+		case 'Jan':
+			return "<%ejGetML(MLG_ConnStatus_Status_Str62)%>";
+		case 'Feb':
+			return "<%ejGetML(MLG_ConnStatus_Status_Str63)%>";
+		case 'Mar':
+			return "<%ejGetML(MLG_ConnStatus_Status_Str64)%>";
+		case 'Apr':
+			return "<%ejGetML(MLG_ConnStatus_Status_Str65)%>";
+		case 'May':
+			return "<%ejGetML(MLG_ConnStatus_Status_Str66)%>";
+		case 'Jun':
+			return "<%ejGetML(MLG_ConnStatus_Status_Str67)%>";
+		case 'Jul':
+			return "<%ejGetML(MLG_ConnStatus_Status_Str68)%>";
+		case 'Aug':
+			return "<%ejGetML(MLG_ConnStatus_Status_Str69)%>";
+		case 'Sep':
+			return "<%ejGetML(MLG_ConnStatus_Status_Str70)%>";
+		case 'Oct':
+			return "<%ejGetML(MLG_ConnStatus_Status_Str71)%>";
+		case 'Nov':
+			return "<%ejGetML(MLG_ConnStatus_Status_Str72)%>";
+		case 'Dec':
+			return "<%ejGetML(MLG_ConnStatus_Status_Str73)%>";
+	    default:
+			return 0;
+	}
+}
+
+function getonlinetime()
+{
+	if ( objTimeXMLHTTP != null ) {
+		objTimeXMLHTTP.open("GET","/pages/connectionStatus/TimeZoneGetNew.html",true);
+		objTimeXMLHTTP.onreadystatechange = function() 
+		{
+			if(objTimeXMLHTTP.readyState == 4) {
+				var now;
+				var servertime=objTimeXMLHTTP.responseText;
+				var servertimestamp = Date.parse(servertime);
+				servernow = new Date(servertimestamp);
+				now = new Date(timestamp);
+				
+				if ( now.getDate() != servernow.getDate() ||
+						now.getMonth() != servernow.getMonth() ||
+						now.getFullYear() != servernow.getFullYear() ) {
+					timestamp = servertimestamp;
+				}
+				timetask = setTimeout('getonlinetime()', 10000);
+			}
+		}
+	
+		objTimeXMLHTTP.send(null);
+	
+	}
+}
+
+function initTime()
+{
+	timestamp = Date.parse(timeNow);
+	IncreaseSec();
+	if ( ntp_enabled == 1 ) {
+		if (window.XMLHttpRequest) {
+			objTimeXMLHTTP=new XMLHttpRequest();
+			timetask = setTimeout('getonlinetime()', 10000);
+		}// code for IE
+		else if (window.ActiveXObject) {
+			objTimeXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+			timetask = setTimeout('getonlinetime()', 10000);
+		}
+	}
+}
+
+//cpuusg
+var objCpuUsgXMLHTTP = null;
+var objDnsUsgXMLHTTP = null;
+
+function showNatSessionUsg(){
+   var natStr = '';
+   natStr += '<table width="' + NatSessionUsgInfo + '%" border="0" cellspacing="0" cellpadding="0">';
+   natStr += '  <tr>';
+   natStr += '    <td height="18" background="../../images/i_percentage_blue.gif">&nbsp;</td>';
+   natStr += '  </tr>';
+   natStr += '</table>';
+
+   /*Memory Usage Information.*/
+   document.getElementById("natSessionUsgID").innerHTML =natStr;
+   document.getElementById("natSessionInfo").innerHTML = NatSessionUsgInfo;
+}
+function init3ginfo(){
+	var wwanStr = '';
+	var test = '';
+
+	//ZyXEL, Ryan add for hide 3G page, 0x00004000 is same as WWAN_GUI_HIDE_FLAG which was defined in cms.h
+	if( (customizationFlag & 0x00004000)){
+		support3GBackup=0;
+	}
+	
+	if ( support3GBackup==0) {
+		$("#wwan3g").hide();
+		return;
+	}
+	else {
+		$("#wwan3g").show();
+	}
+	
+   		if (wwanStatus=='InvalidPIN')
+      		wwanStr += '<a href="javascript: doOpenWindow(21);"><%ejGetML(MLG_ConnStatus_Status_InterfaceStatus_Need_PIN)%>';
+  		 else if (wwanStatus=='NeedPUK')
+        	wwanStr += '<a href="javascript: doOpenWindow(16);"><%ejGetML(MLG_ConnStatus_Status_InterfaceStatus_Need_PUK)%>';
+   		else if (wwanStatus=='InvalidSIM')
+       		wwanStr += '<a href="javascript: doOpenWindow(17);"><%ejGetML(MLG_ConnStatus_Status_InterfaceStatus_Damaged_SIM)%>';
+   		else if (wwanStatus=='NoResponse')
+        	wwanStr += '<a href="javascript: doOpenWindow(20);"><%ejGetML(MLG_ConnStatus_Status_InterfaceStatus_No_Response)%>';
+   		else
+   			wwanStr += wwanStatus;
+			
+		if( wwanStatus =='Up')
+   		{
+   			if( wwanquality =='Excellent')
+          		test += '<img src=\"../../images/rssi_level_5.gif\">';
+   			if( wwanquality =='Good')
+           		test += '<img src=\"../../images/rssi_level_4.gif\">';
+   			if( wwanquality =='Fair')
+           		test += '<img src=\"../../images/rssi_level_3.gif\">';
+   			if( wwanquality =='Poor')
+           		test += '<img src=\"../../images/rssi_level_2.gif\">';
+   			if( wwanquality =='Very Poor')
+           		test += '<img src=\"../../images/rssi_level_1.gif\">';
+   			if( wwanquality =='No Service')
+           		test += '<img src=\"../../images/rssi_level_0.gif\">';
+   		}
+   		else
+        	test += 'N/A';
+        if( wwanStatus == 'NoDevice')
+			wwanStr =  '<%ejGetML(MLG_ConnStatus_Status_InterfaceStatus_3G_USB)%>';
+		document.getElementById("wwanID").innerHTML =wwanStr;
+  		document.getElementById("wwanInfo").innerHTML =test;
+	
+
+}
+function showMemUsg(){
+   var memStr = '';
+   memStr += '<table width="' + MemUsgInfo + '%" border="0" cellspacing="0" cellpadding="0">';
+   memStr += '  <tr>';
+   memStr += '    <td height="18" background="../../images/i_percentage_blue.gif">&nbsp;</td>';
+   memStr += '  </tr>';
+   memStr += '</table>';
+
+   /*Memory Usage Information.*/
+   document.getElementById("memUsgID").innerHTML = memStr;
+   document.getElementById("memInfo").innerHTML = MemUsgInfo;
+}
+
+function showCpuUsg(usg)
+{
+
+   var cpuStr = '';
+   cpuStr += '<table width="' + usg + '%" height="18" border="0" cellspacing="0" cellpadding="0">';
+   cpuStr += '  <tr>';
+   cpuStr += '    <td height="18" background="../../images/i_percentage_blue.gif">&nbsp;</td>';
+   cpuStr += '  </tr>';
+   cpuStr += '</table>';
+
+   document.getElementById("cpuUsgId").innerHTML = cpuStr;
+   document.getElementById("cpuNumId").innerHTML = usg;
+}
+
+//ZyXEL, cathy, merge from VMG4380 
+//to fix Ping & TraceRoute in Diagnostic can't work on Goole Chrome only.
+Date.prototype.toString = function(){
+var t = this.toTimeString().split("(");
+var s = this.toDateString()+" "+t[0];
+return s;
+}
+//cathy
+function getCpuUsg(){
+   if ( objCpuUsgXMLHTTP != null ) {
+      objCpuUsgXMLHTTP.open("GET","/pages/connectionStatus/cpuUsg.html", true);
+      objCpuUsgXMLHTTP.setRequestHeader("If-Modified-Since",new Date(0));
+      objCpuUsgXMLHTTP.onreadystatechange = function() 
+      {
+         if(objCpuUsgXMLHTTP.readyState == 4) {
+            var result = objCpuUsgXMLHTTP.responseText;
+            if (result.indexOf("%") >= 0) {
+               showCpuUsg(result);
+               showMemUsg();
+			   showNatSessionUsg();
+            }
+         }
+      }
+      objCpuUsgXMLHTTP.send(null);
+   }
+   cputask = setTimeout("getCpuUsg()",5000); 
+}
+
+function getDnsUsg(){
+	
+   if ( objDnsUsgXMLHTTP != null ) {
+		objDnsUsgXMLHTTP.open("GET","/pages/connectionStatus/GetDnsInfo.html", true);
+		//objDnsUsgXMLHTTP.setRequestHeader("If-Modified-Since",new Date(0));
+		objDnsUsgXMLHTTP.onreadystatechange = function() 
+		{
+			if(objDnsUsgXMLHTTP.readyState == 4) {
+				
+			var wanInfo = objDnsUsgXMLHTTP.responseText;
+
+			initWanInfo();
+		 	}
+		}
+
+		objDnsUsgXMLHTTP.send(null);
+	}
+
+	dnstask = setTimeout("getDnsUsg()",5000); 
+
+}
+
+//ZyXEL, check the Lan Port Connect Status, Ricky, 2015/8/6
+function initEthInfo()
+{
+	$('#eth0Status').html(vd_lan1);	
+	if(vd_lan1 == 'on') {
+        $('#eth0Status').html('<%ejGetML(MLG_Common_UP)%>');			
+	}
+	else { 
+		if(eth0portStatus == 'Disabled') {
+	        $('#eth0Status').html('<%ejGetML(MLG_Common_Disabled)%>');
+		}
+		else {
+	        $('#eth0Status').html('<%ejGetML(MLG_Common_NoLink)%>');
+		}
+	}
+	if ( vd_lan1 != 'on' ) {
+		$('#eth0Info').html('N/A');
+	}
+	else {
+		$('#eth0Info').html(eth0maxBitRate+'&nbsp;/&nbsp;'+eth0duplexMode);
+	}
+
+//ZyXEL, Albert, 20160511, Get the Power Management Status
+	if ( lan1En == '1' ) {
+		$('#eth0Power').html('<%ejGetML(MLG_Common_On)%>');
+	}
+	else {
+		$('#eth0Power').html('<%ejGetML(MLG_Common_Off)%>');
+	}
+	
+	$('#eth1Status').html(vd_lan2);	
+	if(vd_lan2 == 'on') {
+		$('#eth1Status').html('<%ejGetML(MLG_Common_UP)%>');			
+	}
+	else { 
+		if(eth1portStatus == 'Disabled') {
+	        $('#eth1Status').html('<%ejGetML(MLG_Common_Disabled)%>');
+	    }
+	    else {
+	        $('#eth1Status').html('<%ejGetML(MLG_Common_NoLink)%>');
+	    }
+	}
+	if ( vd_lan2 != 'on' ) {
+		$('#eth1Info').html('N/A');
+	}
+	else {
+		$('#eth1Info').html(eth1maxBitRate+'&nbsp;/&nbsp;'+eth1duplexMode);
+	}	
+
+//ZyXEL, Albert, 20160511, Get the Power Management Status
+	if ( lan2En == '1' ) {
+		$('#eth1Power').html('<%ejGetML(MLG_Common_On)%>');
+	}
+	else {
+		$('#eth1Power').html('<%ejGetML(MLG_Common_Off)%>');
+	}
+	
+	$('#eth2Status').html(vd_lan3);	
+	if(vd_lan3 == 'on') {
+		$('#eth2Status').html('<%ejGetML(MLG_Common_UP)%>');			
+	}
+	else {
+		if(eth2portStatus == 'Disabled') {
+	        $('#eth2Status').html('<%ejGetML(MLG_Common_Disabled)%>');
+	    }
+	    else {
+	        $('#eth2Status').html('<%ejGetML(MLG_Common_NoLink)%>');
+	    }
+	}
+	if ( vd_lan3 != 'on' ) {
+		$('#eth2Info').html('N/A');
+	}
+	else {
+		$('#eth2Info').html(eth2maxBitRate+'&nbsp;/&nbsp;'+eth2duplexMode);
+	}	
+
+//ZyXEL, Albert, 20160511, Get the Power Management Status
+	if ( lan3En == '1' ) {
+		$('#eth2Power').html('<%ejGetML(MLG_Common_On)%>');
+	}
+	else {
+		$('#eth2Power').html('<%ejGetML(MLG_Common_Off)%>');
+	}
+	
+	$('#eth3Status').html(vd_lan4);	
+	if(vd_lan4 == 'on') {
+		$('#eth3Status').html('<%ejGetML(MLG_Common_UP)%>');			
+	}
+	else {
+		if(eth3portStatus == 'Disabled'){
+	        $('#eth3Status').html('<%ejGetML(MLG_Common_Disabled)%>');
+	    }
+	    else {
+	        $('#eth3Status').html('<%ejGetML(MLG_Common_NoLink)%>');
+	    }
+	}
+	if( vd_lan4 != 'on' ) {
+		$('#eth3Info').html('N/A');
+	}
+	else {
+		$('#eth3Info').html(eth3maxBitRate+'&nbsp;/&nbsp;'+eth3duplexMode);
+	}	
+
+//ZyXEL, Albert, 20160511, Get the Power Management Status
+	if ( lan4En == '1' ) {
+		$('#eth3Power').html('<%ejGetML(MLG_Common_On)%>');
+	}
+	else {
+		$('#eth3Power').html('<%ejGetML(MLG_Common_Off)%>');
+	}	
+}
+//ZyXEL, check the Lan Port Connect Status, Ricky, 2015/8/6
+
+function initCPUUsg () {
+   if (window.XMLHttpRequest) {
+      objCpuUsgXMLHTTP=new XMLHttpRequest();
+      getCpuUsg();
+   } else if (window.ActiveXObject) {
+      // code for IE
+      objCpuUsgXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+      getCpuUsg();
+   }
+}
+
+function initDnsInfoUsg () {
+   if (window.XMLHttpRequest) {
+      objDnsUsgXMLHTTP=new XMLHttpRequest();
+      getDnsUsg();
+   } else if (window.ActiveXObject) {
+      // code for IE
+      objDnsUsgXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+      getDnsUsg();
+   }
+}
+
+
+function initEthWanInfo()
+{
+	if ( supportethwan != '1' ) {
+		$("#ethwan").hide();
+		return;
+	}
+	else {
+		$("#ethwan").show();
+	}
+	$('#ethWanStatus').html(ethWanportStatus);	
+	if ( ethWanportStatus == 'NoLink' ) {
+			$('#ethWanStatus').html('<%ejGetML(MLG_Common_NoLink)%>');
+	}
+	else if(ethWanportStatus == 'Disabled'){
+			$('#ethWanStatus').html('<%ejGetML(MLG_Common_Disabled)%>');
+	}
+	else if(ethWanportStatus == 'Up'){
+			$('#ethWanStatus').html('<%ejGetML(MLG_Common_UP)%>');
+	}
+	if ( ethWanportStatus == 'NoLink' ) {
+		$('#ethWanInfo').html('N/A');
+	}
+	else {
+		$('#ethWanInfo').html(ethWanmaxBitRate+'&nbsp;/&nbsp;'+ethWanduplexMode);
+	}
+
+//ZyXEL, Albert, 20160511, Get the Power Management Status	
+	if ( ethWanEn == '1' ) {
+		$('#ethWanPower').html('<%ejGetML(MLG_Common_On)%>');
+	}
+	else {
+		$('#ethWanPower').html('<%ejGetML(MLG_Common_Off)%>');
+	}
+}
+function initDslInfo()
+{
+    /* 
+	  ZyXEL, Albert add for Etisalat, hide DSL 20131118
+	  The condition number for enable/disable DSL feature is "0x00000004"
+	  it's defined in cms.h 
+	  define MARCO "DSL_GUI_HIDE_FLAG"
+	*/
+	if ( supportdsl != '1' || (customizationFlag & 0x00000004) ) {
+		$("#dslwan").hide();
+		return;
+	}
+	else {
+		$("#dslwan").show();
+	}
+	$('#dslStatus').html(dslStatus);
+	if(dslStatus == 'NoLink'){
+			$('#dslStatus').html('<%ejGetML(MLG_Common_NoLink)%>');
+	}
+	else if(dslStatus == 'Disabled'){
+			$('#dslStatus').html('<%ejGetML(MLG_Common_Disabled)%>');
+	}
+	else if(dslStatus == 'Up'){
+			$('#dslStatus').html('<%ejGetML(MLG_Common_UP)%>');
+	}
+	var tmp='';
+	tmp +='RX:' + dslInfo1;
+	tmp += '/ TX:'+dslInfo0+'(Kbps)';
+	if ( dslStatus == 'NoLink' ) {
+		$('#dslInfo').html('N/A');
+	}
+	else {
+		$('#dslInfo').html(tmp);
+	}
+
+//ZyXEL, Albert, 20160511, Get the Power Management Status
+	if ( dslEn == '1' ) {
+		$('#dslPower').html('<%ejGetML(MLG_Common_On)%>');
+	}
+	else {
+		$('#dslPower').html('<%ejGetML(MLG_Common_Off)%>');
+	}	
+}
+
+function updateValue(msg){
+   var upDate = msg.replace(/\r\n/ig, "");
+   upDate = upDate.replace(/\n/ig, "");
+   var upDates = upDate.split('#');
+
+   wanLevel = upDates[0];
+   dhcpEnbl = upDates[1];
+   currfwLevel = upDates[2];
+   supportwlan = upDates[3];
+   wanInfo = (((upDates[4] == undefined) || (upDates[4] == '')) ? '' : upDates[4]);
+   SysUpTime = upDates[5];
+   MemUsgInfo = upDates[6];
+   timeNow = upDates[7];
+   ntp_enabled = (((upDates[8] == undefined) || (upDates[8] == '')) ? 0 : parseInt(upDates[8]));
+
+
+	tmplineStatus = upDates[25];		// VoIP lineStatus
+	dslStatus=upDates[26];
+	eth0portStatus = upDates[27];
+	eth0maxBitRate = upDates[28];
+	eth0duplexMode = upDates[29];
+	eth1portStatus = upDates[30];
+	eth1maxBitRate = upDates[31];
+	eth1duplexMode = upDates[32];
+	eth2portStatus = upDates[33];
+	eth2maxBitRate = upDates[34];
+	eth2duplexMode = upDates[35];
+	eth3portStatus = upDates[36];
+	eth3maxBitRate = upDates[37];
+	eth3duplexMode = upDates[38];
+	ethWanportStatus = upDates[39];
+	ethWanmaxBitRate = upDates[40];
+	ethWanduplexMode = upDates[41];	
+	dslInfo1=upDates[42];
+	dslInfo0=upDates[43];
+	wwanStatus=upDates[44];
+	wwanquality=upDates[45];
+   frmLoad(0);
+}
+
+function frmLoad(init) {
+   // init dhcp info
+   initDHCPInfo();
+
+   // init WLAN info
+   initWLANinfo();
+
+   // init Firewall info
+   initFWInfo();
+
+   // init WAN info
+   initWanInfo();
+
+   //init lan info
+   initEthInfo();
+
+   //init eth wan info
+   initEthWanInfo();
+
+   //init dsl info
+   initDslInfo();
+	
+   //init 3g info
+   init3ginfo();
+
+   // __ZyXEL__, Ryan, hide memory usage for Thailand
+   if (customer == "Thailand") {        
+      
+      showhide("memtr","0");
+   }
+
+    //init VoIP
+	initVoipInfo();
+   if(buildMstcIPv6 == '1' && enblLanIPv6 == '1')
+   {
+      $('#Ipv6LanInfo').show();
+      //init IPv6Info
+      initIPv6Info();
+   }
+   else
+      $('#Ipv6LanInfo').hide();
+
+   if(init == 1) {
+      // current date/time
+      initTime();
+
+      // CPU usage
+      initCPUUsg();
+
+      // DnsInfo usage
+      initDnsInfoUsg();  
+   }
+   if(supportwlan == '2')
+   {
+      $('#wlan2').show();
+      $('#Wlan2StatusInfo').show();
+      //init wlanInfo
+         initWLAN2info();  
+       
+   }
+   else
+   {
+      $('#Wlan2StatusInfo').hide();
+      $('#wlan2').hide();
+   }
+
+   if(supportVoip == '1'){
+      $('#sipStatus').show();
+   } else {
+      $('#sipStatus').hide();
+      $('#sipStatus').css('visibility', 'hidden');
+   }
+
+   if(wanLevel == '0') {
+      connection(true, wanLevel);
+   } else {
+      connection(false, wanLevel);
+   }
+	$('#serialNumber').fadeIn(0);
+	if(forEircom==1)
+	{
+		//$('#serialNumber').fadeIn(0);
+		$('#SecurityKey').fadeIn(0);
+	}
+	else
+	{
+		//$('#serialNumber').fadeOut(0);
+		$('#SecurityKey').fadeOut(0);
+	}
+   
+}
+
+
+$(function()
+{
+	$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );  
+});
+// done hiding -->
+</script>
+
+<script type="text/javascript" src="../../js/jquery.text-overflow.js"></script>
+<div id="statusView" class='naviView' style='position: relative;'>
+  <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+    <tr>
+      <td width="50%">&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td valign="top">&nbsp;</td>
+      <td valign="top">&nbsp;</td>
+    </tr>
+    <tr>
+      <td valign="top"><div class="w_text3">
+        <table width="92%" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="deviceInformation">
+          <tr >
+            <td colspan="2" class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str1)%></td>
+          </tr>
+          <tr >
+            <td width="40%"  class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str2)%> </td>
+            <td  class="table_font w_blue">Router</td>
+          </tr>
+          <tr >
+            <td  class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str3)%> </td>
+            <td  class="table_font w_blue" ><%ejGet(modelName)%></td>
+          </tr>
+          <tr id="serialNumber" style="display:none;">
+            <td  class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str301)%> </td>
+            <td  class="table_font w_blue" ><%ejGet(serialNumber)%></td>
+          </tr>
+          <tr >
+            <td  class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str4)%> </td>
+            <td  class="table_font w_blue"><%ejGet(sysVersion)%></td>
+          </tr>
+          <tr >
+            <td  class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str5_1)%> </td>
+            <td  class="table_font">&nbsp;</td>
+          </tr>
+          <tbody id="wanInfo"></tbody>
+<!--
+          <tr >
+            <td  class="table_font">&nbsp;&nbsp;- MAC Address:</td>
+            <td  class="table_font w_blue">00:19:cb:a2:08:6b </td>
+          </tr>
+          <tr >
+            <td  class="table_font">&nbsp;&nbsp;-  IP Address: </td>
+            <td  class="table_font w_blue">172.23.30.105</td>
+          </tr>
+          <tr >
+            <td  class="table_font">&nbsp;&nbsp;- IP Subnet Mask:</td>
+            <td  class="table_font w_blue">255.255.255.0 </td>
+          </tr>
+          <tr >
+            <td  class="table_font">&nbsp;&nbsp;- DHCP: </td>
+            <td  class="table_font w_blue"></td>
+          </tr>
+-->
+          <tr >
+            <td  class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str8_1)%></td>
+            <td  class="table_font">&nbsp;</td>
+          </tr>
+          <tr >
+            <td  class="table_font">&nbsp;&nbsp;-  <%ejGetML(MLG_Common_IPAddress)%>: </td>
+            <td  class="table_font w_blue"><%ejGet(ethIpAddress)%></td>
+          </tr>
+          <tr >
+            <td  class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_IPSubnetMask)%>:</td>
+            <td  class="table_font w_blue"><%ejGet(ethSubnetMask)%></td>
+          </tr>
+          <tr >
+            <td  class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str9)%></td>
+            <td id="dhcpInfo"  class="table_font w_blue"></td>
+          </tr>
+<!--IPv6 begin-->
+          <tbody id="Ipv6LanInfo">
+            <tr>
+              <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_IPv6Address)%>: </td>
+              <td id="IPv6Addr" class="table_font w_blue">&nbsp;</td>
+            </tr>
+            <tr>
+              <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str81)%>: </td>
+              <td class="table_font w_blue textOverflow"><%ejGetOther(lanIpv6LinkLocalAddr)%></td>
+            </tr>
+          </tbody>
+<!--IPv6 end-->
+          <tr >
+            <td  class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_MACAddress)%>:</td>
+            <td  class="table_font w_blue"><%ejGetOther(sysInfo, baseMacAddress)%></td>
+          </tr>
+          <tbody id="WlanStatusInfo">
+<script language="javascript">
+<!-- hide
+var tempStr = '';
+	  tempStr += '<tr>\n';
+if(supportwlan == '2')
+	  tempStr += '<td  class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str10_24)%></td>\n';
+else
+	  tempStr += '<td  class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str10_1)%></td>\n';
+	  tempStr += '<td  class="table_font">&nbsp;</td>\n';				  
+	  tempStr += '</tr>\n';
+	  $('#WlanStatusInfo').prepend(tempStr);
+// done hiding -->
+</script>
+            <tr>
+              <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_MACAddress)%>:</td>
+              <td id="wlBssid" class="table_font w_blue"></td>
+            </tr>
+            <tr>
+              <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str11)%> </td>
+              <td id="wlEnbl" class="table_font w_blue"></td>
+            </tr>
+            <tr >
+              <td  class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str88)%>:</td>
+              <td id="wlSSID" class="table_font w_blue textOverflow">My SSID</td>
+            </tr>
+            <tr>
+              <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str13)%> </td>
+              <td id="channelInfo" class="table_font w_blue"></td>
+            </tr>
+            <tr >
+              <td  class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str89)%>:</td>
+              <td id="securityInfo" class="table_font w_blue"></td>
+            </tr>
+            <tr id="SecurityKey" style="display:none;">
+              <td  class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str302)%> </td>
+              <td id="security_pwdInfo" class="table_font w_blue"></td>
+            </tr>
+            <tr>
+              <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str90)%>: </td>
+              <td id="modeInfo" class="table_font w_blue"></td>
+            </tr>
+            <tr id="wpsinfoview">
+              <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str16)%></td>
+              <td id="wpsInfo" class="table_font w_blue"></td>
+            </tr>
+          </tbody>
+          <tbody id="Wlan2StatusInfo">
+            <tr >
+              <td  class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str10_5)%></td>
+              <td  class="table_font">&nbsp;</td>
+            </tr>
+            <tr>
+              <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_Common_MACAddress)%>:</td>
+              <td id="wl1Bssid" class="table_font w_blue"></td>
+            </tr>
+            <tr>
+              <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str11)%> </td>
+              <td id="wl1Enbl" class="table_font w_blue"></td>
+            </tr>
+            <tr >
+              <td  class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str88)%>:</td>
+              <td id="wl1SSID" class="table_font w_blue">My SSID</td>
+            </tr>
+            <tr>
+              <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str13)%> </td>
+              <td id="wl1_channelInfo" class="table_font w_blue"></td>
+            </tr>
+            <tr >
+              <td  class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str89)%>:</td>
+              <td id="wl1_securityInfo" class="table_font w_blue"></td>
+            </tr>
+            <tr>
+              <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str90)%>: </td>
+              <td id="wl1_modeInfo" class="table_font w_blue"></td>
+            </tr>
+            <tr id="wl1_wpsinfoview">
+              <td class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str16)%></td>
+              <td id="wl1_wpsInfo" class="table_font w_blue"></td>
+            </tr>
+          </tbody>
+          <tr >
+            <td  class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str89)%></td>
+            <td  class="table_font">&nbsp;</td>
+          </tr>
+          <tr >
+            <td  class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str91)%> :</td>
+            <td id="fwInfo" class="table_font w_blue"></td>
+          </tr>
+          <tr id="contentFilter" style="display:none;">
+            <td  class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_ContentFilter)%> :</td>
+            <td id="fwContent" class="table_font w_blue"></td>
+          </tr>
+          <tr >
+            <td  class="table_font">&nbsp;</td>
+            <td  class="table_font">&nbsp;</td>
+          </tr>
+        </table>
+      </div></td>
+      <td valign="top">
+        <table width="92%" border="0" align="center"  cellpadding="0" cellspacing="0" class="table_frame" id="systemStatus">
+          <tr >
+            <td colspan="3" class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str42)%></td>
+          </tr>
+          <tr >
+            <td width="40%"  class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str43)%> </td>
+            <td colspan="2"  class="table_font w_blue"><span id='uptime'></span></td>
+          </tr>
+          <tr >
+            <td  class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str44)%> </td>
+            <td colspan="2"  class="table_font w_blue"><span id='clock1'></span>&nbsp;<span id = "showTime"></td>
+          </tr>
+          <tr >
+            <td  class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str47)%></td>
+            <td colspan="2"  class="table_font w_blue">&nbsp;</td>
+          </tr>
+          <tr >
+            <td  class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str48)%></td>
+              <td width="38%" height="18"class="table_font"><table width="100%" height="18" border="1" cellpadding="0" cellspacing="0" bordercolor="#7895c8">
+                <tr>
+                  <td background="../../images/i_percentage_center.gif">
+                    <span id="cpuUsgId">
+                      <table width="50%" height="18" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td height="18" background="../../images/i_percentage_blue.gif">&nbsp;</td>
+                        </tr>
+                      </table>
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+            <td  class="table_font w_blue"><span id="cpuNumId"></span></td>
+          </tr>
+          <tr id="memtr">
+            <td  class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_Status_Str49)%></td>
+            <td  class="table_font">
+              <table width="100%" height="18" border="1" cellpadding="0" cellspacing="0" bordercolor="#7895c8">
+                <tr>
+                  <td background="../../images/i_percentage_center.gif">
+                    <span id='memUsgID'>
+                      <table width="50%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td height="18" background="../../images/i_percentage_blue.gif">&nbsp;</td>
+                        </tr>
+                      </table>
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+            <td  class="table_font w_blue"><span id='memInfo'></span>%</td>
+          </tr>
+          <tr >
+            <td  class="table_font">&nbsp;&nbsp;- <%ejGetML(MLG_ConnStatus_NAT_Session_str1)%>:</td>
+            <td  class="table_font">
+              <table width="100%" height="18" border="1" cellpadding="0" cellspacing="0" bordercolor="#7895c8">
+                <tr>
+                  <td background="../../images/i_percentage_center.gif">
+                    <span id='natSessionUsgID'>
+                      <table width="50%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td height="18" background="../../images/i_percentage_blue.gif">&nbsp;</td>
+                        </tr>
+                      </table>
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+            <td  class="table_font w_blue"><span id='natSessionInfo'></span>%</td>
+          </tr>		  
+          <tr >
+            <td  class="table_font">&nbsp;</td>
+            <td colspan="2"  class="table_font">&nbsp;</td>
+          </tr>
+        </table>
+        <br>
+	<table width="92%" border="0" align="center"  cellpadding="0" cellspacing="0" class="table_frame" id="InterfaceStatus">
+          <tr >
+            <td colspan="4" class="top_font"><%ejGetML(MLG_ConnStatus_Status_InterfaceStatus_title)%></td>
+          </tr>	
+          <tr align="center" valign="top">
+               <td class="table_font2"><%ejGetML(MLG_ConnStatus_Status_InterfaceStatus_Interface)%></td>
+               <td class="table_font2"><%ejGetML(MLG_ConnStatus_Status_InterfaceStatus_Status)%></td>
+               <td class="table_font2"><%ejGetML(MLG_ConnStatus_Status_InterfaceStatus_Rate)%></td>
+               <td class="table_font2"><%ejGetML(MLG_ConnStatus_Status_InterfaceStatus_Power)%></td>			   
+          </tr>
+          <tr id="ethPort1" align="center"> 
+               <td class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str26)%></td>
+               <td id="eth0Status" class="table_font"></td>
+               <td id="eth0Info" class="table_font"></td>
+               <td id="eth0Power" class="table_font"></td>			   
+          </tr>
+          <tr id="ethPort2" align="center">
+               <td class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str27)%></td>
+               <td id="eth1Status" class="table_font"></td>
+               <td id="eth1Info" class="table_font"></td>
+               <td id="eth1Power" class="table_font"></td>					   
+          </tr>
+          <tr id="ethPort3" align="center">
+               <td class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str28)%></td>
+               <td id="eth2Status" class="table_font"></td>
+               <td id="eth2Info" class="table_font"></td>
+               <td id="eth2Power" class="table_font"></td>					   
+          </tr>
+          <tr id="ethPort4" align="center">
+               <td class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str29)%></td>
+               <td id="eth3Status" class="table_font"></td>
+               <td id="eth3Info" class="table_font"></td>
+               <td id="eth3Power" class="table_font"></td>					   
+          </tr>
+          <tbody id="wlan">
+<script language="javascript">
+<!-- hide
+var tempStr = '';
+	  tempStr += '<tr id="wlanStatus" align="center" class = tabcolor2> \n';
+if(supportwlan == '2')
+	  tempStr += '<td class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str33_24)%></td>\n';
+else
+	  tempStr += '<td class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str33)%></td>\n';
+	  tempStr += '<td id="wlanInfo" class="table_font"></td>\n';
+	  tempStr += '<td id="wlanRate" class="table_font"></td>\n';				  
+	  tempStr += '<td id="wlanPower" class="table_font"></td>\n';		  
+	  tempStr += '</tr>\n';
+	  $('#wlan').append(tempStr);
+// done hiding -->
+</script>
+		  </tbody>
+          <tbody id="wlan2">
+               <tr id="wlan2Status" align="center" class = tabcolor2 > 
+               <td class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str33_5)%></td>
+               <td id="wlan2Info" class="table_font"></td>
+               <td id="wlan2Rate" class="table_font"></td>
+               <td id="wlan2Power" class="table_font"></td>			   
+          </tr>
+          </tbody>
+          <tr id="ethwan" align="center">
+               <td class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str38)%></td>
+               <td id="ethWanStatus" class="table_font"></td>
+               <td id="ethWanInfo" class="table_font"></td>
+               <td id="ethWanPower" class="table_font"></td>			   
+          </tr>
+          <tr id="dslwan" align="center">
+               <td class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str39)%></td>
+               <td id="dslStatus" class="table_font"></td>
+               <td id="dslInfo" class="table_font"></td>
+               <td id="dslPower" class="table_font"></td>			   
+          </tr>		  
+          <tr id="wwan3g" align="center">
+            <td  class="table_font"><%ejGetML(MLG_ConnStatus_Status_Str41)%></td>
+               <td  class="table_font w_blue"><span id='wwanID'></span></td>
+               <td  class="table_font w_blue"><span id='wwanInfo'></span></td>
+               <td  class="table_font w_blue"><span id='wwanPower'></span></td>			   
+          </tr>		  
+        </table>
+      </td>
+    </tr>
+  </table>
+  <br>
+       <!-- VoIP Registration Status Start -->			
+            <table id="voipTable" width="94%" border="0" align="center"  cellpadding="0" cellspacing="0">
+          <tr>
+            <td>
+              <table width="100%" cellpadding="0" cellspacing="0" >
+                <tr >
+                  <td class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str55)%> </td>
+                </tr>
+                <tr >
+                  <td  class="table_font">
+                    <!--Table define start-->
+                    <table width="95%" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="registrationStatus">
+                      <tr align="center" valign="top">
+                        <td class="table_font2"><%ejGetML(MLG_ConnStatus_Status_Str56)%></td>
+                        <!--<td width="80" class="table_font2"><%ejGetML(MLG_ConnStatus_Status_Str57)%></td> ZyXEL, cathy marked-->
+                        <td width="100" class="table_font2" id="txt_sipaction"><%ejGetML(MLG_ConnStatus_Status_Str57)%></td>
+                        <td class="table_font2 textOverflow"><%ejGetML(MLG_ConnStatus_Status_Str58)%></td>
+                        <td class="table_font2 textOverflow"><%ejGetML(MLG_Network_DynamicDNS_Str5)%></td>
+                        <td class="table_font2" id="txt_sipuri" ><%ejGetML(MLG_ConnStatus_Status_Str60)%></td>
+                      </tr>
+					  <span id='SipAccountList'>
+                      <script TYPE="text/javascript">				  
+                         createSipAccountList();
+                      </script>
+					  </span>
+                    </table>
+                  </td>
+                </tr>
+                <tr >
+                  <td  class="table_font">&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <!-- VoIP Registration Status End -->
+   <br>
+</div>
+<script language='JavaScript'>
+<!--
+$(document).ready(function() {
+
+	frmLoad(1);
+});
+//-->
+</script>
+

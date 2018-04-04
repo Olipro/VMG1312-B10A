@@ -1,0 +1,148 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+
+var enbl_CBT_fw = '<%ejGet(enblCBTfw)%>';
+var currCBTfwLevel = '<%ejGet(CBTfwLevel)%>';
+
+function btnNext() {
+   var loc = 'cbt_firewall_custom.html';
+	
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function btnSave() {
+   var loc = 'cbt_firewall-cfg.cgi?';
+
+   with ( document.forms[0] ) {
+      if ( firewallLevel[0].checked == true ){
+         loc += 'enblCBTfw=0';
+         loc += '&CBTfwLevel=none'
+      }
+      else if ( firewallLevel[1].checked == true ) {
+         loc += 'enblCBTfw=1';
+         loc += '&CBTfwLevel=Low';
+      }
+      else if ( firewallLevel[2].checked == true ) {
+         loc += 'enblCBTfw=1';
+         loc += '&CBTfwLevel=Medium';
+      }
+      else if ( firewallLevel[3].checked == true ) {
+         loc += 'enblCBTfw=1';
+         loc += '&CBTfwLevel=High'
+      }
+   }
+
+   loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function levelClick() {
+   with ( document.forms[0] ) {
+      if ( firewallLevel[4].checked == true ) {
+         if (document.getElementById) { // DOM3 = IE5, NS6
+            document.getElementById('buttonNext').style.visibility = 'visible';
+            document.getElementById('buttonSave').style.visibility = 'hidden';
+         }
+         else {
+            if (document.layers == false) {// IE4
+               document.all.buttonNext.style.visibility = 'visible';
+               document.all.buttonSave.style.visibility = 'hidden';
+            }
+         }
+      }
+      else {
+         if (document.getElementById) { // DOM3 = IE5, NS6
+            document.getElementById('buttonNext').style.visibility = 'hidden';
+            document.getElementById('buttonSave').style.visibility = 'visible';
+         }
+         else {
+            if (document.layers == false) {// IE4
+               document.all.buttonNext.style.visibility = 'hidden';
+               document.all.buttonSave.style.visibility = 'visible';
+            }
+         }
+      }
+   }
+}
+
+function frmLoad()
+{
+   with ( document.forms[0] ) {
+      if ( enbl_CBT_fw == '0' ) {
+         firewallLevel[0].checked = true;
+      }
+      else if ( enbl_CBT_fw == '1' ) {
+         if ( currCBTfwLevel == 'Low' ) {
+            firewallLevel[1].checked = true;
+         }
+         else if ( currCBTfwLevel == 'Medium' ) {
+            firewallLevel[2].checked = true;
+         }
+         else if ( currCBTfwLevel == 'High' ) {
+            firewallLevel[3].checked = true;
+         }
+         else if ( currCBTfwLevel == 'Custom' ) {
+            firewallLevel[4].checked = true;
+         }
+      }
+   }
+   levelClick();
+}
+
+            </script>
+   </head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <form>
+            <b>Firewall Setup<br>
+            </b>
+            <br>
+            Configure the firewall. You can select the different default level to config the firewall
+            or you can config your own firewall setting.<br>
+            <br>
+            Firewall Level:<br>
+            <br>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width='40'>&nbsp;</td>
+                  <td><input name='firewallLevel' type='radio' onClick='levelClick()'>None</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+                  <td><input name='firewallLevel' type='radio' onClick='levelClick()'>Low</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+                  <td><input name='firewallLevel' type='radio' onClick='levelClick()'>Medium</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+                  <td><input name='firewallLevel' type='radio' onClick='levelClick()'>High</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+                  <td><input name='firewallLevel' type='radio' onClick='levelClick()'>Custom</td>
+               </tr>
+            </table>
+            <br>
+           <div id='buttonNext'>
+            <p align="center">
+               <input type='button' name='buttonNext' value='Next' onClick='btnNext()'>
+            </P>
+           </div>
+           <div id='buttonSave'>
+            <p align="center">
+               <input type='button' name='buttonSave' value='Apply/Save' onClick='btnSave()'>
+            </P>
+           </div>
+         </form>
+      </blockquote>
+   </body>
+</html>

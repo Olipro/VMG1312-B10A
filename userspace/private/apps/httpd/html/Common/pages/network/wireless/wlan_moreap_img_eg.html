@@ -1,0 +1,28 @@
+<script language="JavaScript">
+var schList = "<%ejGetOther(getSchList)%>";
+
+function btnApply() {
+		}
+		submit();
+		$('.ui-dialog-titlebar-close').trigger('click');
+		$.openLoadingMask(1);
+		return;
+	}
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+
+</script>
+
+<form method=POST action="" target="mainFrame">
+<input type="hidden" name="action" id="action">
+<input type="hidden" name="sessionKey" id="sessionKey">
+<input type="hidden" name="description" id="description">
+<div class="popup_frame" >
+<div class="data_frame2">
+	<tr>
+       <td><img src="../../images/wlan_eg.gif" width="85%" height="85%"  /></td>
+   </tr>
+</div>
+</div>
+</form>

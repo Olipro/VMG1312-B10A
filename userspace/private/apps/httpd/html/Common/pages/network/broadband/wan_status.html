@@ -1,0 +1,721 @@
+<script language="javascript">
+<!-- hide
+var enbl = 1;
+var wlCurrentChannel = '<%ejGetWl(wlCurrentChannel)%>';
+var band = '<%ejGetWl(wlBand)%>';
+var nbwcap = '<%ejGetWl(wlNBwCap)%>';
+var dataMember = 0;
+var InterfaceList = '<%ejGetOther(upInterface)%>';
+var InterfaceSplit = InterfaceList.split(' ');
+var interface_laod = '<%ejGetOther(interfaceChoiceGet)%>';
+var timeNow = '<%ejGetOther(sysInfo, dateTime)%>';
+var timesplit = timeNow.split(' ');
+
+function setChartWidth(){
+	var a = $(".line").length;
+	var charWidth = (a*40)+55;
+	$('#columnChart').css('width',charWidth);
+}  
+
+var objChScanXMLHTTP = null;
+
+function enblScanBtn()
+{
+	with (document.forms[0]) {
+		Scan.disabled = false;
+		Scan.value = "<%ejGetML(MLG_WLAN_WDS_Str12)%>";
+	}
+}
+
+
+/*****************************************************************************/
+/*  Paul Ho: The function getChScanResult() will query wlan_chs_result.html  */
+/*  and obtain the result such as 31 22 9 23 100 ......, the first number    */
+/*  means the noise of 1st channel and the second number means the noise of  */
+/*  2nd channel, etc..                                                       */
+/*  Then it parse the result and transform these numbers into the pixel of   */
+/*  vertical color bar height (i.e., multiply with 3)                        */
+/*****************************************************************************/
+
+function resetChoice()
+{
+	with ( document.forms[0] )
+	{
+
+		interfaceChoice.value = interface_Select.value;
+		directionChoice.value = direction_Select.value;
+		timeChoice.value = time_Select.value;
+		
+		submit();
+	}
+	//getChScanResult();
+}
+
+function getChScanResult()
+{
+	if (window.XMLHttpRequest) {
+      objChScanXMLHTTP=new XMLHttpRequest();
+	  requestScanResult();
+   } else if (window.ActiveXObject) {
+      // code for IE
+      objChScanXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+      requestScanResult();
+   }
+
+   function requestScanResult()
+   {
+	  if ( objChScanXMLHTTP != null ) {
+		  objChScanXMLHTTP.open("POST","/pages/network/broadband/wan_status_result.html", true);
+		  objChScanXMLHTTP.onreadystatechange = function() 
+	      {
+	         if(objChScanXMLHTTP.readyState == 4) 
+			 {
+	            var result = objChScanXMLHTTP.responseText;
+		
+				var ch_score = result.split(" ");
+
+				//__ZYXEL__, Chi-Hsiang plot chart block dynamically.
+				
+				dataMember = ch_score.length - 2;
+				var timeNumber = $("#chartBlock");
+				var spechtml = ""; 
+				
+				for(var i=0; i<dataMember; i++) {
+					var ch=i+1;
+					spechtml +="<div id =\"chartstyle"+ch+"\" class=\"chartWidth\"><div class=\"line\">";
+					spechtml +="<div id=\"bar_ch"+ch+"\" class=\"colorBar\" style=\"height:0px;\"><div id=\"val_ch"+ch+"\" class=\"value\"><%ejGetML(MLG_Common_NA)%></div></div>";
+					spechtml +="</div></div>";
+				}
+				timeNumber.html(spechtml);
+				
+				var tSpec = $("#timeSpec");
+				var spechtml = ""; 
+				for(var i=0; i<dataMember; i++) {
+					var ch=i+1;
+					spechtml +="<div id=\"x_bar"+ch+"\" class=\"chartWidth\"></div>";
+				}
+				tSpec.html(spechtml);
+				
+				/* __ZYXEL__, Chi-Hsiang wan status page to show flow rate,
+				*   when flow rate is over 1024 kb/s, turn the showing to mb/s or gb/s to prevent the chart bar is too high.
+				*/
+
+				var ch_score_mb=[];
+				var ch_score_gb=[];
+				
+				var use_mega =0;
+				var use_giga =0;
+				
+				for(var i=0; i<ch_score.length; i++){
+
+					ch_score_mb[i]=Math.round(ch_score[i]/1024);
+					ch_score_gb[i]=Math.round(ch_score_mb[i]/1024);
+
+					if (ch_score[i]>1024){	use_mega=1;
+						if (ch_score_mb[i]>1024){	use_giga=1;
+						}
+					}
+
+				}
+
+				/* __ZYXEL__, Chi-Hsiang Since plot chart block dynamically, no need to remove chart.
+
+				with (document.forms[0])
+				{
+
+					if(ch_score.length<24)
+					{
+						dataMember = ch_score.length - 2;
+						$("#chartWidth_ch13").remove();
+						$("#chartWidth_ch14").remove();
+						$("#chartWidth_ch15").remove();
+						$("#chartWidth_ch16").remove();
+						$("#chartWidth_ch17").remove();
+						$("#chartWidth_ch18").remove();
+						$("#chartWidth_ch19").remove();
+						$("#chartWidth_ch20").remove();
+						$("#chartWidth_ch21").remove();
+						$("#chartWidth_ch22").remove();
+						$("#chartWidth_ch23").remove();
+						$("#chartWidth_ch24").remove();
+						$("#chartWidth_ch25").remove();
+						$("#chartWidth_ch26").remove();
+						$("#chartWidth_ch27").remove();
+						$("#chartWidth_ch28").remove();
+						$("#chartWidth_ch29").remove();
+						$("#chartWidth_ch30").remove();
+						$("#x_bar13").remove();
+				 		$("#x_bar14").remove();
+						$("#x_bar15").remove();
+				 		$("#x_bar16").remove();
+						$("#x_bar17").remove();
+		 	 			$("#x_bar18").remove();
+						$("#x_bar19").remove();
+				 		$("#x_bar20").remove();
+						$("#x_bar21").remove();
+				 		$("#x_bar22").remove();
+						$("#x_bar23").remove();
+				 		$("#x_bar24").remove();
+						$("#x_bar25").remove();
+						$("#x_bar26").remove();
+				 		$("#x_bar27").remove();
+						$("#x_bar28").remove();
+				 		$("#x_bar29").remove();
+						$("#x_bar30").remove();
+					}
+					else if(24<ch_score.length&&ch_score.length<30)
+					{
+						dataMember = ch_score.length - 2;
+						$("#chartWidth_ch25").remove();
+						$("#chartWidth_ch26").remove();
+						$("#chartWidth_ch27").remove();
+						$("#chartWidth_ch28").remove();
+						$("#chartWidth_ch29").remove();
+						$("#chartWidth_ch30").remove();
+						$("#x_bar25").remove();
+						$("#x_bar26").remove();
+				 		$("#x_bar27").remove();
+						$("#x_bar28").remove();
+				 		$("#x_bar29").remove();
+						$("#x_bar30").remove();
+					}
+					else
+					{
+						dataMember = ch_score.length - 2;
+					}
+				}
+				*/
+				
+				var rateUnit = $("#flowRate");
+				var spechtml = "";
+				var rate_kb = '<%ejGetML(MLG_Network_XY_text_str1)%>';
+				var rate_mb = '<%ejGetML(MLG_Network_XY_text_str3)%>';
+				var rate_gb = '<%ejGetML(MLG_Network_XY_text_str4)%>';
+
+			if(dataMember<13){ //per second in 5 minutes
+								if(use_giga==0){
+									if(use_mega==0){//use kb/s
+										spechtml += "<div class=\"y-text\">"+rate_kb+"</div>";
+									}else{//use_mega
+										spechtml += "<div class=\"y-text\">"+rate_mb+"</div>";
+									}
+								}else{//use_giga
+									spechtml += "<div class=\"y-text\">"+rate_gb+"</div>";
+								}
+
+				rateUnit.html(spechtml);
+			}else if(13<dataMember&&dataMember<25){
+								if(use_giga==0){
+									if(use_mega==0){//use kb/s
+										spechtml += "<div class=\"y-text\">"+rate_kb+"</div>";
+									}else{//use_mega
+										spechtml += "<div class=\"y-text\">"+rate_mb+"</div>";
+									}
+								}else{//use_giga
+									spechtml += "<div class=\"y-text\">"+rate_gb+"</div>";
+								}
+				rateUnit.html(spechtml);
+			}else{				
+								if(use_giga==0){
+									if(use_mega==0){//use kb/s
+										spechtml += "<div class=\"y-text\">"+rate_kb+"</div>";
+									}else{//use_mega
+										spechtml += "<div class=\"y-text\">"+rate_mb+"</div>";
+									}
+								}else{//use_giga
+									spechtml += "<div class=\"y-text\">"+rate_gb+"</div>";
+								}
+
+				rateUnit.html(spechtml);
+			}
+
+				for(var i=0; i<dataMember; i++) 
+				{
+					var ch = i + 1;
+					var div_bar_ch = document.getElementById('bar_ch'+ch);
+					var div_x_bar = document.getElementById('x_bar'+ch);
+					var div_val_ch = document.getElementById('val_ch'+ch);
+					var div_chartstyle = document.getElementById('chartstyle'+ch);
+
+		
+					if(dataMember<13) //per second in 5 minutes
+					{
+										if(use_giga==0){
+											if(use_mega==0){//use kb/s
+												if(ch_score[i] != -1){
+													div_bar_ch.style.height = ch_score[i]*3/10 + 'px';	
+													div_bar_ch.className = 'colorBar';
+													div_x_bar.className = 'chartWidth';
+													div_chartstyle.className = 'chartWidth';
+													$('#val_ch'+ch).html(ch_score[i]);
+												}
+												else{
+													ch_score[i] = 0.5;
+													div_bar_ch.style.height = 0.5*10 + 'px';
+													div_bar_ch.className = 'colorBar used';
+					 								div_x_bar.className = 'chartWidth';
+													div_chartstyle.className = 'chartWidth';
+													$('#val_ch'+ch).html('N/A');
+												}
+											}else{ //use_mega
+												if(ch_score_mb[i] != -1){
+													div_bar_ch.style.height = ch_score_mb[i]*3/10 + 'px';	
+													div_bar_ch.className = 'colorBar';
+													div_x_bar.className = 'chartWidth';
+													div_chartstyle.className = 'chartWidth';
+													$('#val_ch'+ch).html(ch_score_mb[i]);
+												}
+												else{
+													ch_score_mb[i] = 0.5;
+													div_bar_ch.style.height = 0.5*10 + 'px';
+													div_bar_ch.className = 'colorBar used';
+					 								div_x_bar.className = 'chartWidth';
+													div_chartstyle.className = 'chartWidth';
+													$('#val_ch'+ch).html('N/A');
+												}
+											}
+										}else{//use_giga							
+											if(ch_score_gb[i] != -1){
+												div_bar_ch.style.height = ch_score_gb[i]*3/10 + 'px';	
+												div_bar_ch.className = 'colorBar';
+												div_x_bar.className = 'chartWidth';
+												div_chartstyle.className = 'chartWidth';
+												$('#val_ch'+ch).html(ch_score_gb[i]);
+											}else{
+												ch_score_gb[i] = 0.5;
+												div_bar_ch.style.height = 0.5*10 + 'px';
+												div_bar_ch.className = 'colorBar used';
+					 							div_x_bar.className = 'chartWidth';
+												div_chartstyle.className = 'chartWidth';
+												$('#val_ch'+ch).html('N/A');
+											}
+										}
+									}
+					else if(13<dataMember&&dataMember<25)//per second in 1 hour
+					{
+										if(use_giga==0){
+											if(use_mega==0){//use kb/s
+												if(ch_score[i] != -1){
+													div_bar_ch.style.height = ch_score[i]*3/10 + 'px';	
+													div_bar_ch.className = 'colorBar2';
+													div_x_bar.className = 'chartWidth2';
+													div_chartstyle.className = 'chartWidth2';
+													$('#val_ch'+ch).html(ch_score[i]);
+												}
+						 						else{
+													ch_score[i] = 0.5;
+													div_bar_ch.style.height = ch_score[i]*10 + 'px';
+													div_bar_ch.className = 'colorBar2 used2';
+									 	   			div_x_bar.className = 'chartWidth2';
+										  			div_chartstyle.className = 'chartWidth2';
+													$('#val_ch'+ch).html('N/A');
+												}
+											}else{//use_mega
+												if(ch_score_mb[i] != -1){
+													div_bar_ch.style.height = ch_score_mb[i]*3/10 + 'px';	
+													div_bar_ch.className = 'colorBar2';
+													div_x_bar.className = 'chartWidth2';
+													div_chartstyle.className = 'chartWidth2';
+													$('#val_ch'+ch).html(ch_score_mb[i]);
+												}else{
+													ch_score_mb[i] = 0.5;
+													div_bar_ch.style.height = ch_score_mb[i]*10 + 'px';
+													div_bar_ch.className = 'colorBar2 used2';
+										 	   		div_x_bar.className = 'chartWidth2';
+											  		div_chartstyle.className = 'chartWidth2';
+													$('#val_ch'+ch).html('N/A');
+												}
+											}			
+										}else{//use_giga
+											if(ch_score_gb[i] != -1){
+												div_bar_ch.style.height = ch_score_gb[i]*3/10 + 'px';	
+												div_bar_ch.className = 'colorBar2';
+												div_x_bar.className = 'chartWidth2';
+												div_chartstyle.className = 'chartWidth2';
+												$('#val_ch'+ch).html(ch_score_gb[i]);
+											}else{
+												ch_score_gb[i] = 0.5;
+												div_bar_ch.style.height = ch_score_gb[i]*10 + 'px';
+												div_bar_ch.className = 'colorBar2 used2';
+					 	   						div_x_bar.className = 'chartWidth2';
+										  		div_chartstyle.className = 'chartWidth2';
+												$('#val_ch'+ch).html('N/A');
+											}
+										}
+					}else{//per second in 1 day
+										if(use_giga==0){
+											if(use_mega==0){//use kb/s
+												if(ch_score[i] != -1){
+													div_bar_ch.style.height = ch_score[i]*3/10 + 'px';	
+													div_bar_ch.className = 'colorBar3';
+													div_x_bar.className = 'chartWidth3';
+													div_chartstyle.className = 'chartWidth3';
+													$('#val_ch'+ch).html(ch_score[i]);
+												}else{
+													ch_score[i] = 0.5;
+													div_bar_ch.style.height = ch_score[i]*10 + 'px';
+													div_bar_ch.className = 'colorBar3 used3';
+					 								div_x_bar.className = 'chartWidth3';
+													div_chartstyle.className = 'chartWidth3';
+													$('#val_ch'+ch).html('N/A');
+												}
+											}else{//use_mega
+												if(ch_score_mb[i] != -1){
+													div_bar_ch.style.height = ch_score_mb[i]*3/10 + 'px';	
+													div_bar_ch.className = 'colorBar2';
+													div_x_bar.className = 'chartWidth2';
+													div_chartstyle.className = 'chartWidth2';
+													$('#val_ch'+ch).html(ch_score_mb[i]);
+												}else{
+													ch_score_mb[i] = 0.5;
+													div_bar_ch.style.height = ch_score_mb[i]*10 + 'px';
+													div_bar_ch.className = 'colorBar2 used2';
+					 	   							div_x_bar.className = 'chartWidth2';
+						  							div_chartstyle.className = 'chartWidth2';
+													$('#val_ch'+ch).html('N/A');
+												}
+											}
+										}else{//use_giga
+											if(ch_score_gb[i] != -1){
+												div_bar_ch.style.height = ch_score_gb[i]*3/10 + 'px';	
+												div_bar_ch.className = 'colorBar2';
+												div_x_bar.className = 'chartWidth2';
+												div_chartstyle.className = 'chartWidth2';
+												$('#val_ch'+ch).html(ch_score_gb[i]);
+											}else{
+												ch_score_gb[i] = 0.5;
+												div_bar_ch.style.height = ch_score_gb[i]*10 + 'px';
+												div_bar_ch.className = 'colorBar2 used2';
+					 	   						div_x_bar.className = 'chartWidth2';
+						  						div_chartstyle.className = 'chartWidth2';
+												$('#val_ch'+ch).html('N/A');
+											}
+									}
+					}
+
+
+					if(dataMember<13)
+					{
+						$('#x_bar'+ch).html(i*5+5);
+						document.getElementById("x-value").innerHTML = 'History(Min)'
+					}
+					else if(dataMember >13 && dataMember < 30)
+					{
+						var hourline = timesplit[3];
+						var hour = hourline.split(':');
+						var timehour = hour[0]-i;
+						document.getElementById("x-value").innerHTML = 'History('+timesplit[1]+' '+timesplit[2]+' '+timesplit[0]+')'; 
+						if(timehour > 0)
+						{
+							$('#x_bar'+ch).html(timehour);
+						}
+						else
+						{
+							$('#x_bar'+ch).html(24 + timehour);
+						}
+					}
+					else
+					{
+						var month = timesplit[1];
+						var timeday = timesplit[2]-i;
+						document.getElementById("x-value").innerHTML = 'History('+timesplit[4]+' '+timesplit[1]+')';
+						if( month=="Mar" )
+						{
+							if(timeday > 0)
+							{
+								$('#x_bar'+ch).html(timeday);
+							}
+							else
+							{
+								if( (28 + timeday) < 1 )//means over Feb
+								{
+									$('#x_bar'+ch).html(31-(28+timeday));	
+								}
+								else
+								{
+									$('#x_bar'+ch).html(28 + timeday);
+								}
+							}
+						}
+						else if( month=="May"||month=="Jul"||month=="Oct"||month=="Dec" )
+						{
+							if(timeday > 0)
+							{
+								$('#x_bar'+ch).html(timeday);
+							}
+							else
+							{
+								$('#x_bar'+ch).html(30 + timeday);
+							}
+						}
+						else
+						{
+							if(timeday > 0)
+							{
+								$('#x_bar'+ch).html(timeday);
+							}
+							else
+							{
+								$('#x_bar'+ch).html(31 + timeday);
+							}
+						}
+					}
+				}
+				/* __ZYXEL__, Chi-Hsiang Since plot chart block dynamically, no need to hide chart.
+				
+				if(dataMember<13)
+				{
+					$('.chartWidth').each(function(index)
+					{
+						if(index>11&&index<30)
+						{
+							$(this).hide();
+						}
+						else
+						{
+							$(this).show();
+						}
+					});
+				}
+				else
+				{
+					$('.chartWidth').each(function(index) 
+					{
+						var chartValue = $(this).children('.line').find('.value').text();
+						if(chartValue == 'N/A') 
+						{
+							$(this).hide();
+						} else 
+						{
+							$(this).show();
+						}
+					});
+				}
+				*/
+				enblScanBtn();				
+		
+				$('#Scan_img').html("");
+			}
+		}
+	      objChScanXMLHTTP.send(null);
+	  }
+   }
+}
+	
+function ScanClick()
+{
+	delay = 1000;
+	with (document.forms[0]) {
+		$('#Scan_img').html("&nbsp;<img src=\"../../images/grid-loading.gif\" width=\"16\" height=\"16\"/>");
+		Scan.disabled = true;
+		Scan.value = "<%ejGetML(MLG_WLAN_WDS_Str12_1)%>";
+
+		setTimeout(function(){
+
+		   if (window.XMLHttpRequest) {
+		      objChScanXMLHTTP=new XMLHttpRequest();
+			  postChScanCmd();
+		   } else if (window.ActiveXObject) {
+		      // code for IE
+		      objChScanXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+		      postChScanCmd();
+		   }
+
+		   function postChScanCmd()
+		   {
+			  if ( objChScanXMLHTTP != null ) {
+			      objChScanXMLHTTP.open("POST","wireless-chscan.cmd", true);
+			      objChScanXMLHTTP.onreadystatechange = function() 
+			      {
+			         if(objChScanXMLHTTP.readyState == 4) {
+			            var result = objChScanXMLHTTP.responseText;
+			            if (result == "Success") {
+                              delay = 0;
+				              getChScanResult();
+			            }
+			         }
+			      }
+			      objChScanXMLHTTP.send(null);
+			  }
+		   }
+		}, delay);
+	}
+	return;
+}
+
+function frmLoad()
+{
+	if(interface_laod == '   ')
+	{
+			var names = InterfaceSplit[1].split('/');
+			interface_laod = names + ' rx min '
+			with ( document.forms[0] )
+			{
+				interfaceChoice.value = InterfaceSplit[1].split('/');
+				directionChoice.value = 'rx';
+				timeChoice.value = 'min'; 
+				submit();
+			}
+	}
+
+	//setChartWidth();
+	var fromlaod = interface_laod.split(" ");
+	with (document.forms[0]) 
+	{
+	    Scan.disabled = true;
+
+		if (enbl == '0')
+		{
+			$('#note1').html("<i><font color=\"red\">&nbsp;&nbsp;<%ejGetML(MLG_WLAN_WDS_AlertMsg_Str11)%> <%ejGetML(MLG_Common_General)%> <%ejGetML(MLG_WLAN_WPS_AlertMsg_page)%>.</font></i>");
+			return;
+		}
+		if (band == '2')
+		{
+			if (nbwcap == '0' || nbwcap == '2')
+			{
+				Scan.disabled = false;
+			}
+		}
+		  
+		getChScanResult();
+		
+		with ( document.forms[0] )
+		{
+			interface_Select.value = fromlaod[0];
+			direction_Select.value = fromlaod[1];
+			time_Select.value = fromlaod[2];
+		}
+	}		
+}
+
+// done hiding -->
+</script>
+<form action="/pages/tabFW/broadband-wan_status.cgi" method="post">
+<input name="interfaceChoice" type="HIDDEN" id="interfaceChoice" value=""; />
+<input name="directionChoice" type="HIDDEN" id="directionChoice" value=""; />
+<input name="timeChoice" type="HIDDEN" id="timeChoice" value=""; />
+<div class="content_frame">
+    <!--Unit Explain start-->
+    <div class="explain">
+        <div>
+            <b class="r1"></b>
+            <b class="r2"></b>
+            <b class="r3"></b>
+            <b class="r4"></b>
+            <b class="r4"></b>
+        </div>
+        <div class="explain_text">
+           <%ejGetML(MLG_Network_Flow_Information_Str3)%>
+        </div>
+        <div>
+            <b class="r4"></b>
+            <b class="r4"></b>
+            <b class="r3"></b>
+            <b class="r2"></b>
+            <b class="r1"></b>
+        </div>
+    </div>
+    <!--Unit Explain End-->
+    <div class="data_frame">
+        <ul>
+			<li class="title">
+				<%ejGetML(MLG_Network_ChoiceInterface)%>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    			<select name="interface_Select" id="interface_Select" size="1">
+    			<script TYPE="text/javascript">
+    					//<!-- hide 
+						{
+   							var i = 0, temp = 0;	
+
+							while(i<InterfaceSplit.length-1)
+							{
+								$('#interface_Select').append('<option value="'+InterfaceSplit[i+1].split('/')+'">'+InterfaceSplit[i].split('/')+'</option>');
+								i = i+2;
+							}
+
+						}
+						// done hiding -->
+					</script>
+				</select>
+			</li>
+			<li class="title">
+				<%ejGetML(MLG_Network_ChoiceDirection)%>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<select name="direction_Select" id="direction_Select" size="1"> 
+                  <option value='rx' selected>RX</option>
+                  <option value='tx'>TX</option>
+                </select>
+            </li>
+			<li class="title">
+				<%ejGetML(MLG_Network_ChoiceType)%>
+                <select name="time_Select" id="time_Select" size="1"> 
+                  <option value='min' selected>Minute</option>
+                  <option value='hour'>Hour</option>
+                  <option value='day'>Day</option>
+                </select>
+             	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="button" value="<%ejGetML(MLG_Common_Apply)%>" name="Scan" onClick="resetChoice();" />
+			</li>
+			<li class="space">
+            </li>
+            <li class="space">
+            </li>
+            <li class="space">
+            </li>
+            <li class="set1">
+                <div id="columnChart">
+                	<table cellpadding="0" cellspacing="0" border="0">
+						<tr>
+                			<td colspan="2">
+            					<ul class="indicate">
+            						<li class="channel"><%ejGetML(MLG_Network_Flow_Information_Str1)%></li>
+									<li class="current"><%ejGetML(MLG_Network_Flow_Information_Str2)%></li>
+            					</ul>
+							</td>
+                		</tr>
+						<tr>
+							<td id="flowRate">
+							</td>
+                		</tr>
+                		<tr>
+                			<td class="y-value" valign="bottom">
+                				<div id ="y_bar" class="y-line"></div>
+                				<div id ="y_bar" class="y-line"></div>
+                				<div id ="y_bar" class="y-line"></div>
+                				<div id ="y_bar" class="y-line"></div>
+                				<div id ="y_bar" class="y-line"></div>
+                				<div id ="y_bar" class="y-line"></div>
+                				<div id ="y_bar" class="y-line"></div>
+                				<div id ="y_bar" class="y-line"></div>
+                				<div id ="y_bar" class="y-line"></div>
+                				<div id ="y_bar" class="y-line"></div>
+                			</td>
+                			<td id="chartBlock">
+                			
+							</td>
+                		</tr>
+                		<tr>
+                			<td>&nbsp;</td>
+               			<td id="timeSpec" class="x-value">
+
+						</td>
+                		</tr>
+						<tr>
+                			<td>&nbsp;</td>
+                			<td><div id="x-value" class="x-text"></div></td>
+                		</tr>
+                	</table>
+                </div>
+            </li>
+            <li class="space">
+            </li>
+        </ul>
+    </div>
+</div>
+<br/>
+<br/>
+</form>
+
+<script language="javascript">
+//<!-- hide
+   frmLoad();
+// done hiding -->
+</script>

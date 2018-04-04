@@ -1,0 +1,425 @@
+<script language="javascript">
+<!-- hide
+var db = $('.popup_frame').parents('.dialogContener'); 
+var OkBtn = db.getBtnByIndex('2');
+OkBtn.click(function(){ btnSave(); });
+var usedWanName;
+var lanIpSubnet = '<%ejGetOther(sysInfo, lanIpSubnet)%>';
+//192.168.1.1,255.255.255.0|192.168.2.2,255.255.255.0
+
+// __ZyXEL__, Albert, 20140210, Add to control defualt route in GUI 20140507
+var customizationFlag = '<%ejGetOther(customizationFlag)%>';
+
+function checkLANSubnet()
+{
+   var token = lanIpSubnet.split('|');
+   with ( document.forms[0] ) {
+	   for (i=0; i<token.length; i++)
+	   {
+		 if (token[i] == undefined || token[i] == '')
+		 	continue;
+		 var ipToken = token[i].split(',');
+
+		 if (isSameSubNet(dstAddr.value, mask.value, ipToken[0], ipToken[1]) == true)
+		 	return true;
+	   }
+
+   }
+   return false;
+}
+
+function ipverChanged()
+{
+	with ( document.forms[0] ) {
+		if (ipvertmp.value == 6) {
+			showhide('SubnetMask',0);
+			showhide('PrefixLength',1);
+		} else {
+			showhide('SubnetMask',1);
+			showhide('PrefixLength',0);
+		}
+	}
+}
+
+function wanIfChange()
+{
+    with(document.forms[0]){
+	var idx = usedWanIf.selectedIndex;
+	var ifName=usedWanIf[idx].value;
+        if( ifName.indexOf('ppp') == -1 ){
+		gwStr[0].disabled = false;
+		gwStr[1].disabled = false;
+        }
+        else{
+		gwStr[1].checked = true;
+		gwStr[0].disabled = true;
+		gwStr[1].disabled = true;
+		if (ipvertmp.value == 4){
+		rtGateway.value = '0.0.0.0';
+		}
+		else{
+			rtGateway.value = '';
+		}
+		rtGateway.disabled = true;
+        }
+    }
+
+}
+
+function doGwCheck()
+{
+    with(document.forms[0]){
+	if(gwStr[0].checked){
+	    rtGateway.disabled =false;
+
+	}else{
+	    rtGateway.disabled =true;
+
+	}
+    }
+}
+
+function fillMask(){
+    with(document.forms[0]){
+	  if (ipvertmp.value == 4){
+		var ipAddr = dstAddr.value;
+		var names = ipAddr.split('.');
+		var submask = '0.0.0.0';
+	
+		if(names[3]!='0'){
+		    submask='255.255.255.255';
+		}
+		else
+		{
+		    if(names[2]!='0')
+		    {
+			    submask='255.255.255.0';
+		    }
+		    else
+		    {
+				if(names[1]!='0')
+				{
+				    submask='255.255.0.0';
+				}
+				else{
+
+				    if(names[0]!='0')
+					submask='255.0.0.0';
+
+				}
+		    }
+		}
+		mask.value= submask;
+	  }
+    }
+}
+
+function btnSave()
+{
+   with ( document.forms[0] ) {
+
+      if (routeName.value == '') {
+         hciAlert('<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str1)%>', {height: 180, type: 2, title: ''});
+		 return false;
+      }
+
+      if (dstAddr.value == '') {
+         hciAlert('<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str2)%>', {height: 180, type: 2, title: ''});
+		 return false;
+      }
+	  if (ipvertmp.value == 4){
+	  	var dstAddrFlag = 0;
+		if (isValidIpAddress(dstAddr.value) == false ) {
+
+		// __ZyXEL__, Albert, 20140210, Add to control defualt route in GUI 20140507
+            if(customizationFlag & 0x00001000 ){
+				ipPartsT = dstAddr.value.split('/');
+	   	
+			 	if(ipPartsT[0] != '0.0.0.0'){
+					//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+					//hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str3)%>",dstAddr.value), {height: 180, type: 2, title: ''});
+					hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str3)%>",""), {height: 180, type: 2, title: ''});
+					return false;
+		    	}else{
+		    		dstAddrFlag = 1;
+		    	}
+            }else{
+				   //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+               //hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str3)%>",dstAddr.value), {height: 180, type: 2, title: ''});
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str3)%>",""), {height: 180, type: 2, title: ''});
+               return false;
+            }
+		}
+
+		if (isValidSubnetMask(mask.value) == false ) {
+            if( !(customizationFlag & 0x00001000) || (dstAddrFlag != 1) ){
+               //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+               //hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str4)%>",mask.value), {height: 180, type: 2, title: ''});
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str4)%>",""), {height: 180, type: 2, title: ''});
+               return false;
+            }
+		}
+
+		if(rtGateway.value != "" && gwStr[0].checked){
+			if (isValidIpAddress(rtGateway.value) == false ) {
+				//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+				//hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str5)%>",rtGateway.value), {height: 180, type: 2, title: ''});
+				hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str5)%>",""), {height: 180, type: 2, title: ''});
+				return false;
+			}
+		}
+	  }
+	  if (ipvertmp.value == 6){
+			if (dstAddr.value != ""){
+				if (isValidIpAddress6(dstAddr.value) == false){
+					//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+					//msg = MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str22)%>",dstAddr.value);
+					msg = MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str22)%>","");
+					hciAlert(msg, 2);
+					return false;
+				}
+				if (prefixlength.value == ""){
+					hciAlert('<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str24)%>', {height: 180, type: 2, title: ''});
+					return false;
+				} else {
+					var dstAddrtmp = dstAddr.value + '/' + prefixlength.value;
+					if (isValidIpAddress6(dstAddrtmp) == false){
+						//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+						//msg = MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str22)%>",dstAddrtmp);
+						msg = MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str22)%>","");
+						hciAlert(msg, 2);
+						return false;
+					}
+					dstAddr.value = dstAddrtmp;
+				}
+				if (rtGateway.value != "" && gwStr[0].checked){
+					if (isValidIpAddress6(rtGateway.value) == false){
+						//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+						//msg = MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str23)%>",rtGateway.value);
+						msg = MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str23)%>","");
+						hciAlert(msg, 2);
+						return false;
+					}
+				}
+			}
+	  }
+
+	
+      if (checkLANSubnet() == true) {
+         hciAlert("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str6)%>", {height: 180, type: 2, title: ''});
+		 return false;
+      }
+
+	  var idx = usedWanIf.selectedIndex;
+	  var ifc = usedWanIf.options[idx].value;
+	 	
+	 	if (gwStr[0].checked){
+		 	dstGtwy.value = rtGateway.value;
+		}
+		else{
+			if (ipver.value == 4){
+			 	dstGtwy.value = "0.0.0.0";
+			}
+		 	else{
+			 	dstGtwy.value = "";
+		 	}
+		}
+	  dstWanIf.value = ifc;
+		
+   	  sessionKey.value = mainFrame.gblsessionKey;
+   }
+   document.forms[0].submit();
+   $('.ui-dialog-titlebar-close').trigger('click');
+   $.openLoadingMask(1);
+
+}
+
+function frmLoad()
+{//var str = '|NA/1/140.138.148.144/255.255.255.255/124.219.31.190/|'
+	with(document.forms[0]){
+		wanIfChange();
+		doGwCheck();
+	}
+}
+$(document).ready(function() {
+	var i=0;
+	var interfaceInfo = '<%ejGetOther(wanInterfaceInfo, route)%>';
+	var interfaces = interfaceInfo.split('|');
+	var found = false;
+	var oriName = '<%ejGet(lst)%>'
+	var str = '<%ejGetOther(getRtEntry)%>'
+	var str2 = str.split('|');
+
+	$('#usedWanIf').empty();
+	var buildIPv6 = '<%ejGetOther(sysInfo, buildIPv6)%>';
+		if(buildIPv6 == '1'){
+			$('#ipvertmp').append('<option value="6">IPv6</option>');
+		}
+	for (i=1; i<str2[i].length; i++)
+	{
+		var entry = str2[i].split('/');	
+		if (entry[2] == undefined)
+			break;
+		if (entry[0] == oriName)
+		{
+			$("#active").attr("checked", parseInt(entry[1]));
+
+			$("#routeName").attr("value",entry[0]);
+			$("#dstAddr").attr("value",entry[2]);
+			if (entry[3] != '&nbsp;'){
+				$("#mask").attr("value",entry[3]);
+			}
+			if (entry[4] != '&nbsp;'){
+			$("#rtGateway").attr("value",entry[4]);
+			}
+			with(document.forms[0]){
+				if (test_ipv6(entry[2])== true)
+				{
+					ipvertmp.value = 6;
+					ipver.value = 6;
+					$("#prefixlength").attr("value",entry[3]);
+				}
+				else
+				{
+					ipvertmp.value = 4;
+					ipver.value = 4;
+					$("#mask").attr("value",entry[3]);
+				}
+				ipverChanged();
+				ipvertmp.disabled = true;
+			}
+			if (entry[4] == '' || entry[4] == '0.0.0.0' || entry[4] == '&nbsp;')
+			{
+				$("input[name='gwStr']").get(1).checked = true;				
+			}
+			else
+			{
+				$("input[name='gwStr']").get(0).checked = true;				
+			}
+			usedWanName = entry[5];
+			break;
+		}
+	}
+
+	if(interfaces.length>0){  
+		for ( i = 0; i < interfaces.length; i++ ) {
+			var names = interfaces[i].split('/');
+			if(names[1] != "(null)"){
+	             	if(usedWanName == names[0]){
+					$('#usedWanIf').append('<option value="'+names[1]+'" selected>'+interfaces[i]+'</option>');
+				}else{
+					$('#usedWanIf').append('<option value="'+names[1]+'">'+interfaces[i]+'</option>'); 
+				}			
+			}
+		}
+	} 
+//
+	var laninterfaceInfo = '<%ejGetOther(lanInterfaceInfo)%>';
+	var laninterfaces = laninterfaceInfo.split('|');
+	if(laninterfaces.length>0){  
+		for ( i = 0; i < laninterfaces.length; i++ ) {
+			var names = laninterfaces[i].split('/');
+				if(usedWanName == names[0]){
+					$('#usedWanIf').append('<option value="'+names[1]+'" selected>'+laninterfaces[i]+'</option>');
+				}else{
+					$('#usedWanIf').append('<option value="'+names[1]+'">'+laninterfaces[i]+'</option>');  
+				}
+		}
+	} 
+//	
+
+	frmLoad();
+});
+// done hiding -->
+</script>
+
+<form action="/pages/tabFW/routing-staticRoute.cmd" method="post" target="mainFrame">
+<input name="action" type="HIDDEN" id="action" value="edit"; />
+<input name="dstWanIf" type="HIDDEN" id="dstWanIf" value=""; />
+<input name="dstGtwy" type="HIDDEN" id="dstGtwy" value=""/>
+<input name="ipver" type="HIDDEN" id="ipver" value=""/>
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""/>
+<div class="popup_frame" >
+<!--Set area start-->
+<div class="data_frame"><ul>
+<!--level 1 title start-->
+	<li class="title"><%ejGetML(MLG_Network_StaticRoute_Str11)%></li><!--level 1 title end-->
+<!--level 1 start-->
+	<li class="set1"> 
+		<div class="w_text">
+			  <input type='checkbox' name="active" id="active" /><%ejGetML(MLG_Network_StaticRoute_Str12)%>
+		</div>
+		<div class="w_text">
+		  <ul>
+			<li class="left_table"><%ejGetML(MLG_Network_StaticRoute_Str13)%> :</li>
+			<li class="right_table">
+			  <input name="routeName" id="routeName" size="15" maxlength="32"  type="text" disabled />
+			</li>
+		  </ul>
+		</div>
+		<div class="w_text"><ul>	
+				<li class="left_table"><%ejGetML(MLG_Network_StaticRoute_Str24)%></li>
+				<li class="right_table">
+			   <select name='ipvertmp' id='ipvertmp' size='1' onChange='ipverChanged()'  >
+					<option value='4'><%ejGetML(MLG_Network_StaticRoute_Str25)%></option>
+
+					</select></li>
+			   </ul></div>
+		<div class="w_text">
+		  <ul>
+			<li class="left_table"><%ejGetML(MLG_Network_StaticRoute_Str14)%>:</li>
+			<li class="right_table">
+			  <input name="dstAddr" id="dstAddr" size="15" maxlength="39" value="" type="text" onblur="fillMask();" />
+			</li>
+		  </ul>
+		</div>
+		<div class="w_text" id="SubnetMask">
+		 <ul>
+		   <li class="left_table"> <%ejGetML(MLG_Network_StaticRoute_Str15)%> :</li>
+		   <li class="right_table"><input name="mask" id="mask" size="16" maxlength="15" value="0.0.0.0"  type="text" /></li>
+		 </ul>
+		</div>
+		<div class="w_text" id="PrefixLength">
+		 <ul>
+		   <li class="left_table"> <%ejGetML(MLG_Network_StaticRoute_Str30)%> :</li>
+		   <li class="right_table"><input name="prefixlength" id="prefixlength" size="5" maxlength="3" value="0"  type="text" /></li>
+		 </ul>
+		</div>
+		<div class="w_text">
+		 <ul>
+		   <li class="left_table"><%ejGetML(MLG_Network_StaticRoute_Str16)%>:</li>
+		   <li class="right_table">
+		   	<input type="radio" name="gwStr" id="gwStr" onClick='doGwCheck()' value="1"> <%ejGetML(MLG_Common_Enable)%>
+		   	<input type="radio" name="gwStr" id="gwStr" onClick='doGwCheck()' value="0"> <%ejGetML(MLG_Common_Disable)%>
+		   </li>
+		 </ul>
+		 <ul>
+		   <li class="left_table"><%ejGetML(MLG_Network_StaticRoute_Str17)%>:</li>
+		   <li class="right_table"><input name="rtGateway" id="rtGateway" size="16" maxlength="39" value=""  type="text" /></li>
+		 </ul>
+		</div>
+
+		<div class="w_text">
+		 <ul>
+		   <li class="left_table"><%ejGetML(MLG_Network_StaticRoute_Str18)%> :</li>
+		   <li class="right_table">
+			<select name="usedWanIf" id="usedWanIf" size="1" onChange='wanIfChange()'>
+			</select>		   
+		   </li>
+		 </ul>
+		</div>
+
+<!--level 1 end-->
+
+<!--Note define start-->
+<!--
+<li class="noteframe"> <div class="w_text"><span class="i_note">Note:</span></div><div class="note_text">&nbsp;&nbsp;</div></li>
+-->
+<!--Note define end-->
+	</li>
+<li class="space"> </li>
+</ul></div>
+</div>
+<!--Set area end-->
+</form>
+

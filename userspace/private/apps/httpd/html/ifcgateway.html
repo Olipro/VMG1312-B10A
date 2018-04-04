@@ -1,0 +1,281 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+var interfaceInfo = '<%ejGetOther(wanInterfaceInfo, routePlusOne)%>';
+var interfaces = interfaceInfo.split('|');
+var prtcl = '<%ejGetOther(memInfo, ntwkPrtcl)%>';
+var gtwyIfcs = '<%ejGetOther(sysInfo, gtwyIfcs)%>'; if (gtwyIfcs == '&nbsp') gtwyIfcs = '';
+var intfInfo6 = '<%ejGetOther(wanInterfaceInfo, route6PlusOne)%>';
+var intf6 = intfInfo6.split('|');
+var enblIpVer = '<%ejGet(enblIpVer)%>';
+var gtwy6Ifc = '<%ejGetOther(sysInfo, dfltGw6Ifc)%>'; if (gtwy6Ifc == '&nbsp') gtwy6Ifc = '';
+
+function btnNext() {
+   var loc = 'ifcdns.cgi?';
+
+   with (document.forms[0]) {
+       var loc;
+       var tempList = '';
+	   
+       if (enblIpVer != '2') {
+          for (i = 0; i < selGtwyIfcs.length; i++) {
+             if (i > 0)
+                tempList += ',';
+             tempList += selGtwyIfcs.options[i].value;
+          }
+
+          if (tempList == '') {
+             alert('At least one default gateway interface need to be selected.');
+             return;
+          }
+       }
+	   
+	   loc += 'defaultGatewayList=' + tempList;
+
+       if (enblIpVer != '0') {
+          var idx6 = wanIf6.selectedIndex;
+          var ifc6 = wanIf6.options[idx6].value;
+
+          if (ifc6 == '') {
+             alert('At least one IPv6 default gateway interface need to be selected.');
+             return;
+          }
+	   
+          loc += '&dfltGw6Ifc=' + ifc6;
+       }
+   }
+   
+   loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function btnBack() {
+   var loc;
+
+   if ( prtcl == 'PPPoE' || prtcl == 'PPPoA' )
+      loc = 'pppoe.html';
+   else if ( prtcl == 'IPoA' )
+      loc = 'ipoacfg.html';
+   else if ( prtcl == 'MER' )
+      loc = 'natcfg2.html';
+   else
+      loc = 'wansrvc.cmd';
+   
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function hideGw6Info(hide) {
+   var status = 'visible';
+
+   if ( hide == 1 )
+      status = 'hidden';
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('gw6Info').style.visibility = status;
+   else {
+      if (document.layers == false) // IE4
+         document.all.gw6Info.style.visibility = status;
+   }
+}
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+    if (enblIpVer != '0')
+       hideGw6Info(0);
+    else
+       hideGw6Info(1);
+
+    if (enblIpVer == '2') {
+       selGtwyIfcs.disabled = 1;
+       availIfcs.disabled = 1;
+    }
+   }
+}
+
+
+function btnRemove() {
+   with ( document.forms[0] ) {
+      var arrSelected = new Array();
+      var count = 0;
+      for ( i = 0; i < selGtwyIfcs.options.length; i++ ) {
+         if ( selGtwyIfcs.options[i].selected == true ) {
+            arrSelected[count] = selGtwyIfcs.options[i].value;
+         }
+         count++;
+      }
+      var x = 0;
+      for (i = 0; i < selGtwyIfcs.options.length; i++) {
+         for (x = 0; x < arrSelected.length; x++) {
+            if (selGtwyIfcs.options[i].value == arrSelected[x]) {
+               varOpt = new Option(selGtwyIfcs.options[i].text, selGtwyIfcs.options[i].value);
+               availIfcs.options[availIfcs.length] = varOpt;
+               selGtwyIfcs.options[i] = null;
+            }
+         }
+      }
+   }
+}
+
+function btnAdd() {
+   with ( document.forms[0] ) {
+      var arrSelected = new Array();
+      var count = 0;
+      for ( i = 0; i < availIfcs.options.length; i++ ) {
+         if ( availIfcs.options[i].selected == true ) {
+            arrSelected[count] = availIfcs.options[i].value;
+         }
+         count++;
+      }
+      var x = 0;
+      for (i = 0; i < availIfcs.options.length; i++) {
+         for (x = 0; x < arrSelected.length; x++) {
+            if (availIfcs.options[i].value == arrSelected[x]) {
+               varOpt = new Option(availIfcs.options[i].text, availIfcs.options[i].value);
+               selGtwyIfcs.options[selGtwyIfcs.length] = varOpt;
+               availIfcs.options[i] = null;
+            }
+         }
+      }
+   }
+}
+
+
+
+// done hiding -->
+</script>
+
+   </head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <form>
+            <P>
+           <b>Routing -- Default Gateway</b><br><br><br>
+                          Default gateway interface list can have multiple WAN interfaces served as system default gateways but only one will be used according to
+                          the priority with the first being the higest and the last one the lowest priority if the WAN interface is connected.  Priority order can be changed
+                          by removing all and adding them back in again.
+	        </P>
+			<br>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width="150"><b>Selected Default Gateway Interfaces</b></td>
+                  <td width="100"></td>
+                  <td width="150"><b>Available Routed WAN Interfaces</b></td>
+               </tr>
+               <tr><td colspan="3">&nbsp;</td></tr>
+               <tr>
+                  <td>
+                      <select multiple name="selGtwyIfcs" size="10" style="width: 100">
+                      
+<script language="javascript">
+<!-- hide
+{
+   	var i = 0;
+	var gtwyIfcsList;
+
+   	if (gtwyIfcs == '') {
+      var names = interfaces[0].split('/');
+	  gtwyIfcs= names[1];
+	  gtwyIfcsList = gtwyIfcs.split(',');
+   	}
+	gtwyIfcsList = gtwyIfcs.split(',');
+
+	for (i = 0; i < gtwyIfcsList.length; i++) 
+ 	   document.writeln("  <option value='" +gtwyIfcsList[i] + "'>"+ gtwyIfcsList[i]);
+}
+// done hiding -->
+</script>
+
+                      
+                      </select>
+                   </td>
+                  <td>
+                     <table border="0" cellpadding="0" cellspacing="5">
+                        <tr><td>
+                           <input type="button" value="->" onClick="btnRemove()" style="width: 30; height: 30">
+                        </td></tr>
+                        <tr><td>
+                           <input type="button" value="<-" onClick="btnAdd()" style="width: 30; height: 30">
+                        </td></tr>
+                     </table>
+                  </td>
+                  <td>
+                      <select multiple name="availIfcs" size="10" style="width: 100">
+
+<script language="javascript">
+<!-- hide
+{
+   var i;
+
+   for (i = 0; i < interfaces.length; i++) {
+      var names = interfaces[i].split('/');
+	  if (gtwyIfcs.search(names[1]) == -1)
+        document.writeln("  <option value='" + names[1] + "'>" + names[1]);
+   }
+}
+// done hiding -->
+</script>
+
+                    </select></td>
+                  </tr>
+               </table>
+               <br>
+            <br>
+
+
+
+            <div id='gw6Info'>
+            <P>
+		       IPv6: Select a preferred wan interface as the system default IPv6 gateway.<br>
+            </P>
+               <table>
+                  <tr>
+                     <td>Selected WAN Interface</td>
+                     <td><select name='wanIf6'>
+                           <script language="javascript">
+<!-- hide
+{
+   var i = 0;
+   
+   document.writeln("  <option value=''>");
+
+   if (gtwy6Ifc == '') {
+      var names = intf6[0].split('/');
+      gtwy6Ifc= names[1];
+   }
+
+   for ( i = 0; i < intf6.length; i++ ) {
+      var names = intf6[i].split('/');
+      if ( names[1] == gtwy6Ifc )
+         document.write("  <option value='" + names[1] + "' selected>");
+      else
+         document.write("  <option value='" + names[1] + "'>");
+      document.writeln(intf6[i]);
+   }
+}
+
+// done hiding -->
+</script>
+                        </select></td>
+                  </tr>
+               </table>
+               <br>
+            <br>
+            </div>
+
+
+
+
+
+            <p align="center">
+               <input type='button' onClick='btnBack()' value='Back'><input type='button' onClick='btnNext()' value='Next'>
+         </form>
+      </blockquote>
+   </body>
+</html>
+

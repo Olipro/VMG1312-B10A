@@ -1,0 +1,200 @@
+<script language="JavaScript">
+<!-- hide
+var filtername = '<%ejGet(fltName)%>';
+function frmLoad()
+{
+	var schList = '<%ejGetOther(getSchList)%>';
+   var strA = schList.split('@');
+   var newStr = '';
+
+	with ( document.forms[0] ) {
+      for (i=1; i<strA.length; i++)
+      {
+         if (strA[i] == '' || strA[i] == undefined)
+            break;
+         var strB = strA[i].split('|');
+         if(filtername==strB[0])
+         {         
+            if(strB[2].indexOf("Sun")>=0)
+               $("input[name='sunday']").attr("checked",true);
+				if(strB[2].indexOf("Mon")>=0)
+               $("input[name='monday']").attr("checked",true);
+            if(strB[2].indexOf("Tue")>=0)
+               $("input[name='tuesday']").attr("checked",true);
+            if(strB[2].indexOf("Wed")>=0)
+               $("input[name='wednesday']").attr("checked",true);
+            if(strB[2].indexOf("Thu")>=0)
+               $("input[name='thursday']").attr("checked",true);
+            if(strB[2].indexOf("Fri")>=0)
+               $("input[name='friday']").attr("checked",true);
+            if(strB[2].indexOf("Sat")>=0)
+               $("input[name='saturday']").attr("checked",true);      
+
+            $("input[name='rulename']").val(strB[0]);
+            $("input[name='rulename']").attr("disabled",true);
+            $("input[name='description']").val(strB[1]);
+            $("input[name='startTime']").val(strB[3]);
+            $("input[name='endTime']").val(strB[4]);
+         }
+      }
+   
+   }
+}
+function btnApply() {
+	with ( document.forms[0] ) {
+		action.value="edit";
+		sessionKey.value = mainFrame.gblsessionKey;
+      if (isValidDescription(description.value) == false) {
+         hciAlert( '<%ejGetML(MLG_Security_Scheduler_AlertMsg_Str4)%>', 2);
+         return;
+      }
+      week = 0;
+      
+      if( monday.checked )
+         week = 1;
+      
+      if( tuesday.checked )
+         week |= 2;
+      
+      if( wednesday.checked )
+         week |= 4;
+      
+      if( thursday.checked )
+         week |= 8;
+      
+      if( friday.checked )
+         week |= 16;
+      
+      if( saturday.checked )
+         week |= 32;
+      
+      if( sunday.checked )
+         week |= 64;
+      
+      if( week == 0 ) {
+         hciAlert("<%ejGetML(MLG_Security_Scheduler_AlertMsg_Str5)%>",2);
+         return;
+      }
+
+      days.value=week;
+      
+      if( startTime.value.length ) {
+         vals = startTime.value.split( ':' );
+         if ( vals.length == 2 ) {
+            hour = eval( vals[0] );
+            min = eval( vals[1] );
+            if( hour < 0 || hour > 23 ) {
+               hciAlert( startTime.value + " <%ejGetML(MLG_Security_Scheduler_AlertMsg_Str6)%>",2 );
+               return;
+            }
+            if( min < 0 || min > 59 ) {
+               hciAlert( startTime.value + " <%ejGetML(MLG_Security_Scheduler_AlertMsg_Str6)%>",2 );
+               return;
+            }
+            st_time = hour * 60 + min;
+         } else {
+            hciAlert( startTime.value + " <%ejGetML(MLG_Security_Scheduler_AlertMsg_Str6)%>",2 );
+            return;
+         }
+      } else {
+         st_time = 0; // 00:00
+      }
+
+      if(endTime.value.length ) {
+         vals = endTime.value.split( ':' );
+         if ( vals.length == 2 ) {
+            hour = eval( vals[0] );
+            min = eval( vals[1] );
+            if( hour < 0 || hour > 23 ) {
+               hciAlert( endTime.value + " <%ejGetML(MLG_Security_Scheduler_AlertMsg_Str6)%>",2 );
+               return;
+            }
+            if( min < 0 || min > 59 ) {
+               hciAlert( endTime.value + " <%ejGetML(MLG_Security_Scheduler_AlertMsg_Str6)%>",2 );
+               return;
+            }
+            en_time = hour* 60 + min;
+         } else {
+            hciAlert( endTime.value + " <%ejGetML(MLG_Security_Scheduler_AlertMsg_Str6)%>",2 );
+            return;
+         }
+      } else {
+         en_time = 1439; // 23:59
+      }
+
+      if( en_time < st_time ) {
+         hciAlert( '<%ejGetML(MLG_Security_Scheduler_AlertMsg_Str7)%>',2);
+         return;
+      }
+      startTime.value = st_time;
+      endTime.value = en_time;
+  
+      $("input[name='rulename']").attr("disabled",false);
+		submit();
+		$('.ui-dialog-titlebar-close').trigger('click');
+		$.openLoadingMask(1);
+		return;
+   } 
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnApply(); });
+// done hiding -->
+</script>
+
+<form method="POST" action="/pages/tabFW/schedulerRule-cfg.cmd" target="mainFrame">
+<input type="hidden" name="action" id="action">
+<input type="hidden" name="sessionKey" id="sessionKey">
+<div class="popup_frame" >
+<div class="data_frame2"><ul>
+<li class="set1">
+	<div class="w_text">
+		<ul>
+			<li class="left_table"> <%ejGetML(MLG_Security_Scheduler_Str3)%>   :</li>
+			<li class="right_table">
+				<input name="rulename" type="text" size="31" maxlength="31"/>
+			</li>
+		</ul>
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Common_Day)%>  :</li>
+			<li class="right_table">
+				<input type="checkbox" name="sunday" /> <%ejGetML(MLG_Common_SUN)%>
+				<input type="checkbox" name="monday" /> <%ejGetML(MLG_Common_MON)%>
+				<input type="checkbox" name="tuesday" /> <%ejGetML(MLG_Common_TUE)%>
+				<input type="checkbox" name="wednesday" /> <%ejGetML(MLG_Common_WED)%>
+				<input type="checkbox" name="thursday" /> <%ejGetML(MLG_Common_THU)%>
+				<input type="checkbox" name="friday" /> <%ejGetML(MLG_Common_FRI)%>
+				<input type="checkbox" name="saturday" /> <%ejGetML(MLG_Common_SAT)%> 
+				<input type="hidden" name="days" id="days">
+			</li>
+		</ul>
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Security_Scheduler_Str11)%>  :</li>
+			<li class="right_table"><%ejGetML(MLG_Common_From)%>:
+				<input type='text' size='5' name='startTime' maxlength="5">
+				<%ejGetML(MLG_Common_To)%>:          
+				<input type='text' size='5' name='endTime' maxlength="5">
+				<%ejGetML(MLG_Security_Scheduler_AlertMsg_Str12)%>
+			</li>
+		</ul>
+		<ul>
+			<li class="left_table"> <%ejGetML(MLG_Security_FirewallProtocol_Str4)%>   :</li>
+			<li class="right_table">
+				<input name="description" type="text" size="40" maxlength="63"/>
+			</li>
+		</ul>
+	</div>
+</li>
+</ul>
+</div>
+</div>
+</form>
+<script language='JavaScript'>
+<!--
+$(document).ready(function() {
+
+	frmLoad();
+});
+//-->
+</script>

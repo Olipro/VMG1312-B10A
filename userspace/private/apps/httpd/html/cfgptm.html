@@ -1,0 +1,220 @@
+<html>
+   <head>
+      <meta http-equiv="Pragma" content="no-cache">
+      <LINK href="stylemain.css" type="text/css" rel="stylesheet">
+         <LINK href="colors.css" type="text/css" rel="stylesheet">
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+
+var chipId = '<%ejGetOther(sysInfo, chipId)%>';
+var upRate = parseInt('<%ejGetOther(lineRate, 0, 0)%>');
+var buildvlm =  '<%ejGetOther(sysInfo, buildWanVlanMux)%>';
+var numPrioLevels = '<%ejGet(glbQosPrioLevel)%>';
+var rateMax = 100000;   // VDSL: 100000 Kbps
+//Minimum burst size shall be minimally larger than the size of the largest possible IP packet in the stream.
+var burstMin = 1600;
+
+if (isNaN(upRate) == false)
+   rateMax = Math.ceil(upRate);
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+
+      prec.value = numPrioLevels;
+      wght.value = '1';
+      if (chipId == '63268' || chipId == '6318')
+         burstsize.value = '3000';
+   }
+}
+
+function btnBack() {
+   var code = 'location="dslptm.cmd"';
+   eval(code);
+}
+
+
+function btnSave() {
+   var loc = 'dslptm.cmd?action=add';
+   var portId;
+
+   with ( document.forms[0] ) {
+      if (path0.checked == true && path1.checked == true) {
+            portId = '4';
+      }
+      else if (path0.checked == true) {
+            portId = '0';
+      }
+      else if (path1.checked == true) {
+            portId = '1';
+      }
+      else {
+         alert('At least one latency check box need be selected.');
+         return;
+      }	  	
+      loc += '&portId=' + portId;
+
+      //always supports normal and high PTM priority.
+      loc +='&ptmPriorityNorm=1';
+      loc +='&ptmPriorityHigh=1';
+
+      if (buildvlm == 0)
+         loc += '&connMode=0';  //default mode
+      else
+         loc += '&connMode=1';  //vlanmux mode
+	  
+      if (chipId == '63268' || chipId == '6318') {
+         if (shaperate.value != '') {
+            if (isNaN(parseInt(shaperate.value)) == true) {
+               alert('Shaping Rate "' + shaperate.value + '" is invalid.');
+               return;
+            }
+            rate = parseInt(shaperate.value);
+            if (rate != -1 && (rate <= 0 || rate > rateMax)) {
+               alert('Shaping Rate "' + shaperate.value + '" is out of range [1-' + rateMax + '].');
+               return;
+            }
+            loc += '&shaperate=' + shaperate.value;
+         }
+	    
+         if (isNaN(parseInt(burstsize.value)) == true) {
+            alert('Shaping Burst Size "' + burstsize.value + '" is invalid.');
+            return;
+         }
+         burst = parseInt(burstsize.value);
+         if (burst < burstMin) {
+            alert('Shaping Burst Size "' + burstsize.value + '" shall be >=' + burstMin + '.');
+            return;
+         }
+         loc += '&burstsize=' + burstsize.value;
+	  }
+
+      loc += '&enblQos=1';
+
+      loc += '&grpPrec=' + numPrioLevels;
+      loc += '&grpAlg=WRR&grpWght=1';
+
+      if (isNaN(parseInt(prec.value)) == true) {
+         alert('Default Queue Precedence "' + prec.value + '" is invalid.');
+         return;
+      }
+      precval = parseInt(prec.value);
+      if (precval < 1 || precval > parseInt(numPrioLevels)) {
+         alert('Default Queue Precedence "' + prec.value + '" is out of range.');
+         return;
+      }
+      loc += '&prec=' + prec.value;
+
+      if (isNaN(parseInt(wght.value)) == true) {
+         alert('Default Queue Weight "' + wght.value + '" is invalid.');
+         return;
+      }
+      wghtval = parseInt(wght.value);
+      if (wghtval < 1 || wghtval > 63) {
+         alert('Default Queue Weight "' + wght.value + '" is out of range.');
+         return;
+      }
+      if (alg[0].checked == true) {
+         if (chipId == '63268' || chipId == '6318')
+            loc += '&alg=WRR&wght=' + wght.value;
+         else
+            loc += '&alg=WRR&wght=1';
+      }
+      else {
+         loc += '&alg=WFQ&wght=' + wght.value;
+      }
+   }
+   loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+
+// done hiding -->
+</script>
+   </head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <form>
+            <b>PTM  Configuration</b><br><br>
+            This screen allows you to configure a PTM flow.
+            <br>
+            <br>
+            <table border="0" cellpadding="0" cellspacing="0">
+           	   <td>Select DSL Latency</td>
+               <tr>
+                  <td colspan="2"><input type='checkbox' name='path0' checked>&nbsp;Path0 (Fast)</td>
+               </tr>
+               <tr>
+                  <td colspan="2"><input type='checkbox' name='path1'>&nbsp;Path1 (Interleaved)</td>
+               </tr>
+            </table><br>
+
+            <script language="javascript">
+            <!-- hide
+            if (chipId == '63268' || chipId == '6318') {
+               document.write("<table border='0' cellpadding='0' cellspacing='0'>");
+               document.write("<td colspan='2'>Select Scheduler for Queues of Equal Precedence as the Default Queue</td>");
+               document.write("<tr>");
+               document.write("<td colspan='2'><input type='radio' name='alg' checked>&nbsp;Weighted Round Robin</td>");
+               document.write("</tr>");
+               document.write("<tr>");
+               document.write("<td colspan='2'><input type='radio' name='alg'>&nbsp;Weighted Fair Queuing</td>");
+               document.write("</tr>");
+               document.write("<tr>");
+               document.write("<td>&nbsp;</td>");
+               document.write("</tr>");
+               document.write("<tr>");
+               document.write("<td width='220'>Default Queue Weight:</td>");
+               document.write("<td><input type='text' size='4' name='wght'>&nbsp;[1-63]</td>");
+               document.write("</tr>");
+               document.write("<tr>");
+               document.write("<td width='220'>Default Queue Precedence:</td>");
+               document.write("<td><input type='text' size='4' name='prec'>&nbsp;[1-" + numPrioLevels + "] (lower value, higher priority)</td>");
+               document.write("</tr>");
+               document.write("<tr>");
+               document.write("<td>&nbsp;</td>");
+               document.write("</tr>");
+               document.write("<tr>");
+               document.write("<td width='220'>Default Queue Shaping Rate:</td>");
+               document.write("<td><input type='text' size='4' name='shaperate'>&nbsp;[Kbits/s] (blank indicates no shaping)</td>");
+               document.write("</tr>");
+               document.write("<tr>");
+               document.write("<td width='220'>Default Queue Shaping Burst Size:</td>");
+               document.write("<td><input type='text' size='4' name='burstsize'>&nbsp;[bytes] (shall be >=" + burstMin + ")</td>");
+               document.write("</tr>");
+               document.write("</table><br>");
+            }
+            else {
+               document.write("<table border='0' cellpadding='0' cellspacing='0'>");
+               document.write("<td colspan='2'>Select Scheduler for Queues of Equal Precedence</td>");
+               document.write("<tr>");
+               document.write("<td colspan='2'><input type='radio' name='alg' checked>&nbsp;Round Robin (weight=1)</td>");
+               document.write("</tr>");
+               document.write("<tr>");
+               document.write("<td colspan='2'><input type='radio' name='alg'>&nbsp;Weighted Fair Queuing</td>");
+               document.write("</tr>");
+               document.write("<tr>");
+               document.write("<td width='200'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Default Queue Weight:</td>");
+               document.write("<td><input type='text' size='4' name='wght'>&nbsp;[1-63]</td>");
+               document.write("</tr>");
+               document.write("<tr>");
+               document.write("<td>&nbsp;</td>");
+               document.write("</tr>");
+               document.write("<tr>");
+               document.write("<td width='200'>Default Queue Precedence:</td>");
+               document.write("<td><input type='text' size='4' name='prec'>&nbsp;[1-" + numPrioLevels + "] (lower value, higher priority)</td>");
+               document.write("</tr>");
+               document.write("<td colspan='2'>Note: For WFQ, the default queue precedence will be applied to all other queues in the VC.</td>");
+               document.write("</table><br>");
+            }
+            // done hiding -->
+            </script>
+
+	        <center>
+               <input type='button' onClick='btnBack()' value='Back'> <input type='button' onClick='btnSave()' value='Apply/Save'>
+            </center>
+         </form>
+      </blockquote>
+   </body>
+</html>

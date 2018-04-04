@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/demos
+END
+spkigen.c
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/demos/spkigen.c
+END
+b64.pl
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/demos/b64.pl
+END
+privkey.pem
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/demos/privkey.pem
+END
+selfsign.c
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/demos/selfsign.c
+END
+b64.c
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/demos/b64.c
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/demos/README
+END

@@ -1,0 +1,84 @@
+<script language="JavaScript">
+var enblNATALG = '<%ejGetOther(enblNATALG)%>';
+var enblSIPALG = '<%ejGetOther(enblSIPALG)%>';
+var enblRTSPALG = '<%ejGetOther(enblRTSPALG)%>';
+
+function frmLoad(){
+	if (enblNATALG == 1)
+		$("input[name='NATALG']").get(0).checked = true;
+	else 
+		$("input[name='NATALG']").get(1).checked = true;
+	
+	if (enblSIPALG == 1)
+		$("input[name='SIPALG']").get(0).checked = true;
+	else
+		$("input[name='SIPALG']").get(1).checked = true;
+	
+	if (enblRTSPALG == 1)
+		$("input[name='RTSPALG']").get(0).checked = true;
+	else
+		$("input[name='RTSPALG']").get(1).checked = true;
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+</script>
+</head>
+<body>
+<form action="/pages/tabFW/nat-alg.cmd" method="post" onSubmit="$.openLoadingMask(1);return true;">
+<input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_NAT_ALG_Explain)%> <%ejGetML(MLG_NAT_Applications_Str13)%>. </div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1">
+  <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_NAT_ALG_Str9)%>   :</li>
+    <li class="right_table">
+      <input name="NATALG" id="NATALG" type="radio" value="1" />
+      <%ejGetML(MLG_Common_Enable)%>
+      <input name="NATALG" id="NATALG" type="radio" value="0" />
+      <%ejGetML(MLG_Common_Disable)%> (<%ejGetML(MLG_NAT_ALG_Str10)%>)</li>
+  </ul>
+</div>
+</li>
+<li class="set1">
+  <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_NAT_ALG_Str8)%>   :</li>
+    <li class="right_table">
+      <input name="SIPALG" id="SIPALG" type="radio" value="1" />
+      <%ejGetML(MLG_Common_Enable)%>
+      <input name="SIPALG" id="SIPALG" type="radio" value="0" />
+      <%ejGetML(MLG_Common_Disable)%></li>
+  </ul>
+</div>
+</li>
+<li class="set1">
+  <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_NAT_ALG_RTSPALG)%>   :</li>
+    <li class="right_table">
+      <input name="RTSPALG" id="RTSPALG" type="radio" value="1" />
+      <%ejGetML(MLG_Common_Enable)%>
+      <input name="RTSPALG" id="RTSPALG" type="radio" value="0" />
+      <%ejGetML(MLG_Common_Disable)%></li>
+  </ul>
+</div>
+</li>
+<li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="submit" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="Cancel" value='<%ejGetML(MLG_Common_Cancel)%>' type="button" onClick='frmLoad();'/></div></li>
+<!--Button define end-->
+</ul></div>
+</div>
+<br><br>
+</form>
+</body>
+</html>

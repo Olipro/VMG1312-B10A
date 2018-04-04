@@ -1,0 +1,34 @@
+#
+# ma_muquit@fccc.edu
+# jul-29-199
+#
+
+CC= @CC@
+DEFS= @DEFS@
+AR= ar cq
+RANLIB= @RANLIB@
+LIBNAME= libmutils.a
+
+INCLUDES=  -I. 
+
+# replace -O with -g in order to debug
+
+DEFINES= $(INCLUDES) $(DEFS) -DSYS_UNIX=1
+CFLAGS= -O $(DEFINES)
+
+SRCS = string.c mutils.c mime.c
+OBJS = string.o mutils.o mime.o
+
+.c.o:
+	rm -f $@
+	$(CC) $(CFLAGS) -c $*.c
+
+all: $(LIBNAME)
+
+$(LIBNAME): $(OBJS)
+	rm -f $@
+	$(AR) $@ $(OBJS)
+	$(RANLIB) $@
+
+clean:
+	rm -f $(OBJS) $(LIBNAME) core

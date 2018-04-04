@@ -1,0 +1,155 @@
+<script language="javascript">
+<!-- hide
+var db = $('.popup_frame').parents('.dialogContener'); 
+var OkBtn = db.getBtnByIndex('2');
+OkBtn.click(function(){ btnSave(); });
+
+function btnSave()
+{
+   with ( document.forms[0] ) {
+       if ( PolicyName.value == '' ) {
+		  hciAlert('<%ejGetML(MLG_Network_PolicyForwarding_AlertMsg_Str1)%>', {height: 180, type: 2, title: ''});
+          return;
+       }
+       else if ( isValidName(PolicyName.value) == false ) {
+		  hciAlert('<%ejGetML(MLG_Network_PolicyForwarding_AlertMsg_Str2)%>', {height: 180, type: 2, title: ''});
+          return;
+       }
+       else if (PolicyName.value.length > 8) {
+          hciAlert('<%ejGetML(MLG_Network_PolicyForwarding_AlertMsg_Str3)%>', {height: 180, type: 2, title: ''});
+		  return;
+       }
+       
+       if (SourceIp.value == '' && SourceMac.value == '' && SourcePort.value == '' )
+       {
+          hciAlert('<%ejGetML(MLG_Network_PolicyForwarding_AlertMsg_Str4)%>', {height: 180, type: 2, title: ''});
+		  return;
+       }
+       
+       if (SourceIp.value != '' && isValidIpAddress(SourceIp.value) == false)
+       {
+          hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_PolicyForwarding_AlertMsg_Str5)%>",SourceIp.value), {height: 180, type: 2, title: ''});
+		  return;
+       }
+       
+       if (SourceSubnetMask.value != '' && isValidSubnetMask(SourceSubnetMask.value) == false)
+       {
+          hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_PolicyForwarding_AlertMsg_Str6)%>",SourceSubnetMask.value), {height: 180, type: 2, title: ''});
+		  return;
+       }
+       
+       if (SourcePort.value != '' && isValidPort(SourcePort.value) == false) 
+       {
+          hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_PolicyForwarding_AlertMsg_Str7)%>",SourcePort.value), {height: 180, type: 2, title: ''});
+		  return;
+       }
+       
+       if (SourcePort.value != '' && Protocol.selectedIndex == 0)
+       {
+          hciAlert('<%ejGetML(MLG_Network_PolicyForwarding_AlertMsg_Str8)%>', {height: 180, type: 2, title: ''});
+		  return;
+       }
+       
+       if (SourceMac.value != '' && isValidMacAddress(SourceMac.value) == false)
+       {
+          hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_PolicyForwarding_AlertMsg_Str9)%>",SourceMac.value), {height: 180, type: 2, title: ''});
+		  return;
+       }
+   }
+
+   document.forms[0].sessionKey.value = mainFrame.gblsessionKey;
+   document.forms[0].submit();
+   $('.ui-dialog-titlebar-close').trigger('click');
+   $.openLoadingMask(1);
+}
+
+// done hiding -->
+</script>
+
+<form action="/pages/tabFW/routing-policyForwarding.cmd" method="post" target="mainFrame">
+<input name="action" type="HIDDEN" id="action" value="add"; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""/>
+<div class="popup_frame" >
+<!--Set area start-->
+<div class="data_frame"><ul>
+<!--level 1 start-->
+	<li class="set1"> 
+		<div class="w_text">
+		  <ul>
+			<li class="left_table"><%ejGetML(MLG_Network_PolicyForwarding_Str2)%> :</li>
+			<li class="right_table">
+			  <input name="PolicyName" size="15" maxlength="32"  type="text" />
+			</li>
+		  </ul>
+		</div>
+		<div class="w_text">
+		  <ul>
+			<li class="left_table"><%ejGetML(MLG_Network_PolicyForwarding_Str3)%> :</li>
+			<li class="right_table">
+			  <input name="SourceIp" size="15" maxlength="15" type="text" />
+			</li>
+		  </ul>
+		</div>
+		<div class="w_text">
+		  <ul>
+			<li class="left_table"><%ejGetML(MLG_Network_PolicyForwarding_Str4)%> :</li>
+			<li class="right_table">
+			  <input name="SourceSubnetMask" size="15" maxlength="15" type="text" />
+			</li>
+		  </ul>
+		</div>
+		<div class="w_text">
+		 <ul>
+		   <li class="left_table"><%ejGetML(MLG_Network_PolicyForwarding_Str5)%> :</li>
+		   <li class="right_table"><select name="Protocol">
+		   <option value="-1"></option>
+		   <option value="6"><%ejGetML(MLG_Common_TCP)%></option>
+		   <option value="17"><%ejGetML(MLG_Common_UDP)%></option>
+		   </select>
+       </li>
+		 </ul>
+		</div>
+		<div class="w_text">
+		 <ul>
+		   <li class="left_table"><%ejGetML(MLG_Network_PolicyForwarding_Str6)%> :</li>
+		   <li class="right_table"><input name="SourcePort" size="15" maxlength="15" type="text" /></li>
+		 </ul>
+		</div>
+		<div class="w_text">
+		 <ul>
+		   <li class="left_table"><%ejGetML(MLG_Network_PolicyForwarding_Str7)%> :</li>
+		   <li class="right_table"><input name="SourceMac" size="17" maxlength="17" type="text" /></li>
+		 </ul>
+		</div>
+		<div class="w_text">
+		 <ul>
+		   <li class="left_table"><%ejGetML(MLG_Network_PolicyForwarding_Str8)%> :</li>
+		   <li class="right_table"><select name="wanIf"></select>
+		   	&nbsp; <a href='#' onClick= "$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('network-broadband');"><%ejGetML(MLG_Network_PolicyForwarding_Str12)%></a>
+<script language="javascript">
+<!--
+{
+       var i=0;
+       //var interfaceInfo = '<%ejGetOther(wanAllInterfaceInfo, allEoAPvc)%>';
+       var interfaceInfo = '<%ejGetOther(wanInterfaceInfo, route)%>';
+       var interfaces = interfaceInfo.split('|');
+       if(interfaces.length>0){
+         for ( i = 0; i < interfaces.length; i++ ) {
+             var names = interfaces[i].split('/');
+             if(names[1]!="(null)"){
+                 document.forms[0].wanIf[i] = new Option(names[0], names[1]);
+             }
+         }
+       }
+}
+-->
+</script>
+       </li>
+		 </ul>
+		</div>
+<!--level 1 end-->
+	</li>
+</ul></div>
+</div>
+<!--Set area end-->
+</form>

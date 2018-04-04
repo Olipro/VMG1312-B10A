@@ -1,0 +1,198 @@
+<script type="text/javascript">
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+var ipAddress = '<%ejGet(ethIpAddress)%>';
+var subnetMask = '<%ejGet(ethSubnetMask)%>';
+var tempStr = '<%ejGet(TrustDomainIP)%>';
+var TrustDomainIP = tempStr.split('@');
+
+$(document).ready(function() {
+var errMsg = "<%ejGetOther(errMsg)%>";
+   if (errMsg != '')   {
+      hciAlert(errMsg, 2);
+   }
+
+   if( TrustDomainIP.length > 10 )
+   { TD_Add.disable = true;    }
+   else
+   { TD_Add.disable = false;    }
+   
+});
+
+function addClick() {
+      var loc = 'pages/maintenance/remoteMGMT/trustdomain_add.html';
+      var code = 'location=\"' + loc + '\"';
+
+      var db1 = window.parent.$.zyUiDialog({
+                 width: '40%',
+                 height: 300,
+                 title: '<%ejGetML(MLG_Maintenance_Remote_Add_Domain)%>',
+
+                 buttons: {
+                    '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+                    '<%ejGetML(MLG_Common_Apply)%>':function(){}
+                 }
+                });
+      db1.load(loc);
+      db1.dialog('open');
+}
+
+function removeClick(name) {
+   var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 190,
+              title: '<%ejGetML(MLG_Common_Delete)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+                 '<%ejGetML(MLG_Common_Apply)%>': function(){ db1.dialog('close'); $.openLoadingMask(1); deleteDomain(name); }
+              }
+             });
+         var link = 'pages/delete.html';
+         if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+         link='../../'+link;
+         db1.load(link);
+         db1.dialog('open');
+}
+function deleteDomain(name) {
+   var httpLan = (<%ejGet(httpLan)%> == 1 ? 2:0) ;
+   var httpWan = (<%ejGet(httpWan)%> == 1 ? 2:0) ; 
+   var httpPort = '<%ejGet(httpPort)%>';
+
+   var httpsLan = (<%ejGet(httpsLan)%> == 1 ? 2:0) ;
+   var httpsWan = (<%ejGet(httpsWan)%> == 1 ? 2:0) ;
+   var httpsPort = '<%ejGet(httpsPort)%>';
+
+   var sshLan = (<%ejGet(sshLan)%> == 1 ? 2:0) ;
+   var sshWan = (<%ejGet(sshWan)%> == 1 ? 2:0) ;
+   var sshPort = '<%ejGet(sshPort)%>';
+   
+		
+   var telnetLan = (<%ejGet(telnetLan)%> == 1 ? 2:0) ;
+   var telnetWan = (<%ejGet(telnetWan)%> == 1 ? 2:0) ;
+   var telnetPort = '<%ejGet(telnetPort)%>';
+		
+   var ftpLan = (<%ejGet(ftpLan)%> == 1 ? 2:0) ;
+   var ftpWan = (<%ejGet(ftpWan)%> == 1 ? 2:0) ;
+   var ftpPort = '<%ejGet(ftpPort)%>';
+   
+   var snmpLan = (<%ejGet(snmpLan)%> == 1 ? 2:0) ;
+   var snmpWan = (<%ejGet(snmpWan)%> == 1 ? 2:0) ;
+   var snmpPort = '<%ejGet(snmpPort)%>';
+
+   var icmpLan = (<%ejGet(icmpLan)%> == 1 ? 2:0) ;
+   var icmpWan = (<%ejGet(icmpWan)%> == 1 ? 2:0) ;
+
+   var TrustDomainFtpState = (<%ejGet(TrustDomainFtpState)%> == 1 ? 2:0) ;
+   var TrustDomainHttpState = (<%ejGet(TrustDomainHttpState)%> == 1 ? 2:0) ;
+   var TrustDomainHttpsState = (<%ejGet(TrustDomainHttpsState)%> == 1 ? 2:0) ;
+   var TrustDomainSshState = (<%ejGet(TrustDomainSshState)%> == 1 ? 2:0) ;
+   var TrustDomainTelnetState = (<%ejGet(TrustDomainTelnetState)%> == 1 ? 2:0) ;
+   var TrustDomainSnmpState = (<%ejGet(TrustDomainSnmpState)%> == 1 ? 2:0) ;
+   var TrustDomainIcmpState = (<%ejGet(TrustDomainIcmpState)%> == 1 ? 2:0) ;
+
+   var loc = '/pages/tabFW/remoteMGMT-remoteMGMT.cgi?httpLan=' + httpLan + '&httpWan=' + httpWan + '&httpPort=' + httpPort;
+   loc += '&httpsLan=' + httpsLan + '&httpsWan=' + httpsWan + '&httpsPort=' + httpsPort + '&sshLan=' + sshLan + '&sshWan=' + sshWan + '&sshPort=' + sshPort;
+   loc += '&telnetLan=' + telnetLan + '&telnetWan=' + telnetWan + '&telnetPort=' + telnetPort + '&ftpLan=' + ftpLan + '&ftpWan=' + ftpWan + '&ftpPort=' + ftpPort + '&snmpLan=' + snmpLan + '&snmpWan=' + snmpWan + '&snmpPort=' + snmpPort + '&icmpLan=' + icmpLan + '&icmpWan=' + icmpWan + '&TrustDomainFtpState=' + TrustDomainFtpState + '&TrustDomainHttpState=' + TrustDomainHttpState + '&TrustDomainHttpsState=' + TrustDomainHttpsState + '&TrustDomainSshState=' + TrustDomainSshState + '&TrustDomainTelnetState=' + TrustDomainTelnetState + '&TrustDomainSnmpState=' + TrustDomainSnmpState + '&TrustDomainIcmpState=' + TrustDomainIcmpState + '&TrustDomainIP=';
+
+/*   
+   var lanAddress_exist=false;
+   var iplist='';
+	for (i=0; i<TrustDomainIP.length; i++)
+	{
+	   if(TrustDomainIP[i] == '' || TrustDomainIP[i] == undefined)
+		   break;
+
+	   if ( TrustDomainIP[i] == name ) 
+	       continue;   	   
+
+	   if (ipAddress + '/' + subnetMask  == TrustDomainIP[i])
+		   continue;   	    	   
+			 
+       iplist += TrustDomainIP[i] + '@';		
+	}
+	
+	if( iplist.length != 0 ){ 
+		iplist = ipAddress + '/' + subnetMask + '@' + iplist;		
+	}
+	loc += iplist;
+	*/
+for (i=0; i<TrustDomainIP.length; i++)
+{
+   if(TrustDomainIP[i] == '' || TrustDomainIP[i] == undefined)
+   break;
+
+   if ( TrustDomainIP[i] == name )
+   continue;
+
+   loc += TrustDomainIP[i] + '@';
+}
+   loc += '&sessionKey=' + gblsessionKey;
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+</script>
+<form>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Maintenance_Trust_Domain_Explain)%>.</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1">
+  <div class="w_table">
+  <input name="TD_Add" id="TD_Add" type="button" value="<%ejGetML(MLG_Maintenance_Remote_Add_Domain)%>" onclick="addClick();" />
+  </div>
+</li>
+<li class="set1"> 
+<div class="w_table">
+   <table width="100%" cellpadding="0" cellspacing="0" class="table_frame" id="TrustDomainIPTable">
+			<tr >
+			<!-- ZyXEL, cathy, for considering IPv6
+			<td valign="top" class="top_font"><center><%ejGetML(MLG_Common_IPAddress)%>-->
+			<td valign="top" class="top_font"><center><%ejGetML(MLG_Network_StaticDHCP_Str6)%>
+			</center></td>
+			<td width="60" class="top_font"><center><%ejGetML(MLG_Common_Delete)%>
+			</center></td>
+			</tr>
+<script>
+<!-- hide
+var newStr = '';
+
+for (i=0; i<TrustDomainIP.length; i++)
+{
+	if (TrustDomainIP[i] == '' || TrustDomainIP[i] == undefined)
+		break;
+
+//	if(	TrustDomainIP[i] == ipAddress + '/' + subnetMask)
+//		continue;
+		
+	newStr += '<tr align=\"center\">\n';
+	newStr += '<td class="table_font textOverflow">'+ TrustDomainIP[i] +'</td>\n';
+	newStr += "<td class='table_font'><div class='i_modify'><ul>";
+	newStr += "<li><a href='#' class='delete' title='Delete' id='deleteBtn' onclick=\"removeClick('"+TrustDomainIP[i]+"')\"></a></li>";
+	
+}
+
+$('#TrustDomainIPTable').append(newStr);
+
+$(function()
+{
+	$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );  
+});
+
+// done hiding -->
+</script>
+              </table>
+
+</div><!--Table define end-->
+</li>
+<li class="space"></li>
+<!--level 1 end-->
+<!--Note define start-->
+<li class="space"> </li>
+<li class="space"> </li>
+</ul></div>
+<!--Set area end-->
+</div></form>

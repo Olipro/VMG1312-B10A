@@ -1,0 +1,277 @@
+<script language="javascript">
+<!-- hide
+function frmLoad() {
+	with ( document.forms[0] ) {
+		Volume.value = '<%ejGet(fileSharingOldShareName)%>';
+		AddSharePath.value = '<%ejGet(fileSharingOldPath)%>';
+		AddShareDesc.value = '<%ejGet(fileSharingOldDesc)%>';
+		
+		AddShareAccess.value = '<%ejGet(fileSharingOldAccLev)%>';
+		if (AddShareAccess.value == '1') {
+			document.getElementById("userlist").style.display = "none";
+		}
+		else {
+			document.getElementById("userlist").style.display = "block";
+		}
+	}
+}
+
+function doAccessChange(value) {
+        if(value == '1'){
+                document.getElementById("userlist").style.display = "none";
+        }
+        else{
+                document.getElementById("userlist").style.display = "block";
+        }
+        return;
+}
+
+function doMoveElement(srcBox,destBox) {
+        var i = srcBox.selectedIndex;
+        if(i == -1){
+                submitFlag = true;
+                return;
+        }
+        while(i >= 0) {
+                if(srcBox.options[i].text != "") {
+                        newElem=new Option(srcBox.options[i].text, srcBox.options[i].value);
+                        destBox.options.add(newElem);
+                        srcBox.options[i] = null;
+                }
+                i = srcBox.selectedIndex;
+        }
+        submitFlag = false;
+        return;
+}
+
+function doSecurityAllowUser() {
+	if (document.getElementById("AddShareAccess").value == '0') {
+		var f = document.forms[0];
+		var obj = f.AllowUsers;
+		var text = "";
+
+		for (i = 0; i < obj.length; i++) {
+			if (i == 0) {
+				text = obj.options[i].text;
+				continue;
+			}
+			text = text + "," + obj.options[i].text;
+		}
+		
+		if (text == "") {
+			var msg = "Please select Allow Users at least one.";
+			hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return false;
+		}
+
+		f.allow.value = text;
+		return true;
+	}
+}
+
+function submitchk(){
+    desc = document.getElementById("AddShareDesc").value.replace(/(^\s*)|(\s*$)/g, "");
+    chreg =  /[^A-Za-z0-9 ]/i ;
+	var msg = "";
+	
+	if (desc == "") {
+		msg = "Please enter some description for this directory.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        desc.focus();
+        return false;
+	}
+	if (desc.search(chreg) >= 0) {
+		msg = "Description must be English alphabet, digit, space.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        desc.focus();
+        return false;
+	}
+
+	document.getElementById("AddShareDesc").value = desc;
+	return true;
+}
+
+function btnSave() {
+	if(submitchk() == false){
+		return false;
+	}
+
+	with ( document.forms[0] ) {
+		storage.value = Volume.value;
+		var x = AddSharePath.value.split('/');
+                //Modified Share Directory entry can be save successfuly.
+		if (AddSharePath.value == "/mnt/usb1_1"){
+			x[3]="usb";
+		}
+		modifyDirName.value = x[3];
+		desc.value = AddShareDesc.value;
+		level.value = AddShareAccess.value;
+		if (doSecurityAllowUser() == false)
+			return;
+		sessionKey.value = mainFrame.glbSessionKey;
+		submit();
+
+		$('.ui-dialog-titlebar-close').trigger('click');
+		$.openLoadingMask(1);
+	}
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnSave(); });
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+// done hiding -->
+</script>
+
+<form action="/pages/tabFW/usbService-fileSharing_add.cmd" method="post" target="mainFrame">
+<input size="15" type="hidden" name="action" id="action" value="editDir" />
+<input size="15" type="hidden" name="storage" id="storage" />
+<input size="15" type="hidden" name="modifyDirName" id="modifyDirName" />
+<input size="15" type="hidden" name="desc" id="desc" />
+<input size="15" type="hidden" name="level" id="level" />
+<input size="15" type="hidden" name="allow" id="allow" />
+<input size="15" type="hidden" name="sessionKey" id="sessionKey" />
+<div id="setting_div">
+<div class="popup_frame" >
+<div class="data_frame2">
+<ul>
+<li class="set1">
+<div class="w_text">
+<ul>
+<li class="left_table">Volume :</li>
+<li class="right_table"><span class="cfig_word">
+  <input type="text" name="Volume" id="Volume" size="30" maxlength="50" disabled />
+</span></li>
+</ul>
+<ul>
+<li class="left_table"> Share Path :</li>
+<li class="right_table"><span class="cfig_word">
+  <input type="text" name="AddSharePath" id="AddSharePath" size="30" maxlength="50" disabled />
+</span></li>
+</ul>
+<ul>
+<li class="left_table"><%ejGetML(MLG_Common_Description)%> :</li>
+<li class="right_table"><span class="cfig_word">
+  <input type="text" name="AddShareDesc" id="AddShareDesc" size="30" maxlength="50" />
+</span></li>
+</ul>
+  <ul>
+    <li class="left_table">Access Level :</li>
+    <li class="right_table"><span class="cfig_word">
+      <select style="width:179" name="AddShareAccess" id="AddShareAccess" onchange="doAccessChange(this.value);">
+        <option value="1">Public</option>
+        <option value="0"><%ejGetML(MLG_Common_Security)%></option>
+      </select>
+    </span></li>
+  </ul>
+</div>
+            </li>
+         </ul></div>
+      </div>
+<div id="userlist" style="display:none; width:575px">
+	<div class="space"></div>
+	<li class="set1">
+		<div class="w_text">
+			<table width="98%" border="0" cellpadding="0" cellspacing="0" >
+				<tr>
+					<td valign="top" width="45%">
+						<div class="w_text3">
+							<table width="100%" cellpadding="0" cellspacing="0" class="table_frame" id="alluserlistTable">
+								<tr align="center">
+									<td class="top_font">Available Users</td>
+								</tr>
+<script language="javascript">
+<!-- hide
+{
+	var allowUsers = '<%ejGet(allowUsers)%>';
+	var par = allowUsers.split(',');
+
+	var i = 0;
+	var j = 0;
+	var allUsers = '<%ejGetOther(allUsers)%>';
+	var info = allUsers.split('|');
+	var str = '';
+	var find = 0;
+	
+	str += ' <tr><td>';
+	str += ' <select id="AllUsers" name="AllUsers" size="5" multiple="multiple" style="width:100%">';
+
+	if (info != '') {
+		for (i = 0; i < info.length; i++) {
+			find = 0;
+			for (j = 0; j < par.length; j++) {
+				if (info[i] == par[j]) {
+					find = 1;
+					break;
+				}
+			}
+			if (find == 0) {
+				str += ' <option value="">' + info[i] + '</option>';
+			}
+		}
+	}
+	
+	str += ' </select>';
+	str += ' </td></tr>';
+	
+	$('#alluserlistTable').append(str);
+}
+// done hiding -->
+</script>
+							</table>
+						</div>
+					</td>
+					<td align="center" class="blod">
+						<input type="button" name="rightbtn" style="background:url(../../../images/i_right_bn.gif) no-repeat; width:32px; height:27px;border:none; display:block; cursor:pointer;" onClick="doMoveElement(this.form.AllUsers, this.form.AllowUsers)" >
+						<input type="button" name="leftbtn" style="background:url(../../../images/i_left_bn.gif) no-repeat; width:32px; height:27px;border:none; display:block; cursor:pointer;" onClick="doMoveElement(this.form.AllowUsers, this.form.AllUsers)" >
+					</td>
+					<td valign="top" width="45%">
+						<div class="w_text3">
+							<table width="100%" cellpadding="0" cellspacing="0" class="table_frame" id="allowuserlistTable">
+								<tr align="center">
+									<td class="top_font">Allow Users</td>
+								</tr>					
+<script language="javascript">
+<!-- hide
+{
+	var i = 0;
+	var allowUsers = '<%ejGet(allowUsers)%>';
+	var info = allowUsers.split(',');
+	var str = '';
+	
+	str += ' <tr><td>';
+	str += ' <select id="AllowUsers" name="AllowUsers" size="5" multiple="multiple" style="width:100%">';
+	
+	if (info != '') {
+		for (i = 0; i < info.length; i++) {
+			str += ' <option value="">' + info[i] + '</option>';
+		}
+	}
+	
+	str += ' </select>';
+	str += ' </td></tr>';
+	
+	$('#allowuserlistTable').append(str);
+}
+// done hiding -->
+</script>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</li>
+</div>
+</div>
+</form>
+
+<script language="JavaScript">
+with ( document.forms[0] ) {
+   AddShareDesc.focus();
+}
+</script> 

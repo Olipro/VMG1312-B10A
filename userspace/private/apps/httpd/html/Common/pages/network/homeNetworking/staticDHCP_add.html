@@ -1,0 +1,389 @@
+<script language="javascript">
+<!-- hide
+var lanHostList = '<%ejGetOther(lanHostEntry)%>';
+var lanIpSubnet = '<%ejGetOther(sysInfo, lanIpSubnet)%>';
+var ethIp = '<%ejGet(ethIpAddress)%>';
+var buildIPv6 = '<%ejGetOther(sysInfo, staticdhcpv6)%>';
+var lan6HostList = '<%ejGetOther(lan6HostEntry)%>';
+
+function setInfo() {	
+   // clean MAC Address
+   $("#str1").val('');
+   $("#str2").val('');
+   $("#str3").val('');
+   $("#str4").val('');
+   $("#str5").val('');
+   $("#str6").val('');
+   $("#static_ip").val('');
+
+   with ( document.forms[0] ) {
+      if (buildIPv6 == 1) {
+         if (ipver.selectedIndex == 0) {
+            if (lanHostList.length > 1) {
+               var lanInfo = lanHostList.split('|');
+
+               if (lanInfo.length>0) {
+                  for (i=1; i<lanInfo.length; i++) {
+                      var hostVar = lanInfo[i].split(',');
+
+                      if (hostVar[1] == $('#exitDevice').val()) {
+                         var mac = hostVar[1].split(':');
+                         $("#str1").val(mac[0]);
+                         $("#str2").val(mac[1]);
+                         $("#str3").val(mac[2]);
+                         $("#str4").val(mac[3]);
+                         $("#str5").val(mac[4]);
+                         $("#str6").val(mac[5]);
+                         $("#static_ip").val(hostVar[2]);
+                      }
+                  }
+               }
+            }
+         } else {
+            if (lan6HostList.length > 1) {
+               var lanInfo = lan6HostList.split('|');
+
+               if (lanInfo.length>0) {
+                  for (i=1; i<lanInfo.length; i++) {
+                      var hostVar = lanInfo[i].split(',');
+
+                      if (hostVar[1] == $('#exitDevice').val()) {
+                         var mac = hostVar[1].split(':');
+                         $("#str1").val(mac[0]);
+                         $("#str2").val(mac[1]);
+                         $("#str3").val(mac[2]);
+                         $("#str4").val(mac[3]);
+                         $("#str5").val(mac[4]);
+                         $("#str6").val(mac[5]);
+                         $("#static_ip").val(hostVar[2]);
+                         $("#duid").val(hostVar[3]);
+                      }
+                  }
+               }
+            }
+         }
+      }
+      else
+      {
+         if (lanHostList.length > 1) {
+            var lanInfo = lanHostList.split('|');
+                
+            if (lanInfo.length>0) {
+               for (i=1; i<lanInfo.length; i++)
+               {
+                  var hostVar = lanInfo[i].split(',');
+                  $("#str1").val('');
+                  $("#str2").val('');
+                  $("#str3").val('');
+                  $("#str4").val('');
+                  $("#str5").val('');
+                  $("#str6").val('');
+                  $("#static_ip").val('');
+
+                  if (hostVar[1] == $('#exitDevice').val()) {
+                     var mac = hostVar[1].split(':');
+                     $("#str1").val(mac[0]);
+                     $("#str2").val(mac[1]);
+                     $("#str3").val(mac[2]);
+                     $("#str4").val(mac[3]);
+                     $("#str5").val(mac[4]);
+                     $("#str6").val(mac[5]);
+                     $("#static_ip").val(hostVar[2]);
+                     break;
+                  }
+               }
+            }
+         }
+      }
+   }
+}
+
+function frmLoad() {
+	$('#exitDevice').append('<option value=""><%ejGetML(MLG_Common_ManualInput)%></option>'); 
+
+	if (lanHostList.length > 1) {
+		var lanInfo = lanHostList.split('|');
+		
+		if (lanInfo.length>0) {
+			for (i=1; i<lanInfo.length; i++)
+			{
+				var hostVar = lanInfo[i].split(',');
+				
+				if (hostVar[0] == '' || hostVar[0] == undefined)
+					break;
+				$('#exitDevice').append('<option value="'+hostVar[1]+'">'+hostVar[0]+'('+hostVar[2]+')</option>');
+			}
+      }
+	}
+
+        //duid.disabled = true;
+	$('#duid')[0].disabled=true;
+
+	if (buildIPv6 == 1) {
+		$('#ipver').append('<option value="4"><%ejGetML(MLG_Security_FirewallACL_Str25)%></option>');
+                $('#ipver').append('<option value="6"><%ejGetML(MLG_Security_FirewallACL_Str50)%></option>');
+	}
+	else
+	{
+		$('#ipver').append('<option value="4"><%ejGetML(MLG_Security_FirewallACL_Str25)%></option>');
+		$('#ipver')[0].disabled=true;
+	}
+}
+
+//update device info
+function updateDeviceinfo(iptype)
+{
+   with ( document.forms[0] ) {
+	var lanInfo;
+
+	$('#exitDevice').find('option').remove();
+	$('#exitDevice').append('<option value=""><%ejGetML(MLG_Common_ManualInput)%></option>');
+
+	if(iptype == '4') {
+		if (lanHostList.length > 1)
+			lanInfo = lanHostList.split('|');
+                duid.value = "";
+                duid.disabled = true;
+	}
+	else if(iptype == '6') {
+		if (lan6HostList.length > 1)
+                        lanInfo = lan6HostList.split('|');
+                duid.disabled = false;
+	}
+	else
+		return;
+
+	if (lanInfo.length>0) {
+		for (i=1; i<lanInfo.length; i++) {
+			var hostVar = lanInfo[i].split(',');
+
+			if (hostVar[0] == '' || hostVar[0] == undefined)
+				break;
+			$('#exitDevice').append('<option value="'+hostVar[1]+'">'+hostVar[0]+'('+hostVar[2]+')</option>');
+		}
+	}
+   }
+}
+
+//set type to IPv4/IPv6
+function typeChanged()
+{
+	with ( document.forms[0] ) {
+		if (buildIPv6 == 1) {
+			//if(ipver.value == 4)
+			if (ipver.selectedIndex == 0)
+				updateDeviceinfo('4');
+			else
+				updateDeviceinfo('6');
+		}
+	}
+}
+
+function isDuplicateRecord(mac, ip)
+{
+   var staticiplease = '<%ejGetOther(staticiplease)%>';
+   var info = staticiplease.split('|');
+
+   if (info != '') {
+      for ( i = 0; i < info.length; i++ ) {
+         var names = info[i].split('/');
+         if (names[1] == mac || names[2] == ip) {
+            return false;
+         }
+      }
+   }
+}
+
+
+function subnetCheck () {
+   var lanInfos = lanIpSubnet.split("|");
+   var lans;
+   var lan;
+   var subnet;
+   var i;
+
+   with ( document.forms[0] ) {
+      for ( i = 0 ; i < lanInfos.length ; i ++ ) {
+         if ( lanInfos[i] != '' ) {
+            lans = lanInfos[i].split(",");
+            lan = lans[0];
+            subnet = lans[1];
+            if ( isSameSubNet(lan,subnet,static_ip.value,subnet) ) {
+               return 1;
+            }
+         }
+      }
+   }
+   return 0;
+}
+
+function checkValidIPAddr () {
+   with ( document.forms[0] ) {
+        var subnetMask = '<%ejGet(ethSubnetMask)%>';
+        if (isValidIpAddress(static_ip.value) == false || isNetworkAddress(static_ip.value, subnetMask) || isBroadcastAddress(static_ip.value, subnetMask))
+           return 0;
+   }
+   return 1;
+}
+
+function btnSave() {
+   with ( document.forms[0] ) {
+      var msg = "";
+      macAddr.value = str1.value + ":" + str2.value + ":" + str3.value + ":" + str4.value + ":" + str5.value + ":" +str6.value;
+
+      if (ipver.value == 4)
+         isIpv6.value = 0;
+      else
+         isIpv6.value = 1;
+
+      if (enableck.checked == true) {
+         enable.value=1;
+      } else {
+         enable.value=0;
+      }
+
+      if(macAddr.value.length != 17){
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str1)%>", macAddr.value);
+         //AlertOpen(msg, 2);
+         hciAlert(msg, {height: 180,type: 2, title: ''});
+         return;
+      }
+      else if (isIpv6.value == 1 && isValidIpAddress6(static_ip.value) == false) {
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str1)%>", static_ip.value);
+         hciAlert(msg, {height: 180,type: 2, title: ''});
+         return;
+      }
+      else if (isIpv6.value == 0 && !checkValidIPAddr()) {
+            msg = MLG_Makestring("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str1)%>", static_ip.value);
+            //AlertOpen(msg, 2);
+            hciAlert(msg, {height: 180,type: 2, title: ''});
+            return;
+      }
+      else if (isIpv6.value == 0 && static_ip.value == ethIp) { 
+	    // Lan IP addr of the CPE and DHCP static IP cannot the same.
+	    //msg= 'Address "' + static_ip.value + '" is used for LAN IP address.';
+            msg = MLG_Makestring("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str26)%>", static_ip.value);
+		 hciAlert(msg, {height: 180,type: 2, title: ''});
+            return;
+      }
+      else if (isValidMacAddress(macAddr.value) == false) {
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str1)%>", macAddr.value);
+         //AlertOpen(msg, 2);
+         hciAlert(msg, {height: 180,type: 2, title: ''});
+         return;
+      } else if (isDuplicateRecord(macAddr.value.toUpperCase(), static_ip.value) == false) {
+         msg = '<%ejGetML(MLG_Network_DNSEntry_AlertMsg_Str3)%>';
+         //AlertOpen(msg, 2);
+         hciAlert(msg, {height: 180,type: 2, title: ''});
+         return;
+      } else if (isIpv6.value == 0 && !subnetCheck()) {
+         msg = '<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str4)%> ';
+
+         var lanInfos = lanIpSubnet.split("|");
+         var i;
+         for ( i = 0 ; i < lanInfos.length ; i ++ ) {
+            if ( lanInfos[i] != '' ) {
+               if ( i != 0 )
+                  msg += ",";
+               lans = lanInfos[i].split(",");
+               msg += lans[0]+"/"+lans[1];
+            }
+         }
+         //AlertOpen(msg, 2);
+         hciAlert(msg, {height: 180,type: 2, title: ''});
+         return;
+      } else {
+        macAddr.value = macAddr.value.toUpperCase();
+      	sessionKey.value = mainFrame.glbSessionKey;
+        duId.value = duid.value;
+      	submit();
+
+         $('.ui-dialog-titlebar-close').trigger('click');
+         $.openLoadingMask(1);
+         return;
+      }
+   }
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){
+ConfirmOpen("<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str15)%>", btnSave);
+ });
+
+$(document).ready(function() {
+  frmLoad();
+});
+
+// done hiding -->
+</script>
+
+<form action="/pages/tabFW/homeNetworking-staticDHCP.cmd" method="post" target="mainFrame">
+  <input type="hidden" name="action" id="action" value="add">
+  <input type="hidden" name="enable" id="enable" value="1">
+  <input type="hidden" name="sessionKey" id="sessionKey" value="">
+  <input type="hidden" name="macAddr" id="macAddr" size="17" maxlength="17" />
+  <input type="hidden" name="isIpv6" id="isIpv6" value="0">
+  <input type="hidden" name="duId" id="duId" value="">
+
+  <div class="popup_frame" >
+    <div class="data_frame2"><ul>
+      <li class="set1">
+        <div class="w_text">
+          <input type="checkbox" name="enableck" /> <%ejGetML(MLG_Common_Active)%>
+        </div>
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_InterfaceGrouping_Str4)%> :</li>
+            <li class="right_table">
+              <%ejGet(groupList)%>
+            </li>
+          </ul>
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Security_FirewallACL_Str24)%>:</li>
+            <li class="right_table">
+              <select name='ipver' id='ipver' size='1' onChange='typeChanged()'>
+              </select>
+            </li>
+          </ul>
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_StaticDHCP_Str4)%>:</li>
+            <li class="right_table">
+              <select name='exitDevice' id='exitDevice' size='1' onChange='setInfo()'>
+              </select>
+            </li>
+          </ul>
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_StaticDHCP_Str5)%> :</li>
+            <li class="right_table">
+              <input name="str1" id="str1" type="text" size="2" maxlength="2" onFocus="nextfield = 'str2'; prevfield = 'str1';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)" /> :
+              <input name="str2" id="str2" type="text" size="2" maxlength="2" onFocus="nextfield = 'str3'; prevfield = 'str1';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)" /> :
+              <input name="str3" id="str3" type="text" size="2" maxlength="2" onFocus="nextfield = 'str4'; prevfield = 'str2';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)" /> :
+              <input name="str4" id="str4" type="text" size="2" maxlength="2" onFocus="nextfield = 'str5'; prevfield = 'str3';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)" /> :
+              <input name="str5" id="str5" type="text" size="2" maxlength="2" onFocus="nextfield = 'str6'; prevfield = 'str4';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)" /> :
+              <input name="str6" id="str6" type="text" size="2" maxlength="2" onFocus="nextfield = 'static_ip';prevfield = 'str5';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)" onKeyPress="return disableEnterKey(event)" />
+            </li>
+          </ul>
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_StaticDHCP_Str6)%> :</li>
+            <li class="right_table">
+              <input name="static_ip" id="static_ip" size="17" maxlength="15" type="text" />
+            </li>
+          </ul>
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_InterfaceGrouping_Str41)%> :</li>
+            <li class="right_table">
+              <input name="duid" id="duid" size="25" maxlength="32" type="text" />
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul></div>
+  </div>
+</form>
+
+<script language="JavaScript">
+with ( document.forms[0] ) {
+   str1.focus();
+}
+</script> 

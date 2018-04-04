@@ -1,0 +1,602 @@
+﻿<script type="text/javascript"> 
+var bonding = '<%ejGet(dslBonding)%>';
+var upprocess = '<%ejGet(UpdateProcess)%>';
+var isSupportbonding = '<%ejGetOther(sysInfo, buildDslBonding)%>';
+var USPhyR = '<%ejGet(USPhyR)%>';
+var DSPhyR = '<%ejGet(DSPhyR)%>';
+var enblAdslPTM = '<%ejGet(enblAdslPTM)%>';
+//var enblAnnexM = '<%ejGet(enblAnnexM)%>';
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; //ZyXEL, Albert add for Etisalat, hide DSL 20131129	
+var customer = '<%ejGetOther(customer)%>';
+
+function reboot() {
+	var loc = '/login/login.html';
+	var code = 'window.top.location="' + loc + '"';
+
+	eval(code);
+}
+
+function btnApply()
+{  
+   var adslFlagTemp = 0;
+   with ( document.forms[0] ) {
+      if (GDmt[0].checked == true)
+         adslFlagTemp |= 0x00000001;
+
+      if (Glite[0].checked == true)
+         adslFlagTemp |= 0x00000002;
+
+      if (T1413[0].checked == true)
+         adslFlagTemp |= 0x00000004;
+
+      if (ADSL2[0].checked == true)
+         adslFlagTemp |= 0x00000008;
+
+      if (AnnexL[0].checked == true)
+         adslFlagTemp |= (0x00000010);
+
+      if (ADSL2Plus[0].checked == true)
+         adslFlagTemp |= 0x00000020;
+
+      if (AnnexM[0].checked == true)
+         adslFlagTemp |= 0x00000040;
+
+      if ((VDSL8a[0].checked == true) || (VDSL8b[0].checked == true) || (VDSL8c[0].checked == true) || (VDSL8d[0].checked == true) ||
+	  	(VDSL12a[0].checked == true) || (VDSL12b[0].checked == true) || (VDSL17a[0].checked == true) || /*(VDSL30a[0].checked == true) ||*/
+	  	(VDSLUS0[0].checked == true))
+      {
+      	   adslFlagTemp |= 0x00000080;
+      }
+
+      if ((adslFlagTemp & 0x000000ff) == 0)
+         alert("Need to select at least one modulation mode or VDSL profile.");
+
+      if (VDSL8a[0].checked == true)
+         adslFlagTemp |= 0x00000100;
+
+      if (VDSL8b[0].checked == true)
+         adslFlagTemp |= 0x00000200;
+
+      if (VDSL8c[0].checked == true)
+         adslFlagTemp |= 0x00000400;
+
+      if (VDSL8d[0].checked == true)
+         adslFlagTemp |= 0x00000800;
+
+      if (VDSL12a[0].checked == true)
+         adslFlagTemp |= 0x00001000;
+
+      if (VDSL12b[0].checked == true)
+         adslFlagTemp |= 0x00002000;
+
+      if (VDSL17a[0].checked == true)
+         adslFlagTemp |= 0x00004000;
+/*
+      if (VDSL30a[0].checked == true)
+         adslFlagTemp |= 0x00008000;
+*/
+      if (((adslFlagTemp & 0x00000080) != 0) && ((adslFlagTemp & 0x000FF00) == 0))
+         alert("Need to select at least one VDSL profile.");
+
+      if (VDSLUS0[0].checked == true)
+         adslFlagTemp |= 0x007F0000;
+
+      if (!adslBitswap[0].checked == true)
+         adslFlagTemp |= 0x02000000;
+
+      if (adslSra[0].checked == true)
+         adslFlagTemp |= 0x08000000;
+   
+  }
+   document.forms[0].adslFlag.value = adslFlagTemp;
+   document.forms[0].submit();
+   $.openLoadingMask(1);
+}
+
+function doEthWanEnable(){
+		enbl_ethwan_MediaType.value = ethwan_MediaType.value;
+}
+
+function initEthWanSpeedInfo()
+{
+    if ((customizationFlag & 0x00000008)){
+        $("#EthWanCfg").show();
+    }else{
+        $("#EthWanCfg").hide();
+   		return;
+    }
+      
+	if ((customizationFlag & 0x00000010) ) 
+		ethwan_MediaType.value = '100FD';
+	else if ((customizationFlag & 0x00000020) ) 
+		ethwan_MediaType.value = '100HD';
+	else if ((customizationFlag & 0x00000040) ) 
+		ethwan_MediaType.value = '10FD';
+	else if ((customizationFlag & 0x00000080) ) 
+		ethwan_MediaType.value = '10HD';		
+	else 
+		ethwan_MediaType.value = 'auto';
+	
+	doEthWanEnable();
+}
+
+function frmLoad() {
+   var adslFlag = '<%ejGet(adslFlag)%>';
+
+   if (customer == "Tim") 
+       $("#ADSLModulationSection").hide();
+   
+   // support DSL advanced setup
+   if (enblAdslPTM=='1')
+      $("input[name='enblAdslPTM']").get(0).checked = true;
+   else 
+      $("input[name='enblAdslPTM']").get(1).checked = true;
+/*      
+   if (enblAnnexM=='1')
+      $("input[name='enblAnnexM']").get(0).checked = true;
+   else 
+      $("input[name='enblAnnexM']").get(1).checked = true;
+*/   
+   if (USPhyR=='1')
+      $("input[name='USPhyR']").get(0).checked = true;
+   else 
+      $("input[name='USPhyR']").get(1).checked = true;
+   
+   if (DSPhyR=='1')
+      $("input[name='DSPhyR']").get(0).checked = true;
+   else
+      $("input[name='DSPhyR']").get(1).checked = true;
+   
+      
+   /* support bonding option */
+   if(isSupportbonding=='1')
+   {
+      showhide("BondingSection",1);
+      if (upprocess == '2') {
+         setTimeout("$.openLoadingMask(2)", 1500);
+         setTimeout("BackgroundUrl('reboot-rebootpost.cgi')", 1500);
+         setTimeout('reboot()', 80000);
+      }
+      if (bonding=='1')
+         $("input[name='dslBonding']").get(0).checked = true;
+      else 
+         $("input[name='dslBonding']").get(1).checked = true;
+   }else{
+      showhide("BondingSection",0);
+      $("input[name='dslBonding']").get(1).checked = true;
+   }
+   <!--//Albert, 20131129 -->	
+   initEthWanSpeedInfo();
+//support adsl modulation
+      if (adslFlag & 0x00000001)
+         $("input[name='GDmt']").get(0).checked = true;
+      else
+         $("input[name='GDmt']").get(1).checked = true;         
+
+      if (adslFlag & 0x00000002)
+         $("input[name='Glite']").get(0).checked = true;
+      else
+         $("input[name='Glite']").get(1).checked = true;
+
+      if (adslFlag & 0x00000004)
+         $("input[name='T1413']").get(0).checked = true;
+      else
+         $("input[name='T1413']").get(1).checked = true;
+
+      if (adslFlag & 0x00000008)
+         $("input[name='ADSL2']").get(0).checked = true;
+      else
+         $("input[name='ADSL2']").get(1).checked = true;
+
+      if (adslFlag & 0x00000010)
+         $("input[name='AnnexL']").get(0).checked = true;
+      else
+         $("input[name='AnnexL']").get(1).checked = true;
+ 
+      if (adslFlag & 0x00000020)
+         $("input[name='ADSL2Plus']").get(0).checked = true;
+      else
+         $("input[name='ADSL2Plus']").get(1).checked = true;
+
+      if (adslFlag & 0x00000040)
+         $("input[name='AnnexM']").get(0).checked = true;
+      else
+         $("input[name='AnnexM']").get(1).checked = true;
+
+      //support Bitswap and Sra
+      if (adslFlag & 0x02000000)
+         $("input[name='adslBitswap']").get(1).checked = true;
+      else
+         $("input[name='adslBitswap']").get(0).checked = true;
+
+      if (adslFlag & 0x08000000)
+         $("input[name='adslSra']").get(0).checked = true;
+      else
+         $("input[name='adslSra']").get(1).checked = true;	
+
+
+//support vdsl profile
+      if (adslFlag & 0x00000080)//VDSL2 Enabled
+      {
+         if (adslFlag & 0x00000100)
+         	$("input[name='VDSL8a']").get(0).checked = true;
+	  else
+		$("input[name='VDSL8a']").get(1).checked = true;
+
+         if (adslFlag & 0x00000200)
+         	$("input[name='VDSL8b']").get(0).checked = true;
+	  else
+		$("input[name='VDSL8b']").get(1).checked = true;
+
+         if (adslFlag & 0x00000400)
+         	$("input[name='VDSL8c']").get(0).checked = true;
+	  else
+		$("input[name='VDSL8c']").get(1).checked = true;
+
+         if (adslFlag & 0x00000800)
+         	$("input[name='VDSL8d']").get(0).checked = true;
+	  else
+		$("input[name='VDSL8d']").get(1).checked = true;
+
+         if (adslFlag & 0x00001000)
+         	$("input[name='VDSL12a']").get(0).checked = true;
+	  else
+		$("input[name='VDSL12a']").get(1).checked = true;
+
+         if (adslFlag & 0x00002000)
+         	$("input[name='VDSL12b']").get(0).checked = true;
+	  else
+		$("input[name='VDSL12b']").get(1).checked = true;
+
+         if (adslFlag & 0x00004000)
+         	$("input[name='VDSL17a']").get(0).checked = true;
+	  else
+		$("input[name='VDSL17a']").get(1).checked = true;
+/*
+         if (adslFlag & 0x00008000)
+         	$("input[name='VDSL30a']").get(0).checked = true;
+	  else
+		$("input[name='VDSL30a']").get(1).checked = true;
+*/
+         if (adslFlag & 0x007f0000)
+         	$("input[name='VDSLUS0']").get(0).checked = true;
+	  else
+		$("input[name='VDSLUS0']").get(1).checked = true;
+
+      }else{//VDSL2 Disabled
+         $("input[name='VDSL8a']").get(1).checked = true;
+	  $("input[name='VDSL8b']").get(1).checked = true;
+	  $("input[name='VDSL8c']").get(1).checked = true;
+	  $("input[name='VDSL8d']").get(1).checked = true;
+	  $("input[name='VDSL12a']").get(1).checked = true;
+	  $("input[name='VDSL12b']").get(1).checked = true;
+	  $("input[name='VDSL17a']").get(1).checked = true;
+	  //$("input[name='VDSL30a']").get(1).checked = true;
+	  $("input[name='VDSLUS0']").get(1).checked = true;
+      }
+}
+
+$(document).ready(function() {
+ 	var errMsg = "<%ejGetOther(errMsg)%>";
+	frmLoad();
+	if (errMsg != '')
+	{
+		hciAlert(errMsg, 2);
+	}
+});
+
+</script>
+
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_WAN_Broadband_AlertMsg_Str43_1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<form action="/pages/tabFW/broadband-advanced_cfg.cgi" method="post" onSubmit="$.openLoadingMask(1);return true;">
+	<input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">
+    <input type="hidden" name="adslFlag" id="adslFlag">
+	<!--//Albert, 20131129 -->	
+	<input name="enbl_ethwan_MediaType" type="HIDDEN" id="enbl_ethwan_MediaType" value="<%ejGet(enbl_ethwan_MediaType)%>"; />
+<div class="data_frame"><ul>
+<!--level 1 start-->
+<div id="DSLCap2">
+<li class="title"><%ejGetML(MLG_WAN_Broadband_Str86)%></li>
+<li class="set1"> <div class="w_text">
+  <ul>
+	<li class="left_table">PhyR US :</li>
+	<li class="right_table">
+      <input name="USPhyR" id="USPhyR" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="USPhyR" id="USPhyR" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%> 
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">PhyR DS :</li>
+	<li class="right_table">
+      <input name="DSPhyR" id="DSPhyR" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="DSPhyR" id="DSPhyR" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">Bitswap :</li>
+	<li class="right_table">
+      <input name="adslBitswap" id="adslBitswap" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="adslBitswap" id="adslBitswap" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">SRA :</li>
+	<li class="right_table">
+      <input name="adslSra" id="adslSra" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="adslSra" id="adslSra" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%> 
+	</li>
+  </ul>
+
+</div>
+</li>
+</div>
+<div id="BondingSection">
+<li class="title">DSL Bonding</li>
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table">State :</li>
+     <li class="right_table">
+      <input name="dslBonding" id="dslBonding" type="radio" value="1" />
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="dslBonding" id="dslBonding" type="radio" value="0" />
+      <%ejGetML(MLG_Common_Disable)%> 
+     </li>
+  </ul>
+</div>
+</li>
+</div>
+<!-- div id="xdslAdvCfg">
+<li class="title">xDSL setup</li>
+<li class="set1"> <div class="w_text">
+   <ul>
+	<li class="left_table">PTM over ADSL :</li>
+	<li class="right_table">
+      <input name="enblAdslPTM" id="enblAdslPTM" type="radio" value="1"/>
+      Enable
+      <input name="enblAdslPTM" id="enblAdslPTM" type="radio" value="0"/>
+      Disable
+	</li>
+  </ul>
+   <ul>
+	<li class="left_table">Annex M :</li>
+	<li class="right_table">
+      <input name="enblAnnexM" id="enblAnnexM" type="radio" value="1"/>
+      Enable
+      <input name="enblAnnexM" id="enblAnnexM" type="radio" value="0"/>
+      Disable
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">PhyR US :</li>
+	<li class="right_table">
+      <input name="USPhyR" id="USPhyR" type="radio" value="1"/>
+      Enable
+      <input name="USPhyR" id="USPhyR" type="radio" value="0"/>
+      Disable
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">PhyR DS :</li>
+	<li class="right_table">
+      <input name="DSPhyR" id="DSPhyR" type="radio" value="1"/>
+      Enable
+      <input name="DSPhyR" id="DSPhyR" type="radio" value="0"/>
+      Disable
+	</li>
+  </ul>
+</div>
+</li>
+</div !-->
+<div id="ADSLModulationSection">
+<li class="title"><%ejGetML(MLG_WAN_Broadband_Str113)%></li>
+<li class="set1"> <div class="w_text">
+  <ul>
+	<li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str114)%> :</li>
+	<li class="right_table">
+      <input name="enblAdslPTM" id="enblAdslPTM" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="enblAdslPTM" id="enblAdslPTM" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%> 
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">G.Dmt :</li>
+	<li class="right_table">
+      <input name="GDmt" id="GDmt" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="GDmt" id="GDmt" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">G.lite :</li>
+	<li class="right_table">
+      <input name="Glite" id="Glite" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="Glite" id="Glite" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>
+	</li>
+  </ul> 
+  <ul>
+	<li class="left_table">T1.413  :</li>
+	<li class="right_table">
+      <input name="T1413" id="T1413" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="T1413" id="T1413" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">ADSL2 :</li>
+	<li class="right_table">
+      <input name="ADSL2" id="ADSL2" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="ADSL2" id="ADSL2" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">AnnexL :</li>
+	<li class="right_table">
+      <input name="AnnexL" id="AnnexL" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="AnnexL" id="AnnexL" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">ADSL2+ :</li>
+	<li class="right_table">
+      <input name="ADSL2Plus" id="ADSL2Plus" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="ADSL2Plus" id="ADSL2Plus" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">AnnexM :</li>
+	<li class="right_table">
+      <input name="AnnexM" id="AnnexM" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="AnnexM" id="AnnexM" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul>
+</div>
+</li>
+</div>
+<div id="VDSLModulationSection">
+<li class="title"><%ejGetML(MLG_WAN_Broadband_Str115)%></li>
+<li class="set1"> <div class="w_text">
+  <ul>
+	<li class="left_table">8a Enabled</li>
+	<li class="right_table">
+      <input name="VDSL8a" id="VDSL8a" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="VDSL8a" id="VDSL8a" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul> 
+  <ul>
+	<li class="left_table">8b Enabled</li>
+	<li class="right_table">
+      <input name="VDSL8b" id="VDSL8b" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="VDSL8b" id="VDSL8b" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">8c Enabled</li>
+	<li class="right_table">
+      <input name="VDSL8c" id="VDSL8c" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="VDSL8c" id="VDSL8c" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul>
+    <ul>
+	<li class="left_table">8d Enabled</li>
+	<li class="right_table">
+      <input name="VDSL8d" id="VDSL8d" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="VDSL8d" id="VDSL8d" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">12a Enabled</li>
+	<li class="right_table">
+      <input name="VDSL12a" id="VDSL12a" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="VDSL12a" id="VDSL12a" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>   
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">12b Enabled</li>
+	<li class="right_table">
+      <input name="VDSL12b" id="VDSL12b" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="VDSL12b" id="VDSL12b" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul>
+  <ul>
+	<li class="left_table">17a Enabled</li>
+	<li class="right_table">
+      <input name="VDSL17a" id="VDSL17a" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="VDSL17a" id="VDSL17a" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul>
+<!--  //not support this model
+  <ul>
+	<li class="left_table">30a Enabled</li>
+	<li class="right_table">
+      <input name="VDSL30a" id="VDSL30a" type="radio" value="1"/>
+      Enable
+      <input name="VDSL30a" id="VDSL30a" type="radio" value="0"/>
+      Disable 
+	</li>
+  </ul>
+-->
+  <ul>
+	<li class="left_table">US0</li>
+	<li class="right_table">
+      <input name="VDSLUS0" id="VDSLUS0" type="radio" value="1"/>
+      <%ejGetML(MLG_WAN_Broadband_Str4)%>
+      <input name="VDSLUS0" id="VDSLUS0" type="radio" value="0"/>
+      <%ejGetML(MLG_Common_Disable)%>  
+	</li>
+  </ul>
+</div>
+</li>
+</div>
+<!--//Albert, 20131129 -->
+<div id="EthWanCfg">
+<li class="title"><%ejGetML(MLG_WAN_EthWen_setup)%></li>    
+<li class="set1"> <div class="w_text">  
+  <ul>
+  <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str105)%> :  </li>
+  <li class="right_table">
+    <label>
+    <select id="ethwan_MediaType" name="ethwan_MediaType" onclick="doEthWanEnable()" >
+      <option value='auto'><%ejGetML(MLG_WAN_Broadband_Str106)%></option>
+      <option value='100FD'><%ejGetML(MLG_WAN_Broadband_Str107)%></option>
+      <option value='100HD'><%ejGetML(MLG_WAN_Broadband_Str108)%></option>
+      <option value='10FD'><%ejGetML(MLG_WAN_Broadband_Str109)%></option>    
+      <option value='10HD'><%ejGetML(MLG_WAN_Broadband_Str110)%></option>          
+    </select>
+    </label>
+  </li> </ul>
+
+</div>
+</li>
+</div>
+<!--//Albert, 20131129 -->
+<!--level 1 end-->
+<li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Maintenance_Apply_Btn)%>" type="button" onClick="btnApply()" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="Cancel" value="<%ejGetML(MLG_Maintenance_Cancel_Btn)%>" type="button" onClick='frmLoad();'/></div></li>
+<!--Button define end-->
+</ul></div>
+</form>
+<!--Set area end-->
+</div>

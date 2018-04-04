@@ -1,0 +1,217 @@
+<script type="text/javascript">
+
+<!-- hide
+
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+
+var maxSp = '<%ejGetVoice(maxSp)%>';                            // MaxProfileCount
+var maxLines = '<%ejGetVoice(maxLines)%>';                      // MaxLineCount
+if ( maxLines.search("ejGetVoice") >= 0 ) {
+   maxLines = 2;                                                // if not provided by provisioning, hard-code maxLines
+}
+var currentSp = '<%ejGetVoice(numSp)%>';                        // current Profile count
+var currentAcnt = '<%ejGetVoice(numLines)%>';                   // current sip accounts
+
+var voiceRunning='<%ejGetVoice(voiceInUse)%>';
+
+var tmplc = '<%ejGetVoice(linesPerVP)%>';                       // number of lines per profile
+var tmpvpn = '<%ejGetVoice(VPName)%>';                         // SIP Service Provider Name
+var tmplp = '<%ejGetVoice(localPort)%>';                        // SIP Local Port
+var tmppa = '<%ejGetVoice(proxyAddr)%>';                        // SIP Server Address
+var tmppp = '<%ejGetVoice(proxyPort)%>';                        // SIP Server Port
+var tmpra = '<%ejGetVoice(regAddr)%>';                          // REGISTER Server Address
+var tmprp = '<%ejGetVoice(regPort)%>';                          // REGISTER Server Port
+var tmpuad  = '<%ejGetVoice(domainName)%>';                     // SIP Service Domain
+
+
+for (var i = 0; i < currentSp; i++) {
+
+	eval( "var lc" + i + " \= \"\" " );            /*line count per profile*/
+	eval( "var vpn" + i + " \= \"\" " );           /*vpName*/
+	eval( "var lp" + i + " \= \"\" " );            /*localPort*/
+	eval( "var pa" + i + " \= \"\" " );            /*proxyAddr*/
+	eval( "var pp" + i + " \= \"\" " );            /*proxyPort*/
+	eval( "var ra" + i + " \= \"\" " );            /*regAddr*/
+	eval( "var rp" + i + " \= \"\" " );            /*regPort*/
+	eval( "var uad" + i + " \= \"\" " );           /*domainName*/ 
+}
+
+
+if ( tmplc.search("ejGetVoice") < 0 ){
+	eval(tmplc);
+}
+if ( tmpvpn.search("ejGetVoice") < 0 ){
+	eval(tmpvpn);
+}
+if ( tmplp.search("ejGetVoice") < 0 ){
+	eval(tmplp);
+}
+if ( tmppa.search("ejGetVoice") < 0 ){
+	eval(tmppa);
+}
+if ( tmppp.search("ejGetVoice") < 0 ){
+	eval(tmppp);
+}
+if ( tmpra.search("ejGetVoice") < 0 ){
+	eval(tmpra);
+}
+if ( tmprp.search("ejGetVoice") < 0 ){
+	eval(tmprp);
+}
+if ( tmpuad.search("ejGetVoice") < 0 ){
+	eval(tmpuad);
+}
+
+/**************************************/
+
+function frmLoad () {
+
+    var errMsg = "<%ejGetOther(errMsg)%>";
+    if (errMsg != '') {
+        hciAlert(errMsg, {height: 180,type: 2, title: ''});
+    }
+	
+	if( parseInt(voiceRunning) == 1 ){
+		alert("<%ejGetML(MLG_VoIP_SIPAccount_AlertMsg_Str1)%>");
+	}		
+
+	var str = '';
+	var i, n = 0;
+	for (i = 0; i < currentSp; i++) {
+		n++;
+		
+		str += "<tr align='center'>";
+		str += "<td class='table_font'>" + n + "</td>";
+		str += "<td class='table_font textOverflow'>" + eval("vpn"+i) + "</td>";
+		str += "<td class='table_font textOverflow'>" + eval("pa"+i) + "</td>";
+		str += "<td class='table_font textOverflow'>" + eval("ra"+i) + "</td>";
+		str += "<td class='table_font textOverflow'>" + eval("uad"+i) + "</td>";
+		str += "<td class='table_font'><div class='i_modify'><ul>";
+		str += "<li><a href='#' class='edit' id='editBtn' title='Edit' onclick='btnEditProvider("+i+")'></a></li>";
+		str += "<li><a href='#' class='delete' id='deleteBtn' title='Delete' onclick='btnDeleteProvider("+i+")'></a></li>";
+		str += "</ul></div></td>";
+		str += "</tr>";
+	}
+	$('#sipserviceProviderTable').append(str);
+}
+
+function rmlClick( sp )
+{
+	if(parseInt(currentSp) <= 1){
+		alert("<%ejGetML(MLG_VoIP_SIPServiceProvider_AlertMsg_Str1)%>");
+		return;
+	}
+
+	with ( document.forms[0] ) {
+		action.value = "deletSP";
+		sessionKey.value = glbSessionKey;
+		spnum.value = sp;
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+function btnDeleteProvider( sp ) {
+
+	var db1 = window.parent.$.zyUiDialog({
+		width: 450,
+		height: 190,
+		title: '<%ejGetML(MLG_VoIP_SIPServiceProvider_Str5)%>',
+		
+		buttons: {
+			'<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close')},
+			'<%ejGetML(MLG_Common_OK)%>': function(){ db1.dialog('close'); rmlClick(sp); }
+		}
+	});
+	var link = 'pages/delete.html';
+	if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+	link='../../'+link;
+	db1.load(link);
+	db1.dialog('open');
+}
+
+function btnAddProvider() {
+	var db1 = window.parent.$.zyUiDialog({
+		width: 770,
+		height: 430,
+		title: '<%ejGetML(MLG_VoIP_SIPServiceProvider_Str6)%>',
+		
+		buttons: {
+			'<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+			'<%ejGetML(MLG_Common_Apply)%>':function(){}
+		}
+	});
+	var link = 'pages/voip/sip/SIPServiceProvider_add.html';
+	if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+	link='../../'+link;
+	db1.load(link);
+	db1.dialog('open');
+}
+
+function btnEditProvider( sp ) {
+
+	with ( document.forms[0] ) {
+		editVpSelect.value = sp;
+	}
+
+	var db1 = window.parent.$.zyUiDialog({
+		width: 770,
+		height: 430,
+		title: '<%ejGetML(MLG_VoIP_SIPServiceProvider_Str7)%>',
+		
+		buttons: {
+			'<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+			'<%ejGetML(MLG_Common_Apply)%>':function(){}
+		}
+	});
+	var link = 'pages/voip/sip/SIPServiceProvider_edit.html';
+	if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+	link='../../'+link;
+	db1.load(link);
+	db1.dialog('open');
+}
+
+$(document).ready(function() {
+	//resetMsg();
+	frmLoad();
+});
+
+// done hiding -->
+</script>
+
+<form id="SipServerForm" name="sipServerForm" method="post" action="/pages/tabFW/sip-voicesipcfg.cmd" onsubmit="return formCheck()">
+
+<input name="action" type="HIDDEN" id="action" value="view"; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""; />
+<input name="spnum" type="HIDDEN" id="spnum" value=""; />
+<input name="editVpSelect" type="HIDDEN" id="editVpSelect" value=""; />
+
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+  <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b> </div>
+  <div class="explain_text"><%ejGetML(MLG_VoIP_SIPServiceProvider_Explain)%></div>
+  <div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+</div>
+<!--Unit Explain End-->
+<div class="data_frame">
+	<ul>
+		<li class="set1">
+			<div class="w_table"><input type="button" value="<%ejGetML(MLG_VoIP_SIPServiceProvider_Str6)%>" id='Fw_Add' onclick="btnAddProvider()"/></div>
+			<div class="w_table">
+				<table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;"class="table_frame" id="sipserviceProviderTable">
+					<tr align="center" valign="center">
+						<td width="5%" class="top_font ">#</td>
+						<td class="top_font"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str1)%></td>
+						<td class="top_font "><%ejGetML(MLG_VoIP_SIPServiceProvider_Str2)%></td>
+						<td class="top_font "><%ejGetML(MLG_VoIP_SIPServiceProvider_Str3)%></td>
+						<td class="top_font "><%ejGetML(MLG_VoIP_SIPServiceProvider_Str4)%></td>
+						<td width="60"  class="top_font " style="border-right:0px;"><%ejGetML(MLG_Common_Modify)%></td>
+					</tr>
+				</table>
+			</div>
+		</li>
+	</ul>
+</div>
+</div><br/><br/>
+</form>

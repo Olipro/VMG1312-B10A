@@ -1,0 +1,259 @@
+<script language="JavaScript">
+<!--hide
+
+var glbSessionKey = '<%ejGetOther(sessionKey)%>';
+var tagIndex = '<%ejGetOther(laninterface)%>';
+var tagCmdList = tagIndex.split('|');
+var supporthpna = '<%ejGetOther(sysInfo, buildHPNA)%>';
+var supportWanToLan = '<%ejGetOther(sysInfo, enblEthWanToLan)%>';
+
+function operaionSelect(tagId)
+{
+   var operObj = document.getElementById('tagOperation' + tagId);
+   var operIndex = operObj.selectedIndex;
+
+   switch(operIndex){
+      case 0: // unchange, disable priority and vlan id text box
+      case 2: // remove, disable priority and vlan id text box
+         var priObj = document.getElementById('Priority' + tagId);
+         var vidObj = document.getElementById('TAGID' + tagId);
+
+         priObj.disabled = true;
+         vidObj.disabled = true;
+         break;
+      case 1: // add, enable priority and vlan id
+         var priObj = document.getElementById('Priority' + tagId);
+         if(priObj.selectedIndex == 0) {
+            priObj.selectedIndex = 1;
+         }
+      case 3: // remark, enable priority and vlan id
+         var priObj = document.getElementById('Priority' + tagId);
+         var vidObj = document.getElementById('TAGID' + tagId);
+
+         priObj.disabled = false;
+         vidObj.disabled = false;
+         break;
+   }
+}
+
+function resetAllItem(){
+   var i = 0, str = '';
+   for ( i = 0; i < tagCmdList.length; i++ ) {
+      if (tagCmdList[i] != '') {
+         var tagCmd = tagCmdList[i].split('/');
+         var tagId = parseInt(tagCmd[0]);
+         var oper = parseInt(tagCmd[1]);
+         var pri = parseInt(tagCmd[2]);
+         var vlanId = parseInt(tagCmd[3]);
+
+         // set operation index
+         var operObj = document.getElementById('tagOperation' + tagId);
+         operObj.selectedIndex = ((oper<0)?(oper+1):oper);
+         operaionSelect(tagId);
+
+         // set priority index and vid
+         if((oper == 1) || (oper == 3)){
+            var priObj = document.getElementById('Priority' + tagId);
+            var vidObj = document.getElementById('TAGID' + tagId);
+
+            priObj.selectedIndex = pri+1;
+            vidObj.value = vlanId;
+         }
+      }
+   }
+}
+
+function btnApply() {
+   var i = 0, str = '';
+   for ( i = 0; i < tagCmdList.length; i++ ) {
+      if (tagCmdList[i] != '') {
+         var tagCmd = tagCmdList[i].split('/');
+         var tagId = parseInt(tagCmd[0]);
+
+         var operObj = document.getElementById('tagOperation' + tagId);
+         var operIndex = operObj.selectedIndex;
+
+         switch(operIndex){
+            case 1: // add, enable priority and vlan id
+               var priObj = document.getElementById('Priority' + tagId);
+               if(priObj.selectedIndex == 0) {
+                  with(document.forms[0]){
+                     if ( tagId == 4 && supporthpna == '1' ) {
+                        //AlertOpen('Priority of HPNA must be set between 0 to 7', 2);
+                        hciAlert('<%ejGetML(MLG_Network_LANVLAN_Str17)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     }
+                     else if ( tagId == 10 && supportWanToLan == '1' ) {
+                        //AlertOpen('Priority of LAN5 must be set between 0 to 7', 2);
+                        hciAlert('<%ejGetML(MLG_Network_LANVLAN_Str17_1)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     }
+                     else {
+                        //AlertOpen('Priority of LAN' + (tagId+1) + ' must be set between 0 to 7', 2);
+                        hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_LANVLAN_Str18)%>", (tagId+1) ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     }
+                     return false;
+                  }
+               }
+            case 3: // remark, enable priority and vlan id
+               var vidObj = document.getElementById('TAGID' + tagId);
+               var tid = parseInt(vidObj.value);
+               if ((tid<0) || (tid>4094) || (vidObj.value == '')){
+                  with(document.forms[0]){
+                     if ( tagId == 4 && supporthpna == '1' ) {
+                        //AlertOpen('VLAN ID of HPNA must be set between 0 and 4094.', 2);
+                        hciAlert('<%ejGetML(MLG_Network_LANVLAN_Str19)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     }
+                     else if ( tagId == 10 && supportWanToLan == '1' ) {
+                        //AlertOpen('VLAN ID of LAN5 must be set between 0 and 4094.', 2);
+                        hciAlert("<%ejGetML(MLG_Network_LANVLAN_Str19_1)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     }
+                     else {
+                        //AlertOpen('VLAN ID of LAN' + (tagId+1) + ' must be set between 0 and 4094.', 2);
+                        hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_LANVLAN_Str20)%>", (tagId+1) ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     }
+                     return false;
+                  }
+               }
+               break;
+         }
+      }
+   }
+
+   return true;
+}
+
+function doSubmit() {
+   if (btnApply()) {
+      document.forms[0].submit();
+      $.openLoadingMask(1);
+   }
+}
+
+function frmLoad() {
+   var i = 0, str = '';
+   $('#lanVlanList').html(str);
+
+   for ( i = 0; i < tagCmdList.length; i++ ) {
+      if (tagCmdList[i] != '') {
+         var tagCmd = tagCmdList[i].split('/');
+         var tagId = parseInt(tagCmd[0]);
+         var oper = parseInt(tagCmd[1]);
+         var pri = parseInt(tagCmd[2]);
+         var vlanId = parseInt(tagCmd[3]);
+
+         str += "<tr align=\"center\">";
+         if ( tagId == 4 && supporthpna == '1' ) {
+            str += "  <td class=\"table_font\">HPNA</td>";
+         }
+         else if ( tagId == 10 && supportWanToLan == '1' ) {
+            str += "  <td class=\"table_font\"><%ejGetML(MLG_Common_LAN)%>5</td>";
+         }
+         else {
+            str += "  <td class=\"table_font\"><%ejGetML(MLG_Common_LAN)%>" + (tagId + 1) + "</td>";
+         }
+         str += "  <td class=\"table_font\">";
+         str += "    <select name=\"tagOperation" + tagId + "\" id=\"tagOperation" + tagId + "\" size=\"1\" onchange=\"operaionSelect(" + tagId+ ")\">";
+         str += "      <option value=\"-1\"><%ejGetML(MLG_Network_LANVLAN_Str11)%></option>";
+         str += "      <option value=\"1\"><%ejGetML(MLG_Network_LANVLAN_Str12)%></option>";
+         str += "      <option value=\"2\"><%ejGetML(MLG_Network_LANVLAN_Str13)%></option>";
+         str += "      <option value=\"3\"><%ejGetML(MLG_Network_LANVLAN_Str14)%></option>";
+         str += "    </select>";
+         str += "  </td>";
+         str += "  <td class=\"table_font\">";
+         str += "    <select name=\"Priority" + tagId + "\" id=\"Priority" + tagId + "\" size=\"1\" >";
+         str += "      <option value=\"-1\"><%ejGetML(MLG_Network_LANVLAN_Str11)%></option>";
+         str += "      <option value=\"0\">0</option>";
+         str += "      <option value=\"1\">1</option>";
+         str += "      <option value=\"2\">2</option>";
+         str += "      <option value=\"3\">3</option>";
+         str += "      <option value=\"4\">4</option>";
+         str += "      <option value=\"5\">5</option>";
+         str += "      <option value=\"6\">6</option>";
+         str += "      <option value=\"7\">7</option>";
+         str += "    </select>";
+         str += "  </td>";
+         str += "  <td class=\"table_font\">";
+
+         str += "    <input type=\"text\" name=\"TAGID" + tagId + "\" id=\"TAGID" + tagId + "\" size=\"10\" maxlength=\"4\" value=\"" + ((vlanId<0)? "": vlanId) + "\">";
+         str += "  </td>";
+         str += "</tr>";
+      }
+   }
+   $('#lanVlanList').html(str);
+   resetAllItem();
+
+   with ( document.forms[0] ) {
+   }
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+//done hiding-->
+</script >
+
+<form action="/pages/tabFW/homeNetworking-lanvlan.cmd" method="post">
+  <input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">
+
+  <div class="content_frame" >
+    <!--Unit Explain start-->
+    <div class="explain">
+      <div>
+        <b class="r1"></b>
+        <b class="r2"></b>
+        <b class="r3"></b>
+        <b class="r4"></b>
+        <b class="r4"></b>
+      </div>
+      <div class="explain_text"><%ejGetML(MLG_Network_LANVLAN_Str1)%></div>
+      <div>
+        <b class="r4"></b>
+        <b class="r4"></b>
+        <b class="r3"></b>
+        <b class="r2"></b>
+        <b class="r1"></b>
+      </div>
+    </div>
+    <!--Unit Explain End-->
+
+    <!--Set area start-->
+    <div class="data_frame"><ul>
+      <li class="space"></li>
+      <li class="set1">
+        <div class="w_table">
+          <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="vlanTable">
+            <tr align="center">
+              <td class="top_font"><center><%ejGetML(MLG_Network_LANVLAN_Str21)%></center></td>
+              <td class="top_font"><center><%ejGetML(MLG_Network_LANVLAN_Str8)%></center></td>
+              <td class="top_font"><center><%ejGetML(MLG_Network_LANVLAN_Str9)%></center></td>
+              <td class="top_font"><center><%ejGetML(MLG_Network_LANVLAN_Str10)%></center></td>
+              <tbody id="lanVlanList" ></tbody>
+            </tr>
+          </table>
+        </div>
+      </li>
+
+      <!--Note define start-->
+      <li class="space"> </li>
+      <li class="set2note">
+        <div class="w_text"><span class="i_note"><%ejGetML(MLG_Network_Note)%>:</span></div> 
+        <div class="note_text">
+          &nbsp;&nbsp;1. <%ejGetML(MLG_Network_LANVLAN_Str15)%><br>
+          &nbsp;&nbsp;2. <%ejGetML(MLG_Network_LANVLAN_Str16)%></div> 
+      </li>
+      <!--Note define end-->
+
+      <li class="space"> </li>
+      <li class="buttonframe">
+        <div class="button_position">
+          <input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="doSubmit();"/>
+          &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+          <input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick="frmLoad();"/>
+        </div>
+      </li>
+
+    </lu></div> <!-- data_frame -->
+    <!--Set area end-->
+  </div> <!-- content_frame -->
+</form>
+

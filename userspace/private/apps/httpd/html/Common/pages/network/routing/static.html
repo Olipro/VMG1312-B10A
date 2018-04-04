@@ -1,0 +1,233 @@
+<script type="text/javascript">
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+var errMsg = "<%ejGetOther(errMsg)%>";
+var dhcpOptionRtList = <%ejGetOtherBig(getDHCPStaticRt)%>;
+var StaticRtList ='<%ejGetOtherBig(getRtEntry)%>';
+var entryNum = '<%ejGet(entryNum)%>';
+$(function(){
+    $('#editBtn').click(function(){
+        var db1 = window.parent.$.zyUiDialog({
+            width: 500,
+            height: 270,
+            title: '<%ejGetML(MLG_Network_StaticRoute_Str27)%>'
+        });
+		var link = 'pages/network/routing/static_add.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+    $('#addnewshareBtn').click(function(){
+    
+       var db1 = window.parent.$.zyUiDialog({
+            width: 500,
+            height:270,
+            title: '<%ejGetML(MLG_Network_StaticRoute_Str28)%>',
+	    buttons: {
+                '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+                '<%ejGetML(MLG_Common_OK)%>': function(){}
+            }	
+        });
+		var link = 'pages/network/routing/static_add.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+	
+    $('#deleteBtn').click(function(){
+    
+        var db1 = window.parent.$.zyUiDialog({
+            width: 450,
+            height: 190,
+            title: '<%ejGetML(MLG_Common_Delete)%>',
+            buttons: {
+               '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close')},
+               '<%ejGetML(MLG_Common_OK)%>': function(){}
+            }
+        });
+		var link = 'pages/delete.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+});
+
+function btnAdd()
+{
+       var db1 = window.parent.$.zyUiDialog({
+             width: '75%',
+             height: 340,
+            title: '<%ejGetML(MLG_Network_StaticRoute_Str10)%>',
+            buttons: {
+                '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+                '<%ejGetML(MLG_Common_Apply)%>': function(){}
+            }
+	  });
+        db1.load('/pages/network/routing/staticRouteAdd.html');
+        db1.dialog('open');
+}
+
+function removeClick(rml) {
+   var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 190,
+              title: '<%ejGetML(MLG_Network_StaticRoute_Str20)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_No)%>': function(){ db1.dialog('close'); },              	
+                 '<%ejGetML(MLG_Common_Yes)%>': function(){ db1.dialog('close'); $.openLoadingMask(1); deleteProcess(rml);}
+              }
+             });
+	   db1.load('/pages/delete.html');
+	   db1.dialog('open');
+}
+
+function deleteProcess(rml)
+{
+	document.forms[0].lst.value = rml;
+	document.forms[0].action.value = 'remove';	
+	document.forms[0].sessionKey.value = gblsessionKey;	
+	document.forms[0].submit();
+}
+
+function editClick(rml) {
+    //__ZyXEL__, Curtis, Encode special chars
+    var loc = 'routing-staticRoute.cmd?lst=' + encodeURIComponent(rml) + '&action=view&sessionKey='+gblsessionKey;
+    var db1 = window.parent.$.zyUiDialog({
+          width: '75%',
+          height: 350,
+         title: '<%ejGetML(MLG_Network_StaticRoute_Str21)%>',
+         buttons: {
+             '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+             '<%ejGetML(MLG_Common_Apply)%>': function(){}
+         }
+   });
+     db1.load(loc);
+     db1.dialog('open');
+
+}
+
+function enblProcess(rml)
+{
+	document.forms[0].lst.value = rml;
+	document.forms[0].action.value = 'enbl';	
+	document.forms[0].sessionKey.value = gblsessionKey;
+	$.openLoadingMask(1);
+	document.forms[0].submit();
+}
+
+$(document).ready(function() {
+	if (errMsg != '')
+	{
+		hciAlert(errMsg, {height: 180, type: 2, title: ''});
+	}
+	
+	var i = 0;
+	var index = 1;
+	if(typeof dhcpOptionRtList == "object"){
+            var str = "";
+	    for(var i in dhcpOptionRtList){
+	        if(typeof dhcpOptionRtList[i] == "object"){
+		    for(var j in dhcpOptionRtList[i].route){
+		        str += "<tr align='center'>\n";
+			str += "<td class=\"table_font\">"+index+"</td>\n";
+			str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" class=\"active_on\" title=\"On\" ></a></li></ul></div></td>\n";
+			str += "<td class=\"table_font\">DHCP Option</td>\n"; //name
+			str += "<td class=\"table_font\">"+dhcpOptionRtList[i].route[j][0]+"</td>\n"; //ip
+			str += "<td class=\"table_font\">"+dhcpOptionRtList[i].route[j][1]+"</td>\n"; //mask
+			str += "<td class=\"table_font\">"+dhcpOptionRtList[i].route[j][2]+"</td>\n"; //gtwy
+			str += "<td class=\"table_font\">"+dhcpOptionRtList[i].name+"</td>\n"; //intf
+			str += "<td class=\"table_font\"></td>\n";
+			str += "</tr>\n";
+			index++;
+		    }
+		}
+	    }
+	    $('#DhcpOptionRt').append(str)
+	}
+        var str2 = StaticRtList.split('|');
+        var finalStr = '';
+
+        if (parseInt(entryNum) >= 32){
+	    $("#addBtn").attr("disabled",true);
+        }
+
+        for ( i = 0; i < str2.length; i++ )
+        {   
+	        var entry = str2[i].split('/');
+                if(str2[i] != '') {	
+	            finalStr += "<tr align='center'>";
+	            finalStr += "<td  class=\"table_font\">"+index+"</td>";
+	            if (entry[1] == '1')
+		        finalStr += "<td class=\"table_font\"><ul><li><img src=\"../../images/i_active_on.gif\" width=\"18\" height=\"18\" href=\"#\" title=\"On\" id='activeoffBtn' onClick = enblProcess('"+entry[2]+"|"+entry[3]+"') ></li></ul></div></td>";
+	            else
+		        finalStr += "<td class=\"table_font\"><ul><li><img src=\"../../images/i_active_off.gif\" width=\"18\" height=\"18\" href=\"#\" title=\"Off\" id='activeonBtn' onClick = enblProcess('"+entry[2]+"|"+entry[3]+"') ></li></ul></div></td>";
+	            finalStr += "<td  class=\"table_font textOverflow\">" + entry[0] + "</td>"; //name
+	            finalStr += "<td  class=\"table_font textOverflow\">" + entry[2] + "</td>"; //ip
+	            finalStr += "<td  class=\"table_font textOverflow\">" + entry[3] + "</td>"; //mask
+	            finalStr += "<td  class=\"table_font textOverflow\">" + entry[4] + "</td>"; //gtwy
+	            finalStr += "<td  class=\"table_font textOverflow\">" + entry[5] + "</td>"; //gtwy
+	            finalStr += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" class=\"edit\" title=\"Edit\" id='editBtn' onClick = editClick('"+entry[0]+"')></a></li><li><a href=\"#\" class=\"delete\" title=\"Delete\" id='deleteBtn' onClick = removeClick('"+entry[2]+"|"+entry[3]+"') ></a></li></ul></div></td>";
+	            finalStr += "</tr>";
+                    index++;
+                }
+	
+            $(function(){
+            $('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );  
+            $('.textOverflow').ellipsis(true);
+            });
+
+         }
+         $('#StaticRt').append(finalStr);
+});
+
+ </script>
+ <form action="/pages/tabFW/routing-staticRoute.cmd" method="post">
+<input name="lst" type="HIDDEN" id="lst" value=""; />
+<input name="action" type="HIDDEN" id="action" value="add"; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""/>
+ <div class="content_frame"><div class="explain"> <div> <b class="r1"></b><b class="r2"></b> <b class="r3"></b><b class="r4"></b> <b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Network_StaticRoute_Str23)%></div><div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b> <b class="r1"></b></div></div>
+         <div class="data_frame"><ul>
+            <li class="set1">
+               <div class="w_table">
+                  <input type="button" name="sysAddUserBtn" value="<%ejGetML(MLG_Network_StaticRoute_Str28)%>"id="addnewshareBtn" />
+               </div>
+            </li>
+            <li class="set1">
+              <div class="w_table">
+  <!--Table define start-->
+   <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="staticTable">
+                <thead id='rtEntry'><tr align="center">
+                  <td width="5%"class="top_font">#</td>
+                  <td class="top_font" width="10%"><%ejGetML(MLG_Network_StaticRoute_Str3)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Network_StaticRoute_Str4)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Network_StaticRoute_Str5)%></td>
+				  <td class="top_font"><%ejGetML(MLG_Network_StaticRoute_Str6)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Network_StaticRoute_Str7)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Network_StaticRoute_Str8)%></td>
+                  <td width="60" class="top_font" style="border-right:0px;"><%ejGetML(MLG_Network_StaticRoute_Str9)%></td>
+                </tr>
+                </thead>
+<tbody id="DhcpOptionRt">
+</tbody>
+<tbody id="StaticRt">
+</tbody>
+
+<!--				
+                <tr align="center">
+                  <td class="table_font">1</td>
+                  <td class="table_font"><img src="../../images/i_active_off.gif" width="18" height="18" /></td>
+                  <td class="table_font">--</td>
+                  <td class="table_font">--</td>
+                  <td class="table_font">--</td>
+                  <td class="table_font">--</td>
+                  <td class="table_font"><div class="i_modify"><ul><li><a href="#" class="edit" id='editBtn' title="<%ejGetML(MLG_Common_Edit)%>"></a></li><li ><a href="#"  id='deleteBtn' class="delete" title="<%ejGetML(MLG_Common_Delete)%>"></a></li></ul></div></td>
+                  </tr>
+-->                
+              </table>
+</div>
+ </li>
+</ul>
+</div><br/><br/>

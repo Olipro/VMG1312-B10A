@@ -1,0 +1,109 @@
+<script language="javascript">
+<!-- hide
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+var errMsg = "<%ejGetOther(errMsg)%>";
+function editAuthRule(id) {
+   var loc = 'broadband-8021xRuleEdit.cmd?index=' + id;
+   loc += '&sessionKey=' + gblsessionKey;
+
+   var db1 = window.parent.$.zyUiDialog({
+              width: '75%',
+              height: 370,
+              title: '<%ejGetML(MLG_WAN_Broadband_8021_AuthenticationEdit)%>',
+
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close');  },
+                 '<%ejGetML(MLG_Common_Apply)%>':function(){}
+              }
+             });
+   db1.load(loc);
+   db1.dialog('open');
+}
+
+function editError(id)
+{
+   if(id == 1)
+   	hciAlert('<%ejGetML(MLG_WAN_ATM_Interface)%>', {height: 180,type: 2, title: ''});
+   else if(id == 2)
+   	hciAlert('<%ejGetML(MLG_WAN_PTM_Interface)%>', {height: 180,type: 2, title: ''});
+   else if(id == 3)
+  	hciAlert('<%ejGetML(MLG_WAN_ETH_Interface)%>', {height: 180,type: 2, title: ''});
+   return;
+}
+
+$(function()
+{
+	$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );  
+	$('.textOverflow').ellipsis(true); //...
+       if (errMsg != '') {
+       hciAlert(errMsg, {height: 180,type: 2, title: ''});
+       }
+
+});
+
+// done hiding -->
+</script>
+<form action="/pages/tabFW/broadband-8021xRuleEdit.cmd" method="post">
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value="" />
+<input name="authATM" type="HIDDEN" id="authATM" value="" />
+<input name="authPTM" type="HIDDEN" id="authPTM" value="" />
+<input name="authETHER" type="HIDDEN" id="authETHER" value="" />
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div>
+	<b class="r1"></b>
+	<b class="r2"></b>
+	<b class="r3"></b>
+	<b class="r4"></b>
+	<b class="r4"></b>
+</div>
+<div class="explain_text"><%ejGetML(MLG_WAN_Broadband_8021_Authentication)%></div>
+<div>
+	  <b class="r4"></b>
+	  <b class="r4"></b>
+	  <b class="r3"></b>
+	  <b class="r2"></b>
+	  <b class="r1"></b>
+  </div>
+</div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<!--level 1 start-->
+<div id="8021xList">
+<li class="title"><%ejGetML(MLG_WAN_Broadband_8021_Authentication)%></li>
+</div>
+
+<li class="set1"> 
+<div class="w_table">
+  <!--Table define start--><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id='tbl' style="table-layout:fixed;">
+				<tr align="center">
+				<td width="3%" class="top_font textOverflow"><center>#</center></td>
+				<td class="top_font textOverflow"><center><%ejGetML(MLG_Common_Status)%></center></td>
+				<td class="top_font textOverflow"><center><%ejGetML(MLG_Network_StaticRoute_Str8)%></center></td>
+				<td class="top_font textOverflow"><center><%ejGetML(MLG_Network_EAP_Identity)%></center></td>
+				<td  class="top_font textOverflow"><center><%ejGetML(MLG_Network_EAP_method)%></center></td>
+				<td class="top_font textOverflow"><center><%ejGetML(MLG_Network_Bidirectional_Authentication)%></center></td>
+				<td class="top_font textOverflow"><center><%ejGetML(MLG_Network_Certificate)%></center></td>
+				<td class="top_font textOverflow"><center><%ejGetML(MLG_Menu_Tab_TrustedCA)%></center></td>
+				<td width="60" class="top_font" style="border-right:0px;"><center><%ejGetML(MLG_Network_StaticRoute_Str9)%></center></td>
+			  </tr>
+				<!-- generate the table -->
+					<%ejGetOtherBig(auth8021xShow)%>
+				<!-- End -->
+  </table>
+</div><!--Table define end-->
+</li>
+
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_WAN_Broadband_Str18)%>:</span></div>
+<div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_WAN_ADD_WanIntf)%> </div>
+<div class="note_text">&nbsp;&nbsp;</div>
+</li>
+<!--Note define end-->
+</ul></div>
+<!--Set area end-->
+</div>
+
+</form>

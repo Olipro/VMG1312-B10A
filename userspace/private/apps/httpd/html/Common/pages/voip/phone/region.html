@@ -1,0 +1,130 @@
+<script language="javascript">
+<!-- hide
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+var currentSp = '<%ejGetVoice(numSp)%>'; //current Profile count
+var voiceRunning = '<%ejGetVoice(voiceInUse)%>';
+var dial_Method = '<%ejGetVoice(dialMethod)%>';
+var locList = '<%ejGetVoice(localeList)%>';
+var selectedLocale = '<%ejGetVoice(localeName)%>';
+
+for (var i = 0; i < currentSp; i++) {
+   eval( "var sl" + i + " \= \"\" " ); /*selectedLocale per profile*/
+}
+if ( selectedLocale.search("ejGetVoice") < 0 ){
+	eval(selectedLocale);
+}
+
+function printLocaleListBox(){
+   var tokLocCodeList = locList.split(",");
+
+   for(i = 0; i < tokLocCodeList.length; i++)
+   {
+      var tokCodeNameList = tokLocCodeList[i].split(" - ");
+	  $('#locale_Name').append('<option value='+tokCodeNameList[0]+' >'+tokCodeNameList[0]+' - '+tokCodeNameList[1]+'</option>'); 
+   }
+}
+
+function btnStartSip(current_view) {
+
+	if(parseInt(voiceRunning)==1){
+		alert("<%ejGetML(MLG_VoIP_region_AlertMsg_Str1)%>");
+	}	
+
+	document.forms[0].action.value = "start";
+	with ( document.forms[0] ) {
+		sessionKey.value = glbSessionKey;	
+		localeName0.value = locale_Name.value;
+		dialMethod.value = dialMethodSelect.value;
+		$.openLoadingMask(1);
+		submit();
+	}	
+}
+
+function enableButtons(){
+   var buttonStart = document.getElementById("StartButton");
+   var buttonDefault = document.getElementById("DefaultButton");
+
+   if ( voiceRunning == 1 ) {
+      buttonStart.disabled = true;
+      buttonDefault.disabled = false;
+   } else {
+      buttonStart.disabled = false;
+      buttonDefault.disabled = false;
+   }
+}
+
+function frmLoad() {
+	with ( document.forms[0] ) {
+		enableButtons();
+		for(var i=0;i<dialMethodSelect.length;i++){
+			if(dialMethodSelect.options[i].value == dial_Method){
+				dialMethodSelect.options[i].selected = true;
+			}
+		}
+		
+		//localeName.value = selectedLocale;	
+		locale_Name.value = eval('sl'+ 0); // always use the first profile setting
+	}
+}
+
+$(document).ready(function() {
+	printLocaleListBox();
+	frmLoad();
+});
+
+// done hiding -->
+ </script>
+<form id="form1" name="form1" method="post" action="/pages/tabFW/phone-voicesipcfg.cmd">
+<input name="action" type="HIDDEN" id="action" value="view"; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""; />
+
+<input name="localeName0" type="HIDDEN" id="localeName0" value=""; />
+<input name="dialMethod" type="HIDDEN" id="dialMethod" value=""; />
+<div class="content_frame">
+<!--Unit Explain start-->
+<div class="explain"> <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b> </div>
+<div class="explain_text"><%ejGetML(MLG_VoIP_region_Explain)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame">
+	<ul>
+		<div class="w_text">
+			<ul>
+				<li class="left_table"><%ejGetML(MLG_VoIP_region_Str1)%> :</li>
+				<li class="right_table">
+					<select name="locale_Name" id="locale_Name">
+					</select>
+				</li>
+			</ul>
+			<ul>
+				<li class="left_table"><%ejGetML(MLG_VoIP_region_Str2)%> :</li>
+				<li class="right_table">
+					<select name="dialMethodSelect">
+						<option value="DialMethod_EUROP"><%ejGetML(MLG_VoIP_region_Str3)%></option>
+						<option value="DialMethod_USA" selected="selected"><%ejGetML(MLG_VoIP_region_Str4)%></option>
+					</select>
+				</li>
+			</ul>
+		</div>
+		<li class="space"> </li>
+		<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Common_Note)%>:</span></div><div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_VoIP_SIPAccount_Str9)%> : <%ejGetML(MLG_VoIP_region_Str5)%></div></li>
+		<li class="space"> </li>
+
+		<!--button frame STAR-->
+		<div class="data_frame">
+			<ul>
+				<li class="buttonframe">
+				<div class="btn-button_position"> 
+					<span class="none_right"><input name="sysSubmit" type='button' onClick="btnStartSip('SIPServiceProvider')" value="<%ejGetML(MLG_Common_Apply)%>" ID="StartButton" disabled="false"></span>
+						&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+					<span class="none_right"><input onclick="frmLoad();"  value="<%ejGetML(MLG_Common_Cancel)%>" id="DefaultButton" disabled="false" type="button"></span>
+				</div>
+				</li>
+			</ul>
+		</div>	
+		<!--button frame END-->	
+	</ul>
+</div>
+</div><br/><br/>
+</form>

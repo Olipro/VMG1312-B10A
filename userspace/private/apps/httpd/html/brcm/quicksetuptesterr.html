@@ -1,0 +1,57 @@
+<html>
+<head>
+<meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+<link rel=stylesheet href='stylemain.css' type='text/css'>
+<link rel=stylesheet href='colors.css' type='text/css'>
+<script language="javascript">
+<!-- hide
+
+function btnBack() {
+   var loc = 'quicksetup.html';
+
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+// done hiding -->
+</script>
+</head>
+
+<body>
+<blockquote>
+<b>Quick Setup Configuration Error</b><br><br>
+<script language="javascript">
+<!-- hide
+var errorCode = '<%ejGet(quicksetupErrCode)%>';
+var msg = '';
+if ( errorCode == '10' ) {
+   msg = 'The Quick Setup cannot add the DSL interface .<br><br>';
+   msg += 'Check if the DSL Line is plugged in properly.';
+   document.writeln(msg);
+} else if(errorCode == '20'){
+   msg = 'The Quick Setup cannot add PPP connection ';
+   document.writeln(msg);
+} else if(errorCode == '21'){
+   msg = 'PPP authentication failed. Check username and password';
+   document.writeln(msg);
+} else if(errorCode == '30'){
+   msg = 'WLAN setup failed';
+   document.writeln(msg);
+}else {
+   msg = 'Unknown Error occured';
+   document.writeln(msg);
+}
+
+   msg = '<br><br>\n';
+   msg += 'Click on "Back" button to retry .\n';
+   msg += '<br><br><br>';
+   document.writeln(msg);
+   msg = '<center>\n';
+   msg += '<input type="button" onClick="btnBack()" value="Back">\n';
+   msg += '</center>';
+   document.writeln(msg);
+// done hiding -->
+</script>
+</blockquote>
+</body>
+</html>

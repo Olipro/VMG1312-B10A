@@ -1,0 +1,31 @@
+
+ <script type="text/javascript">
+     
+alert('demo view onload')
+     
+$('#naviTo1').click(function(){
+   naviApi.refresh(0); 
+});
+     
+$('#refresh').click(function(){
+   naviApi.refresh(); 
+}); 
+
+$('#prev').click(function(){
+   naviApi.prev(); 
+}); 
+
+$('#next').click(function(){
+   naviApi.next(); 
+}); 
+
+     
+</script>
+<br>
+<button id='naviTo1'><%ejGetML(MLG_ConnStatus_Test_Str1)%></button>
+
+<button id='refresh'><%ejGetML(MLG_ConnStatus_Test_Str2)%></button>
+
+<button id='prev'><%ejGetML(MLG_ConnStatus_Test_Str3)%></button>
+
+<button id='next'><%ejGetML(MLG_ConnStatus_Test_Str4)%></button>

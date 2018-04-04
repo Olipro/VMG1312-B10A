@@ -1,0 +1,337 @@
+<style>
+   .qs_headline {
+      font-weight: bold;
+      font-size: 16px;
+      margin: 10px 0 10px 5px;
+      border-bottom: 2px dotted #ccc;
+      padding-bottom: 10px;
+      color: #1c6d9d;
+      position: relative;
+   }
+</style>
+<script type="text/javascript">
+var CheckTree = $('#CheckTree').zyCheckTree({
+   loseControlOptions: ['0']
+});
+var CheckWz = $('#CheckWz').zyCheckTree({
+   isParseTreeByJson: false
+/*
+   parseJson:'pages/wizard/wizard.json',
+   root: 'Quick Start',
+   parseFn: function(i, item){ return item.status=='step';}
+*/
+});
+
+// CheckWz.selectAll();
+var objXMLHTTP = null;
+var groupInfo;
+var groupItems;
+var quickStart;
+var currentGroup;
+var configurable = '<%ejGetOther(privilegeControl)%>';
+var groupAccounts = new Array();
+
+var db = $('.wrap').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnSave(); });
+
+//collapse all
+$('#collapseBtn').click(function(){
+   CheckTree.collapseAll();
+   CheckWz.collapseAll();
+});
+
+//expand all
+$('#expandBtn').click(function(){
+   CheckTree.expandAll();
+   CheckWz.expandAll();
+});
+
+$("#group").change(function(){
+   updateCheckTreeBySelector();
+});
+
+$('#exitBtn').click(function() {
+   window.location='../index.html';
+});
+
+function getGroupInfo()
+{
+   if ( objXMLHTTP != null ) {
+      objXMLHTTP.open("POST", "/pages/loginPrivilege/getGroupInfo.html", true);
+
+      objXMLHTTP.onreadystatechange = function()
+      {
+         if (objXMLHTTP.readyState == 4) {
+            groupInfo = objXMLHTTP.responseText;
+            if (groupInfo.indexOf("/") < 0) {
+               groupInfo = '';
+            }
+            getQuickStartInfo();
+         }
+      }
+
+      objXMLHTTP.send(null);
+   }
+}
+
+function getQuickStartInfo()
+{
+   if ( objXMLHTTP != null ) {
+      objXMLHTTP.open("POST", "/pages/loginPrivilege/getQuickStartInfo.html", true);
+
+      objXMLHTTP.onreadystatechange = function()
+      {
+         if (objXMLHTTP.readyState == 4) {
+            quickStart = objXMLHTTP.responseText;
+            if (quickStart.indexOf("|") < 0) {
+               quickStart = '';
+            }
+            updateGroup();
+            $("#group").get(0).selectedIndex = currentGroup;
+            updateCheckTreeBySelector();
+         }
+      }
+
+      objXMLHTTP.send(null);
+
+   }
+}
+
+function updateCheckTreeBySelector()
+{
+   var groupType = $("#group").find('option:selected').val();
+
+   if (groupType == 'Supervisor') {
+      $(".qs_headline").show();
+      $("#groupInfo").show();
+      $("#waiting").hide();
+      $("#status").hide();
+      $(".tiersright").hide();
+      $("#p_username").show();
+      $("#p_pwd").show();
+      $("#username").val('supervisor');
+      username.disabled = true;
+      $("#pwd").val('');
+   } else {
+      var info;
+      for (var i = 0 ; i < groupItems.length ; i++) {
+         info = groupItems[i].split("/");
+         if (info[0] == groupType) break;
+      }
+
+      //$.trim(quickStart);
+      var wsInfo = $.trim(quickStart).split("|");
+      $(".checkbox", CheckWz).removeClass('checked');
+      if (wsInfo[i] == '1') {
+         $(".checkbox", CheckWz).addClass('checked');
+      }
+
+      $(".qs_headline").show();
+      $("#groupInfo").show();
+      $("#waiting").hide();
+      $("#status").hide();
+      $(".tiersright").show();
+      $("#p_username").hide();
+      $("#p_pwd").hide();
+      CheckTree.setCheckedItems(info[1]);
+   }
+}
+
+function sendPrivilegeConfig(url)
+{
+   if ( objXMLHTTP != null ) {
+      objXMLHTTP.open("POST", "./" + url, true);
+      $("#waiting").show();
+      $(".tiersright").hide();
+      $("#status").hide();
+      $("#p_username").hide();
+      $("#p_pwd").hide();
+      $(".qs_headline").hide();
+      $("#groupInfo").hide();
+      objXMLHTTP.onreadystatechange = function()
+      {
+         if (objXMLHTTP.readyState == 4) {
+            getGroupInfo();
+         }
+      }
+      objXMLHTTP.send(null);
+   }
+}
+
+function btnSave()
+{
+   var loc = 'loginPrivilege-privilege.cmd?action=viewcfg';
+   var type = $("#group").find('option:selected').val();
+
+   if (type == 'Supervisor') {
+      loc += "&isPrivilege=0";
+      loc += "&userName=" + $("#username").val();
+      loc += "&password=" + $("#pwd").val();
+   } else {
+      loc += "&isPrivilege=1";
+      loc += "&groupName=" + type;
+
+      if ($("#node_wz").hasClass('checked')) {
+         loc += "&quickStart=1";
+      } else {
+         loc += "&quickStart=0";
+      }
+
+      var getArray = CheckTree.getCheckedJsonIDs();
+      var result = '';
+      for (var i = 0 ; i < getArray.length ; i++) {
+         if (result == '')
+            result = getArray[i];
+         else
+            result += ',' + getArray[i];
+      }
+
+      loc += "&privilege=" + result;
+   }
+
+   sendPrivilegeConfig(loc);
+}
+
+function updateGroup()
+{
+   var str = '';
+//   var numOfGrp;
+
+   currentGroup = $("#group").find('option:selected').val();
+/*
+   numOfGrp = $("#group").get(0).options.length;
+   for (var i = 0 ; i < numOfGrp ; i++)
+      $("#group option:last").remove();
+*/
+   currentGroup = $("#group").get(0).selectedIndex;
+   $("#group option").remove();
+
+   groupItems = groupInfo.split("|");
+   for (var i = 0 ; i < groupItems.length ; i++) { 
+      var item = groupItems[i].split("/");
+      str += '<option value=\"' + item[0] + '">' + item[0] + '</option>';
+   }
+
+   $("#group").append(str);
+}
+
+function fromload()
+{
+   $("#waiting").show();
+   $(".tiersright").hide();
+   $("#status").hide();
+   $("#p_username").hide();
+   $("#p_pwd").hide();
+   $(".qs_headline").hide();
+   $("#groupInfo").hide();
+   getGroupInfo();
+}
+
+$(document).ready(function() {
+   if (window.XMLHttpRequest)  {
+      objXMLHTTP=new XMLHttpRequest();
+   }// code for IE
+   else if (window.ActiveXObject)  {
+      objXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+   }
+   else {
+      alert("The browser no support XMLHttp Object");
+      return;
+   }
+
+   if (configurable == '0')
+      ApplyBtn.hide();
+
+   fromload();
+});
+
+</script>
+<div class="wrap" >
+<div class="space"></div>
+   <div id="groupInfo" style='margin-left:24px;'>
+      <span> <%ejGetML(MLG_Common_Group)%></span>:&nbsp;&nbsp;
+      <select name="select" id="group">
+         <option value="Supervisor" selected="selected"><%ejGetML(MLG_Common_Supervisor)%></option>
+         <option value="Administrator"><%ejGetML(MLG_Common_Administrator)%></option>
+         <option value="User"><%ejGetML(MLG_Common_User)%></option>
+      </select> 
+   </div> 
+
+   <div class='qs_headline'></div>
+   <div class="tiersleft" >
+      <div class="content" style="margin-top:0px; ">
+         <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr id="status">
+               <td class="item"><%ejGetML(MLG_Common_Status)%>:</td>
+               <td>
+                  <input name="radio" type="radio" id="radio" value="radio" checked="checked" /> <%ejGetML(MLG_Common_Enable)%> &nbsp;&nbsp;
+                  <input type="radio" name="radio" id="radio2" value="radio" /> <%ejGetML(MLG_Common_Disable)%>
+               </td>
+            </tr>
+            <tr id="p_username">
+               <td class="item"><%ejGetML(MLG_Common_User_Name)%>:</td>
+               <td><span class="value">
+                  <input name="username" type="text" id="username" value="admin" />
+               </span></td>
+            </tr>
+            <tr id="p_pwd">
+               <td class="item"><%ejGetML(MLG_Common_Password)%>:</td>
+               <td><span class="value">
+                  <input name="pwd" autocomplete="new-password" type="password" id="pwd" value="1234" />
+               </span></td>
+            </tr>
+         </table>
+      </div>
+   </div>
+   <div class="tiersright">
+      <div class="item" style="margin-top:10px;"><%ejGetML(MLG_Common_PrivilegeSetting)%>
+         <div class="tools"><a href="#" id="expandBtn"><%ejGetML(MLG_Common_Expand_All)%></a> | <a href="#" id="collapseBtn"><%ejGetML(MLG_Common_Collapse_All)%></a></div>
+      </div>
+      <div class="treepanel">
+         <div class="r1"></div><div class="r2"></div><div class="r3"></div><div class="r4"></div>
+         <div class="inner">
+            <div class="wizard"><h1><%ejGetML(MLG_Common_Wizard)%></h1>
+               <div id="CheckWz">
+                  <ul class="tree">
+                     <li>
+                        <div id="node_wz" class="checkbox checked"></div>
+                        <label><%ejGetML(MLG_Common_QuickStart)%></label>
+<!--
+                 <ul class='tree'>
+                         <li>
+                             <div id='node_0_1' class='checkbox checked'></div>
+                             <label>Internet Connection</label>
+                         </li>
+                         <li>
+                             <div id='node_0_2' class='checkbox checked'></div>
+                             <label>Wireless Setting</label>
+                         </li>
+						  <li>
+                             <div id='node_0_3' class='checkbox checked'></div>
+                             <label>VoIP</label>
+                         </li>
+                 </ul>
+-->				
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            <div class="config"><h1><%ejGetML(MLG_Common_Configuration)%></h1>
+               <div id='CheckTree'></div>
+            </div>
+         </div>
+         <div class="r4"></div><div class="r3"></div><div class="r2"></div><div class="r1"></div>
+      </div>
+   </div>
+   <!-- waiting Beginning -->
+   <div id="waiting" style="display:none;" class='state'>
+      <div class="qs_content">
+         <p style="display:block;height:110px;">&nbsp;</p>
+         <div class="waiting"></div>
+         <!--p style="font-weight:bold;text-align:center;">Saving and applying configurations, please wait.</p-->
+      </div>
+   </div>
+   <!-- waiting Ending -->
+   <div class="clearfloat"></div>
+</div>

@@ -1,0 +1,84 @@
+<script language="JavaScript">
+
+var defIpAddr='0.0.0.0';
+var LANipAddress = '<%ejGet(ethIpAddress)%>';
+
+function frmLoad() {
+	with ( document.forms[0] ) {
+		dmzAddr.value ='<%ejGetOther(dmzHost)%>';
+		if('<%ejGetOther(dmzHost)%>'==''){
+			ethIp = '<%ejGet(ethIpAddress)%>';
+			ethMask = '<%ejGet(ethSubnetMask)%>';
+			mask = ethMask.split('.');
+			lan = ethIp.split('.');
+			
+			dmzAddr.value = '';
+			
+			for (i = 0; i < 3; i++) {
+				m = parseInt(mask[i]);
+				if (m == 255)
+					dmzAddr.value = dmzAddr.value + lan[i] + '.';
+			}
+			defIpAddr = dmzAddr.value;
+		}
+	}
+
+}
+
+function btnDMZ(){
+	var tempDmzAddr='';
+	with ( document.forms[0] ) {
+		tempDmzAddr = dmzAddr.value;
+	
+		if(tempDmzAddr == defIpAddr){
+			tempDmzAddr = '';
+		}
+	
+		if ( tempDmzAddr != '' && isValidIpAddress(tempDmzAddr) == false ) {
+			hciAlert (MLG_Makestring("<%ejGetML(MLG_NAT_DMZ_AlertMsg_Str1)%>", tempDmzAddr ), {height: 180, type: 2, title: ''});
+			return;
+		}
+		if ( tempDmzAddr ==  LANipAddress) {
+			hciAlert (MLG_Makestring("<%ejGetML(MLG_NAT_DMZ_AlertMsg_Str2)%>", tempDmzAddr ), {height: 180, type: 2, title: ''});
+			return;
+		}
+		address.value = tempDmzAddr;
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+</script>
+
+<div class="content_frame" >
+<form action="/pages/tabFW/nat-scdmz.cmd" method="post" onSubmit="return false;">
+<input type="hidden" name="address" id="address" value="">
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_NAT_DMZ_Explain)%> </div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1"> 
+<div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_NAT_DMZ_Str2)%> : </li>
+    <li class="right_table"> <input onChange="checkIpAddress()" type="text" name="dmzAddr" value="0.0.0.0" size="15" maxlength="15"></li>
+  </ul>
+</div>
+</li>
+<li class="space"> </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Common_Note)%>:</span></div><div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_NAT_DMZ_Str4)%>
+ <br>&nbsp;&nbsp;<%ejGetML(MLG_NAT_DMZ_Str5)%> </div></li>
+<li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe"><div class="button_position"><input name="sysSubmit" onclick="btnDMZ()" value="<%ejGetML(MLG_Common_Apply)%>" type="button" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();'/></div></li>
+<!--Button define end-->
+</ul></div>
+</div>
+<br><br>
+</form>

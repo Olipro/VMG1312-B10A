@@ -1,0 +1,683 @@
+<script language="javascript">
+<!-- hide
+var sessionKey='<%ejGetOther(sessionKey)%>';
+var	mode = <%ejGet(logMode)%>;
+var addr = '<%ejGet(logIpAddress)%>';
+var port = '<%ejGet(logPort)%>';
+var logMailServerVar = '<%ejGet(logMailServer)%>';
+var logMailSubjectVar = '<%ejGet(logMailSubject)%>';
+var securityLogMailSubjectVar = '<%ejGet(securityLogMailSubject)%>';
+var logFromVar = '<%ejGet(logFrom)%>';
+var logMailAddressVar = '<%ejGet(logMailAddress)%>';
+var alertMailAddressVar = '<%ejGet(alertMailAddress)%>';
+var alertIntervalVar = <%ejGet(alertInterval)%>;
+var logSMTPAuthVar = '<%ejGet(logSMTPAuth)%>';
+var logSMTPUserVar = '<%ejGet(logSMTPUser)%>';
+var logSMTPPasswordVar = '<%ejGet(logSMTPPassword)%>';
+var logCategoryVar = '<%ejGet(logCategory)%>';
+var alertCategoryVar = '<%ejGet(alertCategory)%>';
+var logCapacityAlarmPercentVar = '<%ejGet(logCapacityAlarmPercent)%>';
+var clearLogAfterSendMailVar = '<%ejGet(clearLogAfterSendMail)%>';
+var supportMoca = '<%ejGetOther(sysInfo, buildSupportMoca)%>';
+var logCategoryShow = '<%ejGet(logCategoryShow)%>';
+var supportEmailNotification='<%ejGetOther(sysInfo, buildEmailNotification)%>';
+var buildvoip='<%ejGetOther(buildvoip)%>'; //ZyXEL, ShuYing, build VoIP
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; //ZyXEL, Albert add for Etisalat, hide DSL 20131129	
+var modelname= '<%ejGet(modelName)%>';
+
+
+function getLogPort() {
+   var portNum = parseInt(port);
+   if ( isNaN(portNum) || portNum == 0 )
+      portNum = 514; // default system log server port is 514
+
+   return portNum;
+}
+
+function hideInfo(hide) {
+	var tmp = addr.substr(1,addr.length-2);
+	if ( hide == 1 ) {
+		document.forms[0].logIpAddress.value = '';
+		document.forms[0].logPort.value = '';
+		document.forms[0].logIpAddress.disabled = true;
+		document.forms[0].logPort.disabled = true;
+	}
+	else {
+		if (test_ipv6(tmp)==true){
+			document.forms[0].logIpAddress.value = tmp;
+		} else {
+			document.forms[0].logIpAddress.value = addr;
+		}
+		document.forms[0].logPort.value = getLogPort();
+		document.forms[0].logIpAddress.disabled = false;
+		document.forms[0].logPort.disabled = false;
+	}
+}
+
+function cbClick() {
+  with ( document.forms[0] ) {
+	   var val = logMode.options[logMode.selectedIndex].value;
+	   if ( val == '1' || val == '4' )
+		    hideInfo(1);
+	   else
+		    hideInfo(0);
+	}
+}
+
+function createLogMode()
+{
+  with ( document.forms[0] ) {
+    var logModesStr = '<%ejGetOther(logModeOptions)%>';
+    var modeOption = logModesStr.split('|');
+    var str = '';
+    var i;
+    
+    for ( i = 0; i< modeOption.length; i++ ) {
+      if(modeOption[i] != "") {
+        var modeStr = modeOption[i].split('/');
+        str += "  <option value='" + modeStr[1] + "'>" + modeStr[0] + "</option>";
+      }
+    }
+    
+    $('#logMode').append(str);
+  }
+}
+
+function createMailServer()
+{
+  with ( document.forms[0] ) {
+    var i = 0;	
+   	var ServerList = '<%ejGetOther(mailServerList)%>';
+    var mailServer = ServerList.split('|');	
+    var str = '';
+
+    for (i=0; i<mailServer.length; i++)
+    {
+      if(mailServer[i]!=""){
+        var names = mailServer[i].split('/');
+        str += "  <option value='" + names[0] + "'>" + names[0] + "</option>";
+      }
+    }
+
+    $('#log_MailServer').append(str);
+  }
+}
+
+function frmLoad() {
+   var errMsg = "<%ejGetOther(errMsg)%>";
+	if (errMsg != '')
+	{
+		hciAlert(errMsg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+	}
+
+	/* hide logCapacityAlarmPercent */
+	showhide("logCapacityAlarmPercent_hide", "1");
+	
+	if(modelname == "VMG1312-B10A" || modelname == "VMG1312-B10B" || modelname == "VMG1312-B30A" || modelname == "VMG1312-B30B"){
+		showhide("IPSec", "0");
+	}
+	//ZyXEL, ShuYing, build VoIP
+	if(buildvoip == 0){
+		showhide("VoIP", "0");
+	}else{
+		//ZyXEL, Albert add to control hide VOIP for SYSLOG in GUI 20140122    
+		if(customizationFlag & 0x00000200){
+			showhide("VoIP", "0");
+		}
+	}
+
+	//ZyXEL, Albert add to control hide IPSec for SYSLOG in GUI 20140218   
+	if(customizationFlag & 0x00000400){
+		showhide("IPSec", "0");
+	}
+
+	
+	if(supportEmailNotification==1)
+	{
+		showhide("MailServer", "0");
+		showhide("MailServer_Email", "1");
+		showhide("smtpAuth", "0");
+		showhide("From_email", "0");
+	}
+	else
+	{
+		showhide("MailServer", "1");
+		showhide("MailServer_Email", "0");
+		showhide("smtpAuth", "1");
+		showhide("From_email", "1");
+	}
+	
+	with ( document.forms[0] ) {
+		if ( supportMoca != '1' ) {
+			$('#moca').hide();
+		}
+
+		createLogMode();
+		if(<%ejGet(logStatus)%> == 0)
+			status[1].checked = true;
+		else
+			status[0].checked = true;
+		var i=0;
+		var tmp = addr.substr(1,addr.length-2);
+		if (test_ipv6(tmp)==true){
+			logIpAddress.value = tmp;
+		} else {
+			logIpAddress.value = addr;	
+		}
+		logPort.value = port;
+		for(i=0;i<logMode.length;i++) {
+			if(mode == logMode.options[i].value) {
+				logMode.selectedIndex = i;
+				break;
+			}
+		}
+		if ( mode == 1 || mode == 4 ) {
+			hideInfo(1);
+		} else {
+			hideInfo(0);
+		}
+		typeClick();
+		if(supportEmailNotification==1){
+			createMailServer();
+			for(i = 0;i<log_MailServer.length;i++){
+				if( log_MailServer.options[i].value == "<%ejGet(logMailServer)%>" )
+					log_MailServer.selectedIndex = i;
+			}
+		}
+		else{
+		logMailServer.value = logMailServerVar;
+		}
+		logMailSubject.value = logMailSubjectVar;
+		securityLogMailSubject.value = securityLogMailSubjectVar;
+		if(logFromVar == "")
+			logFrom.value = "<%ejGet(modelName)%>";
+		else
+			logFrom.value = logFromVar;
+		logMailAddress.value = logMailAddressVar;
+		alertMailAddress.value = alertMailAddressVar;
+		alertInterval.value = alertIntervalVar;
+		logCapacityAlarmPercent.value = logCapacityAlarmPercentVar;
+		if(logSMTPAuthVar == 1)
+		  enblSMTPAuth[0].checked = true;
+		else
+		  enblSMTPAuth[1].checked = true;
+		logSMTPUser.value = logSMTPUserVar;
+		logSMTPPassword.value = logSMTPPasswordVar;
+		authClick();
+		if(clearLogAfterSendMailVar == 1)
+		  enblClearLogAfterMail[0].checked = true;
+		else
+		  enblClearLogAfterMail[1].checked = true;
+	}
+
+	if(logCategoryShow == '1')
+	{
+		var logTypes = document.getElementsByName("log_category");
+		for(i=0;i<logTypes.length;i++){
+		  logTypes[i].checked = false;
+		}
+		
+		var alertTypes = document.getElementsByName("alert_category");
+		for(i=0;i<alertTypes.length;i++){
+		  alertTypes[i].checked == false;
+		}
+			
+		if(logCategoryVar != ""){
+		  var temp = new Array();
+		  temp = logCategoryVar.split(",");
+		  for(i=0;i<temp.length;i++){
+		    document.getElementById("log_" + temp[i]).checked = true;
+		  }
+		}
+		
+		if(alertCategoryVar != ""){
+	    var temp2 = new Array();
+		  temp2 = alertCategoryVar.split(",");
+		  for(i=0;i<temp2.length;i++){
+		    document.getElementById("alert_" + temp2[i]).checked = true;
+		  }
+		}
+    }
+    else
+        showhide("logCategorySetting", "0");
+}
+
+function typeClick() {
+	with ( document.forms[0] ) {
+		if ( status[1].checked == true ){
+			logMode.disabled=true;
+			logIpAddress.disabled=true;
+			logPort.disabled=true;
+		}
+		else {
+			logMode.disabled=false;
+			var val = logMode.options[logMode.selectedIndex].value;
+			if ( val == '1' || val == '4' ) {
+				hideInfo(1);
+			}
+			else {
+				hideInfo(0);
+			}
+		}
+	}
+}
+
+function authClick() {
+  with ( document.forms[0] ) {
+    if(enblSMTPAuth[1].checked == true) {
+      logSMTPUser.disabled = true;
+      logSMTPPassword.disabled = true;
+    }
+    else {
+      logSMTPUser.disabled = false;
+      logSMTPPassword.disabled = false;
+    }
+  }
+}
+
+function isNumValid(number, max, min)
+{
+    var temp;
+    
+	  if(number == "" || isNaN(number))
+	     return false;
+	  else {
+	     temp = parseInt(number);
+	     if(temp<min || temp>max)
+	        return false;
+    }
+    
+    return true;
+}
+
+function btnApply() {
+	var mode;
+	var hostNameExp = /^([0-9a-zA-Z]|\:)+([0-9a-zA-Z]|\-|\.|:)+[0-9a-zA-Z]+$/;  /* string may contain IPv4 or IPv6 address. */
+	var ipv4AddrExp = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/;
+	var ipv6AddrExp = /(\:+)/;
+	with ( document.forms[0] ) {
+		if ( status[0].checked == true )
+		  logStatus.value = 1;
+		else
+		  logStatus.value = 0;
+		mode = logMode.value;
+		if ( mode == 1 || mode == 4 ) {
+//		  var tmp = addr.substr(1,addr.length-2);
+//			if (test_ipv6(tmp)== true){
+//				logIpAddress.value = tmp;
+//			} else {
+				logIpAddress.value = addr;	
+//			}
+		  logPort.value = getLogPort();
+		} else {
+			if (status[0].checked == true) { 
+            if (logIpAddress.value.match(hostNameExp)) {
+               if (logIpAddress.value.match(ipv4AddrExp) && isValidIpAddress(logIpAddress.value) == false) {
+                  //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+                  hciAlert(MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str8)%>", ""), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+               if (logIpAddress.value.match(ipv6AddrExp) && isValidIpAddress6(logIpAddress.value) == false) {
+                  //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+                  hciAlert(MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str8)%>", ""), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+            } else {
+               //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+               //hciAlert('Server IP address "' + logIpAddress.value + '" is invalid host name.', {height: 180, type: 2, title: ''});
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str8)%>", ""), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+         }
+			if ( status[0].checked == true && isValidPort(logPort.value) == false ) {
+            //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+            hciAlert(MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str9)%>", ""), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return;
+			}
+		}
+
+	if(supportEmailNotification == 0)
+	{
+		if(logMailServer.value != ""){
+		  if ( isValidIpAddress(logMailServer.value) == false && isValidHostName(logMailServer.value) == false ) {
+			var tmpStr = "<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str11)%>";
+			//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+			//hciAlert (MLG_Makestring(tmpStr, logIpAddress.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			hciAlert (MLG_Makestring(tmpStr, ""), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			  return;
+		  }
+
+		  if(logMailSubject.value == "") {
+			hciAlert("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str1)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		    return;
+		  }
+
+		  if(securityLogMailSubject.value == "") {
+			hciAlert("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str2)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		  }
+
+		  if ( isValidEmail(logFrom.value) == false ) {
+			  var tmpStr = "<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str32)%>";
+			  //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+			  //hciAlert(MLG_Makestring(tmpStr, logFrom.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			  hciAlert(MLG_Makestring(tmpStr, ""), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			  return;
+		  }
+		  
+		  if ( isValidEmail(logMailAddress.value) == false ) {
+		      var tmpStr = "<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str10)%>";
+		      //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+		      //hciAlert(MLG_Makestring(tmpStr, logMailAddress.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		      hciAlert(MLG_Makestring(tmpStr, ""), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		      return;
+		  }
+
+		  if ( isValidEmail(alertMailAddress.value) == false ) {
+			  var tmpStr = "<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str12)%>";
+			  //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+			  //hciAlert(MLG_Makestring(tmpStr, alertMailAddress.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			  hciAlert(MLG_Makestring(tmpStr, ""), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		  }
+
+	    if(isNumValid(alertInterval.value, 3600, 0) == false){
+			hciAlert("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str3)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+      }
+
+	    if(isNumValid(logCapacityAlarmPercent.value, 100, 0) == false){
+			hciAlert("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str4)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+      }
+
+		  if ( enblSMTPAuth[0].checked == true ) {
+		    logSMTPAuth.value = 1;
+		    if(logSMTPUser.value == "") {
+			  hciAlert("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str5)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		      return;
+		    }
+		    if(logSMTPPassword.value == "") {
+			  hciAlert("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str6)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		      return;
+		    }
+		  }
+		  else
+		    logSMTPAuth.value = 0;
+		}
+	}
+	else
+	{
+		if(log_MailServer.value != "")
+		{
+		  if ( isValidIpAddress(log_MailServer.value) == false && isValidHostName(log_MailServer.value) == false ) {
+			   hciAlert("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str33)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			  return;
+		  }
+		  logMailServer.value =log_MailServer.value;
+
+		  if(logMailSubject.value == "") {
+			   hciAlert("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str1)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		    return;
+		  }
+
+		  if(securityLogMailSubject.value == "") {
+			   hciAlert("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str2)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		    return;
+		  }
+
+		  if ( isValidEmail(logMailAddress.value) == false ) {
+			   var tmpStr = "<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str10)%>";
+			   //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+			   //hciAlert(MLG_Makestring(tmpStr, logMailAddress.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			   hciAlert(MLG_Makestring(tmpStr, ""), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			  return;
+		  }
+
+		  if ( isValidEmail(alertMailAddress.value) == false ) {
+			   var tmpStr = "<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str12)%>";
+			   //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+			   //hciAlert(MLG_Makestring(tmpStr, alertMailAddress.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			   hciAlert(MLG_Makestring(tmpStr, ""), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			  return;
+		  }
+
+		  if(isNumValid(alertInterval.value, 3600, 0) == false){
+		       hciAlert("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str3)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+	       return;
+		  }
+
+		  if(isNumValid(logCapacityAlarmPercent.value, 100, 0) == false){
+		       hciAlert("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str4)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+	       return;
+		  }
+		}
+	}
+	
+		var i;
+		var temp;
+		var logTypes = document.getElementsByName("log_category");
+		for(i=0;i<logTypes.length;i++){
+		  if(logTypes[i].checked == true)
+		    logCategory.value += logTypes[i].id.replace("log_", "") + ",";
+		}
+		var regex = /,$/;
+		logCategory.value = logCategory.value.replace(regex, "");
+		
+		var alertTypes = document.getElementsByName("alert_category");
+		for(i=0;i<alertTypes.length;i++){
+		  if(alertTypes[i].checked == true){
+		    alertCategory.value += alertTypes[i].id.replace("alert_", "") + ",";
+		  }
+		}
+		alertCategory.value = alertCategory.value.replace(regex, "");
+		if(enblClearLogAfterMail[0].checked == true)
+		  clearLogAfterSendMail.value = 1;
+		else
+		  clearLogAfterSendMail.value = 0;
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+
+// done hiding -->
+</script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Maintenance_LogsSetting_Explain)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<form action="/pages/tabFW/logSetting-cfg.cgi" method="post" name="theform" id="theform">
+<div class="data_frame"><ul>
+<li class="set1">
+<div class="title"><%ejGetML(MLG_Maintenance_LogsSetting_Title)%></div>
+<div class="w_text">
+  <ul>
+    <li class="left_table" ><%ejGetML(MLG_Maintenance_LogsSetting_Str2)%> : </li>
+    <li class="right_table">
+      <input name="status" type="radio" onClick="typeClick()" /><%ejGetML(MLG_Common_Enable)%>
+      <input name="status" type="radio" onClick="typeClick()" /><%ejGetML(MLG_Common_Disable)%> (<%ejGetML(MLG_Maintenance_LogsSetting_Str52)%>)</li>
+  </ul>
+</div>
+<div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str4)%>: </li>
+    <li class="right_table">
+      <select name="logMode" id="logMode" size="1" onchange='cbClick()'>
+      <!--<option value="1"> Local-->
+      <!--<option value="2"> Remote-->
+      <!--<option value="3"> Local and Remote-->
+      <!--<option value="4"> Local File-->
+      <!--<option value="5"> Local File and Remote-->
+      </select>
+    </li>
+  </ul>
+</div>
+<div class="w_text">
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str53)%> : </li>
+<li class="right_table">
+  <input maxlength="127" size="48" name="logIpAddress" />&nbsp;(<%ejGetML(MLG_Maintenance_LogsSetting_Str6)%>) </li>
+</ul>
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str7)%> : </li>
+<li class="right_table">
+  <input maxlength="10" size="6" name="logPort" />&nbsp;(<%ejGetML(MLG_Maintenance_LogsSetting_Str55)%>)</li>
+</ul>
+</div>
+</li>
+<li class="space"> </li>
+<li class="set1">
+<div class="title"><%ejGetML(MLG_Maintenance_LogsSetting_Str8)%> </div>
+  <div class="w_text">
+    <ul id="MailServer">
+      <li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str9)%>: </li>
+      <li class="right_table">
+        <input name="logMailServer" size="30" maxlength="127" value="" type="text" />(<%ejGetML(MLG_Maintenance_LogsSetting_Str10)%>) </li>
+    </ul>
+    <ul id="MailServer_Email">
+      <li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str9)%>: </li>
+      <li class="right_table">
+        <select name="log_MailServer" id="log_MailServer" size="1">
+        </select>
+      </li>
+    </ul>
+    <ul>
+      <li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str11)%>: </li>
+      <li class="right_table">
+        <input name="logMailSubject" size="30" maxlength="127" value="" type="text" /></li>
+    </ul>
+    <ul>
+      <li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str12)%>: </li>
+      <li class="right_table">
+        <input name="securityLogMailSubject" size="30" maxlength="127" value="" type="text" /></li>
+    </ul>
+    <ul id="From_email">
+      <li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str13)%>: </li>
+      <li class="right_table">
+        <input name="logFrom" size="30" maxlength="127" value="" type="text" />(<%ejGetML(MLG_Maintenance_LogsSetting_Str14)%>) </li>
+    </ul>
+    <ul>
+      <li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str15)%>: </li>
+      <li class="right_table">
+        <input name="logMailAddress" size="30" maxlength="127" value="" type="text" />(<%ejGetML(MLG_Maintenance_LogsSetting_Str14)%>) </li>
+    </ul>
+    <ul>
+      <li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str16)%>: </li>
+      <li class="right_table">
+        <input name="alertMailAddress" size="30" maxlength="127" value="" type="text" />(<%ejGetML(MLG_Maintenance_LogsSetting_Str14)%>) </li>
+    </ul>
+    <ul>
+      <li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str17)%>: </li>
+      <li class="right_table">
+        <input name="alertInterval" size="10" maxlength="10" type="text" /><%ejGetML(MLG_Maintenance_TimeSetting_Str54)%> </li>
+    </ul>
+    <ul id="logCapacityAlarmPercent_hide">
+      <li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str18)%>: </li>
+      <li class="right_table">
+        <input name="logCapacityAlarmPercent" size="3" maxlength="3" type="text" />&nbsp;% </li>
+    </ul>
+  <div id="smtpAuth">
+    <ul>
+      <li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str19)%>: </li>
+      <li class="right_table">
+        <input name="enblSMTPAuth" type="radio" value=<%ejGetML(MLG_Common_Enable)%> onClick="authClick()"/>
+        <%ejGetML(MLG_Common_Enable)%>
+        <input name="enblSMTPAuth" type="radio" value=<%ejGetML(MLG_Common_Disable)%> onClick="authClick()"/>
+        <%ejGetML(MLG_Common_Disable)%> (<%ejGetML(MLG_Maintenance_LogsSetting_Str52)%>)</li>
+    </ul>
+    <ul>
+      <li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp; <%ejGetML(MLG_Common_User_Name)%>: </li>
+      <li class="right_table"><input name="logSMTPUser" size="30" maxlength="32" value="" type="text" /></li>
+    </ul>
+    <ul>
+      <li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp; <%ejGetML(MLG_Common_Password)%>: </li>
+      <li class="right_table"><input name="logSMTPPassword" size="30" maxlength="32" value="" type="password" autocomplete="new-password" /></li>
+    </ul>
+  </div>
+    <ul>
+      <li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str22)%>: </li>
+      <li class="right_table">
+        <input name="enblClearLogAfterMail" type="radio" value=<%ejGetML(MLG_Common_Enable)%> />
+        <%ejGetML(MLG_Common_Enable)%>
+        <input name="enblClearLogAfterMail" type="radio" value=<%ejGetML(MLG_Common_Disable)%> />
+        <%ejGetML(MLG_Common_Disable)%> (<%ejGetML(MLG_Maintenance_LogsSetting_Str52)%>)</li>
+    </ul>
+  </div>
+</li>
+<li class="space"> </li>
+<li class="set1" id= "logCategorySetting">
+<div class="title"><%ejGetML(MLG_Maintenance_LogsSetting_Str23)%></div>
+  <div class="w_text"><table width="98%" border="0" cellpadding="0" cellspacing="2" >
+    <tr >
+      <td valign="top" width="35%" >
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr><td class="title3"><%ejGetML(MLG_Maintenance_LogsSetting_Str24)%></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_System"> <%ejGetML(MLG_Maintenance_LogsSetting_Str25)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_DHCP_client"> <%ejGetML(MLG_Maintenance_LogsSetting_Str26)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_PPPoE"> <%ejGetML(MLG_Maintenance_LogsSetting_Str27)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text" id="moca"><ul><input type="checkbox" name="log_category" id="log_MoCA"> <%ejGetML(MLG_Maintenance_LogsSetting_Str54)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_Wireless"> <%ejGetML(MLG_Maintenance_LogsSetting_Str28)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_DHCP_server"> <%ejGetML(MLG_Maintenance_LogsSetting_Str29)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_UPnP"> <%ejGetML(MLG_Maintenance_LogsSetting_Str30)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_NAT"> <%ejGetML(MLG_Maintenance_LogsSetting_Str31)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_Static_route"> <%ejGetML(MLG_Maintenance_LogsSetting_Str32)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_DDNS"> <%ejGetML(MLG_Maintenance_LogsSetting_Str33)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_IGMP"> <%ejGetML(MLG_Maintenance_LogsSetting_Str34)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_QoS"> <%ejGetML(MLG_Maintenance_LogsSetting_Str35)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_TR069"> <%ejGetML(MLG_Maintenance_LogsSetting_Str36)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_NTP"> <%ejGetML(MLG_Maintenance_LogsSetting_Str37)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_XDSL"> <%ejGetML(MLG_Maintenance_LogsSetting_Str56)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_Internet"> <%ejGetML(MLG_Maintenance_LogsSetting_Str57)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_3GDongel"> <%ejGetML(MLG_Maintenance_LogsSetting_Str61)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul id="VoIP"><input type="checkbox" name="log_category" id="log_VoIP"> <%ejGetML(MLG_Maintenance_LogsSetting_Str58)%> </ul></div></td></tr>
+        </table>
+      </td>
+      <td valign="top" width="30%" >
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr><td class="title3"><%ejGetML(MLG_Maintenance_LogsSetting_Str38)%></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_Firewall"> <%ejGetML(MLG_Maintenance_LogsSetting_Str39)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_MAC_filter"> <%ejGetML(MLG_Maintenance_LogsSetting_Str40)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_Forwarded_web"> <%ejGetML(MLG_Maintenance_LogsSetting_Str41)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_Blocked_web"> <%ejGetML(MLG_Maintenance_LogsSetting_Str42)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_Attack"> <%ejGetML(MLG_Maintenance_LogsSetting_Str43)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_Certificate"> <%ejGetML(MLG_Maintenance_LogsSetting_Str44)%> </ul></div></td></tr>
+          <tr id="IPSec"><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_IPSec"> <%ejGetML(MLG_Maintenance_LogsSetting_Str45)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="log_category" id="log_Account"> <%ejGetML(MLG_Maintenance_LogsSetting_Str46)%> </ul></div></td></tr>
+        </table>
+      </td>
+      <td valign="top" width="35%" >
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr><td class="title3"><%ejGetML(MLG_Maintenance_LogsSetting_Str47)%></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="alert_category" id="alert_Attack"> <%ejGetML(MLG_Maintenance_LogsSetting_Str48)%> </ul></div></td></tr>
+          <tr><td height="25"><div class="w_text"><ul><input type="checkbox" name="alert_category" id="alert_Blocked_web"> <%ejGetML(MLG_Maintenance_LogsSetting_Str49)%> </ul></div></td></tr>
+          <tr><td height="25"></td></tr>
+        </table>
+      </td>
+    </tr>
+  </table></div>
+</li>
+<li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick='btnApply()' />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input value="<%ejGetML(MLG_Common_Cancel)%>" type="reset" /></div></li>
+</ul></div>
+<input type="hidden" name="logStatus" id="logStatus" size="1">
+<input type="hidden" name="logLevel" id="logLevel" value="7" size="1">
+<input type="hidden" name="logSMTPAuth" id="logSMTPAuth" size="1">
+<input type="hidden" name="logCategory" id="logCategory" size="256">
+<input type="hidden" name="alertCategory" id="alertCategory" size="256">
+<input type="hidden" name="clearLogAfterSendMail" id="clearLogAfterSendMail" size="1">
+<input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">
+</form>
+<script language='JavaScript'>
+<!--
+$(document).ready(function() {
+
+	frmLoad();
+});
+//-->
+</script>
+</div>
+<br/><br/>

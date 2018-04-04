@@ -1,0 +1,126 @@
+<script language="javascript">
+<!-- hide
+function submitchk(){
+	uname = document.getElementById("userName");
+    pass1 = document.getElementById("userPassword");
+    pass2 = document.getElementById("reuserPassword");
+    chreg =  /[^A-Za-z0-9]/i ;
+	var msg = "";
+	
+	if (uname.value == "") {
+		msg = "<%ejGetML(MLG_Common_User_Name)%> is required.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        uname.focus();
+        return false;
+    }
+	if (uname.value == "supervisor" || uname.value == "support" || uname.value == "user" || uname.value == "nobody" || uname.value == "admin" || uname.value == "zyuser") {
+		msg = "<%ejGetML(MLG_Common_User_Name)%> is invalid.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        uname.focus();
+        return false;
+	}
+	if (uname.value.length < 3 || uname.value.length > 15) {
+		msg = "<%ejGetML(MLG_Common_User_Name)%> must be 3 to 15 characters in length.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        uname.focus();
+        return false;
+    }
+	if (uname.value.search(chreg) >= 0) {
+		msg = "<%ejGetML(MLG_Common_User_Name)%> must be English alphabet or digit.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        uname.focus();
+        return false;
+    }
+	
+	if (pass1.value == "") {
+		msg = "<%ejGetML(MLG_Common_AlertMsg_Str2)%>";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        pass1.focus();
+        return false;
+	}
+	if (pass1.value.search(chreg) >= 0) {
+		msg = "<%ejGetML(MLG_Common_Password)%> must be English alphabet or digit.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        pass1.focus();
+        return false;
+	}
+	if (pass1.value.length < 5 || pass1.value.length > 15) {
+		msg = "<%ejGetML(MLG_Common_Password)%> must be 5 to 15 characters in lenth.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        pass1.focus();
+        return false;
+	}
+
+	if (pass2.value == "") {
+		msg = "Please retype password.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        pass2.focus();
+        return false;
+	}
+	
+	if (pass1.value != pass2.value) {
+		msg = "<%ejGetML(MLG_Common_Login_AlertMsg_Str4)%>";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        pass1.focus();
+        return false;
+	}
+
+	return true;
+}
+
+function btnSave()
+{		
+	if(submitchk() == false){
+		return false;
+	}
+	with (document.forms[0]) {
+		sessionKey.value = mainFrame.glbSessionKey;
+	}
+	return true;
+}
+
+function doSubmit() {
+   if (btnSave()) {
+      document.forms[0].submit();
+      $('.ui-dialog-titlebar-close').trigger('click');
+      $.openLoadingMask(1);
+   }
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var OkBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+OkBtn.click(function(){ doSubmit(); });
+
+// done hiding -->
+</script>
+<form action="/pages/tabFW/usbService-fileuser_add.cmd" method="post" target="mainFrame">
+<input size="15" type="hidden" name="action" value="add" />
+<input size="15" type="hidden" name="sessionKey" />
+<div class="popup_frame" >
+<div class="data_frame2"><ul>
+            <li class="set1">
+               <div class="w_text">
+<ul>
+<li class="left_table"> <%ejGetML(MLG_Common_User_Name)%>  :</li>
+<li class="right_table"><input type="text" name="userName" id="userName" size="30" maxlength="30" /></li>
+</ul>
+<ul>
+<li class="left_table"><%ejGetML(MLG_Common_Loginsum_Str3)%> :</li>
+<li class="right_table"><input type="password" autocomplete="new-password" name="userPassword" id="userPassword" size="30" maxlength="30" /></li>
+</ul>
+  <ul>
+    <li class="left_table">Retype New Password :</li>
+    <li class="right_table"><span class="cfig_word">
+      <input type="password" autocomplete="new-password" name="reuserPassword" id="reuserPassword" size="30" maxlength="30" />
+    </span></li>
+  </ul>
+</div>
+            </li>
+<!--Note define start-->
+<li class="space"> </li>
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Security_FirewallProtocol_Str7)%>:</span></div><div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_Network_USBService_Str19)%></div></li>
+<li class="space"> </li>
+
+         </ul></div>
+      </div>
+</form>

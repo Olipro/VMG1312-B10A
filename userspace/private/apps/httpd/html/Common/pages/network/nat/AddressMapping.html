@@ -1,0 +1,138 @@
+<script language="javascript">
+<!-- hide
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+var errMsg = "<%ejGetOther(errMsg)%>";
+
+function frmLoad () {
+
+	if(errMsg != ""){
+		hciAlert (errMsg, {height: 180, type: 2, title: ''});
+		return;
+	}
+
+}
+function addClick() {
+  
+	var db1 = window.parent.$.zyUiDialog({
+              width: 550,
+              height: 450,
+              title: '<%ejGetML(MLG_NAT_PortForwarding_Str12)%>',
+							
+              buttons: {
+              '<%ejGetML(MLG_Common_Cancel)%>' :function(){ db1.dialog('close'); },
+              '<%ejGetML(MLG_Common_OK)%>':function(){}
+              }
+              });
+	var link = 'pages/network/nat/AddressMappingAdd.html';
+	if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+	link='../../'+link;
+	db1.load(link);
+	db1.dialog('open');
+}
+
+function editClick(Index,sessionKey) {
+	var loc = '/pages/tabFW/nat-AddressMappingEdit.cgi?action=edit&addressMappingIndex=' + Index;
+	loc += '&sessionKey=' + glbSessionKey;
+	
+	var db1 = window.parent.$.zyUiDialog({
+              width: 550,
+              height: 450,
+              title: '<%ejGetML(MLG_NAT_Address_Mapping_Str11)%>',
+							
+              buttons: {
+              '<%ejGetML(MLG_Common_Cancel)%>' :function(){ db1.dialog('close'); },
+              '<%ejGetML(MLG_Common_OK)%>':function(){}
+              }
+              });
+	db1.load(loc);
+	db1.dialog('open');
+}
+function removeClick(rmkey) {
+   var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 190,
+              title: '<%ejGetML(MLG_NAT_PortTriggering_Str20)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>' :function(){ db1.dialog('close'); },
+                 '<%ejGetML(MLG_Common_OK)%>': function(){ db1.dialog('close'); deleteProcess(rmkey); }
+              }
+             });
+   var link = 'pages/delete.html';
+   if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+   link='../../'+link;
+   db1.load(link);
+   db1.dialog('open');
+}
+function deleteProcess(rmkey) {
+   var loc = '/pages/tabFW/nat-addressmapping.cmd?action=remove';
+
+   loc += "&rmkey=" + rmkey;
+   loc += '&sessionKey=' + glbSessionKey;
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+// done hiding -->
+</script>
+<!--
+   <form action="/pages/tabFW/nat-addressmapping.cmd" method="post">
+   <input type=hidden name="sessionKey" id="sessionKey" value="">
+   <input type=hidden name="action" id="action" value="remove">
+   <input type=hidden name="localIPStart" id="localIPStart" value="">
+   <input type=hidden name="localIPEnd" id="localIPEnd" value="">
+   <input type=hidden name="globalIPStart" id="globalIPStart" value="">
+   <input type=hidden name="globalIPEnd" id="globalIPEnd" value="">
+   <input type=hidden name="mappingSet" id="mappingSet" value="">
+   <input type=hidden name="mapType" id="mapType" value="">
+   </form>
+-->
+   <div class="content_frame">
+<!--Unit Explain start-->
+         <div class="explain">
+            <div>
+               <b class="r1"></b>
+               <b class="r2"></b>
+               <b class="r3"></b>
+               <b class="r4"></b>
+               <b class="r4"></b>
+            </div>
+            <div class="explain_text"><%ejGetML(MLG_NAT_Address_Mapping_Explain)%></div>
+            <div>
+               <b class="r4"></b>
+               <b class="r4"></b>
+               <b class="r3"></b>
+               <b class="r2"></b>
+               <b class="r1"></b>
+            </div>
+         </div>
+<!--Unit Explain End-->
+         <div class="data_frame"><ul>
+            <li class="set1">
+               <div class="w_table">
+                  <input type="button" name="sysAddUserBtn" value="<%ejGetML(MLG_NAT_PortForwarding_Str12)%>" onclick="addClick();" />
+               </div>
+            </li>
+            <li class="set1">
+               <div class="w_table">
+                  <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame" id="AMTable">
+					<tr align="center" >
+						<td class="top_font"><%ejGetML(MLG_Common_Set)%></td>
+						<td class="top_font"><%ejGetML(MLG_NAT_Address_Mapping_Str2)%></td>
+						<td class="top_font"><%ejGetML(MLG_NAT_Address_Mapping_Str3)%></td>
+						<td class="top_font"><%ejGetML(MLG_NAT_Address_Mapping_Str4)%></td>
+						<td class="top_font"><%ejGetML(MLG_NAT_Address_Mapping_Str5)%></td>
+						<td class="top_font"><%ejGetML(MLG_Common_Type)%></td>
+						<td class="top_font"><%ejGetML(MLG_Network_StaticRoute_Str9)%></td>
+					</tr>
+					<%ejGetOther(addressMapping)%>
+                  </table>
+               </div>
+            </li>
+<!--Note define start-->
+<li class="space"> </li>
+<!--Note define end-->            
+         </ul></div>
+      </div>

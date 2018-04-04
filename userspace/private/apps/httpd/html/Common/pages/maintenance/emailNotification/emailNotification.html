@@ -1,0 +1,114 @@
+<script language="JavaScript">
+function btnSave() {
+	with ( document.forms[0] ){
+
+		if(isValidIpAddress(Smtp_ServerAddr.value) == false && isValidHostName(Smtp_ServerAddr.value) == false)
+		{
+//			AlertOpen ( <%ejGetML(MLG_Maintenance_Mail_Server_Address_Str)%> "' + Smtp_ServerAddr.value + '" is invalid.', 2);
+			//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+			//hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str30)%>", Smtp_ServerAddr.value), {height: 180, type: 2, title: ''});
+			hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str30)%>", ""), {height: 180, type: 2, title: ''});
+			return;
+		}
+		else if(Smtp_ServerAddr.value=="")
+		{
+//			AlertOpen ( 'Mail Server Address "' + Smtp_ServerAddr.value + '" is invalid.', 2);
+			//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+			//hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str30)%>", Smtp_ServerAddr.value), {height: 180, type: 2, title: ''});
+			hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str30)%>", ""), {height: 180, type: 2, title: ''});
+			return;
+		}
+		
+		SmtpServerAddr.value=Smtp_ServerAddr.value;
+		if( isValidEmail(Smtp_EmailAddress.value) == false )
+		{
+//			AlertOpen ( '<%ejGetML(MLG_Maintenance_Email_Account_Email_Address_Str)%> "' + Smtp_EmailAddress.value + '" is invalid.', 2);
+			//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+			//hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str31)%>", Smtp_ServerAddr.value), {height: 180, type: 2, title: ''});
+			hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str31)%>", ""), {height: 180, type: 2, title: ''});
+			return;
+		}
+		//ZyXEL, check Smtp Server Port, Ricky, 2015/8/5	
+		if(Smtp_port.value=="")
+		{
+			hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str36)%>", ""), {height: 180, type: 2, title: ''});
+			return;
+		}
+		if((Smtp_port.value != 25) && (Smtp_port.value != 587))
+		{
+			hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str37)%>", ""), {height: 180, type: 2, title: ''});
+			return;
+		}
+		//ZyXEL, check Smtp Server Port, Ricky, 2015/8/5	
+		SmtpEmailAddress.value=Smtp_EmailAddress.value;
+		SmtpAuthUser.value=Smtp_AuthUser.value;
+		SmtpAuthPass.value=Smtp_AuthPass.value;
+		SmtpServerPort.value=Smtp_port.value;
+		
+		submit();
+		$('.ui-dialog-titlebar-close').trigger('click');
+		$.openLoadingMask(1);		
+	}
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnSave(); });
+
+</script>
+<form action="/pages/tabFW/emailNotification-mailserver.cmd" method="post" target="mainFrame">
+<input type="hidden" name="SmtpServerAddr" id="SmtpServerAddr" value=""; />
+<input type="hidden" name="SmtpServerPort" id="SmtpServerPort"  value=""; />
+<input type="hidden" name="SmtpEmailAddress" id="SmtpEmailAddress"  value=""; />
+<input type="hidden" name="SmtpAuthUser" id="SmtpAuthUser"  value=""; />
+<input type="hidden" name="SmtpAuthPass" id="SmtpAuthPass"  value=""/>
+<input type="hidden" name="smtpRequiresTLS" id="smtpRequiresTLS" value="0"/>
+<input type="hidden" name="action" id="action"  value="add">
+<input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">
+<div class="popup_frame" >
+<!--Unit Explain start-->
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<!--level 1 title start--><li class="title"><%ejGetML(MLG_Maintenance_Email_Title)%></li><!--level 1 title end-->
+<!--level 1 start--><li class="set1">
+<div class="w_text">
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_Mail_Server_Address_Str)%>: </li>
+<li class="right_table">
+<input type="text" name="Smtp_ServerAddr" size="32" maxlength="64"/>(<%ejGetML(MLG_Maintenance_LogsSetting_Str10)%>)</li>
+</ul>
+</div>
+<div class="w_text">
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_Email_Authentication_Username_Str)%>: </li>
+<li class="right_table">
+<input type="text" name="Smtp_AuthUser" size="32" maxlength="32"/></li>
+</ul>
+</div>
+<div class="w_text">
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_Email_Authentication_Password_Str)%>: </li>
+<li class="right_table">
+<input autocomplete="new-password" type="password" name="Smtp_AuthPass" size="32" maxlength="32"/></li>
+</ul>
+</div>
+<div class="w_text">
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_Email_Account_Email_Address_Str)%>: </li>
+<li class="right_table">
+<input type="text" name="Smtp_EmailAddress" size="32" maxlength="64"/></li>
+</ul>
+</div>
+<div class="w_text">
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_Email_Account_Email_Port_Str)%>: </li>
+<li class="right_table">
+<input type="text" name="Smtp_port" size="32" maxlength="32" value="25"/>(<%ejGetML(MLG_Maintenance_LogsSetting_port_Str1)%>)</li>
+</ul>
+</div>
+</li>
+<!--level 1 end-->
+ </ul></div>
+</form>
+<!--Set area end-->

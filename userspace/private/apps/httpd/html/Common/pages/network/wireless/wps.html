@@ -1,0 +1,872 @@
+<script language="javascript">
+<!-- hide
+var syncNvram = '<%ejGetWl(wlSyncNvram)%>';
+var sessionkey = '<%ejGetOther(sessionKey)%>';
+var WscStaPin = '<%ejGetWl(wlWscStaPin)%>';
+var WscMode = '<%ejGetWl(wlWscMode)%>';
+var WscIRMode = '<%ejGetWl(wlWscIRMode)%>';
+var WscAPMode = '<%ejGetWl(wlWscAPMode)%>';
+var WscMethod = '<%ejGetWl(wlWscMethod)%>';
+var securityMode = '<%ejGetWl(wlAuthMode)%>';
+var enbl = '<%ejGetWl(wlEnbl_wl0v0)%>';
+var apMode = '<%ejGetWl(wlMode)%>';
+var wep = '<%ejGetWl(wlWep)%>';
+var aplock = '<%ejGetWl(wlWscApLock)%>';
+var hide = '<%ejGetWl(wlHide)%>';
+var oldWpsGuiMsg = '<%ejGetWl(wpsGuiMsg)%>';
+var WscVer2    = '<%ejGetWl(wlWscVer2)%>';
+var authmode = '<%ejGetWl(wlAuthMode)%>';
+var band = '<%ejGetWl(wlBand)%>';
+var hidden5G='<%ejGetOther(hidden5G)%>'; //ZyXEL, ShuYing, hidden5G
+
+var wps_timeout = 113;
+var wps_ajax = 1;
+var wps_countdown = 1;
+var db1;
+
+//ZyXEL, Ryan
+var title_str1 = "2.4GHz  "+ $($(".title")[0]).html(); //For 2.4G title
+var title_str2 = "5GHz  "+ $($(".title")[0]).html(); //For 5G title
+
+/* mac filter config */
+var macMode = '<%ejGetWl(wlFltMacMode)%>';
+var list = '<%ejGetWl(wlMacFilterList)%>';
+
+function  isValidChecksum(str){
+
+	if(WscVer2 == 'enabled'){
+		if(str.length <= 3 || (str.length >= 5 && str.length<=7)){		
+			return false;
+		}
+		else if(str.length == 4 ){ 
+			var check4pin = /^[0-9]{4}$/g ;
+ 			if (!check4pin.test(str)){ 			
+			return false;
+			}
+			else{			
+			return true;
+			} 	
+		}else if(str.length == 8){
+			var check8pin = /^[0-9]{8}$/g ;
+			if (!check8pin.test(str)){ 			
+				return false;
+			}		
+		}else if(str.length == 9){
+			var check_hyphen = /^[0-9]{4}\-[0-9]{4}$/g ;
+			var check_whitespace = /^[0-9]{4}\s[0-9]{4}$/g;
+			if (!check_hyphen.test(str) && !check_whitespace.test(str)){ 			
+				return false;
+			}		    
+			else{			
+				str = str.replace(/[ -]/g,"");					
+			}
+		}
+	}else{
+		var check8pin = /^[0-9]{8}$/g ;
+		if (!check8pin.test(str)){ 			
+			return false;
+		}
+	}
+
+	with (document.forms[0]) {
+		wlWscStaPin.value = str;
+	}
+   var accum = 0;
+   var returnvalue = 0;
+   accum += 3*( parseInt(str.charAt(0)) % 10);
+   accum += 1*( parseInt(str.charAt(1)) % 10);
+   accum += 3*( parseInt(str.charAt(2)) % 10);
+   accum += 1*( parseInt(str.charAt(3)) % 10);
+   accum += 3*( parseInt(str.charAt(4)) % 10);
+   accum += 1*( parseInt(str.charAt(5)) % 10);
+   accum += 3*( parseInt(str.charAt(6)) % 10);
+   accum += 1*( parseInt(str.charAt(7)) % 10);
+   
+   if ( 0 == (accum % 10) )
+      return true;
+   else
+      return false;
+}
+
+function wscModeChange() {
+   with ( document.forms[0] ) {
+      if (wl_wsc_pbcmode[0].checked == true)
+         connect.disabled = false;
+      else
+         connect.disabled = true;
+
+      if (wl_wsc_cpinmode[0].checked == true)
+      {
+         wlWscStaPin.disabled = false;
+         register.disabled = false;
+      }
+      else
+      {
+         wlWscStaPin.disabled = true;
+         register.disabled = true;
+      }
+
+      if (wl_wsc_apinmode[0].checked == true)
+      {
+            releaseConf.disabled = false;
+            genDevPIN.disabled = false;
+      }
+      else
+      {
+            releaseConf.disabled = true;
+            genDevPIN.disabled = true;
+      }
+   }
+}
+
+function frmLoad() {
+	
+if (band==2){
+	$(".title").html(title_str1); //2.4G
+
+}else{
+	$(".title").html(title_str2); //5G
+}
+
+   if(hidden5G == 1){  
+      showhide("wps_5G", "0");
+      showhide("wps_ori", "1");
+   }else{
+      showhide("wps_5G", "1");
+      showhide("wps_ori", "0");
+   }
+
+   with (document.forms[0]) {
+      if (apMode == 'wds' || securityMode == 'wpa' || securityMode == 'wpa2' || securityMode == 'wpa wpa2')
+         WscMode.value = 'disabled';
+
+      if (WscMode == 'enabled')
+      {
+         wl_wsc_mode.value = "enabled";
+         if (WscMethod & 0x1)
+            wl_wsc_pbcmode[0].checked = true;
+         else
+            wl_wsc_pbcmode[1].checked = true;
+
+         if (WscMethod & 0x2)
+            wl_wsc_cpinmode[0].checked = true;
+         else
+            wl_wsc_cpinmode[1].checked = true;
+
+         if (WscMethod & 0x4)
+            wl_wsc_apinmode[0].checked = true;
+         else
+            wl_wsc_apinmode[1].checked = true;
+      }
+      else
+      {
+         wl_wsc_mode.value = "disabled";
+         wl_wsc_pbcmode[1].checked = true;
+         wl_wsc_cpinmode[1].checked = true;
+         wl_wsc_apinmode[1].checked = true;
+      }
+      wlWscStaPin.value = WscStaPin;
+      wscModeChange();
+      
+      if (enbl == '0') {
+         wl_wsc_pbcmode[0].disabled = true;
+         wl_wsc_pbcmode[1].disabled = true;
+         wl_wsc_cpinmode[0].disabled = true;
+         wl_wsc_cpinmode[1].disabled = true;
+         wl_wsc_cpinmode[0].disabled = true;
+         wl_wsc_cpinmode[1].disabled = true;
+         connect.disabled = true;
+         wlWscStaPin.disabled = true;
+         register.disabled = true;
+         releaseConf.disabled = true;
+         genDevPIN.disabled = true;
+         sysSubmit.disabled = true;
+         cancel.disabled = true;
+      }
+
+      //wps dialog window
+      if(oldWpsGuiMsg == 'init'){
+         oldWpsGuiMsg = '';
+         
+         db1 = window.parent.$.zyUiDialog({
+            width: 450,
+            height: 200,
+            title: '<%ejGetML(MLG_WLAN_WPS_Str18)%> ',
+            buttons: {
+                '<%ejGetML(MLG_Common_Cancel)%>': function(){
+				 //when count down page is active only
+				   if( wps_ajax == 1)
+				   {  //cancel WPS process
+				      doWpsCancelProcess();
+				   }
+				   oldWpsGuiMsg = '';
+					db1.dialog('close')
+				}
+            }
+         });
+         var link = 'pages/network/wireless/wpsinfo.html';
+         if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 ){
+            link='../../'+link;
+         }
+         db1.load(link, function() {
+            doWpsInfo1Refresh();
+            doWpsInfo2Refresh();
+         });
+         db1.dialog('open');
+         
+      }
+   }
+}
+
+function doWpsCancelProcess(){
+      $.ajax({
+         url: "wireless-wps.cmd",
+         type: 'POST',
+         async: true,
+         cache: false,
+         timeout: 10000,
+         data:  "sessionKey=" + sessionkey + "&action=cancel",
+         success: function(data){                
+                     
+                  },
+         error:   function(){                     
+                  }
+      });
+
+
+}
+
+function doWpsInfo1Refresh(){
+   var text = '';
+   if(wps_countdown == 0){
+      return;
+   }
+   
+   if(window.parent.$("#wps_info").length != 0){
+      window.parent.$("#wps_left").html(wps_timeout);
+      
+      wps_timeout--;
+
+      if(wps_timeout >= 0){
+         setTimeout(doWpsInfo1Refresh, 1000);
+      }else{
+         text = '<table><tr>'
+         text += '<td width="20%" ><center><img src="/images/popup_i_error.gif" width="38" height="35"  style="display:block; margin-top:4px;"/></center></td>';
+         text += '<td>&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_WLAN_WPS_Str21)%></td>';
+         text += '</tr></table>';
+
+         window.parent.$(".deleteframe").html(text);
+         wps_ajax = 0;		 
+      }
+   }else if(window.parent.$("#wps_info2").length != 0){
+      wps_timeout--;
+      
+      if(wps_timeout >= 0){
+         setTimeout(doWpsInfo1Refresh, 1000);
+      }else{
+         text = '<table><tr>'
+         text += '<td width="20%" ><center><img src="/images/popup_i_error.gif" width="38" height="35"  style="display:block; margin-top:4px;"/></center></td>';
+         text += '<td>&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_WLAN_WPS_Str21)%></td>';
+         text += '</tr></table>';
+		 
+         window.parent.$(".deleteframe").html(text);
+         wps_ajax = 0;		 
+      }
+   }else{
+      wps_ajax = 0;
+   }
+}
+
+//Refresh progress bar
+function doWpsInfo2ProcessRefresh(percent){
+   window.parent.$("#wps_per_text").html(percent + "%");
+   window.parent.$("#wps_per_graph").html('<table width="' + percent + '%"  border="0" cellspacing="0" cellpadding="0"><tr><td background="images/i_percentage_blue.gif" >&nbsp;</td></tr></table>');
+}
+
+//Refresh wps result
+function doWpsInfo2ResultRefresh(result){
+   var detail = result;
+   var text = '';
+   
+   if(detail == 'Success'){
+      window.parent.$("#wps_result").html("<%ejGetML(MLG_WLAN_WPS_Str22)%>");
+      doWpsInfo2ProcessRefresh(100);
+	  var buttomPana =db1.parents('.ui-dialog').find('.ui-dialog-buttonpane');   
+      var close=buttomPana.children('Button:nth-child(1)');             
+      close.html('<%ejGetML(MLG_Common_OK)%>');
+	  
+   }else if(detail == 'Unkonwn error'){
+      text = '<table><tr>'
+      text += '<td width="20%" ><center><img src="/images/popup_i_error.gif" width="38" height="35"  style="display:block; margin-top:4px;"/></center></td>';
+      text += '<td><%ejGetML(MLG_WLAN_WPS_Str23)%></td>';
+      text += '</tr></table>';
+
+      window.parent.$(".deleteframe").html(text);	  
+   }else if(detail == 'Client pin error'){
+      text = '<table><tr>'
+      text += '<td width="20%" ><center><img src="/images/popup_i_error.gif" width="38" height="35"  style="display:block; margin-top:4px;"/></center></td>';
+      text += '<td><%ejGetML(MLG_WLAN_WPS_Str24)%></td>';
+      text += '</tr></table>';
+
+      window.parent.$(".deleteframe").html(text);
+   }
+}
+
+//Query CPE and switch to wps info 2 page
+function doWpsInfo2Refresh(){
+   if(wps_ajax == 1){
+      $.ajax({
+         url: "wireless-wps.cmd",
+         type: 'POST',
+         async: true,
+         cache: false,
+         timeout: 10000,
+         data:  "sessionKey=" + sessionkey + "&action=wpsGuiMsg",
+         success: function(data){
+                     //data: 09533235@process@M1
+                     response = data;
+
+                     var meta_response = response.split("@");
+
+                     if(meta_response.length < 2){
+                        eval("top.location='/login/login.html'");
+                     }
+
+                     var key = meta_response[0];
+                     sessionkey = key;
+
+                     var wps_status = meta_response[1];
+                     if(wps_status == 'start'){
+                        
+                        setTimeout(doWpsInfo2Refresh, 1000);
+                        
+                     }else if(wps_status == 'process'){
+                        var mx = meta_response[2];
+                        var percent = 0;
+
+
+                        if(mx == 'M1'){
+                           percent = 15;
+                        }else if(mx == 'M2'){
+                           percent = 30;
+                        }else if(mx == 'M3'){
+                           percent = 45;
+                        }else if(mx == 'M4'){
+                           percent = 60;
+                        }else if(mx == 'M5'){
+                           percent = 75;
+                        }else if(mx == 'M6'){
+                           percent = 85;
+                        }else if(mx == 'M7'){
+                           percent = 95;
+                        }else if(mx == 'M8'){
+                           percent = 100;
+                        }
+
+                        if(wps_ajax == 1){
+                           if(window.parent.$("#wps_info2").length == 0){
+                              var link = 'pages/network/wireless/wpsinfo2.html';
+                              if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525){
+                                link='../../' + link;
+                              }
+                              db1.load(link, function() {
+                                 doWpsInfo2ProcessRefresh(percent);
+                              });
+                           }else{
+                              doWpsInfo2ProcessRefresh(percent);
+                           }
+                        }
+
+                        
+                        
+                        setTimeout(doWpsInfo2Refresh, 1000);
+                     }else if(wps_status == 'result'){
+                     
+                        if(window.parent.$("#wps_info2").length == 0){
+                           var link = 'pages/network/wireless/wpsinfo2.html';
+                           if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525){
+                             link='../../' + link;
+                           }
+                           db1.load(link, function() {
+                              doWpsInfo2ResultRefresh(meta_response[2]);
+                           });
+                        }else{
+                           doWpsInfo2ResultRefresh(meta_response[2]);
+                           wps_countdown = 0;
+                        }
+                     }
+                     
+                     
+                  },
+         error:   function(){
+                     
+                  }
+      });
+   }
+}
+
+function enableAllColumns() {
+   with ( document.forms[0] ) {
+      wl_wsc_pbcmode[0].disabled = false;
+      wl_wsc_pbcmode[1].disabled = false;
+      wl_wsc_cpinmode[0].disabled = false;
+      wl_wsc_cpinmode[1].disabled = false;
+      wl_wsc_apinmode[0].disabled = false;
+      wl_wsc_apinmode[1].disabled = false;
+
+      wlWscStaPin.disabled = false;
+      wlDevGenPin.disabled = false;
+      wl_wsc_reg.disabled = false;
+      wlWscConfig.disabled = false;
+      wsc_config_state.disabled = false;
+      wsc_force_restart.disabled = false;
+      wsc_event.disabled = false;
+      wsc_method.disabled = false;
+      wsc_config_command.disabled = false;
+      wsc_proc_status.disabled = false;
+      wlUseDefaultSsid.disabled = false;
+      wpsGuiMsg.disabled = true;
+      frmLoad();
+   }
+}
+
+function btnApply(place) {
+   with (document.forms[0]) {
+      if (place == 'wireless-PushButton.wl') {
+         wlWscStaPin.value = "";
+         wsc_config_state.value = WscAPMode;
+         wl_wsc_reg.value = "enabled"
+         if (WscAPMode == '0') { // unconfigured
+            wlWscConfig.value = "client-pbc-reset";
+            wsc_force_restart.value = "n";
+            wsc_event.disabled = true;
+            wsc_method.disabled = true;
+            wsc_config_command.disabled = true;
+         } else {
+            wlWscConfig.value = "client-pbc";
+            wsc_force_restart.value = "n";
+            wsc_event.value = "a";
+            wsc_method.value = "2";
+            wsc_config_command.value = "1";
+         }
+         wsc_proc_status.disabled = true;
+         wlUseDefaultSsid.disabled = true;
+         wlUseDefaultWepKey.disabled = true;
+         wlUseDefaultWpaKey.disabled = true;
+         wlDevGenPin.disabled = true;
+         wlWscApLock.disabled = true;
+         wl_wps_method.disabled = true;
+         wl_wsc_pbcmode[0].disabled = true;
+         wl_wsc_pbcmode[1].disabled = true;
+         wl_wsc_cpinmode[0].disabled = true;
+         wl_wsc_cpinmode[1].disabled = true;
+         wl_wsc_apinmode[0].disabled = true;
+         wl_wsc_apinmode[1].disabled = true;
+
+         wpsGuiMsg.disabled = false;
+         wpsGuiMsg.value = "init";
+      } else if (place =="wireless-PinNumber.wl") {
+		 if (isValidChecksum(wlWscStaPin.value) == false) {
+			hciAlert('<%ejGetML(MLG_WLAN_WPS_AlertMsg_Str2)%>', {height: 180, type: 2, title: ''});
+      	    enableAllColumns();
+      	    return false;
+      	 }
+
+         wlWscStaPin.value = encodeUrl(wlWscStaPin.value);
+      	 wsc_config_state.value = "1";
+      	 wl_wsc_reg.value = "enabled"
+         if (WscAPMode == '0') { // unconfigured
+            wlWscConfig.value = "client-pin-reset";
+            wsc_force_restart.value = "n";
+            wsc_proc_status.disabled = true;
+            wsc_method.disabled = true;
+            wsc_config_command.disabled = true;
+         } else {
+         	  wlWscConfig.value = "client-pin";
+         	  wsc_force_restart.value = "n";
+         	  wsc_proc_status.value = "0";
+         	  wsc_method.value = "1";
+         	  wsc_config_command.value = "1";
+         }
+         wsc_event.disabled = true;
+         wlUseDefaultSsid.disabled = true;
+         wlUseDefaultWepKey.disabled = true;
+         wlUseDefaultWpaKey.disabled = true;
+         wlDevGenPin.disabled = true;
+         wlWscApLock.disabled = true;
+         wl_wps_method.disabled = true;
+         wl_wsc_pbcmode[0].disabled = true;
+         wl_wsc_pbcmode[1].disabled = true;
+         wl_wsc_cpinmode[0].disabled = true;
+         wl_wsc_cpinmode[1].disabled = true;
+         wl_wsc_apinmode[0].disabled = true;
+         wl_wsc_apinmode[1].disabled = true;
+
+
+         wpsGuiMsg.disabled = false;
+         wpsGuiMsg.value = "init";
+      } else if (place == "wireless-Release.wl") {
+         wsc_config_state.value = "0";
+         wl_wsc_reg.value = WscIRMode;
+         wlUseDefaultSsid.value = "0"; // disabled for WPS configuration
+         wlUseDefaultWepKey.value = "0"; // disabled for WPS configuration
+         wlUseDefaultWpaKey.value = "0";
+
+         wlWscStaPin.disabled = true;
+         wlWscConfig.disabled = true;
+         wsc_force_restart.disabled = true;
+         wsc_event.disabled = true;
+         wsc_method.disabled = true;
+         wsc_config_command.disabled = true;
+         wsc_proc_status.disabled = true;
+         wlDevGenPin.disabled = true;
+         wlWscApLock.disabled = true;
+         wl_wps_method.disabled = true;
+         wl_wsc_pbcmode[0].disabled = true;
+         wl_wsc_pbcmode[1].disabled = true;
+         wl_wsc_cpinmode[0].disabled = true;
+         wl_wsc_cpinmode[1].disabled = true;
+         wl_wsc_apinmode[0].disabled = true;
+         wl_wsc_apinmode[1].disabled = true;
+      } else if (place == "wireless-Config.wl") {
+         if (wl_wsc_pbcmode[1].checked == true && wl_wsc_cpinmode[1].checked == true && wl_wsc_apinmode[1].checked == true){
+            wl_wsc_mode.value="disabled";
+            wl_wps_method.value = 0;
+         }
+         else
+         {
+            wl_wsc_mode.value="enabled";
+            if(wep == 'enabled' && WscMode == 'enabled'){
+			hciAlert("<%ejGetML(MLG_WLAN_WPS_AlertMsg_Str3)%> <a href=\"#\" onClick= \"$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('network-wireless', 0);\"><%ejGetML(MLG_Common_General)%></a> <%ejGetML(MLG_WLAN_WPS_AlertMsg_page)%>.", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+      	    enableAllColumns();
+      	    return false;
+            }
+
+            if( hide == "1" && WscVer2 == "enabled" && WscMode == 'enabled'){
+			hciAlert("<%ejGetML(MLG_WLAN_WPS_AlertMsg_Str4)%> <a href=\"#\" onClick= \"$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('network-wireless', 0);\"><%ejGetML(MLG_Common_General)%></a> <%ejGetML(MLG_WLAN_WPS_AlertMsg_page)%>. <%ejGetML(MLG_WLAN_WPS_AlertMsg_Str6)%> <a href=\"#\" onClick= \"$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('network-wireless', 6);\"><%ejGetML(MLG_WLAN_WPS_AlertMsg_Others)%></a> <%ejGetML(MLG_WLAN_WPS_AlertMsg_page)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+      	       enableAllColumns();
+      	       return false;
+            }		 
+
+            if( authmode == "psk" && WscVer2 == "enabled" && WscMode == 'enabled'){
+			hciAlert("<%ejGetML(MLG_WLAN_WPS_AlertMsg_Str5)%> <a href=\"#\" onClick= \"$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('network-wireless', 0);\"><%ejGetML(MLG_Common_General)%></a> <%ejGetML(MLG_WLAN_WPS_AlertMsg_page)%>. <%ejGetML(MLG_WLAN_WPS_AlertMsg_Str6)%> <a href=\"#\" onClick= \"$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('network-wireless', 6);\"><%ejGetML(MLG_WLAN_WPS_AlertMsg_Others)%></a> <%ejGetML(MLG_WLAN_WPS_AlertMsg_page)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+      	       enableAllColumns();
+      	       return false;
+            }
+
+		 //if mac filter allow list is empty, we not accept WPS enable
+		// if( WscMode == 'enabled' == true  && macMode == "allow" && list.length == 0){
+		//Adam [Bug Fixed][SVD#179]
+                 if( WscMode == 'disable' == false  && macMode == "allow" && list.length == 0){
+
+			hciAlert("<%ejGetML(MLG_WLAN_WPS_AlertMsg_Str7)%> <a href=\"#\" onClick= \"$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('network-wireless', 2);\"><%ejGetML(MLG_Menu_Tab_WlanMACAuthentication)%></a> <%ejGetML(MLG_WLAN_WPS_AlertMsg_page)%>.", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+      	       enableAllColumns();
+      	       return false;
+            }
+
+            if (wl_wsc_pbcmode[0].checked == true)
+               wl_wps_method.value = wl_wps_method.value | 0x1;
+            if (wl_wsc_cpinmode[0].checked == true)
+               wl_wps_method.value = wl_wps_method.value | 0x2;
+            if (wl_wsc_apinmode[0].checked == true)
+               wl_wps_method.value = wl_wps_method.value | 0x4;
+            else {
+               wlDevGenPin.value = '1';
+            }
+         }
+		 
+      	 wsc_config_state.value = WscAPMode;
+      	 wl_wsc_reg.value = "enabled"
+
+         wlWscStaPin.disabled = true;
+         wlWscConfig.disabled = true;
+         wsc_force_restart.disabled = true;
+         wsc_event.disabled = true;
+         wsc_method.disabled = true;
+         wsc_config_command.disabled = true;
+         wsc_proc_status.disabled = true;
+         wlUseDefaultSsid.disabled = true;
+         wlUseDefaultWepKey.disabled = true;
+         wlUseDefaultWpaKey.disabled = true;
+         wlWscApLock.disabled = true;
+      } else if (place == "wireless-GeneratePin.wl" || place == "wireless-Unlock.wl") {
+         if (place == "wireless-GeneratePin.wl") {
+            wlDevGenPin.value = '1';
+            wlWscApLock.disabled = true;
+
+         if (wl_wsc_pbcmode[0].checked == true)
+            wl_wps_method.value = wl_wps_method.value | 0x1;
+         if (wl_wsc_cpinmode[0].checked == true)
+            wl_wps_method.value = wl_wps_method.value | 0x2;
+         if (wl_wsc_apinmode[0].checked == true)
+            wl_wps_method.value = wl_wps_method.value | 0x4;
+
+         } else {
+            wlWscApLock.value = '0';
+            wlDevGenPin.disabled = true;
+         }
+
+         wlWscStaPin.disabled = true;
+         wlWscConfig.disabled = true;
+         wsc_config_state.disabled = true;
+         wsc_force_restart.disabled = true;
+         wsc_event.disabled = true;
+         wsc_method.disabled = true;
+         wsc_config_command.disabled = true;
+         wsc_proc_status.disabled = true;
+         wlUseDefaultSsid.disabled = true;
+         wlUseDefaultWepKey.disabled = true;
+         wlUseDefaultWpaKey.disabled = true;
+         wl_wps_method.disabled = true;
+         wl_wsc_pbcmode[0].disabled = true;
+         wl_wsc_pbcmode[1].disabled = true;
+         wl_wsc_cpinmode[0].disabled = true;
+         wl_wsc_cpinmode[1].disabled = true;
+         wl_wsc_apinmode[0].disabled = true;
+         wl_wsc_apinmode[1].disabled = true;
+
+         
+         if (WscAPMode == '0') { // Unconfigured
+            wl_wsc_reg.value = 'disabled';
+         } else {
+            wl_wsc_reg.disabled = true;
+         }
+      } else {
+         EnableAllColumns();
+         return false;
+      }
+
+      sessionKey.value = sessionkey;
+   }
+
+   return true;
+}
+
+
+function doSubmit(place) {
+   if (btnApply(place)) {
+      document.forms[0].submit();
+      $.openLoadingMask(1);
+   }
+}
+
+// done hiding -->
+</script>
+   <form action="/pages/tabFW/wireless-wps.wl" method="post" onSubmit="return false;">
+      <div class="content_frame" >
+<!--Unit Explain start-->
+         <div class="explain">
+            <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+            <div class="explain_text"><%ejGetML(MLG_WLAN_WPS_Str1)%>
+            </div>
+            <div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+         </div>
+<!--Unit Explain End-->
+<!--Set area start-->
+         <div class="data_frame"><ul>
+<!--level 1 title start-->
+            <li class="title"><%ejGetML(MLG_WLAN_WPS_Str3)%></li>
+<!--level 1 title end-->
+            <li class="set1">
+<!--Sample 1 start-->
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_WPS_Str4)%> :</li>
+                  </ul>
+               </div>
+            </li>
+            <li class="space"> </li>
+            <li class="set1">
+               <div class="wps">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+                     <tr>
+                        <td width="33%" class="wps_top" ><table width="92%" border="0" cellspacing="0" cellpadding="0" align="center">
+                           <tr>
+                              <td width="45" ><img src="../../images/wps_pic.gif" width="34" height="41" /></td>
+                              <td class="Method"><%ejGetML(MLG_WLAN_WPS_Str5)%> 1</td>
+                              <td>
+                              <input name="wl_wsc_pbcmode" type="radio" value="enabled" />
+                                 <%ejGetML(MLG_Common_Enable)%>
+                              <input name="wl_wsc_pbcmode" type="radio" value="disabled" />
+                                <%ejGetML(MLG_Common_Disabled)%>
+                              </td>
+                           </tr>
+                        </table></td>
+                        <td width="34%" class="wps_top" style="border-left:1px #c6c6c6 solid;"><table width="92%" border="0" cellspacing="0" cellpadding="0" align="center">
+                           <tr>
+                              <td width="45" ><img src="../../images/wps_pic2.gif" width="34" height="41" /></td>
+                              <td class="Method"><%ejGetML(MLG_WLAN_WPS_Str5)%> 2</td>
+                              <td>
+                              <input name="wl_wsc_cpinmode" type="radio" value="enabled" />
+                                 <%ejGetML(MLG_Common_Enable)%>
+                              <input name="wl_wsc_cpinmode" type="radio" value="disabled" />
+                                 <%ejGetML(MLG_Common_Disabled)%>
+                              </td>
+                           </tr>
+                        </table></td>
+                        <td width="33%" class="wps_top" style="border-left:1px #c6c6c6 solid;"><table width="92%" border="0" cellspacing="0" cellpadding="0" align="center">
+                           <tr>
+                              <td width="45" ><img src="../../images/wps_pic3.gif" width="34" height="41" /></td>
+                              <td class="Method"><%ejGetML(MLG_WLAN_WPS_Str5)%> 3</td>
+                             <td>
+                              <input name="wl_wsc_apinmode" type="radio" value="enabled" />
+                                 <%ejGetML(MLG_Common_Enable)%>
+                              <input name="wl_wsc_apinmode" type="radio" value="disabled" />
+                                 <%ejGetML(MLG_Common_Disabled)%>
+                              </td>
+                           </tr>
+                        </table></td>
+                     </tr>
+                     <tr>
+                        <td valign="top" ><span class="space"></span><table width="92%" border="0" cellspacing="0" cellpadding="0" align="center">
+                           <tr>
+                              <td>
+                                 <div class="w_text2"><span class="blod"><%ejGetML(MLG_WLAN_WPS_Str6)%></span></div>
+                                 <div class="w_text2"><span class="blod">1. </span><%ejGetML(MLG_WLAN_WPS_Str7)%>.</div>
+                                 <div class="w_text2"><span class="button_position" style="float:left; margin-left:13px;">
+                                    <input name="connect" value="<%ejGetML(MLG_Common_Connect)%>" type="button" onClick="doSubmit('wireless-PushButton.wl');" />
+                                 </span></div><br />
+                                 <div class="w_text2"><span class="blod">2.</span> <%ejGetML(MLG_WLAN_WPS_Str8)%>
+                                 </div>
+                              </td>
+                           </tr>
+                        </table></td>
+                        <td valign="top" style="border-left:1px #c6c6c6 solid;"><span class="space"></span><table width="92%" border="0" cellspacing="0" cellpadding="0" align="center">
+                           <tr>
+                              <td><div class="w_text2"><span class="blod"><%ejGetML(MLG_WLAN_WPS_Str9)%></span></div>
+                              <div class="w_text2"><span class="blod">1. </span><%ejGetML(MLG_WLAN_WPS_Str10)%></div>
+                              <div class="w_text2"><span class="button_position" style="float:left; margin-left:13px;">
+                                 <span class="right_table">
+                                    <input name="wlWscStaPin" size="10" maxlength="9" type="text" />
+                                 </span>
+                                 <input name="register" value="<%ejGetML(MLG_WLAN_Wirelsss_Btn1)%>" type="button" onClick="doSubmit('wireless-PinNumber.wl');" />
+                              </span></div>
+                              <br />
+                              <div class="w_text2"><span class="blod">2.</span> <%ejGetML(MLG_WLAN_WPS_Str8)%> </div></td>
+                           </tr>
+                        </table></td>
+                        <td valign="top" style="border-left:1px #c6c6c6 solid;"><span class="space"></span><table id='wps_conf_status' width="92%" border="0" cellspacing="0" cellpadding="0" align="center">
+<!--
+                           <tr>
+                              <td><div class="w_text2"><span class="blod">Enter AP's PIN Number in Wireless Client</span></div>
+                                 <div class="w_text2"><span class="blod">1. </span>Enter current PIN number <span id="devicePin" style="color:#06C; font-weight:bold; font-size:14px;"></span>&nbsp;<%ejGetML(MLG_WLAN_WPS_Str15_1)%> </div>
+                                 <div class="w_text2"><span class="button_position" style="float:left; margin-left:13px;">
+                                    <input name="genDevPIN" value="<%ejGetML(MLG_WLAN_Wirelsss_Btn3)%>" type="button" onClick="doSubmit('wireless-GeneratePin.wl');" />
+                                 </span></div>
+                                 <br />
+                                 <div id="unconfig_state" class="w_text2"><span class="blod">2. </span>Please release configuration if you want to configure the wireless settings  </div>
+                                 <div id="unconfigured" class="w_text2"><span class="button_position" style="float:left; margin-left:13px;">
+                                    <input name="releaseConf" value="Release Configuration" type="button" onClick="doSubmit('wireless-Release.wl');" />
+                                 </span></div>
+                              </td>
+                           </tr>
+-->
+<script language="javascript">
+<!-- hide
+   var str = '';
+
+   str += "<tr>";
+   str += "<td><div class=\"w_text2\"><span class=\"blod\"><%ejGetML(MLG_WLAN_WPS_Str12)%></span></div>";
+   if ( aplock == '1' ) {
+      str += "<div class=\"w_text2\"><span class=\"blod\"><%ejGetML(MLG_WLAN_WPS_Str13_1)%>: </span><span class=\"explain_text_bold_red\"><%ejGetML(MLG_Common_Locked)%></span></div>";
+      str += "<div class=\"w_text2\"><span class=\"blod\">1. </span><%ejGetML(MLG_WLAN_WPS_Str25)%></div>";
+      str += "<div class=\"w_text2\"><span class=\"button_position\" style=\"float:left; margin-left:13px;\">";
+      str += "<input name=\"releaseLock\" value=\"<%ejGetML(MLG_WLAN_Wirelsss_Btn6)%>\" type=\"button\" onClick=\"doSubmit('wireless-Unlock.wl');\" />";
+      str += "</span></div>";
+      str += "<div class=\"w_text2\" style=\"display:none;\">";
+      str += "<input name=\"genDevPIN\" value=\"<%ejGetML(MLG_WLAN_Wirelsss_Btn3)%>\" type=\"button\" onClick=\"doSubmit('wireless-GeneratePin.wl');\" />";
+         str += "</span></div>";
+      str += "<div class=\"w_text2\" style=\"display:none;\">";
+      str += "<input name=\"releaseConf\" value=\"<%ejGetML(MLG_WLAN_Wirelsss_Btn2)%>\" type=\"button\" onClick=\"doSubmit('wireless-Release.wl');\" />";
+      str += "</div>";
+      str += "<br />";
+   } else {
+      if ( WscAPMode == '1' ) {
+         str += "<div class=\"w_text2\"><span class=\"blod\"><%ejGetML(MLG_WLAN_WPS_Str13_1)%>: </span><%ejGetML(MLG_Common_Configured)%></div>";
+         str += "<div class=\"w_text2\"><span class=\"blod\">1. </span><%ejGetML(MLG_WLAN_WPS_Str15)%></div>";
+         str += "<div class=\"w_text2\"><span class=\"button_position\" style=\"float:left; margin-left:13px;\">";
+         str += "<input name=\"releaseConf\" value=\"<%ejGetML(MLG_WLAN_Wirelsss_Btn2)%>\" type=\"button\" onClick=\"doSubmit('wireless-Release.wl');\" />";
+         str += "</span></div><br />";
+         str += "<div class=\"w_text2\"><span class=\"blod\">2. </span><%ejGetML(MLG_WLAN_WPS_Str16)%> <span id=\"devicePin\" style=\"color:#06C; font-weight:bold; font-size:14px;\"><%ejGetWl(wlWscDevPin)%></span>&nbsp;<%ejGetML(MLG_WLAN_WPS_Str15_1)%></div>";
+         str += "<div class=\"w_text2\"><span class=\"button_position\" style=\"float:left; margin-left:13px;\">";
+         str += "<input name=\"genDevPIN\" value=\"<%ejGetML(MLG_WLAN_Wirelsss_Btn3)%>\" type=\"button\" onClick=\"doSubmit('wireless-GeneratePin.wl');\" />";
+         str += "</span></div>";
+      } else {
+         str += "<div class=\"w_text2\"><span class=\"blod\"><%ejGetML(MLG_WLAN_WPS_Str13_1)%>: </span><%ejGetML(MLG_WLAN_WPS_Str14)%></div>";
+         str += "<div class=\"w_text2\"><span class=\"blod\">1. </span><%ejGetML(MLG_WLAN_WPS_Str16)%> <span id=\"devicePin\" style=\"color:#06C; font-weight:bold; font-size:14px;\"><%ejGetWl(wlWscDevPin)%></span>&nbsp;<%ejGetML(MLG_WLAN_WPS_Str15_1)%></div>";
+         str += "<div class=\"w_text2\"><span class=\"button_position\" style=\"float:left; margin-left:13px;\">";
+         str += "<input name=\"genDevPIN\" value=\"<%ejGetML(MLG_WLAN_Wirelsss_Btn3)%>\" type=\"button\" onClick=\"doSubmit('wireless-GeneratePin.wl');\" />";
+         str += "</span></div>";
+         str += "<div class=\"w_text2\" style=\"display:none;\">";
+         str += "<input name=\"releaseConf\" value=\"<%ejGetML(MLG_WLAN_Wirelsss_Btn2)%>\" type=\"button\" onClick=\"doSubmit('wireless-Release.wl');\" />";
+         str += "</div>";
+         str += "<br />";
+      }
+   }
+
+   str += "</td></tr>";
+   $('#wps_conf_status').append(str);
+// done hiding -->
+</script>
+                        </table></td>
+                     </tr>
+                     <tr>
+                        <td class="wps_bottom">&nbsp;</td>
+                        <td class="wps_bottom" style="border-left:1px #c6c6c6 solid;">&nbsp;</td>
+                        <td class="wps_bottom" style="border-left:1px #c6c6c6 solid;">&nbsp;</td>
+                     </tr>
+                  </table>
+               </div>
+            </li>
+            <input name="wlDevGenPin" type="hidden" />
+            <input name="wlWscApLock" type="hidden" />
+            <input name="wl_wsc_reg" type="hidden" />
+            <input name="wlWscConfig" type="hidden" />
+            <input name="wsc_config_state" type="hidden" />
+            <input name="wsc_force_restart" type="hidden" />
+            <input name="wsc_event" type="hidden" />
+            <input name="wsc_method" type="hidden" />
+            <input name="wsc_config_command" type="hidden" />
+            <input name="wsc_proc_status" type="hidden" />
+            <input name="wlUseDefaultSsid" type="hidden" />
+            <input name="wl_wps_method" type="hidden" />
+            <input name="wl_wsc_mode" type="hidden" />
+
+            <input type="hidden" name="wlUseDefaultWepKey" />
+            <input type="hidden" name="wlUseDefaultWpaKey" />
+
+            <input type="hidden" name="sessionKey" />
+            <input type="hidden" name="wlSyncNvram" value="1" />
+            <input type="hidden" name="wpsGuiMsg" disabled>
+            <li class="space"></li>
+<!--Note define start-->
+            <li class="noteframe">
+               <div class="w_text">
+                  <span class="i_note"><%ejGetML(MLG_Common_Notes)%>:</span>
+               </div>
+               <div id="wps_5G" class="note_text"><%ejGetML(MLG_WLAN_WPS_Str17_1)%>
+               </div>
+               <div id="wps_ori" class="note_text"><%ejGetML(MLG_WLAN_WPS_Str17)%>
+               </div>
+            </li>
+<!--Note define end-->
+            <li class="space"></li>
+<!--Button define start-->
+            <li class="buttonframe">
+               <div class="button_position">
+                  <input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="doSubmit('wireless-Config.wl');" />
+                     &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                  <input name="cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();'/>
+               </div>
+            </li>
+<!--Button define end-->
+         </ul></div>
+<!--Set area end-->
+      </div>
+      <br/><br/>
+   </form>
+<script language="javascript">
+<!-- hide
+   frmLoad();
+// done hiding -->
+</script>

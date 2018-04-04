@@ -1,0 +1,74 @@
+<script language="javascript">
+mainFrame.glbSessionKey = "<%ejGetOther(sessionKey)%>";
+
+function btnSave() {
+	with ( document.forms[0] ) {
+		PINCode.value = PIN_Code.value;
+		sessionKey.value = mainFrame.glbSessionKey;
+	      	submit();
+         	$('.ui-dialog-titlebar-close').trigger('click');
+        	$.openLoadingMask(1);
+			return;			
+	}
+}
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnSave(); });
+
+
+</script>
+   <form action="/pages/connectionStatus/connectionStatus-status.cmd" method="post" target="mainFrame">
+   <input type="hidden" name="PINCode" id="PINCode" value="">
+   <input type="hidden" name="action" id="action" value="pin">
+   <input type="hidden" name="sessionKey" id="sessionKey" value="">
+      <div class="popup_frame" >
+         <div class="data_frame"><ul>
+<!--level 1 start-->
+            <li class="title"><%ejGetML(MLG_ConnStatus_Status_IS_PIN_str1)%></li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><font color="#FF0000"><%ejGetML(MLG_ConnStatus_Status_IS_PIN_str2)%></font></li>
+                  </ul>
+               </div>
+            </li>            
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_ConnStatus_Status_IS_PIN_str3)%>:</li>
+                     <li class="right_table">
+	                  <input type="text" name="PIN_Code"  id="PIN_Code" size="15" maxlength="15" />
+                     </li>
+                  </ul>
+               </div>
+            </li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_ConnStatus_Status_IS_PIN_str4)%>:</li>
+                     <li class="right_table"><%ejGet(wwanPinErrorTimes)%>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+             <li class="set1">
+               <div class="w_text">
+                  <ul>
+                       <li class="left_table"></li>
+                </ul>
+               </div>
+            </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Common_Note)%>:</span></div>
+<div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_ConnStatus_Status_IS_PIN_str5)%></div>
+</li>
+<!--Note define end-->
+         </ul></div>
+      </div>
+</form>
+<script language="JavaScript">
+with ( document.forms[0] ) {
+   str1.focus();
+}
+</script> 
+

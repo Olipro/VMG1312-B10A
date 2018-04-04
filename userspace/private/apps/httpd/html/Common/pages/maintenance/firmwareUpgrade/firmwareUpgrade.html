@@ -1,0 +1,157 @@
+<script language="javascript">
+var idxStr = '<%ejGetOther(sysInfo, upldSts)%>';
+var upprocess = '<%ejGet(UpdateProcess)%>';
+var supportVoip = '<%ejGetOther(sysInfo, buildVoip)%>';
+var enablewwan = '<%ejGet(wwanpackage)%>';
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; //ZyXEL, Ryan add for hide WWAN upgrade
+
+function Progress() {
+	document.forms[0].upload_btn.disabled = true;
+
+	if(supportVoip)
+	{
+		var voiceRunning = '<%ejGetVoice(voiceInUse)%>';
+		if( parseInt(voiceRunning) == 1 ){
+			alert("<%ejGetML(MLG_Maintenance_FWUpgrade_AlertMsg_Str9)%>");
+		}
+	}
+
+
+	if ($('#chkRestoreDefault').attr("checked"))
+	{
+		var x=document.getElementById("aForm");
+		x.action = "/pages/tabFW/firmwareUpgrade-upload-restore.cgi";
+	}
+
+	return true;
+}
+
+function getMsgIndex() {
+	var idxNum = parseInt(idxStr);
+	if ( isNaN(idxNum) || idxNum < 0 || idxNum > 7 )
+		idxNum = 5;
+	
+	return idxNum;
+}
+
+var msg = new Array();
+msg[1] = '<%ejGetML(MLG_Maintenance_FWUpgrade_AlertMsg_Str1)%>';
+msg[2] = '<%ejGetML(MLG_Maintenance_FWUpgrade_AlertMsg_Str2)%>';
+msg[3] = '<%ejGetML(MLG_Maintenance_FWUpgrade_AlertMsg_Str3)%>';
+msg[4] = '<%ejGetML(MLG_Maintenance_FWUpgrade_AlertMsg_Str4)%>';
+msg[5] = '<%ejGetML(MLG_Maintenance_FWUpgrade_AlertMsg_Str5)%>';
+msg[6] = '<%ejGetML(MLG_Maintenance_FWUpgrade_AlertMsg_Str8)%>';
+msg[7] = '<%ejGetML(MLG_Maintenance_FWUpgrade_AlertMsg_Str6)%>';
+
+function reboot() {
+	var loc = '/login/login.html';
+	var code = 'window.top.location="' + loc + '"';
+
+	eval(code);
+}
+
+function BackgroundUrl(url)
+{
+	var objXMLHTTP = null;
+
+	if (window.XMLHttpRequest){
+		objXMLHTTP=new XMLHttpRequest();
+	}// code for IE
+	else if (window.ActiveXObject){
+		objXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	else{
+		alert("<%ejGetML(MLG_Common_XMLHttp)%>");
+		return;
+	}
+
+	if ( objXMLHTTP != null ){
+		objXMLHTTP.open("GET","./"+url,true);
+		objXMLHTTP.onreadystatechange = function()
+		{
+		}
+		objXMLHTTP.send(null);
+	}
+}
+
+function frmLoad () {
+	var idx = getMsgIndex();
+	var totaltime = 150000; //reboot time + burning time
+	
+	//ZyXEL, Ryan add for hide WWAN upgrade, 0x00004000 is same as WWAN_GUI_HIDE_FLAG which was defined in cms.h
+	if ( (customizationFlag & 0x00004000)){
+		enablewwan=0;
+		document.getElementById("upgrade_tex").innerHTML = "<%ejGetML(MLG_Maintenance_FWUpgrade_Explain_Str2)%>";
+	}
+
+
+	/* hide restoredefault checkbox */
+	showhide("checkboxRestoreDefault", "0");
+	if ( enablewwan != 1 ) {
+		showhide("wwan", "0");
+	}
+	if ( idx != 0 ) {
+		hciAlert(msg[idx], {height: 180, type: 2, title: ''});
+	}
+	if (upprocess == '1') {
+		setTimeout("$.openLoadingMask(2)", 500);
+		setTimeout("BackgroundUrl('firmwareUpgrade-uploadpost.cgi')", 1500);
+		setTimeout('reboot()', totaltime);
+	}
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+</script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text" id="upgrade_tex"><%ejGetML(MLG_Maintenance_FWUpgrade_Explain)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<li class="set1">
+<div class="title"><%ejGetML(MLG_Maintenance_FWUpgrade_Str10)%></div>
+<div class="w_text">
+<ul><li id= "checkboxRestoreDefault"><input type='checkbox' id='chkRestoreDefault' name='chkRestoreDefault'>&nbsp;<%ejGetML(MLG_Maintenance_FWUpgrade_Str2)%></li></ul>
+</div>
+</li>
+<form method='post' id='aForm' name='aForm' ENCTYPE='multipart/form-data' action='/pages/tabFW/firmwareUpgrade-upload.cgi' onSubmit="$.openLoadingMask(1);return Progress();">
+<li class="set1">
+<div class="w_text">
+<ul><li class="all_table"><%ejGetML(MLG_Maintenance_FWUpgrade_Str3)%>:<font color="#ff0000"> <%ejGet(sysVersion)%> </font></li></ul>
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_FWUpgrade_Str5)%>  </li><li class="right_table"><input name="filename" size="20" maxlength="128" type="file" /></li>
+</ul>
+</div>
+</li>
+<li class="space"> </li>
+<li class="buttonframe"><div class="button_position"><input value="<%ejGetML(MLG_Common_Upload)%>" type="submit" id="upload_btn" name="upload_btn" /></div></li>
+
+</form>
+</ul></div>
+<div class="data_frame" id="wwan"><ul>
+<li class="set1">
+<div class="title"><%ejGetML(MLG_Maintenance_FWUpgrade_Str12)%></div>
+</li>
+<form method='post' id='bForm' name='bForm' ENCTYPE='multipart/form-data' action='/pages/tabFW/firmwareUpgrade-wwanupload.cgi' onSubmit="return Checkform();$.openLoadingMask(1);">
+<li class="set1">
+<div class="w_text">
+<ul><li class="all_table"><%ejGetML(MLG_Maintenance_FWUpgrade_Str13)%>:<font color="#ff0000"> <%ejGetOther(sysInfo, wwanVersion)%> </font></li></ul>
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_FWUpgrade_Str14)%>: </li><li class="right_table"><input id="wwanfile" name="filename" size="20" maxlength="128" type="file" /></li>
+</ul>
+</div>
+</li>
+<li class="space"> </li>
+<li class="buttonframe"><div class="button_position"><input value="<%ejGetML(MLG_Common_3G_Upload)%>" type="submit" id="upload_btn_wwan" /></div></li>
+<!--Set area end-->
+</form>
+</ul></div>
+
+</div>
+<br/><br/>

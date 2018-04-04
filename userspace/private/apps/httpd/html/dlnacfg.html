@@ -1,0 +1,106 @@
+<html>
+  <head>
+    <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+    <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+function btnApply() {
+  var loc = 'dlnacfg.cmd?action=savapply&dmsEnabled=';
+
+  with( document.forms[0] ) {
+    if( dmsEnabled.checked ) {
+
+      loc += '1';
+      if ( (dmsMediaPath.value.length == 0)  ||  (dmsMediaPath.value.length > 80) ) {
+        alert('Media path length is invalid [1-80].');
+        return;
+      }
+      loc += '&dmsMediaPath='+dmsMediaPath.value;      
+      loc += '&dmsBrName='+brName.value;      
+    }
+    else {
+      loc += '0';
+    }
+  }
+  loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+  var code = 'location="' + loc + '"';
+  eval(code);
+}
+
+function dmsEnblChange() {
+  if( document.forms[0].dmsEnabled.checked )
+    hideDmsConfig(0);
+  else
+    hideDmsConfig(1);
+}
+
+function hideDmsConfig(hide) {
+  var status = 'visible';
+                                                                                
+  if(hide)
+    status = 'hidden';
+                                                                                
+  if( document.getElementById )
+  {
+    document.getElementById('dmsConfigBr').style.visibility = status;
+    document.getElementById('dmsConfig').style.visibility = status;
+  }
+  else
+  {
+    if(!document.layers)
+    {
+      document.all.dmsConfigBr.style.visibility = status;
+      document.all.dmsConfig.style.visibility = status;
+    }
+  }
+}
+
+function frmLoad() {
+  var i = 0;
+  var enable = "<%ejGetOther(sysInfo, dmsEnabled)%>";
+
+  with (document.forms[0]) {
+    dmsMediaPath.value = "<%ejGetOther(sysInfo, dmsMediaPath)%>";
+    brName.value = "<%ejGetOther(sysInfo, dmsBrName)%>";
+    if (enable == "1" ) {
+      dmsEnabled.checked = true;
+    } else {
+      dmsEnabled.checked = false;
+    }
+  }
+  dmsEnblChange();
+}
+
+// done hiding -->
+    </script>
+  </head>
+  <body onLoad='frmLoad()'>
+    <blockquote>
+      <form>
+        <b>Digital Media Server settings</b><br><br>
+        This page allows you to enable / disable digital media server support.
+        <br><br>
+        <input type='checkbox' name='dmsEnabled' onClick='dmsEnblChange()'> Enable on-board digital media server.
+        <br><br>
+        <div id="dmsConfigBr">
+          Interface <%ejGet(groupList)%>
+        </div>
+        <br>
+        <div id="dmsConfig">
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width='150'>Media Library Path</td>
+              <td><input type='text' name='dmsMediaPath'></td>
+            </tr>
+          </table>
+        </div>
+        <br><br>
+        <center>
+        <input type="button" value="Apply/Save" onClick='btnApply()'>
+        </center>
+      </form>
+    </blockquote>
+  </body>
+</html>

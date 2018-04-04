@@ -1,0 +1,103 @@
+<script language="javascript">
+	
+function isDuplicateRecord(op60, op43)
+{
+   var STBs = '<%ejGetOther(STBEntry)%>';
+   var info = STBs.split('|');
+
+   if (info != '') {
+      for ( i = 0; i < info.length; i++ ) {
+         if (info[i] != '') {
+            var names = info[i].split('/');
+            if ((names[0] != '' && names[0] == op60) || (names[1] != '' && names[1] == op43)) {
+               return false;
+            }
+         }
+      }
+   }
+   return true;
+}
+
+function isValidHexString(value){
+   var hexExp = /^[0-9a-fA-F]+$/;
+   if (value.match(hexExp)) {
+       return true;
+   } else {
+       return false;
+   }
+}
+
+function btnSave() {
+  	with ( document.forms[0] ) {
+		var msg = "";
+		var hexExp = /^[0-9a-fA-F]+$/;
+		
+        if (isOp43Hex.checked == true) {
+            op43Hex.value=1;
+        } else {
+            op43Hex.value=0;
+        }
+        
+		if (isDuplicateRecord(opt60.value, opt43.value) == false) {
+			msg = '<%ejGetML(MLG_Network_STBVendorID_Str14)%>';
+			hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}
+		else if (opt60.value == "" && opt43.value != "") {
+		    msg = '<%ejGetML(MLG_Network_STBVendorID_Str15)%>';
+			hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}
+		else if (opt43.value != "" && isOp43Hex.checked == true && isValidHexString(opt43.value) == false) { // for hex string
+		    msg = '<%ejGetML(MLG_Network_STBVendorID_Str16)%>';
+			hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}
+		else {
+			sessionKey.value = mainFrame.gblsessionKey;
+			submit();
+			$('.ui-dialog-titlebar-close').trigger('click');
+			$.openLoadingMask(1);
+			return;
+        }
+    }
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnSave(); });
+
+</script>
+   <form action="/pages/tabFW/homeNetworking-stbEntry.cmd" method="post" target="mainFrame">
+      <input type="hidden" name="action" id="action" value="add">
+      <input type="hidden" name="sessionKey" id="sessionKey" value="">
+      <input type="hidden" name="op43Hex" id="op43Hex" value="">
+      <div class="popup_frame" >
+
+         <div class="data_frame"><ul>
+<!--level 1 start-->
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_STBVendorID_Str10)%> :</li>
+                     <li class="right_table">
+                        <input name="opt60" id="opt60" size="25" maxlength="255" type="text" />
+                     </li>
+                  </ul>
+               </div>
+            </li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_STBVendorID_Str13)%> :</li>
+                     <li class="right_table">
+                        <input name="opt43" id="opt43" maxlength="255" size="25" />
+                        <input type="checkbox" name="isOp43Hex" value="1" checked /> HEX
+                     </li>
+                  </ul>
+               </div>
+            </li>
+         </ul></div>
+      </div>
+   </form>
+    

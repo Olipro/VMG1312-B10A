@@ -1,0 +1,249 @@
+--00:06:09-- `wput'
+    => ftp://ftp:xxxxx@217.172.179.237:21/incoming/wput
+Verbinden mit 217.172.179.237:21... verbunden! 
+==> AUTH TLS ... verschlüsselt!
+Anmeldung als ftp ... angemeldet!
+==> CWD incoming
+Die Zieldatei ist kleiner als die Quelldatei. Es wird von vorn begonnen.
+==> TYPE I ... fertig.
+Setzte die Datensicherheitsstufe auf Privat... fertig.
+==> PASV ... fertig.
+==> STOR wput ... fertig.
+Größe: 185,339
+    0K Fehler: Beim Hochladen der Daten ist ein Fehler aufgetreten
+==> ABOR ... --00:07:09-- `wput'
+    => ftp://ftp:xxxxx@217.172.179.237:21/incoming/wput
+Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+Length: 185,339
+    0K Error: Error encountered during uploading data
+==> ABOR ... --00:07:48-- `wput'
+    => ftp://ftp:xxxxx@217.172.179.237:21/incoming/wput
+Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+Length: 185,339
+    0K Error: Error encountered during uploading data (Inappropriate ioctl for device)
+==> ABOR ... Error: recv() timed out. No data received
+Receive-Warning: read() timed out. Read '' so far.
+failed.
+Waiting 10 seconds... Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+Length: 185,339
+    0K Error: Error encountered during uploading data (Inappropriate ioctl for device)
+==> ABOR ... Error: recv() timed out. No data received
+Receive-Warning: read() timed out. Read '' so far.
+failed.
+Waiting 10 seconds... Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+Length: 185,339
+    0K Error: Error encountered during uploading data (Inappropriate ioctl for device)
+==> ABOR ... Error: recv() timed out. No data received
+Receive-Warning: read() timed out. Read '' so far.
+failed.
+Waiting 10 seconds... Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+Length: 185,339
+    0K Error: Error encountered during uploading data (Inappropriate ioctl for device)
+==> ABOR ... --00:10:18-- `wput'
+    => ftp://ftp:xxxxx@217.172.179.237:21/incoming/wput
+Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+Length: 185,347
+    0K Vorm schreiben (Inappropriate ioctl for device)
+Error: Error encountered during uploading data (Inappropriate ioctl for device)
+==> ABOR ... Error: recv() timed out. No data received
+Receive-Warning: read() timed out. Read '' so far.
+failed.
+Waiting 10 seconds... --00:10:59-- `wput'
+    => ftp://ftp:xxxxx@217.172.179.237:21/incoming/wput
+Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+Length: 185,347
+    0K Vorm schreiben (Inappropriate ioctl for device)
+Error: Error encountered during uploading data (Inappropriate ioctl for device)
+==> ABOR ... Error: recv() timed out. No data received
+Receive-Warning: read() timed out. Read '' so far.
+failed.
+Waiting 10 seconds... Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+Length: 185,347
+    0K Vorm schreiben (Inappropriate ioctl for device)
+Error: Error encountered during uploading data (Inappropriate ioctl for device)
+==> ABOR ... Error: recv() timed out. No data received
+Receive-Warning: read() timed out. Read '' so far.
+failed.
+Waiting 10 seconds... Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+Length: 185,347
+    0K Vorm schreiben (Inappropriate ioctl for device)
+Error: Error encountered during uploading data (Inappropriate ioctl for device)
+==> ABOR ... --00:12:30-- `wput'
+    => ftp://ftp:xxxxx@217.172.179.237:21/incoming/wput
+Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+Length: 185,347
+    0K Vorm lesen (Inappropriate ioctl for device)
+Error: Error encountered during uploading data (Inappropriate ioctl for device)
+==> ABOR ... Error: recv() timed out. No data received
+Receive-Warning: read() timed out. Read '' so far.
+failed.
+Waiting 10 seconds... Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+Length: 185,347
+    0K Vorm lesen (Inappropriate ioctl for device)
+Error: Error encountered during uploading data (Inappropriate ioctl for device)
+==> ABOR ... --00:13:34-- `wput'
+    => ftp://ftp:xxxxx@217.172.179.237:21/incoming/wput
+Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+Length: 185,355
+    0K vorm seeken (Inappropriate ioctl for device)
+Error: Error encountered during uploading data (Inappropriate ioctl for device)
+==> ABOR ... Error: recv() timed out. No data received
+Receive-Warning: read() timed out. Read '' so far.
+failed.
+Waiting 10 seconds... --00:14:09-- `wput'
+    => ftp://ftp:xxxxx@217.172.179.237:21/incoming/wput
+Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+vor der bar (Operation now in progress)
+Length: 185,343
+    0K Error: Error encountered during uploading data (Inappropriate ioctl for device)
+==> ABOR ... Error: recv() timed out. No data received
+Receive-Warning: read() timed out. Read '' so far.
+failed.
+Waiting 10 seconds... Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+vor der bar (Operation now in progress)
+Length: 185,343
+    0K Error: Error encountered during uploading data (Inappropriate ioctl for device)
+==> ABOR ... Error: recv() timed out. No data received
+Receive-Warning: read() timed out. Read '' so far.
+failed.
+Waiting 10 seconds... Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+vor der bar (Operation now in progress)
+Length: 185,343
+    0K Error: Error encountered during uploading data (Inappropriate ioctl for device)
+==> ABOR ... --00:15:43-- `wput'
+    => ftp://ftp:xxxxx@217.172.179.237:21/incoming/wput
+Connecting to 217.172.179.237:21... connected! 
+==> AUTH TLS ... encrypted!
+Logging in as ftp ... Logged in!
+==> CWD incoming
+Remote file size is smaller than local size. Restarting at 0.
+==> TYPE I ... done.
+Setting data protection level to private ... done.
+==> PASV ... done.
+==> STOR wput ... done.
+Length: 185,339
+    0K .......... .......... .......... ........
+00:15:50 (wput) - `33.22K/s' [185339]
+
+FINISHED --00:15:50--
+Transfered 185,339 bytes in 1 file at 25.91K/s

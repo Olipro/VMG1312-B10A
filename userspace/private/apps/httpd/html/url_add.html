@@ -1,0 +1,63 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+
+function btnApply() {
+   var loc = 'urlfilter.cmd?action=set_url';
+   with ( document.forms[0] ) {
+
+      if (port_num.value < 0 || port_num.value > 65535) 
+	      alert( 'Port number ranges from 0 to 65535');
+      else if (TodUrlAdd.value.length > 128)
+	      alert( 'Url address must be less than 128 characters');
+      else if (TodUrlAdd.value == '')
+	      alert( 'Please enter the Url address');
+      else {
+	      if (port_num.value == '') {
+		      port_num.value = 80;
+	      }
+	      loc += '&TodUrlAdd=' + TodUrlAdd.value;
+
+    	      loc += '&port_num=' + port_num.value;
+            loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+   	      var code = 'location="' + loc + '"';
+   	      eval(code);
+      }
+   }
+}
+
+// done hiding -->
+</script>
+   </head>
+   <body>
+      <blockquote>
+         <form>
+            <b>Parental Control -- URL Filter Add</b><br>
+            <br>
+	    Enter the URL address and port number then click "Apply/Save" to add the entry to the URL filter.<br>
+            <br>
+            <br>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width="180">URL Address:</td>
+                  <td><input type='text' name='TodUrlAdd'></td>
+               </tr>
+               <tr>
+                  <td>Port Number:</td>
+                  <td><input type='text' name='port_num'> (Default 80 will be applied if leave blank.)</td>
+               </tr>
+            </table>
+            <br>
+            <br>
+            <center>
+               <input type='button' onClick='btnApply()' value='Apply/Save'>
+            </center>
+         </form>
+      </blockquote>
+   </body>
+</html>

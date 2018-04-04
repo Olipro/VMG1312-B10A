@@ -1,0 +1,606 @@
+﻿<script language="javascript">
+<!-- hide
+var errMsg = "<%ejGetOther(errMsg)%>";
+var interfaceInfo = '<%ejGetOther(tr69cInterfaceList)%>';
+var interfaces = interfaceInfo.split('|');
+var interfacesLength = interfaces.length - 2;
+var boundIfList = '<%ejGet(tr69cBoundIfList)%>';
+var boundInterfaces = boundIfList.split('|');
+var boundIfName = '<%ejGet(tr69cBoundIfName)%>';
+
+var isSupportCertSelect = '<%ejGet(tr69cSupportCertSelect)%>';
+var clientCertInfo = '<%ejGetOther(clientCertList)%>';
+var clientCerts = clientCertInfo.split('|');
+var boundCertName = '<%ejGet(tr69cBoundCertName)%>';
+
+var enblInform = '<%ejGet(tr69cInformEnable)%>';
+var enblTr069 = '<%ejGet(tr69cEnable)%>';
+var ConnectIPv6First = '<%ejGet(tr69cConnIPv6First)%>';
+var enblDebug = '<%ejGet(tr69cDebugEnable)%>';
+var enblNoneConnReqAuth = '<%ejGet(tr69cNoneConnReqAuth)%>';
+var enblAutoAuth = '<%ejGet(tr69cAutoAuth)%>';
+
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; 
+
+function frmLoad()
+{
+	var i = 0;
+
+   if ( enblTr069 == '0' )
+   {
+      $("input[name='Tr069']").get(1).checked = true;
+      $("input[name='Inform']").get(1).checked = true;
+   }
+   else
+   {
+      $("input[name='Tr069']").get(0).checked = true;
+      if ( enblInform == '1' )
+         $("input[name='Inform']").get(0).checked = true;
+      else
+         $("input[name='Inform']").get(1).checked = true;
+   }
+
+	if ( ConnectIPv6First == '0' )
+      $("input[name='ConnIPv6First']").get(0).checked = true;
+	else
+      $("input[name='ConnIPv6First']").get(1).checked = true;
+	
+	
+	$("input[name='tr69cInformInterval']").val('<%ejGet(tr69cInformInterval)%>');
+	$("input[name='tr69cAcsURL']").val('<%ejGet(tr69cAcsURL)%>');	
+	if (enblAutoAuth == '1')
+		$("input[name='autoGenIdPwd']").attr("checked", true);
+	else
+		$("input[name='autoGenIdPwd']").attr("checked", false);
+	$("input[name='tr69cAcsUser']").val('<%ejGet(tr69cAcsUser)%>');
+	$("input[name='tr69cAcsPwd']").val('<%ejGet(tr69cAcsPwd)%>');
+		
+	if ( enblDebug == '0' )
+      $("input[name='debug']").get(1).checked = true;
+	else
+      $("input[name='debug']").get(0).checked = true;
+	
+	
+	
+	if ( enblNoneConnReqAuth == '0')
+      $("input[name='connReqAuth']").attr("checked",true);
+	else
+		$("input[name='connReqAuth']").attr("checked",false);
+
+   $("input[name='tr69cConnReqUser']").val('<%ejGet(tr69cConnReqUser)%>');
+   $("input[name='tr69cConnReqPwd']").val('<%ejGet(tr69cConnReqPwd)%>'); 
+
+//ZyXEL, 20150803, Albert, add connection request port 
+ 	 $("input[name='tr69cConnReqPort']").val('<%ejGet(tr69cConnReqPort)%>');
+     if(!(customizationFlag & 0x00400000)){
+ 	     $('#tr69cConnReqPort_txt').hide();     
+     }
+   
+   
+   if(isSupportCertSelect=='1')
+   {
+      showhide("CertSelect","1");
+      $("select[name=tr69cBoundCertName]").empty();
+      for ( i = 0; i < clientCerts.length; i++ ) {					
+         if ( clientCerts[i] == boundCertName )  
+            $("select[name=tr69cBoundCertName]").append("<option value='"+ clientCerts[i]+ "' selected>" + clientCerts[i] + "</option>");
+         else
+            $("select[name=tr69cBoundCertName]").append("<option value='"+ clientCerts[i]+ "'>" + clientCerts[i] + "</option>");
+      }
+   }else{
+      showhide("CertSelect","0");
+   }
+   if(boundIfList != ''){ 
+      var inBoundIfList = 0;
+      var i = 0, j = 0;
+      $('.selectWANIf').empty();
+      $('.selectWANIf').append("<input type='hidden' name='tr69cBoundIfList' value='' size='1' maxlength='256'>");
+      for ( i = 1; i < interfacesLength; i++ ) {	// skip Any_WAN interface
+         inBoundIfList = 0;
+         for(j = 0; j < boundInterfaces.length; j++)
+         {
+            if( interfaces[i] == boundInterfaces[j] ) {
+               inBoundIfList = 1;
+               break;
+            }
+         }					
+         if(inBoundIfList == 1) {
+            $('.selectWANIf').append(" <input type='checkbox' name='multiIf' checked value='" + interfaces[i] + "'>" + interfaces[i] );
+         } else {
+            $('.selectWANIf').append(" <input type='checkbox' name='multiIf' value='" + interfaces[i] + "'>" + interfaces[i] );
+         }
+      }
+      if(boundIfName == 'Any_WAN'){
+         $("input[name='wanIf']").get(0).checked = true;
+         hideMultiIf();
+      } else{
+         $("input[name='wanIf']").get(1).checked = true;
+         showMultiIf();
+      }
+      showhide("multi_wan", "1");
+      showhide("single_wan", "0");
+   }
+   else{
+      $("select[name=tr69cBoundIfName]").empty();  
+      
+      for ( i = 0; i < interfaces.length; i++ ) {		
+
+         /* Steven */
+         if (interfaces[i] == 'LAN' || interfaces[i] == 'Loopback')
+            continue;
+		
+         if ( interfaces[i] == boundIfName )  
+            $("select[name=tr69cBoundIfName]").append("<option value='"+ interfaces[i]+ "' selected>" + interfaces[i] + "</option>");
+         else
+            $("select[name=tr69cBoundIfName]").append("<option value='"+ interfaces[i]+ "'>" + interfaces[i] + "</option>");
+      }
+      showhide("multi_wan", "0");
+      showhide("single_wan", "1");
+   }
+   
+   connAuthChange();  
+   autoGenAuth();
+   parent.$.closeLoadingMask();
+}
+
+function disableInform() {
+   document.forms[0].Inform[1].checked = true;
+   document.forms[0].Inform[0].disabled = true;
+   document.forms[0].Inform[1].disabled = true;
+}
+
+function enableInform() {
+   document.forms[0].Inform[0].disabled = false;
+   document.forms[0].Inform[1].disabled = false;
+}
+
+function connAuthChange() {
+   		
+  if(document.forms[0].connReqAuth.checked == true){
+	  document.forms[0].tr69cConnReqUser.disabled =false;	
+		document.forms[0].tr69cConnReqPwd.disabled = false;
+		return;
+  }else{
+	  document.forms[0].tr69cConnReqUser.disabled =true;	
+		document.forms[0].tr69cConnReqPwd.disabled = true;	
+		return;
+  } 
+}
+
+function hideMultiIf(){
+	
+	if(interfacesLength < 2) {	// ignore Any_WAN interface
+	} else if(interfacesLength == 2) {	// ignore Any_WAN interface
+		document.forms[0].multiIf.disabled = true;
+	} else {
+		for (i = 1; i < interfacesLength; i++) {	// skip Any_WAN interface
+			document.forms[0].multiIf[i-1].disabled = true;
+		}
+	}
+}
+
+
+function showMultiIf(){
+	if(interfacesLength < 2) {	// ignore Any_WAN interface
+	} else if(interfacesLength == 2) {	// ignore Any_WAN interface
+		document.forms[0].multiIf.disabled = false;
+	} else {
+		for (i = 1; i < interfacesLength; i++) {	// skip Any_WAN interface
+			document.forms[0].multiIf[i-1].disabled = false;
+		}
+	}
+}
+
+function autoGenAuth() {
+	if(document.forms[0].autoGenIdPwd.checked == true){
+		document.forms[0].tr69cAcsUser.disabled=true;
+		document.forms[0].tr69cAcsPwd.disabled=true;
+		$("input[name='tr69cAcsUser']").val('');
+		$("input[name='tr69cAcsPwd']").val('');
+	}else {
+		document.forms[0].tr69cAcsUser.disabled=false;
+		document.forms[0].tr69cAcsPwd.disabled=false;
+	}
+}
+
+function btnApply() {
+   with ( document.forms[0] ) {
+      if ( Tr069[0].checked == true )
+      {
+         $("input[name='tr69cEnable']").val('1');
+         if ( Inform[0].checked == true )
+            $("input[name='tr69cInformEnable']").val('1');
+         else
+            $("input[name='tr69cInformEnable']").val('0');
+      }
+      else
+      {
+         $("input[name='tr69cEnable']").val('0');
+         $("input[name='tr69cInformEnable']").val('0');
+      }
+
+	  if (ConnIPv6First[0].checked == true) 
+        $("input[name='tr69cConnIPv6First']").val('0');
+      else
+       $("input[name='tr69cConnIPv6First']").val('1');
+		
+      if (debug[0].checked == true) 
+        $("input[name='tr69cDebugEnable']").val('1');
+      else
+      	$("input[name='tr69cDebugEnable']").val('0');
+   	
+   	  if (connReqAuth.checked == true)
+         $("input[name='tr69cNoneConnReqAuth']").val('0');
+      else
+         $("input[name='tr69cNoneConnReqAuth']").val('1');
+
+      if (tr69cAcsURL.value == '') {
+		 hciAlert ('<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str1)%>', 2);
+         return;
+      }
+
+      if (tr69cAcsURL.value.length > 256) {
+		 //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+		 //hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str2)%>", tr69cAcsURL.value.length), 2);
+		 hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str2)%>", ""), 2);
+         return;
+      }
+      
+      if (autoGenIdPwd.checked == true)
+         $("input[name='tr69cAutoAuth']").val('1');
+      else
+         $("input[name='tr69cAutoAuth']").val('0');
+
+      if (tr69cAcsUser.value.length > 256) {
+		 //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+		 //hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str3)%>", tr69cAcsUser.value.length), 2);
+		 hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str3)%>", ""), 2);
+         return;
+      }
+      
+      if (tr69cAcsPwd.value.length > 256) {
+		 //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+		 //hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str4)%>", tr69cAcsPwd.value.length), 2);
+		 hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str4)%>", ""), 2);
+         return;
+      }
+  
+      if (tr69cConnReqUser.value.length > 256) {
+		 //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+		 //hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str5)%>", tr69cConnReqUser.value.length), 2);
+		 hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str5)%>", ""), 2);
+         return;
+      }
+      
+      if (tr69cConnReqPwd.value.length > 256) {
+		 //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+		 //hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str6)%>", tr69cConnReqPwd.value.length), 2);
+		 hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str6)%>", ""), 2);
+         return;
+      }
+
+//ZyXEL, 20150803, Albert, add connection request port 
+      if((customizationFlag & 0x00400000)){
+          if (isNaN(tr69cConnReqPort.value) == true ) {
+		     //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+		     //hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str6)%>", tr69cConnReqPwd.value.length), 2);
+		     hciAlert (MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str10)%>", ""), 2);
+             return;
+          }	  
+      }
+      /* check inform interval, Steven */
+      //30~31536000
+
+      if ( isNaN(tr69cInformInterval.value) == true ) {
+         //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+         //msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str7)%>", tr69cInformInterval.value);
+         msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str7)%>", "");
+         hciAlert (msg, 2);
+         return;
+      }
+      informInterval = parseInt(tr69cInformInterval.value);
+      if ( informInterval < 30 || informInterval > 31536000 ) {
+         //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+         //msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str8)%>", tr69cInformInterval.value);
+         msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str8)%>", "");
+         hciAlert (msg, 2);
+         return;
+      }
+      
+      var temp1 = $("input[name='tr69cConnReqPwd']").val();
+      var temp2 = encodeUrl(temp1);
+      $("input[name='tr69cConnReqPwd']").val(temp2);
+      if(boundIfList != ''){
+         if(wanIf[0].checked == true) {
+            $("input[name='tr69cBoundIfName']").val('Any_WAN');
+            $("input[name='tr69cBoundIfList']").val('SUPPORT_MULTI_WAN');
+         }
+         else{
+            $("input[name='tr69cBoundIfName']").val('Multi_WAN');
+            var first = true;
+            var loc = '';
+            if(interfacesLength < 2) {	// ignore Any_WAN interface
+            } else if(interfacesLength == 2) {	// ignore Any_WAN interface
+               if (multiIf.checked) {
+                  $("input[name='tr69cBoundIfList']").val(multiIf.value.replace(/['" ]/g,''));
+                  first = false;
+               }
+            } else {
+               for (i = 1; i < interfacesLength; i++) {	// skip Any_WAN interface
+                  if (multiIf[i-1].checked) {
+                     if (!first) {
+                        loc += '|';
+                     }
+                     loc += multiIf[i-1].value.replace(/['" ]/g,'');
+                     first = false;
+                  }
+               }
+               $("input[name='tr69cBoundIfList']").val(loc);
+            }
+            if(first) {
+               hciAlert ('<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str9)%>', 2);
+               $("input[name='tr69cBoundIfList']").val('SUPPORT_MULTI_WAN');
+               return;
+            }
+         }
+      }
+   }
+   parent.$.openLoadingMask(1);
+	document.loadForm.submit();
+}
+
+function btnCancel(){
+	frmLoad();
+}
+
+$(document).ready(function() {
+   frmLoad();
+   if(errMsg)
+   {
+      hciAlert(errMsg);
+   }
+});
+// done hiding -->
+</script>
+<div class="content_frame" >
+  <!--Unit Explain start-->
+  <div class="explain">
+    <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+    <div class="explain_text"> <%ejGetML(MLG_Maintenance_TR069_Explain)%></div>
+    <div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+  </div>
+  <!--Unit Explain End-->
+
+<form name="loadForm" action="/pages/tabFW/tr069Client-tr069Client.cgi" method="post">
+<input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">	
+<input type="hidden" name="tr69cInformEnable" id="tr69cInformEnable">	
+<input type="hidden" name="tr69cEnable" id="tr69cEnable">
+<input type="hidden" name="tr69cNoneConnReqAuth" id="tr69cNoneConnReqAuth">	
+<input type="hidden" name="tr69cDebugEnable" id="tr69cDebugEnable">	
+<input type="hidden" name="tr69cConnIPv6First" id="tr69cConnIPv6First">	
+<input type="hidden" name="tr69cAutoAuth" id="tr69cAutoAuth">
+
+  <!--Set area start-->
+  <div class="data_frame">
+    <ul>
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str2)%>:</li>
+            <li class="right_table">
+              <input name='Inform' type='radio' />
+              <%ejGetML(MLG_Common_Enable)%>
+              <input name='Inform' type='radio' />
+              <%ejGetML(MLG_Common_Disable)%> </li>
+          </ul>
+        </div>
+      </li>
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str2_1)%>:</li>
+            <li class="right_table">
+              <input name='Tr069' type='radio' onClick='enableInform()'/>
+              <%ejGetML(MLG_Common_Enable)%>
+              <input name='Tr069' type='radio' onClick='disableInform()'/>
+              <%ejGetML(MLG_Common_Disable)%> </li>
+          </ul>
+        </div>
+      </li>
+      <br />
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str3)%>:</li>
+            <li class="right_table">
+              <input type='text' name='tr69cInformInterval' size="20" maxlength="256" />
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str19)%>:</li>
+            <li class="right_table">
+              <input name='ConnIPv6First' type='radio' />
+              <%ejGetML(MLG_Maintenance_TR069_Str20)%>
+              <input name='ConnIPv6First' type='radio' />
+              <%ejGetML(MLG_Maintenance_TR069_Str21)%> </li>
+          </ul>
+        </div>
+      </li>	  
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str4)%>:</li>
+            <li class="right_table">
+              <input type='text' name='tr69cAcsURL' size="45" maxlength="256" /> (<%ejGetML(MLG_Maintenance_TR069_Str16)%>)
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="all_table">
+              <input type="checkbox" name="autoGenIdPwd" onClick="autoGenAuth()">
+              <%ejGetML(MLG_Maintenance_TR069_Str17)%> . </li>
+          </ul>
+        </div>
+      </li>
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str5)%>:</li>
+            <li class="right_table">
+              <input type='text' name='tr69cAcsUser' size="45" maxlength="256" />
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str6)%>:</li>
+            <li class="right_table">
+              <input type='password' name='tr69cAcsPwd' size="45" maxlength="256" autocomplete="new-password" />
+            </li>
+          </ul>
+        </div>
+      </li>
+
+<script language="text/javascript">
+<!-- hide			
+/*	
+{
+	var i = 0;
+	//document.write("  <option value='" + interfaces[i] + "' selected>");
+	for ( i = 0; i < interfaces.length; i++ ) {					
+	  if ( interfaces[i] == boundIfName )  
+	    $("select[name=tr69cBoundIfName]").append("<option value='"+ interfaces[i]+ "' selected>" + interfaces[i] + "</option>");
+	  else
+	    $("select[name=tr69cBoundIfName]").append("<option value='"+ interfaces[i]+ "'>" + interfaces[i] + "</option>");
+	}
+}
+*/
+// done hiding -->
+</script>    
+
+<div id="multi_wan">
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str7)%>:</li>
+    <li class="right_table">    	
+		<input name='wanIf' type='radio' onClick='hideMultiIf()'><%ejGetML(MLG_Maintenance_TR069_Str14)%>
+		<input name='wanIf' type='radio' onClick='showMultiIf()'><%ejGetML(MLG_Maintenance_TR069_Str15)%>
+		<input type='hidden' name='tr69cBoundIfName' value='' size="1" maxlength="256">
+    </li>
+    <li class="selectWANIf">    
+    </li>
+  </ul>
+</div>
+</li>
+</div>
+<div id="single_wan">
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str7)%>:</li>
+    <li class="right_table">    	
+			<select name='tr69cBoundIfName'>
+			</select>
+    </li>
+  </ul>
+</div>
+</li>
+</div>				
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str8)%></li>
+            <li class="right_table">
+              <input name='debug' type='radio' />
+              <%ejGetML(MLG_Common_Enable)%>
+              <input name='debug' type='radio' />
+              <%ejGetML(MLG_Common_Disable)%> </li>
+          </ul>
+        </div>
+      </li>
+      <br />
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="all_table">
+              <input type="checkbox" name="connReqAuth" onClick="connAuthChange()">
+              <%ejGetML(MLG_Maintenance_TR069_Str9)%> . </li>
+          </ul>
+        </div>
+      </li>
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str10)%>: </li>
+            <li class="right_table">
+              <input type='text' name='tr69cConnReqUser' size="45" maxlength="256" />
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str11)%>:</li>
+            <li class="right_table">
+              <input type='password' name='tr69cConnReqPwd' size="45" maxlength="256" autocomplete="new-password"/>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li class="set1">
+        <div class="w_text" id='tr69cConnReqPort_txt'>
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str18)%>:</li>
+            <li class="right_table">
+              <input type='text' name='tr69cConnReqPort' size="45" maxlength="256" />
+            </li>
+          </ul>
+        </div>
+      </li>      
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str12)%>:</li>
+            <li class="right_table"> <%ejGet(tr69cConnReqURL)%> </li>
+          </ul>
+        </div>
+      </li>
+      <br />
+      <div id="CertSelect">
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Maintenance_TR069_Str13)%>:</li>
+            <li class="right_table">
+              <select name="tr69cBoundCertName">
+              </select>
+            </li>
+          </ul>
+        </div>
+      </li>
+      </div>
+      <li class="space"> </li>
+      <!--Button define start-->
+      <li class="buttonframe">
+        <div class="button_position">
+          <input name="button" type='button'  value='<%ejGetML(MLG_Common_Apply)%>' onClick='btnApply()' />
+          &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+          <input name="button" type='button' value='<%ejGetML(MLG_Common_Cancel)%>' onClick='btnCancel()' />
+        </div>
+      </li>
+      <!--Button define end-->
+    </ul>
+  </div>
+  <!--Set area end-->
+</form> 
+</div>
+<br/><br/>

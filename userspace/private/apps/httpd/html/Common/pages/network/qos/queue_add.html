@@ -1,0 +1,234 @@
+<script language="javascript">
+<!--
+function btnApply() {
+   with ( document.forms[0] ) {
+      if (queueName.value == '' ) {
+         msg = '<%ejGetML(MLG_QOS_QOSQueueSetup_AlertMsg_Str1)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if ( isValidName(queueName.value) == false ) {
+         msg = '<%ejGetML(MLG_QOS_QOSQueueSetup_AlertMsg_Str2)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if (queueName.value.length > 15) {
+         msg = '<%ejGetML(MLG_QOS_QOSQueueSetup_AlertMsg_Str3)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+
+      var qosQueueName = "<%ejGetOther(qosQueueName, all)%>";
+      var existQueueName = qosQueueName.split('|');
+      for ( i = 0; i < existQueueName.length; i++ ) {
+        if (existQueueName[i] != '')
+        {
+          if (existQueueName[i] == queueName.value)
+          {
+            msg = '<%ejGetML(MLG_QOS_QOSQueueSetup_AlertMsg_Str4)%>';
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return;
+          }
+        }
+      }
+      
+      var qosQueueCount = '<%ejGetOther(qosQueueCount, all)%>';
+      var qosWanLanCount = qosQueueCount.split('/');
+      if( qosWanLanCount[0]==8)
+      {
+        if( queueintf.options[queueintf.selectedIndex].value == 'WAN')
+        {
+          msg = '<%ejGetML(MLG_QOS_QOSQueueSetup_AlertMsg_Str5)%>';
+          hciAlert(msg, {height: 180, type: 2, title: ''});
+          return;
+        }
+      }
+      
+      if( qosWanLanCount[1]==3)
+      {
+        if( queueintf.options[queueintf.selectedIndex].value == 'LAN')
+        {
+          msg = '<%ejGetML(MLG_QOS_QOSQueueSetup_AlertMsg_Str6)%>';
+          hciAlert(msg, {height: 180, type: 2, title: ''});
+          return;
+        }
+      }
+
+/*    Jeff, No need to prevent two queue with the same priority and weight 
+      var qosQueuePriorityWeight = "<%ejGetOther(qosQueuePriorityWeight, all)%>";
+      var existQueuePriWeight = qosQueuePriorityWeight.split('|');
+      for ( i = 0; i < existQueuePriWeight.length ; i++ ) {
+        if (existQueuePriWeight[i] != '')
+        {
+          if (existQueuePriWeight[i].indexOf(':') != -1) {
+            var temp = existQueuePriWeight[i];
+            var PriWeightInterface = temp.split(':');
+            if ((PriWeightInterface[0] == precedence.options[precedence.selectedIndex].value))
+            {
+              if (PriWeightInterface[1] == weight.options[weight.selectedIndex].value)
+              {
+              	if(PriWeightInterface[2] == queueintf.options[queueintf.selectedIndex].value)
+              	{
+                  msg = "QoS couple of priority and weight of '" + PriWeightInterface[2] + "' existed, please select another couple of priority and weight.";
+                  hciAlert(msg, {height: 180, type: 2, title: ''});
+                  return;
+                }
+              }
+            }
+          }
+        }
+      }
+*/
+      
+      if ( queueintf.selectedIndex == 0 ) {
+         msg = '<%ejGetML(MLG_QOS_QOSQueueSetup_AlertMsg_Str7)%>'
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      
+		  var msg = "";
+		  if(isNaN(shaperate.value) == true ||(shaperate.value < 0) || (shaperate.value > 1024000)){
+			  msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSQueueSetup_AlertMsg_Str8)%>",shaperate.value);
+        hciAlert(msg, {height: 180, type: 2, title: ''});
+        return;
+	  	}
+      
+      if(enable.checked==true)
+      	enable.value = 1;
+      else
+      	enable.value = 0;
+      	
+      sessionKey.value = mainFrame.gblsessionKey;
+      submit();
+      $('.ui-dialog-titlebar-close').trigger('click');
+      $.openLoadingMask(1);
+      return;
+      
+   }
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnApply();});
+-->
+</script>
+<form action="/pages/tabFW/qos-qosqueue.cmd" method="post" target="mainFrame">
+   <input type="hidden" name="action" id="action" value="add">
+   <input type="hidden" name="sessionKey" id="sessionKey" >
+   <input type="hidden" name="alg" id="alg" value="SP">
+   <input type="hidden" name="latency" id="latency" value="0">
+   <input type="hidden" name="ptmpriority" id="ptmpriority" value="0">
+   <input type="hidden" name="burstsize" id="burstsize" value="">
+<div class="popup_frame" >
+<div class="data_frame2">
+  <ul>
+    <li class="set1">
+      <div class="w_text">
+        <ul>
+          <li class="left_table">
+            <input type="checkbox" name='enable' id='enable' size="1" > <%ejGetML(MLG_QOS_QOSQueueSetup_Str16)%>
+          </li>
+          <li class="right_table">&nbsp;</li>
+        </ul>
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_Common_Name)%>  :</li>
+          <li class="right_table">
+            <input type='text' size="22" name="queueName" id="queueName">
+          </li>
+        </ul>
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSQueueSetup_Str7)%>  :</li>
+          <li class="right_table">
+            <select id="queueintf" name="queueintf">
+              <option value="0">&nbsp;</option>
+<script language="javascript">
+<!-- hide
+{
+  var queueIf = '<%ejGetOther(qosIf, all)%>';
+  var Intf = queueIf.split('|');
+  var str = '';
+  Intf.sort();
+  for ( i = 0; i < Intf.length; i++ ) {
+    if (Intf[i] != ''){
+      if (Intf[i].indexOf(':') != -1) {
+        var temp = Intf[i];
+        var intfInfo = temp.split(':');
+        str += "<option value='" + intfInfo[0] + "'>" + intfInfo[1] + "</option>";
+      }
+    }
+  }
+  $('#queueintf').append(str);
+}
+// done hiding -->
+</script>
+  					</select>
+          </li>
+        </ul>
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSQueueSetup_Str8)%>  :</li>
+          <li class="right_table">
+            <select id="precedence" name="precedence">
+<script language="javascript">
+<!-- hide
+{
+	var queuePrecedence = '<%ejGetOther(qosPrcd, all)%>';
+	var prece = queuePrecedence.split('|');
+	var str = '';
+		
+	prece.sort();
+	for ( i = 0; i < prece.length; i++ ) {
+		if (prece[i] == '1') {
+			str += "<option value='" + prece[i] + "'>" + prece[i] + "(    <%ejGetML(MLG_QOS_QOSQueueSetup_Str20)%>)" + "</option>";
+		}
+		else if (prece[i] != '') {
+			str += "<option value='" + prece[i] + "'>" + prece[i] + "</option>";
+		}
+	}
+	$('#precedence').append(str)
+}
+// done hiding -->
+</script>
+            </select>
+          </li>
+        </ul>
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSQueueSetup_Str9)%>  :</li>
+          <li class="right_table">
+            <select id="wght" name="wght">
+<script language="javascript">
+<!-- hide
+{
+	var queueWeight = '<%ejGetOther(qosWeight, all)%>';
+	var weight = queueWeight.split('|');
+	weight.sort();
+	var str = '';
+	for ( i = 0; i < weight.length; i++ ) {
+		if (weight[i] != '') {
+			str += "<option value='" + weight[i] + "'>" + weight[i] + "</option>";
+		}
+	}
+	$('#wght').append(str)
+}
+// done hiding -->
+</script>
+            </select>
+          </li>
+        </ul>
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSQueueSetup_Str10)%>  :</li>
+          <li class="right_table">
+            <select name="dropAlgrm" id="dropAlgrm" size="1">
+              <option value='DT'><%ejGetML(MLG_QOS_QOSQueueSetup_Str21)%></option>
+            </select>
+          </li>
+        </ul>
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSQueueSetup_Str11)%>  :</li>
+          <li class="right_table"><input type='text' size="22" maxlength="17" id = "shaperate" name="shaperate">&nbsp;(<%ejGetML(MLG_Common_Kbps)%>)</li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
+</div>
+</form>

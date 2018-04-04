@@ -1,0 +1,116 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+
+var sessionKey='<%ejGetOther(sessionKey)%>';
+
+
+function btnApply() {
+   var loc = 'storageuseraccountcfg.cmd?';
+
+   with ( document.forms[0] ) {
+
+
+      // validate user name
+      if ( userName.value == '' ) {
+         alert('username should not be empty.');
+         return;
+      }
+      var len = userName.value.length;
+      if ( len > 64 ) {
+         msg = 'The length of user name (' + len + ') is too long [1-64].';
+         alert(msg);
+         return;
+      }
+      // validate password
+      if ( Password.value == '' ) {
+         alert('Password should not be empty.');
+         return;
+      }
+      len = Password.value.length;
+      if ( len > 64 ) {
+         msg = 'The length of password (' + len + ') is too long [1-64].';
+         alert(msg);
+         return;
+      }
+
+      if ( Password.value != cfmPassword.value ) {
+         alert("The passwords do not match.");
+         return;
+      }
+
+      if ( volumeName.value == '' ) {
+         alert('volumename should not be empty.');
+         return;
+      }
+
+      len = volumeName.value.length;
+      if ( len > 64 ) {
+         msg = 'The length of volume name (' + len + ') is too long [1-64].';
+         alert(msg);
+         return;
+      }
+
+      loc += 'action=add';
+
+      loc += '&userName=' + encodeUrl(userName.value);
+      loc += '&Password=' + encodeUrl(Password.value);
+      loc += '&volumeName=' + encodeUrl(volumeName.value);
+      loc += '&sessionKey=' + sessionKey;
+      var code = 'location="' + loc + '"';
+   }
+
+   eval(code);
+}
+
+// done hiding -->
+
+</script>
+   </head>
+   <body >
+      <blockquote>
+         <form>
+            <b>Storage User Account Setup</b><br>
+            <br>
+            <br>
+            <br>
+            <div >               
+            In the boxes below, enter the user name, password  
+            and volume name on which the home directory is to be created.<br>
+            <br>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td> Username:&nbsp;&nbsp;</td>
+                  <td><input type='text' name='userName'></td>
+               </tr>
+               <tr>
+                  <td> Password:&nbsp;&nbsp;</td>
+                  <td><input type='password' name='Password'></td>
+               </tr>
+               <tr>
+                  <td>Confirm Password:&nbsp;&nbsp;</td>
+                  <td><input type='password' name='cfmPassword'></td>
+               </tr>
+               <tr>
+                  <td> volumeName:&nbsp;&nbsp;</td>
+                  <td><input type='text' name='volumeName'></td>
+               </tr>
+            </table>
+               <br>
+               <br>
+            </div>            
+            <br>
+            <br>
+            <br>
+            <center>
+                <input type='button' onClick='btnApply()' value='Apply/Save'>
+            </center>
+         </form>
+      </blockquote>
+   </body>
+</html>

@@ -1,0 +1,52 @@
+<script language='javascript'>
+<!-- hide
+<%ejGet(intfGrpInfo)%>
+
+<%ejGetOtherBig(getIntfGrpJS)%>
+$(document).ready(function() {
+	frmLoad();
+});
+// done hiding -->
+</script>
+<form method="post" action="/pages/tabFW/intfGrp-portmap.cmd" >
+<input type="hidden" name="action" id="action" value="savapply">
+<input type="hidden" name="sessionKey" id="sessionKey" value="">
+<input type="hidden" name="rml" id="rml" value="">
+<input type="hidden" name="ZyGUI" id="ZyGUI" value="1">
+<input type="hidden" name="intfSts" id="intfSts" value="">
+
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Network_InterfaceGrouping_Str1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+
+<!--Set area start-->
+<div class="data_frame"><ul>
+<li class="set1">
+<div class="button_other">
+  <span class="none_right"><input name="ruleAdd" type="button" value="<%ejGetML(MLG_Network_InterfaceGrouping_Str2)%>" onclick="addClick()" /></span>
+</div>
+</li>
+<li class="set1">
+<div class="w_table">
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="tb1" style='table-layout:fixed;'>
+<!-- ZyXEL -->
+   <tr align="center">
+      <td width="15%" class="top_font textOverflow"><%ejGetML(MLG_Network_InterfaceGrouping_Str4)%></td>
+      <td class='top_font textOverflow'><%ejGetML(MLG_Network_InterfaceGrouping_Str5)%></td>
+      <td class='top_font textOverflow'><%ejGetML(MLG_Network_InterfaceGrouping_Str6)%></td>
+      <td class='top_font textOverflow'><%ejGetML(MLG_Network_InterfaceGrouping_Str7)%></td>
+      <td width="12%" class='top_font textOverflow'><%ejGetML(MLG_Network_StaticRoute_Str9)%></td>
+   </tr>
+<!-- ZyXEL -->
+</table>
+</div></li>
+<!--Table define end-->
+
+</ul></div>
+<!--Set area end-->
+	</div>
+  </form>

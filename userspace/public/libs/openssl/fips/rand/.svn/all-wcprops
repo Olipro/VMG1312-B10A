@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/rand
+END
+fingerprint.sha1
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/rand/fingerprint.sha1
+END
+fips_rand.c
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/rand/fips_rand.c
+END
+fips_randtest.c
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/rand/fips_randtest.c
+END
+fips_rand.h
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/rand/fips_rand.h
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/rand/Makefile
+END

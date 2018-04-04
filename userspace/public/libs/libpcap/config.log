@@ -1,0 +1,151 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:638: checking host system type
+configure:659: checking target system type
+configure:677: checking build system type
+configure:766: checking for gcc
+configure:879: checking whether the C compiler (gcc  ) works
+configure:895: gcc -o conftest    conftest.c  1>&5
+configure:921: checking whether the C compiler (gcc  ) is a cross-compiler
+configure:926: checking whether we are using GNU C
+configure:935: gcc -E conftest.c
+configure:954: checking whether gcc accepts -g
+configure:991: checking gcc version
+configure:1134: checking for inline
+configure:1164: gcc -c -g -O2  conftest.c 1>&5
+configure:1192: checking for __attribute__
+configure:1215: gcc -c -g -O2  conftest.c 1>&5
+configure: In function 'main':
+configure:1204: error: invalid storage class for function 'foo'
+configure:1208: error: invalid storage class for function 'foo'
+configure: failed program was:
+#line 1198 "configure"
+#include "confdefs.h"
+
+#include <stdlib.h>
+
+int main() {
+
+static void foo(void) __attribute__ ((noreturn));
+
+static void
+foo(void)
+{
+  exit(1);
+}
+
+; return 0; }
+configure:1237: checking for u_int8_t using gcc
+configure:1255: gcc -c -g -O2  conftest.c 1>&5
+configure:1275: checking for u_int16_t using gcc
+configure:1293: gcc -c -g -O2  conftest.c 1>&5
+configure:1313: checking for u_int32_t using gcc
+configure:1331: gcc -c -g -O2  conftest.c 1>&5
+configure:1352: checking how to run the C preprocessor
+configure:1373: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1435: checking for sys/ioccom.h
+configure:1445: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1441:24: error: sys/ioccom.h: No such file or directory
+configure: failed program was:
+#line 1440 "configure"
+#include "confdefs.h"
+#include <sys/ioccom.h>
+configure:1435: checking for sys/sockio.h
+configure:1445: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1441:24: error: sys/sockio.h: No such file or directory
+configure: failed program was:
+#line 1440 "configure"
+#include "confdefs.h"
+#include <sys/sockio.h>
+configure:1435: checking for ifaddrs.h
+configure:1445: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1435: checking for limits.h
+configure:1445: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1435: checking for netinet/if_ether.h
+configure:1445: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1474: checking for ANSI ioctl definitions
+configure:1498: gcc -c -g -O2  conftest.c 1>&5
+configure:1521: checking for ether_hostton
+configure:1549: gcc -o conftest -g -O2   conftest.c  1>&5
+configure:1521: checking for strerror
+configure:1549: gcc -o conftest -g -O2   conftest.c  1>&5
+configure:1521: checking for strlcpy
+configure:1549: gcc -o conftest -g -O2   conftest.c  1>&5
+/tmp/ccuvN7pw.o: In function `main':
+/home/peien/3.0-WpcapSrc/winpcap/wpcap/libpcap/configure:1543: undefined reference to `strlcpy'
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 1526 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char strlcpy(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char strlcpy();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_strlcpy) || defined (__stub___strlcpy)
+choke me
+#else
+strlcpy();
+#endif
+
+; return 0; }
+configure:1575: checking if --disable-protochain option is specified
+configure:1606: checking packet capture type
+configure:1637: checking for getifaddrs
+configure:1665: gcc -o conftest -g -O2   conftest.c  1>&5
+configure:1761: checking if --enable-ipv6 option is specified
+configure:1777: checking whether to build optimizer debugging code
+configure:1793: checking whether to build parser debugging code
+configure:1878: checking Linux kernel version
+configure:1903: checking if if_packet.h has tpacket_stats defined
+configure:1916: gcc -c -g -O2  conftest.c 1>&5
+configure:1945: checking whether we have /proc/net/dev
+configure:1979: checking for flex
+configure:2013: checking for flex 2.4 or higher
+configure:2039: checking for bison
+configure:2181: checking for ranlib
+configure:2249: checking if sockaddr struct has sa_len member
+configure:2263: gcc -c -g -O2  conftest.c 1>&5
+configure: In function 'main':
+configure:2259: error: 'struct sockaddr' has no member named 'sa_len'
+configure: failed program was:
+#line 2254 "configure"
+#include "confdefs.h"
+
+#	include <sys/types.h>
+#	include <sys/socket.h>
+int main() {
+u_int i = sizeof(((struct sockaddr *)0)->sa_len)
+; return 0; }
+configure:2284: checking if sockaddr_storage struct exists
+configure:2298: gcc -c -g -O2  conftest.c 1>&5
+configure:2319: checking if dl_hp_ppa_info_t struct has dl_module_id_1 member
+configure:2334: gcc -c -g -O2  conftest.c 1>&5
+configure:2327:23: error: sys/dlpi.h: No such file or directory
+configure:2328:27: error: sys/dlpi_ext.h: No such file or directory
+configure: In function 'main':
+configure:2330: error: 'dl_hp_ppa_info_t' undeclared (first use in this function)
+configure:2330: error: (Each undeclared identifier is reported only once
+configure:2330: error: for each function it appears in.)
+configure:2330: error: expected expression before ')' token
+configure: failed program was:
+#line 2324 "configure"
+#include "confdefs.h"
+
+#	include <sys/types.h>
+#	include <sys/dlpi.h>
+#	include <sys/dlpi_ext.h>
+int main() {
+u_int i = sizeof(((dl_hp_ppa_info_t *)0)->dl_module_id_1)
+; return 0; }
+configure:2355: checking if unaligned accesses fail
+configure:2441: checking for a BSD compatible install

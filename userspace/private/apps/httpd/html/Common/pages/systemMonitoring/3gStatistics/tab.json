@@ -1,0 +1,4 @@
+
+  {
+<%ejGetOtherBig(currenttab, 3gStatistics)%>
+  }

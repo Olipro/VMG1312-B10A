@@ -1,0 +1,3221 @@
+<script language="javascript">
+<!-- hide
+//var dnsPri = '<%ejGetOther(sysInfo, dnsPrimary)%>'; if ( dnsPri == '&nbsp' ) dnsPri = '';
+//var dnsSec = '<%ejGetOther(sysInfo, dnsSecondary)%>'; if ( dnsSec == '&nbsp' ) dnsSec = '';
+
+//alllow manual dns servers in each wan interaface
+var dnsPri = '<%ejGetOther(sysInfo, wanDnsPrimary)%>'; if ( dnsPri == '&nbsp' ) dnsPri = '';
+var dnsSec = '<%ejGetOther(sysInfo, wanDnsSecondary)%>'; if ( dnsSec == '&nbsp' ) dnsSec = '';
+var dnsIfcs = '<%ejGetOther(sysInfo, dnsIfcs)%>'; if (dnsIfcs == '&nbsp') dnsIfcs= '';
+
+var existVlan = '<%ejGetOther(sysInfo, vlanUsed)%>';
+var vdslVlan = '<%ejGetOther(vlanEnbl, VDSL)%>'; 
+// ZyXEL, ShuYing, 2013/01/22, ADSL VLAN patch
+var adslvlanmux = '<%ejGetOther(vlanEnbl, AdslVlanMux)%>'; 
+var customer = '<%ejGetOther(customer)%>'; //ZyXEL, cathy, Etisalat, hide DSL
+var adslVlan = '<%ejGetOther(vlanEnbl, ADSL)%>'; 
+
+var ethVlan = '<%ejGetOther(vlanEnbl, Ethernet)%>';
+var mocaVlan = '<%ejGetOther(vlanEnbl, MOCA)%>';
+var vlanEnbl = 1;
+var enableAddressMapping  = '<%ejGetOther(sysInfo, enblAddressMapping)%>';
+var fullfeaturenat = '<%ejGet(enblFullFeature)%>';
+var fullfeaturenatset = '<%ejGet(fullFeatureNatSet)%>';
+var mtusize = '<%ejGet(maxMtuSize)%>';
+var ethWanEnable = '<%ejGetOther(sysInfo, isEthWanBrobandExist)%>';
+//IPv6 start
+var buildIPv6 = '<%ejGetOther(sysInfo, buildIPv6)%>';
+var buildMstcIPv6 = '<%ejGetOther(sysInfo, buildMstcIPv6)%>';
+var prefixlength = 32;
+var forNorwayGUI  = '<%ejGetOther(sysInfo, forNorwayGUI)%>'; 
+var opt43 = '<%ejGet(dhcpcOp43Enbl)%>';
+var forCodetel = '<%ejGetOther(sysInfo, forCodetel)%>'; //ZyXEL, PPPoA MTU size change to 1492 for Codetel, Albert
+if( buildMstcIPv6 == '1' )
+{
+	var enblIpVer = '<%ejGet(enblIpVer)%>'; //0: IPv4 only, 1:IPv4 & IPv6, 2: IPv6 only
+	var enblDhcpv6 = '<%ejGet(wanAddr6Type)%>';
+	var dhcp6ForAddr = '<%ejGet(dhcp6cForAddr)%>';
+	var dhcp6ForPd = '<%ejGet(dhcp6cForPd)%>';
+	var dns6type = '<%ejGetOther(sysInfo, dns6Type)%>'; if ( dns6type == '&nbsp' ) dns6type = '';
+	var dns6pri = '<%ejGetOther(sysInfo, dns6Pri)%>'; if ( dns6pri == '&nbsp' ) dns6pri = '';
+	var dns6sec = '<%ejGetOther(sysInfo, dns6Sec)%>'; if ( dns6sec == '&nbsp' ) dns6sec = '';
+	var mldenbled = '<%ejGet(enblMld)%>';
+	var wanip6mode = '<%ejGet(wanIpv6Mode)%>';
+   var enblUnnumbered = '<%ejGet(enblIp6Unnumbered)%>';
+	//6RD
+	var enblip6rd = '<%ejGet(enblIp6rd)%>';
+	var ip6rdtype = '<%ejGet(ip6rdType)%>';
+	var ip6rdrelayserver = '<%ejGet(ip6rdRelayServer)%>';
+	var ip6rdprefix = '<%ejGet(ip6rdPrefix)%>';
+	var g_tunnel6rdMaskLen = '<%ejGet(tunnel6rdMaskLen)%>';
+	//DS-Lite
+	var enbldslite = '<%ejGet(enblDsLite)%>';
+	var dsliterelayserver = '<%ejGet(dsLiteRelayServer)%>';
+}
+//IPv6 end
+
+/* __ZyXEL__, WeiZen, SUPPORT CONCURRENT WAN: */
+var lanPair = '<%ejGetOther(lanPortPair)%>'; // the format is LAN1/eth0|LAN2/eth1|LAN3/eth5|...
+var conWanEntry = '<%ejGet(currentPortList)%>';
+var isUsedConCurrentWan = '<%ejGetOther(getConWanStatus)%>';
+
+var authMethod = '<%ejGet(pppAuthMethod)%>';
+
+function wanMACAddrTypeSwitch()
+{
+	if (document.forms[0].WAN_MAC_Address[1].checked == true)//Clone PC IP
+	{
+		document.forms[0].wanMACClonePCIP.disabled = false;
+		document.forms[0].wanMACAddrStatic.disabled = true;
+	}else if (document.forms[0].WAN_MAC_Address[2].checked == true){//user define
+		document.forms[0].wanMACClonePCIP.disabled = true;
+		document.forms[0].wanMACAddrStatic.disabled = false;
+	}else{//default
+		document.forms[0].wanMACClonePCIP.disabled = true;
+		document.forms[0].wanMACAddrStatic.disabled = true;
+	}
+}
+/* get information for edit */
+var prtcl = '<%ejGet(ntwkPrtcl)%>'; //0:PPPoE, 1:PPPoA, 2:IPoE, 3:Bridge, 5:IPoA, 7:PPP
+
+var shapingRate = '<%ejGet("wanL3ShapingRate")%>';
+var qosDefDscpVal = '<%ejGet("qosDefDscp")%>';
+var qosDef8021pVal = '<%ejGet("qosDef8021p")%>';
+var enblQosDefTagVal = '<%ejGet("enblQosDefTag")%>';
+
+var upRate = parseInt('<%ejGetOther(lineRate, 0, 0)%>');
+var pcrMax = 255000;   // Assuming nitro: 255000 * 49 * 8 = 100Mbps  // SASHA: VDSL
+if ( isNaN(upRate) == false && upRate > 0) {
+   pcrMax = Math.ceil((upRate * 1000) / (49 * 8));  // SASHA new value for VDSL
+}
+
+// PPP param
+var userName = '<%ejGet(pppUserName)%>';
+var password = '*****************************************************************';
+var onDemand = '<%ejGet(enblOnDemand)%>';
+var pppmanual = '<%ejGet(pppManual)%>';
+var pppIdleTime = '<%ejGet(pppTimeOut)%>';
+var useStaticIpAddr = '<%ejGet(useStaticIpAddress)%>';
+var pppLocalIpAddr = '<%ejGet(pppLocalIpAddress)%>';
+var pppToBr = '<%ejGet(pppToBridge)%>';
+var enblDhcp = '<%ejGet(enblDhcpClnt)%>';
+var vId = '<%ejGet(vlanMuxId)%>';
+var oldWanType = '<%ejGet(wanType)%>';
+
+var wanType2 = 0;
+if (oldWanType == 'VDSL' || oldWanType == "VDSL over PTM" || oldWanType == "ADSL over PTM" || oldWanType == "PTM") {
+   wanType2 = 0;
+} else if (oldWanType == 'ADSL' || oldWanType == "ATM" || oldWanType == "ADSL over ATM" ) {
+   wanType2 = 1;
+} else if (oldWanType == 'Ethernet') {
+   wanType2 = 2;
+} else if (oldWanType == 'WWAN') {
+   wanType2 = 4;
+} else {
+   wanType2 = 3;
+}
+
+function unmaskPppoePwd()
+{
+
+   if( forNorwayGUI == 1||($.browser.msie && (parseInt($.browser.version, 10) < 8)))
+      return;
+   with (document.forms[0]) {	
+      var new_obj;	
+                           
+    if(unmasksysPppoePwd.checked==true)
+    {  	         
+	  new_obj=changeInputType(sysPPPPwd, 'text');
+
+    } else {
+	  new_obj=changeInputType(sysPPPPwd, 'password');
+    }
+    }
+}
+
+function changeInputType(oldObject, oType) {
+   if( forNorwayGUI == 1||($.browser.msie && (parseInt($.browser.version, 10) < 8)))
+      return;
+  with (document.forms[0]) {
+
+	  var newObject = document.createElement('input');
+	
+	  newObject.type = oType;
+	  if(oldObject.size) newObject.size = oldObject.size;
+	  if(oldObject.value) newObject.value = oldObject.value;
+	  if(oldObject.name) newObject.name = oldObject.name;
+	  if(oldObject.id) newObject.id = oldObject.id;
+	  if(oldObject.className) newObject.className = oldObject.className;
+  	  if(oldObject.maxlength) newObject.maxlength = oldObject.maxlength;
+
+	  oldObject.parentNode.replaceChild(newObject,oldObject);
+          return newObject;
+  }  
+}
+
+function checkAtmL2change()
+{
+	with ( document.forms[0] ) {	
+		if (atmServiceCategory.value == '<%ejGet(atmServiceCategory)%>' && 
+			atmPeakCellRate.value == '<%ejGet(atmPeakCellRate)%>' &&
+			atmSustainedCellRate.value == '<%ejGet(atmSustainedCellRate)%>' &&
+			atmMaxBurstSize.value == '<%ejGet(atmMaxBurstSize)%>' &&
+			encapMode.selectedIndex == parseInt('<%ejGet(encapMode)%>')
+		){
+			l2change.value = 0;
+		}else{
+			l2change.value = 1;
+		}
+	}
+}
+
+function doEnblVlan()
+{
+   with ( document.forms[0] ) {	
+      if (enblVlan.checked == true)
+      {
+         vlanPr.disabled = false;
+         vlanId.disabled = false;
+		 showhide("qosDefTagVlan", "1");		 
+      }
+      else
+      {
+         vlanPr.disabled = true;
+         vlanId.disabled = true;
+		 showhide("qosDefTagVlan", "0");
+		 qosDef8021pInput.value = "";
+      }	
+   }
+}
+
+function doPppTriggerType()
+{
+   with ( document.forms[0] ) {	
+      if (pppTriggerType[0].checked == true)
+      {
+		 pppTriggerType.value = 0;
+         sysidletimeout.disabled = true;
+      }
+      else if(pppTriggerType[1].checked == true)
+      {
+		 pppTriggerType.value = 1;
+         sysidletimeout.disabled = false;
+      }	
+	  else if(pppTriggerType[2].checked == true){
+		 pppTriggerType.value = 2;
+		 sysidletimeout.disabled = false;
+	  }
+   }
+}
+
+function hideInfo(hide) {
+   if (hide == 3) {      // hide all 3
+      showhide('first1', 0);
+      showhide('2and3', 0);
+   }
+   else if (hide == 2) { // hide 2 and 3
+      showhide('first1', 1);
+      showhide('2and3', 0);
+   }
+   else if (hide == 0) { // hide none
+      showhide('first1', 1);
+      showhide('2and3', 1);
+   }
+}
+
+function cbClick(obj) {
+   with ( document.forms[0] ) {
+      var idx = obj.selectedIndex;
+      var val = obj.options[idx].value;
+
+      if ( val == "UBR" ) {
+         hideInfo(3);
+      } else if (val == "UBRWPCR" || val == "CBR") {
+         hideInfo(2);
+      } else {
+         hideInfo(0);
+      }
+   }
+}
+
+function natClick(cb) {
+	with ( document.forms[0] ) {
+      if ( cb.checked == true )
+         showhide("fullconeNatInfo", "1");
+      else
+         showhide("fullconeNatInfo", "0");
+
+      if ( enableAddressMapping != '1' )
+         return;
+      if (cb.checked == true && wan_Encapsulation.value == 2 && WAN_IP_Auto[1].checked == true)
+         showhide("AddrMapping", "1");
+      else
+         showhide("AddrMapping", "0");
+	}		
+}
+
+
+//Change encapsulate list
+function changeWanEncapSel()
+{
+   with ( document.forms[0] ) {
+      if (wanType2 == 1) //adsl
+      {
+         var encapSel = getSelect(wan_Encapsulation);
+         $('#wan_Encapsulation').empty();
+
+         if (wan_Mode.value == 0)
+         {
+            if (encapSel != 0 && encapSel != 1 && encapSel != 2 && encapSel != 5)
+            {
+               encapSel = 0;
+            }
+
+            $('#wan_Encapsulation').append('<option value="0" selected><%ejGetML(MLG_WAN_Broadband_Str29)%></option>'); 
+            $('#wan_Encapsulation').append('<option value="1"><%ejGetML(MLG_WAN_Broadband_Str32)%></option>'); 
+            $('#wan_Encapsulation').append('<option value="2"><%ejGetML(MLG_WAN_Broadband_Str30)%></option>'); 
+            $('#wan_Encapsulation').append('<option value="5"><%ejGetML(MLG_WAN_Broadband_Str31)%></option>'); 
+         }
+         else
+         {
+            if (encapSel != 3)
+            {
+               encapSel = 3;
+            }
+            $('#wan_Encapsulation').append('<option value="3">Bridge</option>'); 
+         }
+
+         $("#wan_Encapsulation").attr("value", encapSel);
+      }
+      else if (wanType2 == 4) //WWAN
+      {
+         var encapSel = getSelect(wan_Encapsulation);
+         $('#wan_Encapsulation').empty();
+
+         if (wan_Mode.value == 0)
+         {
+            if (encapSel != 7)
+            {
+               encapSel = 7;
+            }
+            $('#wan_Encapsulation').append('<option value="7" selected>PPP</option>'); 
+         }
+			
+         $("#wan_Encapsulation").attr("value", encapSel);
+      }
+      else
+      {
+         var encapSel = getSelect(wan_Encapsulation);
+
+         $('#wan_Encapsulation').empty();
+         if (wan_Mode.value == 0)
+         {
+            if (encapSel != 0 && encapSel != 2)
+            {
+               encapSel = 0;
+            }
+
+            $('#wan_Encapsulation').append('<option value="0" selected>PPPoE</option>'); 
+            $('#wan_Encapsulation').append('<option value="2">IPoE</option>'); 
+         }
+         else
+         {
+            if (encapSel != 3)
+            {
+               encapSel = 3;
+            }
+            $('#wan_Encapsulation').append('<option value="3">Bridge</option>'); 
+         }	
+         $("#wan_Encapsulation").attr("value", encapSel);
+      }
+   }
+}
+
+function DNSTypeChange() {
+   with ( document.forms[0] ) {
+      if (dnsType[0].checked == true) {
+         sysDNSAddr.disabled = true;
+         sysDNSAddr2.disabled = true;
+      } else {
+         sysDNSAddr.disabled = false;
+         sysDNSAddr2.disabled = false;
+		}
+   }
+}
+
+//IPv6 start
+function doIpv6ModeChange()
+{
+   with ( document.forms[0] ) {
+      if (wan_Ipv6Mode.value == 0)//IPv4
+      {
+         showhide("ipv4Address", "1");
+         showhide("ipv4Routing", "1");
+         showhide("ipv4Dns", "1");
+         showhide("ipv6Tunnel_v4only", "1");
+         showhide("ipv6Tunnel_v6only", "0");
+         showhide("ipv6Address", "0");
+         showhide("ipv6Routing", "0");
+         showhide("ipv6Dns", "0");
+         EnblIp6rdChange();
+         Ip6rdTypeChange();
+      }
+      else if(wan_Ipv6Mode.value == 1)//Dual Stack
+      {
+         showhide("ipv4Address", "1");
+         showhide("ipv4Routing", "1");
+         showhide("ipv4Dns", "1");
+         showhide("ipv6Tunnel_v4only", "0");
+         showhide("ipv6Tunnel_v6only", "0");
+         showhide("ipv6Address", "1");
+         showhide("ipv6Routing", "1");
+         showhide("ipv6Dns", "1");
+      }
+      else if(wan_Ipv6Mode.value == 2)//IPv6
+      {
+         showhide("ipv4Address", "0");
+         showhide("ipv4Routing", "0");
+         showhide("ipv4Dns", "0");
+         showhide("ipv6Tunnel_v4only", "0");
+         showhide("ipv6Tunnel_v6only", "1");
+         showhide("ipv6Address", "1");
+         showhide("ipv6Routing", "1");
+         showhide("ipv6Dns", "1");
+         EnblDsLiteChange();
+      }
+   }
+}
+
+function EnblDsLiteChange() {
+   with ( document.forms[0] ) {
+      if (EnblDsLite[1].checked == true) {
+         DsLiteRelayServer.disabled = true;
+      } else {
+         DsLiteRelayServer.disabled = false;
+      }
+   }
+}
+
+function EnblIp6rdChange() {
+   with ( document.forms[0] ) {
+      if (EnblIp6rd[1].checked == true) {
+         Ip6rdType[0].disabled = true;
+         Ip6rdType[1].disabled = true;
+         Ip6rdRelayServer.disabled = true;
+         Ip6rdPrefix.disabled = true;
+		 Ipv4MaskLen.disabled = true;
+      } else {	//enable 6RD
+		 if (wan_Encapsulation.value == 0 || wan_Encapsulation.value == 1 || wan_Encapsulation.value == 7)//PPPoE||PPPoA||PPP
+		 {
+			// when enable 6rd in ppp mode, it should disable dhcp.
+			Ip6rdType[1].checked = true;
+         	Ip6rdType[0].disabled = true;
+         	Ip6rdType[1].disabled = false;
+         	Ip6rdTypeChange();
+			Ipv4MaskLen.disabled = false;
+		  } else { //IPoE
+         	Ip6rdType[0].disabled = false;
+         	Ip6rdType[1].disabled = false;
+         	Ip6rdTypeChange();
+		  }
+      }
+   }
+}
+function EnblQosDefTagChange() {
+   with ( document.forms[0] ) {
+      if (enblQosDefTagRadio[0].checked == true) {
+         qosDefDscpInput.disabled = false;
+         qosDef8021pInput.disabled = false;
+         enblQosDefTag.value = 1;
+      } else {	
+		 qosDefDscpInput.disabled = true;
+         qosDef8021pInput.disabled = true;
+		 enblQosDefTag.value = 0;
+      }
+   }
+}
+function Ip6rdTypeChange() {
+   with ( document.forms[0] ) {
+      if (Ip6rdType[1].checked == true) { //static 6rd
+         Ip6rdRelayServer.disabled = false;
+         Ip6rdPrefix.disabled = false;
+		 Ipv4MaskLen.disabled = false;
+      } else { //6rd with DHCP
+         Ip6rdRelayServer.disabled = true;
+         Ip6rdPrefix.disabled = true;
+		 Ipv4MaskLen.disabled = true;
+      }
+   }
+}
+
+function IPv6AddressTypeChange() {
+   with ( document.forms[0] ) {
+      if (Ipv6AddrType[0].checked == true) {
+         showhide("pppIp6AddressDHCPv6Info", "1");
+         showhide("Ip6AddressStaticInfo", "0");
+      } else if (Ipv6AddrType[1].checked == true) {
+         showhide("pppIp6AddressDHCPv6Info", "0");
+         showhide("Ip6AddressStaticInfo", "1");
+      } else if (Ipv6AddrType[2].checked == true) {
+         showhide("pppIp6AddressDHCPv6Info", "0");
+         showhide("Ip6AddressStaticInfo", "0");
+      }
+   }
+}
+
+function DNSv6TypeChange() {
+   with ( document.forms[0] ) {
+      if (dnsv6Type[0].checked == true) {
+         sysDNSv6Addr.disabled = true;
+         sysDNSv6Addr2.disabled = true;
+      } else {
+         sysDNSv6Addr.disabled = false;
+         sysDNSv6Addr2.disabled = false;
+      }
+   }
+}
+
+function isValidv6PrefixLength(prefix) {
+	var v6prefixlength = prefix.split('/');
+	if (v6prefixlength[1] > prefixlength) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+function isValidMaskLength(length) {
+	if ((length < 0) || (length > 32)) {
+		return false;
+	} else {
+	    var result = parseInt(length);
+		prefixlength = (32+result);
+		return true;
+	}
+}
+
+//IPv6 end
+
+function dhcpChange()
+{
+   with ( document.forms[0] ) {
+
+//      if (buildUnnumberedMode == '1'  && isBlockOfStaticIP == '1') {
+//         WAN_IP_Auto[2].disabled = true;
+//      }
+
+      if (WAN_IP_Auto[0].checked == true)
+      {
+         wanSubnet.disabled = true;
+         wanIpAddr.disabled = true;
+         wanGateway.disabled = true;
+         if (wan_Encapsulation.value == 2) {
+            showhide("dhcpcOpt", "1");
+            dhcpcOp60VID.disabled = false;
+//cathy add
+			dhcpcOp61IAID.disabled = false;
+			dhcpcOp61DUID.disabled = false;
+//cathy add
+			dhcpcOp43.disabled = false;
+         } else {
+            showhide("dhcpcOpt", "0");
+            dhcpcOp60VID.disabled = true;
+//cathy add
+			dhcpcOp61IAID.disabled = true;
+			dhcpcOp61DUID.disabled = true;
+//cathy add
+			dhcpcOp43.disabled = true;
+         }
+
+//         lan2IpAddress.disabled = true;
+//         lan2SubnetMask.disabled = true;
+//         lanAddrType.disabled = true;
+
+         dnsType[0].disabled = false;
+      }
+      else
+      {
+         dnsType[0].disabled = true;
+         dnsType[1].checked = true;
+         dnsType[0].checked = false;
+         DNSTypeChange();
+
+         if (wan_Encapsulation.value == 2)
+            showhide("dhcpcOpt", "1");
+         else
+            showhide("dhcpcOpt", "0");
+         dhcpcOp60VID.disabled = true;
+//cathy add
+			dhcpcOp61IAID.disabled = true;
+			dhcpcOp61DUID.disabled = true;
+//cathy add
+		 dhcpcOp43.disabled = true;
+
+         wanIpAddr.disabled = false;
+         if (wan_Encapsulation.value != 0 && 
+             wan_Encapsulation.value != 1 && 
+             wan_Encapsulation.value != 5 && 
+             wan_Encapsulation.value != 7)
+         {
+            wanSubnet.disabled = false;
+            wanGateway.disabled = false;
+         }
+         else
+         {
+
+//            if (buildUnnumberedMode == '1' && WAN_IP_Auto[2].checked == true)
+//            {
+//               lan2IpAddress.disabled = false;
+//               lan2SubnetMask.disabled = false;
+//               lanAddrType.disabled = false;
+//               wanIpAddr.disabled = true;
+//            }
+//            else
+//            {
+//               lan2IpAddress.disabled = true;
+//               lan2SubnetMask.disabled = true;
+//               lanAddrType.disabled = true;
+//               wanIpAddr.disabled = false;
+//            }
+
+            if (wan_Encapsulation.value == 5)
+            {
+               WAN_IP_Auto[0].disabled = true;
+               WAN_IP_Auto[1].disabled = false;
+
+//               if (buildUnnumberedMode == '1' && isBlockOfStaticIP == '0') {
+//                  WAN_IP_Auto[2].disabled = false;
+//               }
+
+               wanIpAddr.disabled = false;
+               wanSubnet.disabled = false;
+            }
+            else
+            {
+               wanSubnet.disabled = true;
+            }
+            wanGateway.disabled = true;
+         }
+      }
+      if ( enableAddressMapping == '1' && WAN_IP_Auto[1].checked == true && wan_Encapsulation.value == 2 && natEnable.checked == true)
+         showhide("AddrMapping", "1");
+      else
+         showhide("AddrMapping", "0");
+   }
+}
+
+//atm
+function encClick() {
+   with ( document.forms[0] ) {
+   	  // ZyXEL, ShuYing, 2013/01/22, ADSL VLAN patch
+      if (atmLinkType.selectedIndex == 1) { //PPPoA
+	  	 if (adslvlanmux == 1){
+ 	  	 	showhide("vlanConf", "0"); 
+			adslVlan = 0;
+	  	 }
+         encapMode.options[0].text = "<%ejGetML(MLG_WAN_Broadband_Str71)%>";
+         encapMode.options[1].text = "<%ejGetML(MLG_WAN_Broadband_Str72)%>";
+      } else if (atmLinkType.selectedIndex == 2) { //IPoA
+         if (adslvlanmux == 1){
+         	showhide("vlanConf", "0");
+			adslVlan = 0;
+         }
+         showhide("vlanConf", "0");
+         encapMode.options[0].text = "<%ejGetML(MLG_WAN_Broadband_Str74)%>";
+         encapMode.options[1].text = "<%ejGetML(MLG_WAN_Broadband_Str71)%>";
+		 adslVlan = 0;
+      } else { //EoA
+      	 if (adslvlanmux == 1){
+         	showhide("vlanConf", "1");
+		 	adslVlan = 1;
+     	 }
+         encapMode.options[0].text = "<%ejGetML(MLG_WAN_Broadband_Str73)%>";
+         encapMode.options[1].text = "<%ejGetML(MLG_WAN_Broadband_Str71)%>";
+      }
+   }
+}
+
+//show/hide some configuration item according to current (Type/Mode/)encap.
+function doEncapChange()
+{
+   with ( document.forms[0] ) {		
+		 EnblIp6rd[1].checked = true;
+		 Ip6rdType[0].disabled = true;
+		 Ip6rdType[1].disabled = true;
+		 Ip6rdRelayServer.disabled = true;
+		 Ip6rdPrefix.disabled = true;
+		 EnblIp6rdChange();
+	  if (wan_Encapsulation.value == 0 || wan_Encapsulation.value == 1 || wan_Encapsulation.value == 7)//PPPoE||PPPoA||PPP
+      {
+         if (wan_Encapsulation.value == 0){
+            atmLinkType.selectedIndex = 0;
+            pppServerName.disabled = false;
+         }else{
+            atmLinkType.selectedIndex = 1;			
+            pppServerName.disabled = true;
+         }
+
+         showhide("pppInfo", 1);
+         showhide("routeInfo", 1);
+         showhide("AddrMapping", "0");
+         showhide("mtuInfo",1);
+		 doPppTriggerType();
+         if (wan_Encapsulation.value == 1 && forCodetel == 0)
+         {
+            document.getElementById("mtuRange").innerHTML = "<%ejGetML(MLG_WAN_Broadband_Str61)%>  [68-1500]\n";
+            if (mtusize > 1500)
+               MTUshow.value = "1500";
+            else
+               MTUshow.value = mtusize;
+         }
+         else
+         {
+            document.getElementById("mtuRange").innerHTML = "<%ejGetML(MLG_WAN_Broadband_Str61)%>  [68-1492]\n";
+            if (mtusize > 1492)
+               MTUshow.value = "1492";
+            else
+               MTUshow.value = mtusize;
+         }
+
+         if (wan_Encapsulation.value == 1 || wan_Encapsulation.value == 7)
+         {
+            showhide("PoESection", 0);
+         }
+         else
+         {
+            showhide("PoESection", 1);
+         }
+
+         if (prtcl == 0 || prtcl == 1 || prtcl == 7)
+         {
+            if (useStaticIpAddr == '0') {
+               WAN_IP_Auto[0].checked = true;
+            } else if (useStaticIpAddr == '1') {
+               WAN_IP_Auto[1].checked = true;
+               wanIpAddr.value = pppLocalIpAddr;
+            } else {
+//               WAN_IP_Auto[2].checked = true;
+//               lan2IpAddress.value = lan2Addr;
+//               lan2SubnetMask.value = lan2Mask;
+//               if (isUsePublic == '1')
+//                  lanAddrType.checked = true;
+//               else
+//                  lanAddrType.checked = false;
+            }  
+         }
+         else
+         {
+            WAN_IP_Auto[0].checked = true;   
+         }		
+         WAN_IP_Auto[0].disabled = false;
+         WAN_IP_Auto[1].disabled = false;
+
+//         if (buildUnnumberedMode == '1' && (isBlockOfStaticIP == '0' || enblUnnumberedMode == 1))
+//            WAN_IP_Auto[2].disabled = false;
+
+         wanSubnet.disabled = true;
+         wanGateway.disabled = true;
+         if(buildMstcIPv6 == '1')//IPv6
+         {
+            wan6NextHop.disabled = true;
+         }
+      }
+      else if (wan_Encapsulation.value == 2)//IPoE
+      {
+         atmLinkType.selectedIndex = 0;
+         showhide("pppInfo", 0);
+         showhide("routeInfo", 1);
+         showhide("mtuInfo",1);
+         document.getElementById("mtuRange").innerHTML = "<%ejGetML(MLG_WAN_Broadband_Str61)%>  [68-1500]\n";
+		 MTUshow.value = mtusize;
+         WAN_IP_Auto[0].disabled = false;
+         WAN_IP_Auto[1].disabled = false;
+
+         if (prtcl == 2)
+         {
+            if (enblDhcp == '1') {
+               WAN_IP_Auto[0].checked = true;
+               WAN_IP_Auto[1].checked = false;
+               dhcpcOp60VID.value = '<%ejGet(dhcpcOp60VID)%>';
+			   //cathy add start
+			   dhcpcOp61IAID.value = '<%ejGet(dhcpcOp61IAID)%>';
+			   dhcpcOp61DUID.value = '<%ejGet(dhcpcOp61DUID)%>';
+			   //cathy add end
+            } else {
+               wanIpAddr.value = '<%ejGet(wanIpAddress)%>';
+               wanSubnet.value = '<%ejGet(wanSubnetMask)%>';
+               wanGateway.value = '<%ejGet(wanIntfGateway)%>';
+
+               WAN_IP_Auto[0].checked = false;
+               WAN_IP_Auto[1].checked = true;
+            }
+         }
+         else
+         {
+            WAN_IP_Auto[0].checked = true;         
+         }
+
+
+//         if (buildUnnumberedMode == '1')
+//            WAN_IP_Auto[2].disabled = true;
+
+         if (WAN_IP_Auto[0].checked == false)
+         {
+            wanSubnet.disabled = false;
+            wanGateway.disabled = false;
+         }
+         if(buildMstcIPv6 == '1')//IPv6
+         {
+            wan6NextHop.disabled = false;
+         }
+      }
+      else if (wan_Encapsulation.value == 3)//Bridge
+      {
+         atmLinkType.selectedIndex = 0;
+         showhide("pppInfo", 0);
+         showhide("routeInfo", 0);
+         showhide("mtuInfo", 0);
+		 showhide("qosDefTag", 0);
+      }
+      else //IPoA
+      {
+         atmLinkType.selectedIndex = 2;
+         showhide("pppInfo", 0);
+         showhide("routeInfo", 1);
+         showhide("mtuInfo",1);
+         document.getElementById("mtuRange").innerHTML = "<%ejGetML(MLG_WAN_Broadband_Str61)%>  [68-1500]\n";
+		 MTUshow.value = mtusize;
+         WAN_IP_Auto[1].checked = true;
+      }
+      dhcpChange();
+      encClick();
+   }
+}
+
+function doModeChange()
+{
+   with ( document.forms[0] ) {		
+      if (wan_Mode.value == 0)//Route
+      {
+         showhide("pppInfo", 1);
+         showhide("routeInfo", 1);
+         showhide("encTag", 1);
+         showhide("mtuInfo",1);
+		 showhide("qosDefTag", 1);	
+		 if ( wanType2 == '2' ) //ethwan
+		 {
+			 showhide("macClone", 1);		 
+		 }			 
+         //IPv6
+         if( buildMstcIPv6 == '1' )
+         {
+            showhide("ipv6Mode", "1");
+            doIpv6ModeChange();
+         }
+      }
+      else
+      {
+         showhide("pppInfo", 0);
+         showhide("routeInfo", 0);
+         showhide("encTag", 0);
+         showhide("mtuInfo", 0);
+		 showhide("macClone", 0);			 
+         showhide("qosDefTag", 0);			 
+         //IPv6
+         if( buildMstcIPv6 == '1' )
+         {
+            showhide("ipv6Mode", "0");
+            showhide("ipv6Tunnel_v4only", "0");
+            showhide("ipv6Tunnel_v6only", "0");
+            showhide("ipv6Address", "0");
+            showhide("ipv6Routing", "0");
+            showhide("ipv6Dns", "0");
+         }
+	  }
+		if (wan_Mode.value == 1){
+			showhide("wan_Concurrent_Div", 0);
+		}else{
+			showhide("wan_Concurrent_Div", 1);
+		}
+		changeWanEncapSel();
+		doEncapChange();
+	}
+}
+
+function doTypeChange()
+{
+   with ( document.forms[0] ) {
+      if ((wanType2 == 0 && vdslVlan != 1) || (wanType2 == 1 && adslVlan != 1) || (wanType2 == 2 && ethVlan != 1) || (wanType2 == 3 && mocaVlan != 1) || (wanType2 == 4))
+      {
+         enblVlan.disabled = true;
+         vlanPr.disabled = true;
+         vlanId.disabled = true;
+      }
+      else
+      {
+         enblVlan.disabled = false;
+         if (enblVlan.checked == false)
+         {
+            vlanPr.disabled = true;
+            vlanId.disabled = true;
+         }
+         else
+         {
+            vlanPr.disabled = false;
+            vlanId.disabled = false;
+         }
+      }
+
+      //showhide("wwanInfo", "0");	//default
+      wan_Mode.disabled = false;
+
+      if ( wanType2 == '1' ) //adsl
+      {
+         showhide("atmPVC", 1);
+         showhide("vlanConf", 0);
+		 showhide("macClone", 0);
+      }
+      else if ( wanType2 == '4' ) //WWAN(Cellular)
+      {
+         //$("#wan_Mode").attr("value", "0");
+         wan_Mode.selectedIndex = 0;
+         wan_Mode.disabled = true;
+         //showhide("wwanInfo", "1");
+         showhide("atmPVC", 0);
+         showhide("vlanConf", 0);
+		 showhide("macClone", 0);		 
+      }
+	  else if ( wanType2 == '2' ) //EthernetWAN
+	  {
+			var macType =  '<%ejGet(wanMacType)%>'; 
+	
+			if (macType == 'ClientIP')
+			{
+				WAN_MAC_Address[1].checked = true;
+				wanMACAddrStatic.value =  '';
+				wanMACClonePCIP.value =  '<%ejGet(wanMacIP)%>';
+			}
+			else if (macType == 'UserDefine') 		
+			{
+				WAN_MAC_Address[2].checked = true;
+				wanMACAddrStatic.value =  '<%ejGet(wanMacAddr)%>';
+				wanMACClonePCIP.value =  '';
+			}
+			else
+			{
+				WAN_MAC_Address[0].checked = true;
+				wanMACAddrStatic.value =  '';
+				wanMACClonePCIP.value =  '';
+			}
+	
+			wanMACAddrTypeSwitch();
+		 	showhide("macClone", 1);		 
+	     	showhide("atmPVC", 0);
+         showhide("vlanConf", 1);
+	  }	  
+      else
+      {
+		 showhide("macClone", 0);
+         showhide("atmPVC", 0);
+         showhide("vlanConf", 1);
+      }
+		if (wan_Mode.value == 1){
+			showhide("wan_Concurrent_Div", 0);
+		}else{
+			showhide("wan_Concurrent_Div", 1);
+		}
+      doModeChange();
+   }
+}
+
+function WanConCurrentChange(){
+	if(document.forms[0].ConcurrentWanActive.checked == true){
+		document.getElementById("Bridge_Port_div").style.display="";
+		showLanPort();
+	}
+	else{
+		document.getElementById("Bridge_Port_div").style.display="none";
+	}
+}
+
+function showLanPort()
+{
+	var srvname = document.forms[0].servicename.value;
+	srvname+="_br";
+	var str = "";
+	for(i=0; i < 4; i++){
+		/*VMG8924-Bx0A the LAN5/eth4 WAN port alwarys active , so we do not to detection. get LAN port , If LAN port is active*/
+		var str2 = lanPair.split('|'); 
+		var tempStr = conWanEntry.split("|");
+		var tempStr1 = isUsedConCurrentWan.split("|");
+		if(str2[count] == "")
+			continue;
+		var checked = "";
+			if(isUsedConCurrentWan != '' && isUsedConCurrentWan != undefined){
+				if( (conWanEntry.search("eth0") != -1) && (isUsedConCurrentWan.search("eth0") != -1) && i == 0 ){
+					checked = "checked=\"checked\"";
+				}else if( (conWanEntry.search("eth1") != -1) && (isUsedConCurrentWan.search("eth1") != -1) && i == 1){
+					checked = "checked=\"checked\"";
+				}else if( (conWanEntry.search("eth2") != -1) && (isUsedConCurrentWan.search("eth2") != -1) && i == 2){
+					checked = "checked=\"checked\"";
+				}else if( (conWanEntry.search("eth3") != -1) && (isUsedConCurrentWan.search("eth3") != -1) && i == 3){
+					checked = "checked=\"checked\"";
+				}else{
+					checked = "";
+				}
+			}else{
+				checked = "";
+			}
+			if((lanPair.search("eth0") == -1) && i == 0){
+				continue;
+			}else if((lanPair.search("eth1") == -1) && i == 1){
+				continue;
+			}else if((lanPair.search("eth2") == -1) && i == 2){
+				continue;
+			}else if((lanPair.search("eth3") == -1) && i == 3){
+				continue;
+			}
+			
+		str+="<ul>"+
+			"<li class=\"left_table\"> Bridge Port "+(i+1)+" :</li>"+
+			"<li class=\"right_table\">"+
+	              "<label><input type='checkbox' name=\"lanport[]\" value=eth"+i+" "+checked+" /></label>"+
+	            "</li>"+
+	          "</ul>";
+	} 
+
+	$("#Bridge_Port_div").html(str);
+	
+}
+
+function frmLoad()
+{
+   with ( document.forms[0] ) {
+
+/*if is IE and version under 7, we need to ignore all of plain text feature, otherwise it will cause error. 
+Using visibility to instad of JQuery .hide() method It can hide the element forever even there have some .show() code in this file*/
+      if( forNorwayGUI == 1||($.browser.msie && (parseInt($.browser.version, 10) < 8)))
+      {
+         unmasksysPppoePwd.style.visibility="hidden";
+         unmasksysPppoePwd.disabled=true;
+         text_unmask.style.visibility="hidden";
+         text_unmask.disabled=true;
+      }
+	 
+      
+      if (prtcl == 0 || prtcl == 1 || prtcl == 7)
+      {
+         wan_Mode.value = 0;
+         showhide("mtuInfo",1);
+
+         if (prtcl == 0){
+            pppServerName.value = '<%ejGet(pppServerName)%>';
+            $('#wan_Encapsulation').append('<option value="0" selected>PPPoE</option>'); 
+         }else  if (prtcl == 1){
+            $('#wan_Encapsulation').append('<option value="1" selected>PPPoA</option>'); 
+         } else if (prtcl == 7){
+            $('#wan_Encapsulation').append('<option value="7" selected>PPP</option>'); 	//Justin: here takes no effect
+         }
+         sysPPPUsername.value = userName;
+         sysPPPPwd.value = password;
+         MTUshow.value = mtusize;
+
+         if (onDemand == true){
+            pppTriggerType.value = 1;
+			pppTriggerType[1].checked = true;
+            sysidletimeout.value = pppIdleTime;
+         }
+         else if(pppmanual == true){
+            pppTriggerType.value = 2;
+			pppTriggerType[2].checked = true;
+            sysidletimeout.value = pppIdleTime;
+         }
+         else{
+            pppTriggerType.value = 0;
+			pppTriggerType[0].checked = true;
+            sysidletimeout.disabled = true;
+         }
+         doPppTriggerType();
+         if (pppToBr == true){
+            pppBridge.checked = true;
+         }
+		}
+      else if (prtcl == 2)
+      {
+         wan_Mode.value = 0;
+         showhide("mtuInfo",1);
+         MTUshow.value = mtusize;
+         $('#wan_Encapsulation').append('<option value="2" selected>IPoE</option>'); 
+      }
+      else if (prtcl == 3)
+      {
+         wan_Mode.value = 1;
+		 showhide("mtuInfo",0);
+         $('#wan_Encapsulation').append('<option value="3" selected>Bridge</option>'); 
+      }
+      else if (prtcl == 5)
+      {
+         wan_Mode.value = 0;
+         showhide("mtuInfo",1);
+         MTUshow.value = mtusize;
+         $('#wan_Encapsulation').append('<option value="5" selected><%ejGetML(MLG_WAN_Broadband_Str31)%></option>'); 
+         wanIpAddr.value = '<%ejGet(wanIpAddress)%>';
+         wanSubnet.value = '<%ejGet(wanSubnetMask)%>';
+      }
+      if (enableAddressMapping == '1'){
+         if ( fullfeaturenat == '1' )
+            FullFeatureEnbl.checked = true;
+         else
+            FullFeatureEnbl.checked = false;
+      }
+      natEnable.checked = <%ejGet(enblNat)%>;      
+      if(opt43 == '1'){
+	dhcpcOp43.checked = true;
+      }
+      else{
+	dhcpcOp43.checked = false;
+      }
+      var nat = '<%ejGet(enblNat)%>';
+      var fullcone = '<%ejGet(enblFullcone)%>';
+      if ( nat == '1' ) {
+         showhide("fullconeNatInfo", "1");
+
+         if ( fullcone == '1' )
+            fullconenatEnable.checked = true;
+         else
+            fullconenatEnable.checked = false;
+
+      } else {
+         showhide("fullconeNatInfo", "0");
+      }
+
+      igmpEnable.checked = <%ejGet(enblIgmp)%>;
+      enableSrv.checked = <%ejGet(enblService)%>;
+      sysdefaultgw.checked = <%ejGet(enblDefaultGateway)%>;
+      servicename.value = '<%ejGet(serviceName)%>';
+
+      atmVpi.value = '<%ejGet(atmVpi)%>';
+      atmVci.value = '<%ejGet(atmVci)%>';
+      encapMode.selectedIndex = parseInt('<%ejGet(encapMode)%>');
+
+      var serviceCategorytmp = '<%ejGet(atmServiceCategory)%>';
+      if( serviceCategorytmp == 'UBR'){
+         atmServiceCategory.selectedIndex = 0;
+      }else if( serviceCategorytmp == 'UBRWPCR'){
+         atmServiceCategory.selectedIndex = 1;
+         atmPeakCellRate.value = '<%ejGet(atmPeakCellRate)%>';
+      }else if( serviceCategorytmp == 'CBR'){
+         atmServiceCategory.selectedIndex = 2;
+         atmPeakCellRate.value = '<%ejGet(atmPeakCellRate)%>';
+      }else if( serviceCategorytmp == 'VBR-nrt'){
+         atmServiceCategory.selectedIndex = 3;
+         atmPeakCellRate.value = '<%ejGet(atmPeakCellRate)%>';
+         atmSustainedCellRate.value = '<%ejGet(atmSustainedCellRate)%>';
+         atmMaxBurstSize.value = '<%ejGet(atmMaxBurstSize)%>';
+      }else if( serviceCategorytmp == 'VBR-rt'){
+         atmServiceCategory.selectedIndex = 4;
+         atmPeakCellRate.value = '<%ejGet(atmPeakCellRate)%>';
+         atmSustainedCellRate.value = '<%ejGet(atmSustainedCellRate)%>';
+         atmMaxBurstSize.value = '<%ejGet(atmMaxBurstSize)%>';
+      }
+      cbClick(atmServiceCategory);
+
+      var vlanEnable = '<%ejGet(enVlanMux)%>';
+      if (parseInt(vId)< 0 || vlanEnable == '0') {
+         enblVlan.checked = false;
+      } else {
+         enblVlan.checked = true;
+         vlanId.value = vId;
+         $("#vlanPr").attr("value",  '<%ejGet(vlanMuxPr)%>');
+      }
+
+      servicename.disabled = true;
+      wan_Type.disabled = true;
+
+      //if (dnsIfcs != '' || wan_Mode.value == 1 || dnsPri == '0.0.0.0' || dnsPri == ''){
+	  //alllow manual dns servers in each wan interaface
+	  if (wan_Mode.value == 1 || dnsPri == '0.0.0.0' || dnsPri == ''){
+         dnsType[0].checked = true;
+         dnsType[1].checked = false;
+      }else{
+         dnsType[0].checked = false;
+         dnsType[1].checked = true;
+
+         if ((dnsPri != '') && (dnsPri != '0.0.0.0')){
+            sysDNSAddr.value = dnsPri;
+         }
+
+         if ((dnsSec != '') && (dnsSec !='0.0.0.0')){
+            sysDNSAddr2.value = dnsSec;
+         }			
+      }
+
+        $("#fullFeatureNatSet").attr("value",  '<%ejGet(fullFeatureNatSet)%>');
+
+      doTypeChange();
+      doEnblVlan();
+      DNSTypeChange();
+
+      if ( authMethod == '1' )
+         pppAuthMethodTmp.selectedIndex = 1;
+      else if ( authMethod == '2' )
+         pppAuthMethodTmp.selectedIndex = 2;
+      else if ( authMethod == '3' )
+         pppAuthMethodTmp.selectedIndex = 3;
+      else
+         pppAuthMethodTmp.selectedIndex = 0;
+
+      if(shapingRate == "-1") {
+         shapingRateShow.value = "";
+      } else {
+         shapingRateShow.value = shapingRate;
+      }
+	  
+	  if(qosDefDscpVal == ''){
+		  showhide("qosDefTag", "0");
+	  }
+	  else{
+		  
+		  if(enblQosDefTagVal=='1'){
+			enblQosDefTagRadio[0].checked =true;
+			
+			if(qosDefDscpVal == "-1"){
+			  qosDefDscpInput.value = "";
+			}
+			else{
+			  qosDefDscpInput.value = qosDefDscpVal;	
+			}
+			
+			if(qosDef8021pVal == "-1"){
+				qosDef8021pInput.value = "";
+			}
+			else{
+			  qosDef8021pInput.value = qosDef8021pVal;	
+			}
+		  }
+		  else{
+			enblQosDefTagRadio[1].checked =true;
+		  }
+		  
+		  EnblQosDefTagChange();
+		  	  
+	  }
+
+//IPv6 start
+      if ( buildMstcIPv6 == '1' )
+      {
+         if(wanip6mode == '0')
+         {
+            if(enblip6rd == '1')
+            {
+               EnblIp6rd[0].checked = true;
+               EnblIp6rd[1].checked = false;
+               if(ip6rdtype == 'Static')
+               {
+                  Ip6rdType[0].checked = false;
+                  Ip6rdType[1].checked = true;
+                  Ip6rdRelayServer.value = ip6rdrelayserver;
+                  Ip6rdPrefix.value = ip6rdprefix;
+				  Ipv4MaskLen.value = g_tunnel6rdMaskLen;
+               }
+               else
+               {
+                  Ip6rdType[0].checked = true;
+                  Ip6rdType[1].checked = false;
+               }
+            }
+            else
+            {
+               EnblIp6rd[0].checked = false;
+               EnblIp6rd[1].checked = true;
+            }
+         }
+      }
+      if ( buildMstcIPv6 == '1' )
+      {
+         if(enblIpVer != '0') /*Not IPv4 only == support IPv6*/
+         {
+            wan_Ipv6Mode.selectedIndex = wanip6mode;
+
+            if (mldenbled == '1')
+               mldEnable.checked = true;
+            else
+               mldEnable.checked = false;
+
+            if('<%ejGet(enblDfltGw6)%>' == '1')
+               wan6DefaultGw.checked = true;
+            else
+               wan6DefaultGw.checked = false;
+
+            if (prtcl == 0 || prtcl == 2){ //PPPoE and IPoE
+               if (enblDhcpv6 == 'Static')
+               {
+                  var wanIpv6AddrPre = '<%ejGet(wanAddr6)%>';
+                  var wanIpv6Temp = wanIpv6AddrPre.split('/');
+
+                  Ipv6AddrType[0].checked = false;
+                  Ipv6AddrType[1].checked = true;
+                  Ipv6AddrType[2].checked = false;
+                  wanIpv6Addr.value = wanIpv6Temp[0];
+                  wanIpv6Pre.value = wanIpv6Temp[1];
+
+                  if (prtcl == 2)
+                     wan6NextHop.value = '<%ejGet(wanGtwy6)%>';
+               }
+               else
+               {
+
+                  if(enblUnnumbered == 1){
+                     Ipv6AddrType[0].checked = false;
+                     Ipv6AddrType[1].checked = false;
+                     Ipv6AddrType[2].checked = true;
+                  }else{
+                     Ipv6AddrType[0].checked = true;
+                     Ipv6AddrType[1].checked = false;
+                     Ipv6AddrType[2].checked = false;
+                  }
+                  if (dhcp6ForAddr == '1')
+                     wan6Ndra.checked = true;
+                  else
+                     wan6Ndra.checked = false;
+//IA_PD enable on wan side
+                  if (dhcp6ForPd == '1')
+                     wan6Pd.checked = true;
+                  else
+                     wan6Pd.checked = false;
+               }
+            }
+
+            if (dns6type == 'Static')
+            {
+               dnsv6Type[0].checked = false;
+               dnsv6Type[1].checked = true;
+               sysDNSv6Addr.value = dns6pri;
+               sysDNSv6Addr2.value = dns6sec;
+            }
+            else
+            {
+               dnsv6Type[0].checked = true;
+               dnsv6Type[1].checked = false;
+            }
+
+            if(wanip6mode == '2')
+            {
+               if(enbldslite == '1')
+               {
+                  EnblDsLite[0].checked = true;
+                  EnblDsLite[1].checked = false;
+                  DsLiteRelayServer.value = dsliterelayserver;
+               }
+               else
+               {
+                  EnblDsLite[0].checked = false;
+                  EnblDsLite[1].checked = true;
+               }
+            }
+         }
+
+         if (prtcl == 3 || prtcl == 4)
+         {
+            showhide("ipv6Mode", "0");
+            showhide("ipv6Tunnel_v4only", "0");
+            showhide("ipv6Tunnel_v6only", "0");
+            showhide("ipv6Address", "0");
+            showhide("ipv6Routing", "0");
+            showhide("ipv6Dns", "0");
+         }
+         else
+         {
+            showhide("ipv6Mode", "1");
+            doIpv6ModeChange();
+            IPv6AddressTypeChange();
+            DNSv6TypeChange();
+         }
+      }
+      else
+      {
+         showhide("ipv6Mode", "0");
+         showhide("ipv6Tunnel_v4only", "0");
+         showhide("ipv6Tunnel_v6only", "0");
+         showhide("ipv6Address", "0");
+         showhide("ipv6Routing", "0");
+         showhide("ipv6Dns", "0");
+      }
+//IPv6 end
+
+	// Concurrent WAN
+	if(conWanEntry != '' && conWanEntry != undefined){
+		ConcurrentWanActive.checked = true;
+	}
+	WanConCurrentChange();	
+
+   }
+}
+
+function btnSave()
+{
+   with ( document.forms[0] )
+   {
+      if (servicename.value == '')
+      {
+         //AlertOpen ("Entry name is necessary.", 2);
+         hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str4)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return false;
+      }
+      else if ( isValidName(servicename.value) == false )
+      {
+         //AlertOpen( '<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str6)%>', 2);
+         hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str6)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+  // cathy add
+      if (dhcpcOp61IAID.value != "" )
+	  {
+	  	if ( isValidHexKey(dhcpcOp61IAID.value, 8) == false)
+	  	{ 
+	  		 hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_dhcpcOp61IAIDError)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         	return;
+	  	}
+      }
+	  if (dhcpcOp61DUID.value != "")
+	  {
+      	if (isValidHexKey(dhcpcOp61DUID.value, dhcpcOp61DUID.value.length) == false)
+      	{
+       	 	hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_dhcpcOp61DUIDError)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         	return;
+      	}
+	  }
+      if ( (dhcpcOp61IAID.value == "" && dhcpcOp61DUID.value != "") || 
+         (dhcpcOp61IAID.value != "" && dhcpcOp61DUID.value == ""))
+      {
+         hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_dhcpcOp61Error)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+// cathy add end
+      if(shapingRateShow.value == "")
+      {
+         wanL3ShapingRate.value = "-1";
+      }
+      else if(isNaN(shapingRateShow.value) == true ||(shapingRateShow.value < 0) || (shapingRateShow.value > 1024000))
+      {
+         //AlertOpen ('MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str44)%>", shapingRateShow.value )', 2);
+         hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str44)%>", shapingRateShow.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      else
+      {
+         wanL3ShapingRate.value = shapingRateShow.value;
+      }
+	  
+	  if(qosDefDscpVal != ''){
+		  if (isNaN(qosDef8021pInput.value) == true || qosDef8021pInput.value < 0 || qosDef8021pInput.value > 7) {
+			 msg = MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str21)%>",qosDef8021pInput.value);
+			 hciAlert(msg, {height: 180, type: 2, title: ''});
+			 return;
+		  }
+		  if (isNaN(qosDefDscpInput.value) == true || qosDefDscpInput.value < 0 || qosDefDscpInput.value > 63) {
+			 msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str22)%>",qosDefDscpInput.value);
+			 hciAlert(msg, {height: 180, type: 2, title: ''});
+			 return;
+		  }
+		  
+		  if(qosDef8021pInput.value==''){
+			qosDef8021p.value = '-1';
+		  }
+		  else{
+			qosDef8021p.value = qosDef8021pInput.value;
+		  }
+		  if(qosDefDscpInput.value==''){
+		    qosDefDscp.value = '-1';
+		  }
+		  else{
+			qosDefDscp.value = qosDefDscpInput.value;
+		  }
+		  		  
+	  }
+	  else{
+		  qosDef8021p.value = '-1';
+		  qosDefDscp.value = '-1';
+	  }
+	  
+      //atm
+      if (wanType2 == 1)
+      {
+         linkType.value = atmLinkType.value;
+
+         if ( isNaN(parseInt(atmVpi.value)) == true ) {
+            //AlertOpen('VPI "' + atmVpi.value + '" is invalid.', 2);
+            hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str8)%>", atmVpi.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+         }
+         if ( isNaN(parseInt(atmVci.value)) == true ) {
+            //AlertOpen('VCI "' + atmVci.value + '" is invalid.', 2);
+            hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str9)%>", atmVci.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+         }
+
+         vpi = parseInt(atmVpi.value);
+         if ( vpi < 0 || vpi > 255 ) {
+            //AlertOpen('VPI "' + atmVpi.value + '" is out of range [0-255].', 2);
+            hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str10)%>", atmVci.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+         }
+
+         vci = parseInt(atmVci.value);
+         if ( vci < 32 || vci > 65535 ) {
+            //AlertOpen('MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str11)%>", atmVci.value )', 2);
+            hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str11)%>", atmVci.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+         }
+
+         if (atmVpi.value != '<%ejGet(atmVpi)%>' || atmVci.value != '<%ejGet(atmVci)%>') {
+            vpiVciChanged.value = 1;
+         }
+
+         if (atmServiceCategory.value != 'UBR') {
+            if ( isNaN(parseInt(atmPeakCellRate.value)) == true) {
+               //AlertOpen('Peak Cell Rate "' + atmPeakCellRate.value + '" is invalid.', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str12)%>", atmPeakCellRate.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+
+            peak = parseInt(atmPeakCellRate.value);
+            if ( peak <= 0 || peak > pcrMax ) {
+               //AlertOpen('Peak Cell Rate "' + atmPeakCellRate.value + '" is out of range [1-' + pcrMax + '].', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str13)%>", atmPeakCellRate.value,  pcrMax ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+         } else {
+            atmPeakCellRate.value = 0;			  
+         }
+
+         if (atmServiceCategory.value == 'VBR-nrt' || atmServiceCategory.value == 'VBR-rt') {
+            if ( isNaN(parseInt(atmSustainedCellRate.value)) == true) {
+               //AlertOpen('Sustainable Cell Rate "' + atmSustainedCellRate.value + '" is invalid.', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str14)%>", atmSustainedCellRate.value  ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+
+            sustainable = parseInt(atmSustainedCellRate.value);
+            if ( sustainable <= 0 || sustainable > pcrMax ) {
+               //AlertOpen(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str13)%>", atmSustainedCellRate.value, pcrMax  ), 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str15)%>", atmSustainedCellRate.value, pcrMax  ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+
+            if ( sustainable >= peak) {
+               //AlertOpen('Sustainable Cell Rate "' + atmSustainedCellRate.value + '" has to be smaller than Peak Cell Rate', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str16)%>", atmSustainedCellRate.value   ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+
+            if ( isNaN(parseInt(atmMaxBurstSize.value)) == true) {
+               //AlertOpen('Maximum Burst Size "' + atmMaxBurstSize.value + '" is invalid.', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str17)%>", atmMaxBurstSize.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+
+            maximum = parseInt(atmMaxBurstSize.value);
+            if ( maximum <= 0 || maximum > 1000000 ) {
+               //AlertOpen('Maximum Burst Size "' + atmMaxBurstSize.value + '" is out of range [1-1000000].', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str18)%>", atmMaxBurstSize.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+         } else {
+            atmSustainedCellRate.value = 0;			  
+            atmMaxBurstSize.value = 0;
+         }
+
+         checkAtmL2change();
+      }
+
+      if((wanType2 == 1 && adslVlan == 1) || wanType2 != 1){
+         if (enblVlan.checked == true)
+         {
+            if (isNaN(vlanId.value))
+            {
+               //AlertOpen ('VLAN ID \"' + vlanId.value + '\" is invalid.', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str19)%>", vlanId.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+
+            var vlmpr = parseInt(vlanPr.value);
+            var vlmid = parseInt(vlanId.value);
+            if ( vlmpr < 0 || vlmpr > 7 ) {
+               //AlertOpen ('VLAN 8021p Priority \"' + vlmpr + '\" is out of range [0-7].', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str21)%>", vlmpr  ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+            if ( vlmid < 0 || vlmid > 4094 ) {
+               //AlertOpen ('VLAN ID \"' + vlmid + '\" is out of range [0-4094].', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str22)%>", vlmid ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+
+				//check duplicate vlan
+				//@1|123,456@2|11,22
+			var vlanSet = existVlan.split('@'); //@1|123,456
+            for (i = 0; i<vlanSet.length; i++)
+            {
+               if (vlanSet[i] == undefined)
+                  continue;
+
+               if (vlanSet[i].indexOf('|') != -1)
+               {
+                  var wanTypeTmp = vlanSet[i].split('|');
+                  if (((wanTypeTmp[0] == 1) && (wanType2 == 1)) || 
+                      ((wanTypeTmp[0] == 2) && (wanType2 == 0)) || 
+                      ((wanTypeTmp[0] == 3) && (wanType2 == 2)) || 
+                      ((wanTypeTmp[0] == 4) && (wanType2 == 3))) {
+                     var vlan = wanTypeTmp[1].split(',');
+
+                     for (j = 0; j < vlan.length; j++)	
+                     {
+                        if (vlmid == parseInt(vlan[j]) && vlmid != vId )
+	                    {
+	                     	j=j+1;
+	                     	if (wan_Mode.value == parseInt(vlan[j]))
+	                     	{
+				    if (customer != "ISKON")  //ZyXEL, Adam20141103allow, 2pppoe use 1 vlanid
+				    {
+                         		//AlertOpen('VLAN ID '+vlmid+' is already used.', 2);
+                           		hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str23)%>", vlmid ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                           		return;
+				    }
+	                     	}
+                        }
+						else{
+							j=j+1;
+						}
+                     }
+                  }else{
+                     continue;
+                  }
+               }
+            }		
+         }
+      }
+
+      if ((wanType2 == 0 && vdslVlan != 1) || (wanType2 == 1 && adslVlan != 1) || (wanType2 == 2 && ethVlan != 1) || (wanType2 == 3 && mocaVlan != 1) || (wanType2 == 4))
+      {
+         vlanEnbl = 0;
+      }
+      else
+      {
+         vlanEnbl = 1;
+      }
+
+      if (wan_Encapsulation.value == 0 || wan_Encapsulation.value == 1 || wan_Encapsulation.value == 7){//PPPoE||PPPoA||PPP
+         if (wanType2 == 2 || wanType2 == 3)//EtherWAN, MOCA
+         {
+            ntwkPrtcl.value = 12;
+         }
+         else if (wanType2 == 4)//WWAN
+         {
+            ntwkPrtcl.value = 7;
+         }
+         else
+         {
+            if (wan_Encapsulation.value == 0) {
+               ntwkPrtcl.value = 0;
+            } else {
+               ntwkPrtcl.value = 1;
+            }
+         }
+/*
+         if (wanType2 == 4)//WWAN special param
+         {
+            wwanEnable.value = 1;
+            bandSelection.value = Band_Selection.value;
+            accessPointName.value = Access_Point_Name.value;
+            dialString.value = Dial_String.value;
+            PINCode.value = PIN_Code.value;
+            PUKCode.value = PUK_Code.value;
+         }
+*/
+         // validate user name
+         var len = sysPPPUsername.value.length;
+         if ( len > 256 ) {
+            //msg = 'The length of user name (' + len + ') is too long [0-256].';
+            //AlertOpen (msg, 2);
+            //hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str24)%>", len ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+         }
+         if(sysPPPUsername.value == "") {
+            hciAlert ('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str81)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+		 }
+
+         if(sysPPPPwd.value == "") {
+	   hciAlert ('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str82)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+           return false;
+		 }
+	 	 
+		 
+var timeOutNum=0;
+         // validate inactivity timeout
+         if ( pppTriggerType[0].checked == false ) {
+            if ( isNaN(sysidletimeout.value) == true ) {
+               //msg = 'Inactivity Timeout "' + sysidletimeout.value + '" is invalid.';
+               //AlertOpen (msg, 2);
+               //hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str25)%>", sysidletimeout.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return false;
+            }
+
+            timeOutNum = parseInt(sysidletimeout.value);
+			
+			if ( timeOutNum < 1 || timeOutNum > 4320 ) {
+			   //msg = 'Inactivity Timeout "' + sysidletimeout.value + '" is out of range [1-4320].';
+			   //AlertOpen (msg, 2);
+			   //hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			   hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str26)%>", sysidletimeout.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			   return false;
+			}
+			
+			
+         }
+
+         len = pppServerName.value.length;
+         if ( len > 32 ) {
+            //msg = 'The length of PPP service (' + len + ') is too long [0-32].';
+            //AlertOpen (msg, 2);
+            //hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str27)%>", len ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+         }
+
+         pppUserName.value = encodeUrl(sysPPPUsername.value);
+         pppPassword.value = encodeUrl(sysPPPPwd.value);
+         if ( pppTriggerType[0].checked) { //auto connect
+			pppManual.value = 0;
+			enblOnDemand.value = 0;
+			pppTimeOut.value = 0;
+            pppAuthErrorRetry.value = 1;
+		 }
+		 else if(pppTriggerType[1].checked) //on demand
+		 {
+			pppManual.value = 0;
+            enblOnDemand.value = 1;
+            pppTimeOut.value = timeOutNum;
+            pppAuthErrorRetry.value = 0;
+         } else { // manual
+			pppManual.value = 1;
+            enblOnDemand.value = 0;
+			pppTimeOut.value = timeOutNum;
+            pppAuthErrorRetry.value = 0;
+         }
+		
+         if ( WAN_IP_Auto[1].checked == true ) {
+            useStaticIpAddress.value = 1;
+            pppLocalIpAddress.value = wanIpAddr.value;
+            //enblLan2.value = 0;
+         } else if ( WAN_IP_Auto[0].checked == true ){
+            useStaticIpAddress.value = 0;
+            pppLocalIpAddress.value = "0.0.0.0";
+            //enblLan2.value = 0;
+         } else {
+            useStaticIpAddress.value = 2;
+            pppLocalIpAddress.value = "0.0.0.0";
+            //enblLan2.value = 1;
+            if (isValidIpAddress(lan2IpAddress.value) == false) {
+               //AlertOpen ('The Gateway IP Address of Block of Static IP Addresses "' + lan2IpAddress.value + '" is invalid.', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str28)%>", lan2IpAddress.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+            if (isValidSubnetMask(lan2SubnetMask.value) == false) {
+               //AlertOpen ('The Subnet Mask of Block of Static IP Addresses "' + lan2SubnetMask.value + '" is invalid.', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str39)%>", lan2SubnetMask.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+            /*if (lanAddrType.checked == true) {
+               usePublicIP.value = 1;
+            } else {
+               usePublicIP.value = 0;
+            }*/
+         }
+
+         pppServerName.value = encodeUrl(pppServerName.value); //only for pppoe
+         if (pppBridge.checked == true) {
+            pppToBridge.value = 1;
+         } else {
+            pppToBridge.value = 0;
+         }
+
+	if(linkType.value == "PPPoA" && forCodetel == 0){
+         if(MTUshow.value == "") {
+            hciAlert (MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str35)%>", MTUshow.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         } else if(isNaN(MTUshow.value) == true ||(MTUshow.value < 68) || (MTUshow.value > 1500)){
+            hciAlert (MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str35)%>", MTUshow.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         } else {
+            maxMtuSize.value = MTUshow.value;
+         }
+	}else{
+         if(MTUshow.value == "") {
+            hciAlert (MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str35)%>", MTUshow.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         } else if(isNaN(MTUshow.value) == true ||(MTUshow.value < 68) || (MTUshow.value > 1492)){
+            hciAlert (MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str35)%>", MTUshow.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         } else {
+            maxMtuSize.value = MTUshow.value;
+         }
+	}
+		 
+		 
+// wan IPv6 start
+         if(buildMstcIPv6 == '1')
+         {
+            if (wan_Ipv6Mode.value == 0)
+            {
+               if (EnblIp6rd[1].checked == true)
+               {
+                  enblIp6rd.value = 0;
+                  ip6rdRelayServer.value = '0.0.0.0';
+                  ip6rdPrefix.value = '::';
+				  tunnel6rdMaskLen.value = '0';
+               }
+               else
+               {
+                  enblIp6rd.value = 1;
+                  if (Ip6rdType[1].checked == true)
+                  {
+					 if ( isValidMaskLength(Ipv4MaskLen.value) == false) {
+					 	//hciAlert('Please enter correct IPv4 Mask length, ex: 0~32', {height: 180,type: 2, title: 'Error'});
+						hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_6rd_ipv4MaskLengthError)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+						return;
+                  	 }
+					 if ( isValidIpAddress(Ip6rdRelayServer.value) == false ) {
+                        //AlertOpen ('6RD tunnel address "' + Ip6rdRelayServer.value + '" is invalid IP address.', 2);
+                        hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str74)%>", Ip6rdRelayServer.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                        return;
+                     }
+                     if ( isValidIpAddress6(Ip6rdPrefix.value) == false) {
+                        //AlertOpen ('6RD IPv6 Prefix "' + Ip6rdPrefix.value + '" is invalid IPv6 address.', 2);
+                        hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str75)%>", Ip6rdPrefix.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                        return;
+                     }
+                     if ( Ip6rdPrefix.value.search('/') == -1) {
+                        //AlertOpen ('Please enter the prefix length \"/\" to 6RD IPv6 Prefix field, ex: xxxx:xxxx::/xx', 2);
+                        hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str76)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                        return;
+                     }
+					 if (isValidv6PrefixLength(Ip6rdPrefix.value) == false) {
+						//hciAlert('The maximum of prefix length is 32.', {height: 180,type: 2, title: 'Error'});
+						hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_6rd_plen_error)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+						return;
+					 }
+					 ip6rdType.value = 'Static';
+                     ip6rdRelayServer.value = Ip6rdRelayServer.value;
+                     ip6rdPrefix.value = Ip6rdPrefix.value;
+					 tunnel6rdMaskLen.value = Ipv4MaskLen.value;
+                  }
+                  else
+                  {
+                     //AlertOpen ('PPPoE do not support DHCP 6RD option. Please use static setting.', 2);
+                     hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str77)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+                  }
+               }
+            }
+            else if(wan_Ipv6Mode.value == 1 || wan_Ipv6Mode.value == 2)
+            {
+               if (Ipv6AddrType[0].checked == true)
+               {
+                  if(wan6Ndra.checked == true){
+                     dhcp6cForAddr.value=1;
+                  }else{
+                     dhcp6cForAddr.value=0;
+                  }
+//IA_PD enable on wan side
+		  if(wan6Pd.checked == true){
+                     dhcp6cForPd.value=1;
+                  }else{
+                     dhcp6cForPd.value=0;
+                  }
+                  wanAddr6Type.value = 'DHCP';
+                  wanAddr6.value = "::";
+                  wanIpv6Prefix.value = 0;
+               }
+               else if (Ipv6AddrType[1].checked == true)
+               {
+                  if ( isValidIpAddress6(wanIpv6Addr.value) == false ) {
+                     //AlertOpen ('WAN IPv6 address "' + wanIpv6Addr.value + '" is invalid IPv6 address.', 2);
+                     hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str78)%>", wanIpv6Addr.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+                  }
+                  if ( wanIpv6Addr.value.search('/') != -1 ) {
+                     //AlertOpen ('Please remove the \"/\", and keying WAN IPv6 prefix to \"Prefix Length\" field', 2);
+                     hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str79)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+                  }
+                  if ((wanIpv6Pre.value < 0) || (wanIpv6Pre.value > 128) || (wanIpv6Pre.value == '')) {
+                     //AlertOpen ('WAN IPv6 Prefix "' + wanIpv6Pre.value + '" is invalid IPv6 Prefix.', 2);
+                     hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str65)%>", wanIpv6Pre.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+                  }
+                  /*if ( isValidIpAddress6(wan6NextHop.value) == false ) {
+                     //AlertOpen ('WAN IPv6 Next Hop address "' + wan6NextHop.value + '" is invalid IPv6 address.', 2);
+                     hciAlert('WAN IPv6 Next Hop address "' + wan6NextHop.value + '" is invalid IPv6 address.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+                  }
+                  if ( wan6NextHop.value.search('/') != -1 ) {
+                     //AlertOpen ('Please remove the \"/\" on Next Hop field." field', 2);
+                     hciAlert('Please remove the \"/\" on Next Hop field." field', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+                  }*/
+                  wanAddr6Type.value = 'Static';
+                  wanAddr6.value = wanIpv6Addr.value + '/' + wanIpv6Pre.value;
+                  //wanGtwy6.value = wan6NextHop.value;
+                  dhcp6cForAddr.value=0;
+                  dhcp6cForPd.value=1;
+                  //wanIpv6Prefix.value = wanIpv6Pre.value;
+               } if (Ipv6AddrType[2].checked == true){
+                  wanAddr6Type.value = 'DHCP';
+                  wanAddr6.value = "::";
+                  wanIpv6Prefix.value = 0;
+
+                  enblIp6Unnumbered.value = 1;
+               }
+
+               
+               if (wan_Ipv6Mode.value == 2)
+               {
+                  if (EnblDsLite[1].checked == true)
+                  {
+                     enblDsLite.value = 0;
+                     dsLiteRelayServer.value = '::';
+                  }
+                  else
+                  {
+                     if ( isValidIpAddress6(DsLiteRelayServer.value) == false ) {
+                        //AlertOpen ('DS-Lite tunnel IPv6 address "' + DsLiteRelayServer.value.value + '" is invalid IPv6 address.', 2);
+                        hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str64)%>", DsLiteRelayServer.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                        return;
+                     }
+                     enblDsLite.value = 1;
+                     dsLiteRelayServer.value = DsLiteRelayServer.value;
+                  }
+               }
+            }
+         }
+// wan IPv6 end
+
+      }
+      else if (wan_Encapsulation.value == 2) //IPoE
+      {
+         if (wanType2 == 2 || wanType2 == 3)
+         {
+            //EtherWAN
+            ntwkPrtcl.value = 11;
+         }
+         else
+         {
+            ntwkPrtcl.value = 2;
+         }
+
+         // wan IP address
+         if (WAN_IP_Auto[0].checked == true ) {
+            enblDhcpClnt.value = 1;
+            wanIpAddress.value = "0.0.0.0";
+            wanSubnetMask.value = "0.0.0.0";
+            wanIntfGateway.value = "0.0.0.0";
+            if(dhcpcOp43.checked){
+               dhcpcOp43Enbl.value=1;               
+            }
+            else{
+               dhcpcOp43Enbl.value=0;              
+            }           
+         }
+         else
+         {
+            if ( isValidIpAddress(wanIpAddr.value) == false ) {
+               //AlertOpen ('WAN IP address "' + wanIpAddr.value + '" is invalid IP address.', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str36)%>", wanIpAddr.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+
+            if ( isValidSubnetMask(wanSubnet.value) == false ) {
+               //AlertOpen ('WAN subnet mask "' + wanSubnet.value + '" is invalid IP address.', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str32)%>", wanSubnet.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+
+            if ( isValidIpAddress(wanGateway.value) == false ) {
+               //AlertOpen (wanGateway.value + '" is invalid gateway IP address.', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str33)%>", wanGateway.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+            enblDhcpClnt.value = 0;
+            wanIpAddress.value = wanIpAddr.value;
+            wanSubnetMask.value = wanSubnet.value;
+            wanIntfGateway.value = wanGateway.value;
+         }
+			
+         if(MTUshow.value == "")
+         {
+            hciAlert (MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str34)%>", MTUshow.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }
+         else if(isNaN(MTUshow.value) == true ||(MTUshow.value < 68) || (MTUshow.value > 1500))
+         {
+            hciAlert (MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str34)%>", MTUshow.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }
+	  		else
+         {    
+	    		maxMtuSize.value = MTUshow.value;
+         }
+
+// wan IPv6 start
+         if(buildMstcIPv6 == '1')
+         {
+            if (wan_Ipv6Mode.value == 0)
+            {
+               if (EnblIp6rd[1].checked == true)
+               {
+                  enblIp6rd.value = 0;
+                  ip6rdRelayServer.value = '0.0.0.0';
+                  ip6rdPrefix.value = '::';
+				  tunnel6rdMaskLen.value = '0';
+               }
+               else
+               {
+                  enblIp6rd.value = 1;
+                  if (Ip6rdType[1].checked == true)
+                  {
+					 if ( isValidMaskLength(Ipv4MaskLen.value) == false) {
+						hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_6rd_ipv4MaskLengthError)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+						return;
+                  	 }
+					 if ( isValidIpAddress(Ip6rdRelayServer.value) == false ) {
+                        //AlertOpen ('6RD tunnel address "' + Ip6rdRelayServer.value + '" is invalid IP address.', 2);
+                        hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str74)%>", Ip6rdRelayServer.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                        return;
+                     }
+                     if ( isValidIpAddress6(Ip6rdPrefix.value) == false) {
+                        //AlertOpen ('6RD IPv6 Prefix "' + Ip6rdPrefix.value + '" is invalid IPv6 address.', 2);
+                        hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str75)%>", Ip6rdPrefix.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                        return;
+                     }
+                     if ( Ip6rdPrefix.value.search('/') == -1) {
+                        //AlertOpen ('Please enter the prefix length \"/\" to 6RD IPv6 Prefix field, ex: xxxx:xxxx::/xx', 2);
+                        hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str76)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                        return;
+                     }
+					 if (isValidv6PrefixLength(Ip6rdPrefix.value) == false) {
+						//hciAlert('The maximum of prefix length is "' + prefixlength + '"', {height: 180,type: 2, title: 'Error'});
+						hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_6rd_v6LengthError)%>"' + prefixlength + '"', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+						return;
+					 }					 
+                     ip6rdType.value = 'Static';
+                     ip6rdRelayServer.value = Ip6rdRelayServer.value;
+                     ip6rdPrefix.value = Ip6rdPrefix.value;
+					 tunnel6rdMaskLen.value = Ipv4MaskLen.value;
+                  }
+                  else
+                  {
+                     ip6rdType.value = 'DHCP';
+                  }
+               }
+            }
+            else if(wan_Ipv6Mode.value == 1 || wan_Ipv6Mode.value == 2)
+            {
+               if (Ipv6AddrType[0].checked == true)
+               {
+                  if(wan6Ndra.checked == true){
+                     dhcp6cForAddr.value=1;
+                  }else{
+                     dhcp6cForAddr.value=0;
+                  }
+//IA_PD enable on wan side
+                  if(wan6Pd.checked == true){
+                     dhcp6cForPd.value=1;
+                  }else{
+                     dhcp6cForPd.value=0;
+                  }                  
+                  wanAddr6Type.value = 'DHCP';
+                  wanAddr6.value = "::";
+                  wanIpv6Prefix.value = 0;
+               }
+               else if (Ipv6AddrType[1].checked == true)
+               {
+                  if ( isValidIpAddress6(wanIpv6Addr.value) == false ) {
+                     //AlertOpen ('WAN IPv6 address "' + wanIpv6Addr.value + '" is invalid IPv6 address.', 2);]
+                     hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str78)%>", wanIpv6Addr.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+                  }
+                  if ( wanIpv6Addr.value.search('/') != -1 ) {
+                     //AlertOpen ('Please remove the \"/\", and keying WAN IPv6 prefix to \"Prefix Length\" field', 2);
+                     hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str79)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+                  }
+                  if ((wanIpv6Pre.value < 0) || (wanIpv6Pre.value > 128) || (wanIpv6Pre.value == '')) {
+                     //AlertOpen ('WAN IPv6 Prefix "' + wanIpv6Pre.value + '" is invalid IPv6 Prefix.', 2);
+                     hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str65)%>", wanIpv6Pre.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+                  }
+                  if ( isValidIpAddress6(wan6NextHop.value) == false ) {
+                     //AlertOpen ('WAN IPv6 Next Hop address "' + wan6NextHop.value + '" is invalid IPv6 address.', 2);
+                     hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str66)%>", wan6NextHop.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+                  }
+                  if ( wan6NextHop.value.search('/') != -1 ) {
+                     //AlertOpen ('Please remove the \"/\" on Next Hop field." field', 2);
+                     hciAlert("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str67)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                     return;
+                  }
+                  wanAddr6Type.value = 'Static';
+                  wanAddr6.value = wanIpv6Addr.value + '/' + wanIpv6Pre.value;
+                  wanGtwy6.value = wan6NextHop.value;
+                  dhcp6cForAddr.value=0;
+                  dhcp6cForPd.value=1;
+                  //wanIpv6Prefix.value = wanIpv6Pre.value;
+               }else if (Ipv6AddrType[2].checked == true){
+                  dhcp6cForAddr.value=0;
+                  dhcp6cForPd.value=1;
+                  wanAddr6Type.value = 'DHCP';
+                  wanAddr6.value = "::";
+                  wanIpv6Prefix.value = 0;
+                  
+                  enblIp6Unnumbered.value = 1;
+               }
+                  
+               if (wan_Ipv6Mode.value == 2)
+               {
+                  if (EnblDsLite[1].checked == true)
+                  {
+                     enblDsLite.value = 0;
+                     dsLiteRelayServer.value = '::';
+                  }
+                  else
+                  {
+                     if ( isValidIpAddress6(DsLiteRelayServer.value) == false ) {
+                        //AlertOpen ('DS-Lite tunnel IPv6 address "' + DsLiteRelayServer.value.value + '" is invalid IPv6 address.', 2);
+                        hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str64)%>", DsLiteRelayServer.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                        return;
+                     }
+                     enblDsLite.value = 1;
+                     dsLiteRelayServer.value = DsLiteRelayServer.value;
+                  }
+               }
+            }
+         }
+// wan IPv6 end
+
+      }
+      else if (wan_Encapsulation.value == 5)
+      {
+         ntwkPrtcl.value = 5; //IPoA
+         wanIpAddress.value = wanIpAddr.value;
+         wanSubnetMask.value = wanSubnet.value;
+
+         if(MTUshow.value == "")
+         {
+            hciAlert (MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str34)%>", MTUshow.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }
+         else if(isNaN(MTUshow.value) == true ||(MTUshow.value < 68) || (MTUshow.value > 1500))
+         {
+            hciAlert (MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str34)%>", MTUshow.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }
+         else
+         {
+            maxMtuSize.value = MTUshow.value;
+         }
+
+         if ( isValidIpAddress(wanIpAddr.value) == false ) {
+            //AlertOpen ('WAN IP address "' + wanIpAddr.value + '" is invalid IP address.', 2);
+            hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str36)%>", wanIpAddr.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }
+
+         if ( isValidSubnetMask(wanSubnet.value) == false ) {
+            //AlertOpen ('WAN subnet mask "' + wanSubnet.value + '" is invalid IP address.', 2);
+            hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str32)%>", wanSubnet.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }
+
+         if ( WAN_IP_Auto[1].checked == true ) {
+            //enblLan2.value = 0;
+            useStaticIpAddress.value = 1;
+         } else {
+            //enblLan2.value = 1;
+            useStaticIpAddress.value = 2;
+
+            if (isValidIpAddress(lan2IpAddress.value) == false) {
+               //AlertOpen ('The Gateway IP Address of Block of Static IP Addresses "' + lan2IpAddress.value + '" is invalid.', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str28)%>", lan2IpAddress.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+            if (isValidSubnetMask(lan2SubnetMask.value) == false) {
+               //AlertOpen ('The Subnet Mask of Block of Static IP Addresses "' + lan2SubnetMask.value + '" is invalid.', 2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str39)%>", lan2SubnetMask.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+            /*if (lanAddrType.checked == true) {
+               usePublicIP.value = 1;
+            } else {
+               usePublicIP.value = 0;
+            }*/
+         }
+      }
+      else
+      {
+         //bridge
+
+		 // ZyXEL, ShuYing, 2013/01/15, disable DefaultGateway, Nat and Igmp
+         enblDefaultGateway.value = 0;
+         enblNat.value = 0;
+         enblIgmp.value = 0; 
+						
+         if (wanType2 == 2 || wanType2 == 3)
+         {
+            //EtherWAN
+            ntwkPrtcl.value = 13;
+         }
+         else
+         {
+            ntwkPrtcl.value = 3;
+         }
+      }
+
+      if (wan_Encapsulation.value == 3)
+      {
+         enblDefaultGateway.value = 0;
+         enblNat.value = 0;
+         enblFullcone.value = 0;
+         enblIgmp.value = 0;
+      }
+      else
+      {
+         if (sysdefaultgw.checked == true) {
+            enblDefaultGateway.value = 1;
+         } else {
+            enblDefaultGateway.value = 0;
+         }
+
+         if (natEnable.checked == true && wan_Mode.value == 0) {
+            enblNat.value = 1;
+            if (fullconenatEnable.checked == true)
+               enblFullcone.value = 1;
+            else
+               enblFullcone.value = 0;		
+         } else {
+            enblNat.value = 0;
+         }
+
+         if (igmpEnable.checked == true && wan_Mode.value == 0) {
+            enblIgmp.value = 1;
+         } else {
+            enblIgmp.value = 0;
+         }
+      }
+      if (FullFeatureEnbl.checked == true)
+      {
+         enblFullFeature.value = 1;
+      }
+//IPv6 start
+      if (wan_Ipv6Mode.value == 2 && wan_Mode.value == 0)
+            enblIgmp.value = 1;
+
+      if(buildMstcIPv6 == '1')
+      {
+         
+         enblIpVer.value = wan_Ipv6Mode.value;
+            
+         if(wan_Ipv6Mode.value == 1 || wan_Ipv6Mode.value == 2)
+         {
+            if (mldEnable.checked == true && wan_Mode.value == 0)
+               enblMld.value = 1;
+            else
+               enblMld.value = 0;
+
+            if (wan6DefaultGw.checked == true && wan_Mode.value == 0)
+               enblDfltGw6.value = '1';
+            else
+               enblDfltGw6.value = '0';
+         }
+      }
+//IPv6 end
+
+      if (enableSrv.checked == true) {
+         enblService.value = 1;
+      } else {
+         enblService.value = 0;
+      }
+
+      if (wanType2 == 0) {
+         wanType.value = "VDSL";
+      } else if (wanType2 == 1) {
+         wanType.value = "ADSL";
+      } else if (wanType2 == 2) {
+         wanType.value = "Ethernet";
+			if (document.forms[0].WAN_MAC_Address[1].checked == true)//Clone PC IP
+			{
+				document.forms[0].wanMacType.value = "ClientIP";
+				document.forms[0].wanMacAddr.value = "";
+				document.forms[0].wanMacIP.value = document.forms[0].wanMACClonePCIP.value;
+			}else if (document.forms[0].WAN_MAC_Address[2].checked == true){//user define
+	
+				if (!isValidMacAddress(document.forms[0].wanMACAddrStatic.value) || isMCastorBCastMac(document.forms[0].wanMACAddrStatic.value))
+				{
+		            hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str69)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		            return;
+				}
+	
+				document.forms[0].wanMacType.value = "UserDefine";
+				document.forms[0].wanMacIP.value = "";
+				document.forms[0].wanMacAddr.value = document.forms[0].wanMACAddrStatic.value;
+			}else{//default
+				document.forms[0].wanMacType.value = "Default";
+				document.forms[0].wanMacIP.value = "";
+				document.forms[0].wanMacAddr.value = "";
+			}
+		 
+      } else if (wanType2 == 3) {
+         wanType.value = "MOCA";
+      } else if (wanType2 == 4)	{
+         //WWAN(Cellular)
+         wanType.value = "WWAN";
+      }
+
+      if (vlanEnbl == 0){
+         enVlanMux.value = 0;
+         vlanMuxId.value = 0;
+         vlanMuxPr.value = 0;
+      }else{
+         if (enblVlan.checked == true)
+         {
+            enVlanMux.value = 1;
+            vlanMuxId.value = vlmid;
+            vlanMuxPr.value = vlmpr;
+         }
+         else
+         {
+            enVlanMux.value = 1;
+            vlanMuxId.value = -1;
+            vlanMuxPr.value = -1;
+         }
+      }
+
+      serviceName.value = servicename.value;
+      if (dnsType[0].checked == true || wan_Mode.value == 1) 
+      {
+         dnsPrimary.value = "0.0.0.0";
+         dnsSecondary.value = "0.0.0.0";
+      }
+      else
+      {
+         if (sysDNSAddr.value != '0.0.0.0' && sysDNSAddr.value != '' && isValidIpAddress(sysDNSAddr.value)){
+            dnsPrimary.value = sysDNSAddr.value;
+
+            if (sysDNSAddr2.value != '0.0.0.0' && sysDNSAddr2.value != ''){
+               if (isValidIpAddress(sysDNSAddr2.value)) {
+                  dnsSecondary.value = sysDNSAddr2.value;
+               } else {
+                  //AlertOpen ('Please enter a valid DNS address when DNS Type is Static', 2);
+                  hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str40)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+            }else{
+               dnsSecondary.value = "0.0.0.0";
+            }
+         }
+         else
+         {
+            //AlertOpen ('Please enter a valid DNS address when DNS Type is Static', 2);
+            hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str40)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }
+      }
+
+//IPv6 start
+      if(buildMstcIPv6 == '1')
+      {
+         if(wan_Ipv6Mode.value == 1 || wan_Ipv6Mode.value == 2)
+         {
+            if (dnsv6Type[0].checked == true || wan_Mode.value == 1) 
+            {
+               dns6Type.value = 'DHCP';
+               dns6Pri.value = "::";
+               dns6Sec.value = "::";
+            }
+            else
+            {
+               dns6Type.value = 'Static';
+               if (sysDNSv6Addr.value != '::' && sysDNSv6Addr.value != '' && isValidIpAddress6(sysDNSv6Addr.value)){
+                  dns6Pri.value = sysDNSv6Addr.value;
+
+                  if (sysDNSv6Addr2.value != '::' && sysDNSv6Addr2.value != ''){
+                     if (isValidIpAddress6(sysDNSv6Addr2.value))
+                        dns6Sec.value = sysDNSv6Addr2.value;
+                     else{
+                        //AlertOpen ('Please enter a valid DNSv6 address when DNSv6 Type is Static', 2);
+                        hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str68)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                        return;
+                     }
+                  }else{
+                     dns6Sec.value = "::";
+                  }
+               }
+               else
+               {
+                  //AlertOpen ('Please enter a valid DNSv6 address when DNSv6 Type is Static', 2);
+                  hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str68)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+            }
+         }
+         if(buildMstcIPv6 == '1')
+         {
+            var wanIpv6ModeTemp = getSelect(wan_Ipv6Mode); //IPv4, Dual Stack, DS-Lite
+            wanIpv6Mode.value = wanIpv6ModeTemp;
+         }
+      }
+//IPv6 end
+
+      var idx = pppAuthMethodTmp.selectedIndex;
+      pppAuthMethod.value = pppAuthMethodTmp.options[idx].value;
+	  
+// Concurrent WAN
+		var lanportarr = $("input[name=lanport[]]");
+		//var str1 = $("input[name=tagport[]]");
+		currentPortList.value = "";
+		var len = lanportarr.length;
+		var count = 0;
+
+		for(; count < len; count++){
+			if(lanportarr[count].checked && !lanportarr[count].disabled){ 
+				currentPortList.value+=lanportarr[count].value;
+				currentPortList.value+="|";
+			}
+		}
+		currentPortList.value+="|";
+		if(currentPortList.value.length > 0){
+			currentPortList.value = currentPortList.value.substring(0, currentPortList.value.length-1); //remove the last char ','
+		}
+		else if(ConcurrentWanActive.checked == true){
+			hciAlert('<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str83)%>', {height: 180, type: 2, title: ''});
+			return false;
+		}
+		if(ConcurrentWanActive.checked != true){
+			currentPortList.value = "";
+		}
+		
+// Concurrent WAN
+
+      sessionKey.value = mainFrame.gblsessionKey;
+      submit();
+
+      $('.ui-dialog-titlebar-close').trigger('click');
+      $.openLoadingMask(1);
+		
+      return;
+   }
+}
+
+$(document).ready(function() {
+   var wanModeList = '<%ejGetOther(sysInfo, wanModeSupported)%>';
+   var isSelected = '';
+   if (customer == "Etisalat")
+   {
+   	wanModeList = '2_Ethernet,';
+   }
+   $('#wan_Type').empty();
+   var wanList = wanModeList.split(',');
+
+   for (i=0; i<wanList.length; i++)
+   {
+      var wanVar = wanList[i].split('_');
+
+      if (wanVar[0] == '') {
+         break;
+      }
+
+      if(wanType2 == parseInt(wanVar[0])) {
+         isSelected = 'selected';
+      } else {
+         isSelected = '';
+      }
+
+      $('#wan_Type').append('<option value="'+wanVar[0]+'"' + isSelected + '>'+wanVar[1]+'</option>'); 
+   }
+
+   if (i == 1)
+      showhide("l2Type", 0);
+   else
+      showhide("l2Type", 1);
+
+   frmLoad();
+});
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var OkBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+OkBtn.click(function(){ btnSave(); });
+
+// done hiding -->
+</script>
+<form action="/pages/tabFW/broadband-edit.cgi" method="post" target="mainFrame">
+  <input name="serviceId" type="HIDDEN" id="serviceId" value="1"; />
+  <input name="enblZyGUI" type="HIDDEN" id="enblZyGUI" value="1"; />
+  <input name="autoGatewayDns" type="HIDDEN" id="autoGatewayDns" value="1"/>
+  <input name="ntwkPrtcl" type="HIDDEN" id="ntwkPrtcl" value="1"; />
+  <input name="linkType" type="HIDDEN" id="linkType" value="EoA"; />
+  <input name="pppUserName" type="HIDDEN" id="pppUserName" value=""; />
+  <input name="pppPassword" type="HIDDEN" id="pppPassword" value=""; />
+  <input name="enblOnDemand" type="HIDDEN" id="enblOnDemand" value="0"; />
+  <input name="pppManual" type="HIDDEN" id="pppManual" value="0"; />
+  <input name="pppTimeOut" type="HIDDEN" id="pppTimeOut" value="5"; />
+  <input name="pppAuthErrorRetry" type="HIDDEN" id="pppAuthErrorRetry" value="1"; />
+  <input name="useStaticIpAddress" type="HIDDEN" id="useStaticIpAddress" value="0"; />
+  <input name="pppLocalIpAddress" type="HIDDEN" id="pppLocalIpAddress" value="0.0.0.0"; />
+  <input name="pppIpExtension" type="HIDDEN" id="pppIpExtension" value="0"; />
+  <input name="pppAuthMethod" type="HIDDEN" id="pppAuthMethod" value="0"; />
+  <input name="pppToBridge" type="HIDDEN" id="pppToBridge" value="0"; />
+  <input name="enblDhcpClnt" type="HIDDEN" id="enblDhcpClnt" value="1"; />
+  <input name="dhcpcOp43Enbl" type="HIDDEN" id="dhcpcOp43Enbl" value="0"; />
+  <input name="enblService" type="HIDDEN" id="enblService" value="1"; />
+  <input name="enblDefaultGateway" type="HIDDEN" id="enblDefaultGateway" value="0"; />
+  <input name="wanType" type="HIDDEN" id="wanType" value=""; />
+  <input name="enblNat" type="HIDDEN" id="enblNat" value="0"; />
+  <input name="enblIgmp" type="HIDDEN" id="enblIgmp" value="0"; />
+  <input name="enVlanMux" type="HIDDEN" id="enVlanMux" value="0"; />
+  <input name="serviceName" type="HIDDEN" id="serviceName" value=""; />
+  <input name="dnsPrimary" type="HIDDEN" id="dnsPrimary" value=""; />
+  <input name="dnsSecondary" type="HIDDEN" id="dnsSecondary" value=""; />
+  <input name="vlanMuxPr" type="HIDDEN" id="vlanMuxPr" value="0"; />
+  <input name="vlanMuxId" type="HIDDEN" id="vlanMuxId" value="0"; />
+  <input name="sessionKey" type="HIDDEN" id="sessionKey" value=""; />
+  <input name="enblFullcone" type="HIDDEN" id="enblFullcone" value="0"; />
+  <input name="enblFirewall" type="HIDDEN" id="enblFirewall" value="0"; />
+  <input name="wanIpAddress" type="HIDDEN" id="wanIpAddress" value="0"; />
+  <input name="wanSubnetMask" type="HIDDEN" id="wanSubnetMask" value="0"; />
+  <input name="wanIntfGateway" type="HIDDEN" id="wanIntfGateway" value="0"; />
+  <input name="vpiVciChanged" type="HIDDEN" id="vpiVciChanged" value="0"; />
+  <input name="l2change" type="HIDDEN" id="l2change" value="0"; />
+  <input name="wanL3ShapingRate" type="HIDDEN" id="wanL3ShapingRate" value="0"; />
+  <input name="enblFullFeature" type="HIDDEN" id="enblFullFeature" value="0"; />
+  <input name="maxMtuSize" type="HIDDEN" id="maxMtuSize" value=""; />
+  <input name="qosDefDscp" type="HIDDEN" id="qosDefDscp" value=""; />
+  <input name="qosDef8021p" type="HIDDEN" id="qosDef8021p" value=""; />
+  <input name="enblQosDefTag" type="HIDDEN" id="enblQosDefTag" value="0"; />
+  <!--IPv6 start-->
+  <input name="enblMld" type="HIDDEN" id="enblMld" value="0"; />
+  <input name="enblIpVer" type="HIDDEN" id="enblIpVer" value="0"; />
+  <input name="wanAddr6" type="HIDDEN" id="wanAddr6" value="0"; />
+  <input name="wanIpv6Prefix" type="HIDDEN" id="wanIpv6Prefix" value="0"; />
+  <input name="wanGtwy6" type="HIDDEN" id="wanGtwy6" value="0"; />
+  <input name="enblDfltGw6" type="HIDDEN" id="enblDfltGw6" value="0"; />
+  <input name="dns6Type" type="HIDDEN" id="dns6Type" value=""; />
+  <input name="dns6Pri" type="HIDDEN" id="dns6Pri" value=""; />
+  <input name="dns6Sec" type="HIDDEN" id="dns6Sec" value=""; />
+  <input name="wanAddr6Type" type="HIDDEN" id="wanAddr6Type" value="1"; />
+  <input name="enblLan2" type="HIDDEN" id="enblLan2" value="0"; />
+  <input name="usePublicIP" type="HIDDEN" id="usePublicIP" value="0"; />
+  <input name="enblDsLite" type="HIDDEN" id="enblDsLite" value="0"; />
+  <input name="dsLiteRelayServer" type="HIDDEN" id="dsLiteRelayServer" value=""; />
+  <input name="enblIp6rd" type="HIDDEN" id="enblIp6rd" value="0"; />
+  <input name="ip6rdType" type="HIDDEN" id="ip6rdType" value=""; />
+  <input name="ip6rdRelayServer" type="HIDDEN" id="ip6rdRelayServer" value=""; />
+  <input name="ip6rdPrefix" type="HIDDEN" id="ip6rdPrefix" value=""; />
+  <input name="wanIpv6Mode" type="HIDDEN" id="wanIpv6Mode" value=""; />
+  <input name="dhcp6cForAddr" type="HIDDEN" id="dhcp6cForAddr"; />
+  <input name="dhcp6cForPd" type="HIDDEN" id="dhcp6cForPd"; />
+  <input name="enblIp6Unnumbered" type="HIDDEN" id="enblIp6Unnumbered" value="0"; />
+  <input name="tunnel6rdMaskLen" type="HIDDEN" id="tunnel6rdMaskLen" value=""; />
+  <!--IPv6 end-->
+  <input name="wanMacType" type="HIDDEN" id="wanMacType"; />
+  <input name="wanMacAddr" type="HIDDEN" id="wanMacAddr"; />
+  <input name="wanMacIP" type="HIDDEN" id="wanMacIP"; />
+  <!--Concurrent WAN start-->
+  <input name="currentPortList" type="HIDDEN" id="currentPortList" value=""; />
+  <!--Concurrent WAN end-->
+  
+  <div class="popup_frame" >
+    <div class="data_frame2"><ul>
+      <li class="set1"> 
+        <div class="title"><%ejGetML(MLG_Common_General)%></div>
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str21)%></li>
+              <li class="right_table">
+              <input type='checkbox' name="enableSrv" />
+            </li>		   
+          </ul>
+          <ul>
+            <li class="left_table"> <%ejGetML(MLG_WAN_Broadband_Str7)%> :</li><li class="right_table"><input type="text" name="servicename" size="32" maxlength="32"/></li>
+          </ul>
+          <div id="l2Type">
+            <ul>
+              <li class="left_table"> <%ejGetML(MLG_WAN_Broadband_Str8)%> :</li>
+              <li class="right_table">
+                <select name="wan_Type" id="wan_Type" size="1" onchange="doTypeChange(this.selectedIndex)" >
+<script>
+<!-- hide
+/*   if (oldWanType == 'VDSL' || oldWanType == "VDSL over PTM" || oldWanType == "ADSL over PTM" || oldWanType == "PTM") {
+      $('#wan_Type').append('<option value="0" selected>'+oldWanType+'</option>'); 
+   } else if (oldWanType == 'ADSL' || oldWanType == "ATM" || oldWanType == "ADSL over ATM") {
+      $('#wan_Type').append('<option value="1" selected>'+oldWanType+'</option>'); 
+   } else if (oldWanType == 'Ethernet') {
+      $('#wan_Type').append('<option value="2" selected>'+oldWanType+'</option>'); 
+   } else if (oldWanType == 'WWAN') {
+      $('#wan_Type').append('<option value="4" selected>'+'Cellular'+'</option>'); 
+   } else {
+      $('#wan_Type').append('<option value="3" selected>'+oldWanType+'</option>');
+   }*/
+// done hiding -->
+</script>
+                </select>
+              </li>
+            </ul>
+          </div>
+          <ul>
+            <li class="left_table"> <%ejGetML(MLG_WAN_Broadband_Str23)%> :</li>
+            <li class="right_table">
+              <select name="wan_Mode" size="1" onchange="doModeChange(this.selectedIndex)" >
+                <option value="0" selected="selected"> <%ejGetML(MLG_WAN_Broadband_Str27)%> </option>
+                <option value="1"><%ejGetML(MLG_WAN_Broadband_Str28)%> </option>
+              </select>
+            </li>
+          </ul>
+        </div>
+        <div id="encTag">
+          <div class="w_text"><ul>
+            <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str9)%>:</li>
+            <li class="right_table">
+              <select id="wan_Encapsulation" name="wan_Encapsulation" size="1" onchange="doEncapChange(this.selectedIndex)">
+                 <option value='0' selected="selected"><%ejGetML(MLG_WAN_Broadband_Str29)%> </option>
+                 <option value='1'><%ejGetML(MLG_WAN_Broadband_Str32)%> </option>
+                 <option value='2'><%ejGetML(MLG_WAN_Broadband_Str30)%> </option>
+                 <option value='3'><%ejGetML(MLG_WAN_Broadband_Str28)%> </option>
+                 <option value='5'><%ejGetML(MLG_WAN_Broadband_Str31)%> </option>
+                 <option value='7'><%ejGetML(MLG_Common_PPP)%> </option>
+              </select>
+            </li>
+          </ul></div>
+        </div>
+        <!--IPv6 start-->
+        <div id="ipv6Mode">
+          <div class="w_text"><ul>
+            <li class="left_table"><%ejGetML(MLG_WAN_IPv6_IPv4Mode)%>:</li>
+            <li class="right_table">
+              <select id="wan_Ipv6Mode" name="wan_Ipv6Mode" size="1" onchange="doIpv6ModeChange(this.selectedIndex)">
+                <option value='0' selected="selected"><%ejGetML(MLG_Common_IPv4Only)%> </option>
+                <option value='1' ><%ejGetML(MLG_Common_IPv6IPv4_DualStack)%> </option>
+                <option value='2' ><%ejGetML(MLG_Common_IPv6Only)%> </option>
+              </select>
+            </li>
+          </ul></div>
+        </div>
+        <!--IPv6 end-->
+      </li>
+
+      <!-- ATM start-->
+      <div id='atmPVC'>
+        <li class="space"></li>
+        <li class="set1"> 
+          <div class="title"><%ejGetML(MLG_WAN_Broadband_Str63)%></div>
+          <div class="w_text"><ul>
+            <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str64)%>:</li>
+            <li class="right_table">
+              <input maxlength="3" size="15" value="0" name="atmVpi" id="atmVpi" />
+            </li>
+          </ul></div>
+          <div class="w_text"><ul>
+            <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str65)%>:</li>
+            <li class="right_table">
+              <input  maxlength="5" size="15" value="33" name="atmVci" id="atmVci" />
+            </li>
+          </ul></div>
+          <div class="w_text"><ul>
+            <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str66)%>:</li>
+            <li class="right_table">
+              <select name="atmLinkType" id='atmLinkType' size="1" onchange='encClick();' disabled>
+                <option value="EoA" selected="selected"><%ejGetML(MLG_WAN_Broadband_Str68)%> </option>
+                <option value="PPPoA"><%ejGetML(MLG_WAN_Broadband_Str32)%> </option>
+                <option value="IPoA"><%ejGetML(MLG_WAN_Broadband_Str31)%> </option>
+              </select>
+            </li>
+          </ul></div>
+          <div class="w_text"><ul>
+            <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str67)%>:</li>
+            <li class="right_table">
+              <select name="encapMode" id='encapMode' size="1" >
+                <option value="0" selected="selected"><%ejGetML(MLG_WAN_Broadband_Str73)%> </option>
+                <option value="1"><%ejGetML(MLG_WAN_Broadband_Str71)%> </option>
+              </select>
+            </li>
+          </ul></div>
+          <div class="w_text"><ul>
+            <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str91)%>:</li>
+            <li class="right_table">
+              <select id="atmServiceCategory" name="atmServiceCategory" size="1" onClick='cbClick(this)'>
+                <option value="UBR" selected><%ejGetML(MLG_WAN_Broadband_Str75)%></option>
+                <option value="UBRWPCR"><%ejGetML(MLG_WAN_Broadband_Str76)%></option>
+                <option value="CBR"><%ejGetML(MLG_WAN_Broadband_Str77)%></option>
+                <option value="VBR-nrt"><%ejGetML(MLG_WAN_Broadband_Str78)%></option>
+                <option value="VBR-rt"><%ejGetML(MLG_WAN_Broadband_Str79)%></option>
+              </select>
+            </li>
+          </ul></div>
+        </li>
+        <li class='set2'>
+          <div id="first1" style="display:none">
+            <div class="w_text"><ul>
+              <li class="left_table"> <%ejGetML(MLG_WAN_Peak_CellRate)%> : </li>
+              <li class="right_table">
+                <input  maxlength="6" size="15" name="atmPeakCellRate" id="atmPeakCellRate" />
+              </li>
+            </ul></div>
+          </div>
+          <div id="2and3" style="display:none">
+            <div class="w_text"><ul>
+              <li class="left_table"> <%ejGetML(MLG_WAN_Sustainable_CellRate)%> : </li>
+              <li class="right_table">
+                <input  maxlength="6" size="15" name="atmSustainedCellRate" id="atmSustainedCellRate" />
+              </li>
+            </ul></div>
+            <div class="w_text"><ul>
+              <li class="left_table"> <%ejGetML(MLG_WAN_MaxBurst_Size)%> : </li>
+              <li class="right_table">
+                <input  maxlength="7" size="15" name="atmMaxBurstSize" id="atmMaxBurstSize" />
+              </li>
+            </ul></div>
+          </div>
+        </li>
+      </div> <!-- atmPVC -->
+      <!-- ATM end-->
+
+      <!-- routInfo start -->
+      <div id= "routeInfo">
+        <!-- PPP start-->
+        <li class="space"></li>
+        <li class="set1">
+          <div id= "pppInfo">
+            <div class="title"><%ejGetML(MLG_WAN_Broadband_Str33)%></div>
+            <div class="w_text">
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str34)%> : </li>
+                <li class="right_table">
+                  <input type="text" name="sysPPPUsername" size="15" maxlength="256" />
+                </li>
+              </ul>
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str35)%> : </li>
+                <li class="right_table">
+                  <input type="password" autocomplete="new-password" name="sysPPPPwd" id="sysPPPPwd" size="15" maxlength="256" />
+                  &nbsp;<input type="checkbox" name="unmasksysPppoePwd" id="unmasksysPppoePwd"  onclick="unmaskPppoePwd()" />
+                  &nbsp;<span id="text_unmask"><%ejGetML(MLG_WAN_Broadband_Str40)%></span>
+                </li>
+              </ul>
+              <div id="pppTrigger">
+			  <ul>
+				<li class="left_table"><%ejGetML(MLG_WAN_Broadband_PPPTriggerType)%> : </li>
+				<li class="right_table">
+				  <input name="pppTriggerType" type="radio" onclick="doPppTriggerType()" checked /><%ejGetML(MLG_WAN_Broadband_AutoConnect)%>
+				  <input name="pppTriggerType" type="radio" onclick="doPppTriggerType()" /><%ejGetML(MLG_WAN_Broadband_PPPConnectOnDemand)%>
+				  <input name="pppTriggerType" type="radio" onclick="doPppTriggerType()" /><%ejGetML(MLG_Common_Manual)%>
+				</li>
+			  </ul>
+			  </div>			  
+			  <ul>
+                <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str400)%>: </li>
+                <li class="right_table">
+                      <select name='pppAuthMethodTmp' size="1">
+                        <option value="0"><%ejGetML(MLG_WAN_Broadband_Str401)%>
+                        <option value="1"><%ejGetML(MLG_WAN_Broadband_Str402)%>
+                        <option value="2"><%ejGetML(MLG_WAN_Broadband_Str403)%>
+                        <option value="3"><%ejGetML(MLG_WAN_Broadband_Str404)%>
+                     </select>
+                </li>
+              </ul>               		  
+			  <ul>
+                <li class="left_table"><%ejGetML(MLG_WAN_Broadband_IDLETimeout)%>: </li>
+                <li class="right_table">
+                  <input type="text" name="sysidletimeout" size="15" maxlength="5" value="5" />
+                </li>
+              </ul>
+              <div id="PoESection">
+                <ul>
+                  <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str38)%> : </li>
+                  <li class="right_table">
+                    <input type="text" name="pppServerName" size="15" maxlength="32" />
+                  </li>
+                </ul>
+                <ul>
+                  <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str39)%> : </li>
+                  <li class="right_table">
+                    <input type="checkbox" name="pppBridge" />
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div> <!-- pppInfo -->
+        </li>
+        <!-- PPP end-->
+
+        <!-- IP start-->
+        <div id="ipv4Address">
+          <li class="space"></li>
+          <li class="set1">  
+            <div class="title"><%ejGetML(MLG_WAN_Broadband_Str43)%></div>
+            <div class="w_text">
+              <ul>
+                <li class="all_table">
+                <input type="radio" checked="checked" value="0"  name="WAN_IP_Auto" onClick="dhcpChange()" />
+                &nbsp;<%ejGetML(MLG_WAN_Broadband_Str41)%></li>
+              </ul>
+              <div id="dhcpcOpt">
+                <ul>
+                  <li class="left_table"><%ejGetML(MLG_Network_InterfaceGrouping_Str25)%><%ejGetML(MLG_Network_STBVendorID_Str6)%> : </li>
+                  <li class="right_table">
+                    <input maxlength="255" size="18" value="" name="dhcpcOp60VID" />
+                  </li>
+                </ul>
+                 <!-- cathy dhcp61 iaid start-->
+                 <ul>
+                   <li class="left_table"><%ejGetML(MLG_Network_InterfaceGrouping_Str27)%> <%ejGetML(MLG_Network_InterfaceGrouping_Str28)%> : </li>
+                   <li class="right_table">
+                     <input maxlength="8" size="18" value="" name="dhcpcOp61IAID" /> ( 8 <%ejGetML(MLG_Security_IPSecVPNSetting_Str59)%> )
+                   </li>
+                 </ul>
+                 <!-- cathy dhcp61 iaid end-->
+                 <!-- cathy dhcp61 duid start-->
+                 <ul>
+                   <li class="left_table"><%ejGetML(MLG_Network_InterfaceGrouping_Str27)%> <%ejGetML(MLG_Network_InterfaceGrouping_Str41)%> : </li>
+                   <li class="right_table">
+                     <input maxlength="255" size="18" value="" name="dhcpcOp61DUID" /> ( <%ejGetML(MLG_Security_IPSecVPNSetting_Str59)%> )
+                   </li>
+                 </ul>
+                 <!-- cathy dhcp61 duid end-->
+				<ul>
+					<li class="left_table"><%ejGetML(MLG_WAN_Broadband_Opt43Enable)%> : </li>
+					<li class="right_table">
+					  <input type="checkbox" id="dhcpcOp43" name="dhcpcOp43"/>
+					</li>
+				 </ul>
+              </div>
+              <ul>
+              <li class="all_table">
+                <input type="radio" value="1" name="WAN_IP_Auto" onClick="dhcpChange()" />
+                &nbsp;<%ejGetML(MLG_WAN_Broadband_Str42)%></li>
+              </ul>
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str43)%> : </li>
+                <li class="right_table">
+                  <input maxlength="15" size="18" value="0.0.0.0" name="wanIpAddr" />
+                </li>
+              </ul>
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str44)%> : </li>
+                <li class="right_table">
+                  <input  maxlength="15" size="18" value="0.0.0.0" name="wanSubnet" />
+                </li>
+              </ul>
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str45)%> : </li>
+                <li class="right_table">
+                  <input  maxlength="15" size="18" value="0.0.0.0" name="wanGateway" />
+                </li>
+              </ul>
+            </div>
+          </li>
+        </div>
+        <!-- IP end-->
+
+        <!-- Routing start-->
+        <div id="ipv4Routing">
+          <li class="space"></li>
+          <li class="set1">
+            <div class="title"><%ejGetML(MLG_WAN_Broadband_Str48)%></div>
+            <div class="w_text">
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str49)%> : </li>
+                <li class="right_table">
+                  <input type="checkbox" name="natEnable" onClick='natClick(this)'/>
+                </li>
+              </ul>
+              <div id='fullconeNatInfo'>
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Fullcone_NATEnable)%> : </li>
+                <li class="right_table">
+                  <input type="checkbox" name="fullconenatEnable" />
+                </li>
+              </ul>
+              </div>
+              <div id="AddrMapping">
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_WAN_Broadband_FullFeature_NATEnable)%> : </li>
+                <li class="right_table">
+                  <input type="checkbox" name="FullFeatureEnbl"/>
+                </li>			  
+              </ul>
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_WAN_NatSet)%> : </li>
+                <li class="right_table">
+                  <select id="fullFeatureNatSet" name="fullFeatureNatSet" size="1">
+                    <option selected="selected" value='1'>1 </option>
+                    <option value='2'>2 </option>
+                    <option value='3'>3 </option>
+                    <option value='4'>4 </option>
+                    <option value='5'>5 </option>
+                  </select>
+                </li>
+              </ul>
+              </div>
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str94)%> <%ejGetML(MLG_WAN_Broadband_Str4)%> : </li>
+                <li class="right_table">
+                  <input type="checkbox" name="igmpEnable" />
+                </li>
+              </ul>
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str50)%> : </li>
+                <li class="right_table">
+                  <input type="checkbox" name="sysdefaultgw" />
+                </li>
+              </ul>
+            </div>
+          </li>
+        </div>
+        <!-- Routing end-->
+
+        <!-- DNS start-->
+        <div id="ipv4Dns">
+          <li class="space"></li>
+          <li class="set1"> 
+            <div class="title"><%ejGetML(MLG_Network_DNS_Server)%></div>
+            <div class="w_text">
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_Common_DNS)%> :</li>
+                <li class="right_table">
+                  <input name="dnsType" checked="checked" type="radio" onclick="DNSTypeChange()" /><%ejGetML(MLG_WAN_Broadband_Str52)%>
+                  <input name="dnsType" type="radio" onclick="DNSTypeChange()" /><%ejGetML(MLG_WAN_Broadband_Str53)%>
+                </li>
+              </ul>
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str12)%>  :</li>
+                <li class="right_table">
+                  <input maxlength="15" size="15" name="sysDNSAddr" />
+                </li>
+              </ul>
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str13)%>  :</li>
+                <li class="right_table">
+                  <input maxlength="15" size="15" name="sysDNSAddr2" />
+                </li>
+              </ul>
+            </div>
+          </li>
+        </div>
+        <!-- DNS end-->
+        <!-- MACCLONE start-->
+        <div id="macClone">
+          <li class="space"></li>
+            <div class="title"><%ejGetML(MLG_Common_WAN)%> <%ejGetML(MLG_Common_MACAddress)%>: </div>
+			<li class="set1">			
+            <div class="w_text">
+              <ul>
+                <li class="all_table">
+                <input type="radio" checked="checked" value="0"  name="WAN_MAC_Address" onClick="wanMACAddrTypeSwitch();"/>
+                &nbsp;<%ejGetML(MLG_WAN_Broadband_Str116)%></li>
+              </ul>					  
+              <ul>
+                <li class="left_table"><input type="radio" value="1"  name="WAN_MAC_Address" onClick="wanMACAddrTypeSwitch();"/>
+                &nbsp;<%ejGetML(MLG_WAN_Broadband_Str117)%></li>
+                <li class="right_table">
+					<input maxlength="15" size="15" name="wanMACClonePCIP" />
+                </li>
+              </ul>
+              <ul>
+                <li class="left_table"><input type="radio" value="2"  name="WAN_MAC_Address" onClick="wanMACAddrTypeSwitch();"/>
+                &nbsp;<%ejGetML(MLG_Common_Set)%> <%ejGetML(MLG_Common_WAN)%> <%ejGetML(MLG_Common_MACAddress)%></li>
+                <li class="right_table">
+					<input maxlength="17" size="17" name="wanMACAddrStatic" />
+                </li>
+              </ul>
+            </div>
+          </li>
+        </div>
+        <!-- MACCLONE end-->			
+      </div> <!-- routeInfo -->
+      <!-- routInfo end -->
+
+      <!--IPv6 start-->
+      <!--IPv4 Tunnel start-->
+      <div id="ipv6Tunnel_v4only">
+        <li class="space"></li>
+        <li class="set1">
+          <div class="title"><%ejGetML(MLG_WAN_Tunnel)%></div>
+          <div class="w_text">
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_WAN_Enable6RD)%> : </li>
+              <li class="right_table">
+                <input name="EnblIp6rd" type="radio" onclick="EnblIp6rdChange()" /><%ejGetML(MLG_WAN_Broadband_Str4)%>
+                <input name="EnblIp6rd" type="radio" onclick="EnblIp6rdChange()" checked /><%ejGetML(MLG_WAN_Broadband_Str5)%></li>
+            </ul>
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_WAN_6RDType)%> : </li>
+              <li class="right_table">
+                <input name="Ip6rdType" type="radio" onclick="Ip6rdTypeChange()" checked /><%ejGetML(MLG_Common_DHCP)%>
+                <input name="Ip6rdType" type="radio" onclick="Ip6rdTypeChange()" /><%ejGetML(MLG_WAN_Broadband_Str53)%></li>
+            </ul>
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_WAN_6RD_v4MaskLength)%></li>
+              <li class="right_table">
+                <input type="text" name="Ipv4MaskLen" size="3" maxlength="2" value="" />
+              </li>
+            </ul>
+           <ul>
+              <li class="left_table"><%ejGetML(MLG_WAN_6RD_Border_Relay_ServerIP)%> : </li>
+              <li class="right_table">
+                <input type="text" name="Ip6rdRelayServer" size="18" maxlength="15" value="" />
+              </li>
+            </ul>
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_WAN_6RD_IPv6Prefix)%> : </li>
+              <li class="right_table">
+                <input type="text" name="Ip6rdPrefix" size="44" maxlength="39" value="" />
+              </li>
+            </ul>
+          </div>
+        </li>
+      </div>
+      <!--IPv4 Tunnel end-->
+
+      <!--IPv6 Tunnel start-->
+      <div id="ipv6Tunnel_v6only">
+        <li class="space"></li>
+        <li class="set1">
+          <div class="title"><%ejGetML(MLG_WAN_Tunnel)%></div>
+          <div class="w_text">
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str4)%> <%ejGetML(MLG_WAN_DSLite)%> : </li>
+              <li class="right_table">
+                <input name="EnblDsLite" type="radio" onclick="EnblDsLiteChange()" /><%ejGetML(MLG_WAN_Broadband_Str4)%>
+                <input name="EnblDsLite" type="radio" onclick="EnblDsLiteChange()" checked /><%ejGetML(MLG_WAN_Broadband_Str5)%></li>
+            </ul>
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_WAN_DSLite_serverIP)%> : </li>
+              <li class="right_table">
+                <input type="text" name="DsLiteRelayServer" size="44" maxlength="39" value="" />
+              </li>
+            </ul>
+          </div>
+        </li>
+      </div>
+      <!--IPv6 Tunnel end-->
+
+      <!-- IPv6 Address start-->
+      <div id="ipv6Address">
+        <li class="space"></li>
+        <li class="set1">
+          <div class="title"><%ejGetML(MLG_Common_IPv6Address)%></div>
+          <div class="w_text">
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_Common_IPv6Address)%>:</li>
+              <li class="right_table">
+                <input name="Ipv6AddrType" type="radio" onclick="IPv6AddressTypeChange()" checked /><%ejGetML(MLG_Common_Automatic)%>
+                <input name="Ipv6AddrType" type="radio" onclick="IPv6AddressTypeChange()" /><%ejGetML(MLG_WAN_Broadband_Str53)%>
+                <input name="Ipv6AddrType" type="radio" onclick="IPv6AddressTypeChange()" /><%ejGetML(MLG_Common_None)%>                
+                <div class="w_text" id="pppIp6AddressDHCPv6Info">
+                  <input name="wan6Ndra" type="checkbox"><%ejGetML(MLG_Common_Ip_From_DHCPServer)%><br>
+                  <input name="wan6Pd" type="checkbox"><%ejGetML(MLG_Common_Prefix_From_DHCPServer)%>
+                </div>
+              </li>
+            </ul>
+            <ul>
+              <div class="w_text" id="Ip6AddressStaticInfo">
+                <li class="left_table"><%ejGetML(MLG_Common_WAN)%> <%ejGetML(MLG_Common_IPv6Address)%> :</li>
+                <li class="right_table">
+                  <input type="text" name="wanIpv6Addr" size="44" maxlength="39" value="" />
+                </li>
+                <li class="left_table"><%ejGetML(MLG_Common_PrefixLength)%> :</li>
+                <li class="right_table">
+                  <input type="text" name="wanIpv6Pre" size="1" maxlength="3" value="" />
+                </li>
+                <li class="left_table"><%ejGetML(MLG_WAN_NextHop)%> :</li>
+                <li class="right_table">
+                  <input type="text" name="wan6NextHop" size="44" maxlength="39" value="" />
+                </li>
+              </div>
+            </ul>
+          </div>
+        </li>
+      </div>
+      <!-- IPv6 Address end-->
+
+      <!-- IPv6 Routing start-->
+      <div id="ipv6Routing">
+        <li class="space"></li>
+        <li class="set1">
+          <div class="title"><%ejGetML(MLG_Common_IPv6)%> <%ejGetML(MLG_WAN_Broadband_Str48)%></div>
+          <div class="w_text">
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_Network_MLDProxy)%> <%ejGetML(MLG_WAN_Broadband_Str4)%> : </li>
+              <li class="right_table">
+                <input type="checkbox" name="mldEnable" />
+              </li>
+            </ul>
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str50)%></li>
+              <li class="right_table">
+                <input type="checkbox" name="wan6DefaultGw"/>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </div>
+      <!-- IPv6 Routing end-->
+
+      <!-- IPv6 Dns start-->
+      <div id="ipv6Dns">
+        <li class="space"></li>
+        <li class="set1">
+          <div class="title"><%ejGetML(MLG_Common_IPv6)%> <%ejGetML(MLG_WAN_Broadband_Str51)%> :</div>
+          <div class="w_text">
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_Network_IPv6DNS)%> :</li>
+              <li class="right_table">
+                <input name="dnsv6Type" type="radio" onclick="DNSv6TypeChange()" checked /><%ejGetML(MLG_WAN_Broadband_Str52)%>
+                <input name="dnsv6Type" type="radio" onclick="DNSv6TypeChange()" /><%ejGetML(MLG_WAN_Broadband_Str53)%></li>
+            </ul>
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_Common_IPv6)%> <%ejGetML(MLG_WAN_Broadband_Str51)%> 1  :</li>
+              <li class="right_table">
+                <input maxlength="39" size="44" name="sysDNSv6Addr" />
+              </li>
+            </ul>
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_Common_IPv6)%> <%ejGetML(MLG_WAN_Broadband_Str51)%> 2  :</li>
+              <li class="right_table">
+                <input maxlength="39" size="44" name="sysDNSv6Addr2" />
+              </li>
+            </ul>
+          </div>
+        </li>
+      </div>
+      <!-- IPv6 Dns end-->
+      <!--IPv6 End-->
+
+      <!-- VLAN start-->
+      <div id='vlanConf'>
+        <li class="space"></li>
+        <li class="set1">
+          <div class="title"><%ejGetML(MLG_WAN_Broadband_Str56)%></div>
+          <div class="w_text">
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str21)%> : </li>
+              <li class="right_table">
+                <input type="checkbox" name="enblVlan" onClick="doEnblVlan()" />
+              </li>
+            </ul>
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str57)%> :</li>
+              <li class="right_table">
+                <select id="vlanPr" name="vlanPr" size="1">
+                  <option selected="selected" value='0'>0 </option>
+                  <option value='1'>1 </option>
+                  <option value='2'>2 </option>
+                  <option value='3'>3 </option>
+                  <option value='4'>4 </option>
+                  <option value='5'>5 </option>
+                  <option value='6'>6 </option>
+                  <option value='7'>7 </option>
+                </select>
+              </li>
+            </ul>
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str58)%> :</li>
+              <li class="right_table">
+                <input type="text" name="vlanId" size="15" maxlength="15"/> &nbsp;(0~4094)
+              </li>
+            </ul>
+          </div>
+        </li>
+      </div> <!-- vlanConf -->
+      <!-- VLAN end-->
+
+      <!-- Rate Limit start-->
+      <li class="space"></li>
+      <li class="set1"> 
+        <div class="title"><%ejGetML(MLG_WAN_Broadband_Str59)%></div>
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str60)%> :</li>
+            <li class="right_table">
+              <input type="text" name="shapingRateShow" size="15" maxlength="15" /> &nbsp;(<%ejGetML(MLG_Common_Kbps)%>)
+            </li>
+          </ul>
+		  <div id="qosDefTag">
+		  <ul>
+            <li class="left_table"><%ejGetML(MLG_WAN_Broadband_WANOutgoingDefTag)%> :</li>
+            <li class="right_table">        
+                <input name="enblQosDefTagRadio" type="radio" onclick="EnblQosDefTagChange()" /><%ejGetML(MLG_WAN_Broadband_Str4)%>
+                <input name="enblQosDefTagRadio" type="radio" onclick="EnblQosDefTagChange()" checked /><%ejGetML(MLG_WAN_Broadband_Str5)%>            						
+            </li>
+          </ul>
+		  <div id="qosDefTagVlan">
+		  <ul>
+            <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str57)%> :</li>
+            <li class="right_table">         
+                <input type="text" name="qosDef8021pInput" id="qosDef8021pInput" size="5" maxlength="2"/>(0~7)				
+            </li>
+          </ul>
+		  </div>
+		  <ul>
+            <li class="left_table"><%ejGetML(MLG_QOS_QOSClassSetup_Str168)%> :</li>
+            <li class="right_table">         
+                <input type="text" name="qosDefDscpInput" id="qosDefDscpInput" size="5" maxlength="2"/>(0~63)			
+            </li>
+          </ul>
+		  </div>
+        </div>
+      </li>
+      <!-- Rate Limit end-->
+
+      <!--MTU start-->
+      <div id= "mtuInfo">
+        <li class="space"></li>
+        <li class="set1">
+          <div class="title"><%ejGetML(MLG_WAN_Broadband_Str61)%></div>
+          <div class="w_text">
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str62)%> :</li>
+              <li class="right_table">
+                <input maxlength="15" size="15" name="MTUshow" />&nbsp;<span id="mtuRange"></span>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </div>
+      <!--MTU end-->
+
+      <!--Concurrent WAN start-->
+	  <div id="wan_Concurrent_Div">
+	  <li class="space"></li>
+		<li class="set1">
+		  <div class="title"><%ejGetML(MLG_WAN_Broadband_Str111)%></div>
+		  <div class="w_text">
+		  	<ul>
+				<li>
+				<input type="checkbox" name="ConcurrentWanActive" onClick="WanConCurrentChange()" /><%ejGetML(MLG_WAN_Broadband_Str112)%>
+				</li>
+			</ul>
+			<div id="Bridge_Port_div">
+			</div>
+		  </div>
+		</li>
+	  </div>
+	  <!--Concurrent WAN end-->
+
+      <li class="space"></li>
+    </ul></div>
+  </div>
+</form>

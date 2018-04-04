@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title><%ejGetML(MLG_WAN_troubleshoot_Str1)%></title>
+<link href="../css/brick.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="../js/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="../js/jquery.simplemodal-1.3.min.js"></script>
+<script type="text/javascript" src="../js/zyMask.js"></script>		
+<script type="text/javascript">
+<!--
+$.openLoadingMask = function(){ 
+  
+            var content;
+            var contentSize;
+            
+            content = '<div class="wait" ><table width="100%" border="0" cellspacing="3" cellpadding="2" ><tr><td align="center">&nbsp;</td><td>&nbsp;</td></tr><tr><td width="3%" align="right" ><img src="../images/loading.gif"  style="margin-right:10px;" /></td><td width="69%" class="w_red">Please wait ...</td></tr><tr><td colspan="2">&nbsp;</td></tr><tr><td colspan="2" class="white_12" ><%ejGetML(MLG_WAN_troubleshoot_Str11)%></td></tr><tr><td colspan="2" class="white_12" >&nbsp;</td></tr></table></div>';
+            contentSize = [386, 182];
+			
+               $.zyMask(content, contentSize);
+        };
+		
+		$.closeLoadingMask = function(){
+             $.closezyMask();
+        };
+		
+		
+		
+	$(function(){
+				$('#BackupBtn').click(function(){
+				   $.openLoadingMask();
+				});
+	 });
+
+function MM_goToURL() { //v3.0
+  var i, args=MM_goToURL.arguments; document.MM_returnValue = false;
+  for (i=0; i<(args.length-1); i+=2) eval(args[i]+".location='"+args[i+1]+"'");
+}
+//-->
+</script>
+</head>
+
+<body  class="loginbg">
+<div id="wrapper2">
+<div id="popup_win3">
+<ul>
+<li class="popup_left2"></li>
+<li class="popup_center2">
+<div id="popup_content2">
+<ul><li>
+  <div style="position:absolute; height:235px; z-index:3000; left: 39px; top:39px; width:620px; overflow-x:hidden;overflow-y:auto; padding-right:20px;">
+    <ul>
+      <li class="title" style="color:#fff;"><%ejGetML(MLG_WAN_troubleshoot_Str2)%></li>
+      <li class="space"></li>
+      <li class="popup_word3">
+<div class="w_text blod" style="color:#fff;"><img src="../images/i_accept_on.gif" /> <%ejGetML(MLG_ConnStatus_QuickStart_Str41)%></div>
+<div class="w_text blod" style="color:#fff;"><img src="../images/i_accept_on.gif" /> <%ejGetML(MLG_ConnStatus_QuickStart_Str40)%></div>
+<div class="w_text blod" style="color: #CC3300"><img src="../images/i_block_on.gif" width="10" height="10" /> <%ejGetML(MLG_WAN_troubleshoot_Str4)%></div>
+<div class="step1">
+  <div class="w_text"> Usable to establish connection to Domain Name Server. To test the connection again, click  <span class="blod"><%ejGetML(MLG_Common_Retry)%></span>.</div>
+  <div class="w_text" style="text-align:right;"><input name="sysSubmit" type="submit" id='BackupBtn' onclick="MM_goToURL('parent','troubleshooting_wait.html');return document.MM_returnValue"  value="Retry"/>
+  </div>
+</div>
+  </li>
+    </ul>
+  </div></li>
+</ul>
+</div>
+
+</li>
+<li class="popup_right2"></li>
+</ul>
+</div>
+<div id="popup3"></div>
+</div>
+
+
+</body>
+</html>

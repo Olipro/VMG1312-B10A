@@ -1,0 +1,17 @@
+@import url("reset.css");
+div.index{  min-width:850px;
+width:expression((documentElement.clientWidth < 850) ? "850px" : "auto" ); 
+height:100%; min-height:200px;_height: 200px; behavior:expression(this.style.height=(document.documentElement.offsetHeight<200)?"200px":"100%"); background-color:transparent;background:url(../images/bg.gif);}
+/*Home*/
+#viewPort{ margin-top:20px; border-left:#02517f 4px solid;border-right:#02517f 4px solid;border-top:#02517f 4px solid;border-bottom:#02517f 4px solid;overflow:hidden; width:900px;height: 600px; position:relative;  background-color:#0b6fab; margin:0 auto; margin-top:30px;}
+.homebg{ position:absolute; z-index:2px; background:url(../home/images/homebg.jpg); width:877px; height:543px; top:20px; left:10px;}
+.flowContainer {position: relative; }
+.flowContainer .item {position: absolute; top:120px; }
+
+/*.caption { font-size: 20px; text-align: center;}*/
+.flowItemTitle { font-size: 20px;  position: relative; top: 410px; z-index:100; color: white;text-align: center; color:#ccebfd; font-size:18px; font-weight:bold;}
+a{ blr:expression(this.onFocus=this.blur());   /*    IE Opera    */ outline:none;   /*    FF Opera    */}
+a:focus{  -moz-outline-style: none;   /*    FF    */}
+
+
+ 

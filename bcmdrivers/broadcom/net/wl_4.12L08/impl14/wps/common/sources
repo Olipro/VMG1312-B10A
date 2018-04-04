@@ -1,0 +1,54 @@
+#
+# Internal sources file (do not release)
+#
+# Copyright (C) 2006 Broadcom Corporation
+#
+# $Id: sources,v 1.3 2008/06/26 04:04:32 Exp $
+#
+
+OEM             := bcm
+HOSTOS          := wince
+PROCESSOR       ?= X86
+WINCEVER        := 500
+LIB_PATH        ?= $(SRCBASE)/tools/bin/WINCE/$(WINCEVER)/Lib
+TARGETNAME      := ce_wps
+TARGETPATH=obj/sta/$(WINCEVER)/$(PROCESSOR)
+TARGETTYPE = LIB
+
+vpath %.c $(SRCBASE)/wps/common/sta $(SRCBASE)/wps/common/enrollee $(SRCBASE)/wps/common/shared $(SRCBASE)/wps/common/registrar $(SRCBASE)/bcmcrypto
+
+C_DEFILES += -D_LIBS
+ifdef BRAND
+  C_DEFINES += -D$(BRAND)
+endif
+
+C_DEFINES += -DWPS_WIRELESS_ENROLLEE -DAES_CBC_ONLY
+
+C_DEFINES += -DOPENSSL_NO_KRB5 -DNO_CHMOD -DMKIMF_BUILD -DDSO_WIN32 -DOPENSLL_SYSNAME_WINCE -DWIN32_LEAN_AND_MEAN -DL_ENDIAN -DOPENSSL_SYS_WIN32 
+
+ifeq ($(WINCEVER),600)
+  C_DEFINES +=  -D_CRT_SECURE_NO_DEPRECATE
+endif
+
+
+ifeq ($(PROCESSOR),ARM)
+  SDK_LIB_PATH := "$(LIB_PATH)/ARMV4I"
+endif
+
+ifeq ($(PROCESSOR),X86)
+  SDK_LIB_PATH := "$(LIB_PATH)/x86"
+endif
+
+ifneq ($(PROCESSOR),ARM)
+ifneq ($(PROCESSOR),X86)
+  $(error NEW PROCESSOR is defined, needs modification to this file)
+endif
+endif
+
+TARGETLIBS= $(SDK_LIB_PATH)/coredll.lib 
+
+INCLUDES += $(_WINCEROOT)/include;$(_WINCEROOT)/public/common/oak/inc;$(_WINCEROOT)/public/common/ddk/inc;$(_WINCEROOT)/public/common/sdk/inc;
+
+INCLUDES += $(SRCBASE)/include;$(SRCBASE)/include/bcmcrypto;../common/include;
+
+SOURCES += aes.c rijndael-alg-fst.c dh.c bn.c sha256.c hmac_sha256.c random.c slist.c reg_proto_utils.c reg_proto_msg.c dev_config.c tlv.c state_machine.c buffobj.c tutrace.c sta_eap_sm.c enr_reg_sm.c enr_api.c reg_sm.c

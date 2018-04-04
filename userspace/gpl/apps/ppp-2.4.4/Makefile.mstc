@@ -1,0 +1,49 @@
+#/******************************************************************************/
+#/*
+#* Copyright (C) Mitrastar Communications, Corp.
+#* All Rights Reserved.
+#*
+#* Mitrastar Confidential; Need to Know only.
+#* Protected as an unpublished work.
+#*
+#* The computer program listings, specifications and documentation
+#* herein are the property of Mitrastar Communications, Corp. and
+#* shall not be reproduced, copied, disclosed, or used in whole or
+#* in part for any reason without the prior express written permission of
+#* Mitrastar Communications, Corp.
+#*/
+#/******************************************************************************/
+include ${PRODUCT_ROOT_DIR}/Project/Make.config
+
+APP_SRC_DIR := $(shell pwd)
+
+
+#/************************* Start your Makefile *******************************/
+
+all: _cross
+	@echo "###################################"
+	@echo "#               pppd 2.4.4"
+	@echo "#        Build up successfully"
+	@echo "###################################"
+
+
+_cross:
+	echo "Build pppd 2.4.4"
+
+	$(MAKE) -C $(APP_SRC_DIR)
+	if test -e $(APP_SRC_DIR)/pppd/pppd; \
+	then echo "Compile pppd success"; \
+	else echo "Compile pppd error!"; exit 1; \
+	fi
+	
+install:
+ifneq ($(strip $(MSTC_PPTP)),)
+	cp -f $(APP_SRC_DIR)/pppd/pppd $(FILESYSTEM_DIR)/usr/bin/pppd2.4.4
+endif
+clean:
+	echo "Clean pppd 2.4.4"
+	$(MAKE) -C $(APP_SRC_DIR) clean
+	rm -f $(FILESYSTEM_DIR)/usr/bin/pppd2.4.4
+
+	
+#/************************* End your Makefile *******************************/

@@ -1,0 +1,1832 @@
+<script language="javascript">
+<!-- hide
+var errMsg = "<%ejGetOther(errMsg)%>";
+var found = 0;
+var eTypeRouteUsed = 0;
+
+function sortNumber(a,b)
+{
+
+ if( isNaN(parseInt(a,10)) ) a=Number.MAX_VALUE;
+ if( isNaN(parseInt(b,10)) ) b=Number.MAX_VALUE;
+
+ return (a-b);
+}
+
+function createForwardInterface()
+{
+	with ( document.forms[0] ) {
+   var i=0;
+   var interfaceInfo = '<%ejGetOther(wanAllInterfaceInfo, allEoAPvc)%>';
+   var interfaces = interfaceInfo.split('|');
+   var str = '';
+
+   if (interfaces.length>0) {
+      for ( i = 0; i < interfaces.length - 1; i++ ) {
+         var names = interfaces[i].split('/');
+         if (names[1]!="(null)") {
+            str += "  <option value='" + names[1] + "'>" + interfaces[i] + "</option>";
+         }
+      }
+   }
+   $('#fwIntf').append(str);
+	}
+}
+
+function createclassIf()
+{
+	with ( document.forms[0] ) {
+    var i = 0;
+ 	  var qosIntf = '<%ejGetOther(qosIntf, fromInterface)%>';
+ 	  var intf = qosIntf.split('|');
+ 	  var str = '';
+
+    intf.sort();
+ 	  for ( i = 0; i< intf.length; i++ ) {
+ 	     if (intf[i] != '') {
+ 	        if (intf[i].indexOf('nas') != -1)
+ 	           continue; // skip nas ifc
+ 	        else if (intf[i].indexOf('usb') != -1)
+ 	           continue; // skip usb ifc
+ 	        else if (intf[i].indexOf('ptm') != -1) {
+ 	           var ptmIntf = intf[i].split('/');
+ 	           str += "  <option value='" + ptmIntf[1] + "'>" + ptmIntf[0] + "</option>";
+ 	        } else if (intf[i].indexOf('ppp') != -1) {
+ 	           var pppIntf = intf[i].split('/');
+ 	           str += "  <option value='" + pppIntf[1] + "'>" + pppIntf[0] + "</option>";
+ 	        } else if(intf[i].indexOf('Local') != -1){ // sherry add for local device
+ 	           var localIntf = intf[i].split('/');
+ 	           str += "  <option value='" + localIntf[0] + "'>" + localIntf[0] + "</option>";
+ 	        } else {
+ 	           if (intf[i].indexOf('/') != -1) {
+ 	              var temp = intf[i];
+ 	              var intfInfo = temp.split('/');
+ 	              str += "  <option value='" + intfInfo[1] + "'>" + intfInfo[0] + "</option>";
+ 	           }
+ 	           else
+ 	           {
+ 	              str += "  <option value='" + intf[i] + "'>" + intf[i] + "</option>";
+ 	           }
+ 	        }
+ 	     }
+ 	  }
+ 	  $('#classIf').append(str);
+ 	  
+	}
+}
+
+function createQueue(hideWAN, hideLAN, selectedQName)
+{
+  var queueInfo = '<%ejGetOtherBig(qosqueueInfo, all)%>';
+  var queues = queueInfo.split('|');
+  var str = '';
+
+  for ( i = 0; i < queues.length; i++ ) {
+    if (queues[i] != '') {
+      var info = queues[i].split(':');
+      if (info[2].indexOf('wl') != -1)
+        continue;
+      if (info[2].indexOf('WLANConfiguration') != -1)
+        continue;
+      if ((info[2].indexOf('WAN') != -1) && hideWAN) {
+        continue;
+      }
+      if ((info[2].indexOf('LAN') != -1) && hideLAN) {
+        continue;
+      }
+      if(info[1] == selectedQName)
+        str += "<option value='" + info[0] + "' selected>" + info[1] + "</option>";
+      else
+        str += "<option value='" + info[0] + "'>" + info[1] + "</option>";
+    }
+  }
+  $('#queuekey').append(str);
+}
+
+function updateQueue()
+{
+  var selectedQ = $("#queuekey option:selected").text();
+  
+  with ( document.forms[0] ) {
+    //If this classify rule has "to WAN interface" or "from LAN interface", hide LAN queue option
+    if( (classIf.options[classIf.selectedIndex].text.indexOf("LAN") != -1) ||
+    		(classIf.options[classIf.selectedIndex].text.indexOf("eth0.0") != -1) ||
+    		(classIf.options[classIf.selectedIndex].text.indexOf("eth1.0") != -1) ||
+    		(classIf.options[classIf.selectedIndex].text.indexOf("eth2.0") != -1) ||
+    		(classIf.options[classIf.selectedIndex].text.indexOf("eth3.0") != -1) ||
+        (classIf.options[classIf.selectedIndex].text.indexOf("WL_") != -1) ||
+        (classIf.options[classIf.selectedIndex].text.indexOf("HPNA") != -1) ){
+      $("#queuekey").empty();
+      createQueue(0,1,selectedQ);
+    }
+    //If this classify rule has "to LAN interface" or "from WAN interface", hide WAN queue option
+    else if( ( (classIf.options[classIf.selectedIndex].text.indexOf("NA") == -1) &&
+      (classIf.options[classIf.selectedIndex].text.indexOf("LAN") == -1) &&
+      (classIf.options[classIf.selectedIndex].text.indexOf("WL_") == -1) &&
+      (classIf.options[classIf.selectedIndex].text.indexOf("HPNA") == -1) &&
+      (classIf.options[classIf.selectedIndex].text.indexOf("Local") == -1) ) ){
+        $("#queuekey").empty();
+        createQueue(1,0,selectedQ);
+    }
+    else{
+      $("#queuekey").empty();
+      createQueue(0,0,selectedQ);
+    }
+  }
+}
+
+function checkSrcExcl() {
+	with ( document.forms[0] ) {
+		//checkToAndSource();
+		updateQueue();
+
+		srcMacExclude.disabled = true;
+		srcIpExclude.disabled = true;
+		srcPortExclude.disabled = true;
+		srcAddr.disabled = true;
+		srcMask.disabled = true;
+		srcMacAddr.disabled = true;
+		srcMacMask.disabled = true;
+    srcstartport.disabled = true;
+    srcendport.disabled = true;
+		if (srcmacenbl.checked == true && srcmacenbl.disabled == false) {
+			srcMacExclude.disabled = false;
+			srcMacAddr.disabled = false;
+			srcMacMask.disabled = false;
+		}
+		if (srcipenbl.checked == true && srcipenbl.disabled == false) {
+			srcIpExclude.disabled = false;
+			srcAddr.disabled = false;
+			srcMask.disabled = false;
+			ipoptionlistenbl.disabled = true;
+			ipoptionlist.disabled = true;
+			ipOptionValue.disabled = true;
+		}
+		else if (srcipenbl.checked == false && srcipenbl.disabled == false){
+		  ipoptionlistenbl.disabled = false;
+		  ipoptionlist.disabled = false;
+		  ipOptionValue.disabled = false;
+    }
+    if( protExclude.checked == true && protExclude.disabled == false ){
+      srcportenbl.disabled = true;
+    }
+		if (srcportenbl.checked == true && srcportenbl.disabled == false) {
+			srcPortExclude.disabled = false;
+			srcstartport.disabled = false;
+			srcendport.disabled = false;
+		}
+	}
+}
+
+function checkDstExcl() {
+	with ( document.forms[0] ) {
+		//checkFromAndDestination();
+		updateQueue();
+		
+		dstMacExclude.disabled = true;
+		destIpExclude.disabled = true;
+		destportExclude.disabled = true;
+		dstAddr.disabled = true;
+		dstMask.disabled = true;
+		dstMacAddr.disabled = true;
+		dstMacMask.disabled = true;
+		dststartport.disabled = true;
+		dstendport.disabled = true;
+		
+		if(found == 1)
+			dstmacenbl.disabled = true;
+		else
+			dstmacenbl.disabled = false;
+		if (dstmacenbl.checked == true && dstmacenbl.disabled == false) {
+			dstMacExclude.disabled = false;
+			dstMacAddr.disabled = false;
+			dstMacMask.disabled = false;
+		}
+		if (dstipenbl.checked == true && dstipenbl.disabled == false) {
+			destIpExclude.disabled = false;
+			dstAddr.disabled = false;
+			dstMask.disabled = false;
+		}
+    if( protExclude.checked == true && protExclude.disabled == false ){
+      dstportenbl.disabled = true;
+    }
+		if (dstportenbl.checked == true && dstportenbl.disabled == false) {
+			destportExclude.disabled = false;
+			dststartport.disabled = false;
+			dstendport.disabled = false;
+		}
+	}
+}
+
+function checkDhcpOptionExcl() {
+  with ( document.forms[0] ) {
+    ipOptionExclude.disabled = true;
+		if (ipoptionlistenbl.checked == true && ipoptionlistenbl.disabled == false) {
+		  ipOptionExclude.disabled = false;
+			srcipenbl.disabled = true;
+			srcIpExclude.disabled = true;
+			srcAddr.disabled = true;
+			srcMask.disabled = true;
+		}
+		else if (ipoptionlistenbl.checked == false && ipoptionlistenbl.disabled == false) {
+			srcipenbl.disabled = false;
+			if (srcipenbl.checked == true)
+			{
+			  srcIpExclude.disabled = false;
+			  srcAddr.disabled = false;
+			  srcMask.disabled = false;
+			}
+			else
+			{
+			  srcIpExclude.disabled = true;
+			  srcAddr.disabled = true;
+			  srcMask.disabled = true;
+			}
+    }
+  }
+}
+
+function checkOthersExcl() {
+	with ( document.forms[0] ) {
+		etherPrioExclude.disabled = true;
+		vlanIDExclude.disabled = true;
+		protExclude.disabled = true;
+		pktLenExclude.disabled = true;
+		dscpExclude.disabled = true;
+		tcpAckExclude.disabled = true;
+		ipOptionExclude.disabled = true;
+		serviceTypeExclude.disabled = true;
+		if (vlan8021penbl.checked == true && vlan8021penbl.disabled == false) {
+			etherPrioExclude.disabled = false;
+		}
+		if (vlanidenbl.checked == true && vlanidenbl.disabled == false) {
+			vlanIDExclude.disabled = false;
+		}
+		if (protenbl.checked == true && protenbl.disabled == false) {
+			protExclude.disabled = false;
+		}
+		if (pktlenenbl.checked == true && pktlenenbl.disabled == false) {
+			pktLenExclude.disabled = false;
+		}
+		if (cfgdscpenbl.checked == true && cfgdscpenbl.disabled == false) {
+			dscpExclude.disabled = false;
+		}
+		if (tcpAck.checked == true && tcpAck.disabled == false) {
+			tcpAckExclude.disabled = false;
+		}
+		if (serviceTypeenbl.checked == true && serviceTypeenbl.disabled == false) {
+		  serviceTypeExclude.disabled = false;
+		}
+		if ((protocol.options[protocol.selectedIndex].value == 6 ||
+				protocol.options[protocol.selectedIndex].value == 17) && 
+				protenbl.checked == true && protenbl.disabled == false )
+		{
+			if(protExclude.checked == true)
+			{
+				srcportenbl.disabled = true;
+				srcstartport.disabled = true;
+				srcendport.disabled = true;
+				srcPortExclude.disabled = true;
+				dstportenbl.disabled = true;
+				dststartport.disabled = true;
+				dstendport.disabled = true;
+				destportExclude.disabled = true;
+				tcpAck.disabled = true;
+				tcpAckExclude.disabled = true;
+			}
+			else
+			{
+				srcportenbl.disabled = false;
+				if(srcportenbl.checked == true)
+				{
+					srcstartport.disabled = false;
+					srcendport.disabled = false;
+					srcPortExclude.disabled = false;
+				}
+				dstportenbl.disabled = false;
+				if(dstportenbl.checked == true)
+				{
+					dststartport.disabled = false;
+					dstendport.disabled = false;
+					destportExclude.disabled = false;
+				}
+				if(protocol.options[protocol.selectedIndex].value == 6)
+				{
+					tcpAck.disabled = false;
+					if(tcpAck.checked == true)
+					{
+						tcpAckExclude.disabled = false;
+					}
+				}
+			}
+		}
+		if(ipoptionlistenbl.checked == true && ipoptionlistenbl.disabled == false)
+		{
+			ipOptionExclude.disabled = false;
+		}
+	}
+}
+
+function changeDscp() {
+	with ( document.forms[0] ) {
+		dscpMark.disabled = true;
+		if (dscp.options[dscp.selectedIndex].value == -3 && dscp.disabled == false ) {
+			dscpMark.disabled = false;
+		}
+	}
+}
+
+function changeWanVlanIDlist() {
+	with ( document.forms[0] ) {
+		wanVlanID.disabled = true;
+		wanVlan8021p.disabled = true;
+		if (wanVlanIDList.options[wanVlanIDList.selectedIndex].value == 2 ||
+		    wanVlanIDList.options[wanVlanIDList.selectedIndex].value == 1){
+			wanVlanID.disabled = false;
+			wanVlan8021p.disabled = false;
+		}
+	}
+}
+
+function changeclassIf(){
+   with ( document.forms[0] ) {
+      found = 0;
+         var currClsIf = classIf.options[classIf.selectedIndex].value;
+         var tmpBuf = '<%ejGetOther(qosWanConnType)%>';
+         var wanIf = tmpBuf.split('|');
+
+		 // check if ingress and egress is LAN interface.
+/*		 var egressClsIf = classEgressIfc.options[classEgressIfc.selectedIndex].value;
+         if((currClsIf != "") && (egressClsIf != "")){
+		 	if((currClsIf.indexOf("eth") != -1) && (egressClsIf.indexOf("eth") != -1)){
+				msg = 'Cannot select LAN interface on \"From Interface\" and \"To Interface\".';
+         		hciAlert(msg, {height: 180, type: 2, title: ''});
+				classIf.selectedIndex = 0;
+				classEgressIfc.selectedIndex = 0;
+				return;
+			}
+		 }
+
+		 // check if ingress and egress are the same.
+		 if(!((currClsIf == "NA") || (egressClsIf == "NA")) && (currClsIf == egressClsIf)){
+		 	msg = 'Cannot select the same interface in From/To interface.';
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            classIf.selectedIndex = 0;
+            classEgressIfc.selectedIndex = 0;
+            return;
+		 }
+*/
+
+         // ===
+
+		 // check if from interface and destination criteria has set at the same time
+		 //checkFromAndDestination();
+
+		 // check if to interface and source criteria has set at the same time
+		 //checkToAndSource();
+
+//Change ether type options for downstream in routing mode
+         for (i = 0; i < wanIf.length; i++) {
+            var wanInfo = wanIf[i].split(':');
+            if (wanInfo[1] == 'IP_Routed') {
+               if (currClsIf == wanInfo[0]) {
+                  showEtherType("eTypeRoute");
+                  found = 1;
+                  break;
+               }
+            }
+         }
+		 
+	  // if class interface is "WAN" or L2 name, disable forward interface option	 
+	  //since our design don't forward traffic to LAN
+      if(tmpBuf.indexOf(currClsIf) >= 0 || currClsIf.indexOf("WAN") >= 0 )
+	  {
+	    fwIntf.disabled = true;
+	  } else {
+		fwIntf.disabled = false;
+	  }
+		 
+      if(currClsIf == 'WAN')
+      {
+      	showEtherType("eTypeRoute");
+				found = 1;
+      }
+
+//Change ether type options
+      if (found == 0) {
+         showEtherType("eType");
+      }
+
+      changeEtherType();
+      updateQueue();
+   }
+}
+
+function changeEtherType() {
+	with ( document.forms[0] ) {
+		/* DSCP mark */
+		dscp.disabled = true;
+		dscpMark.disabled = true;
+		/* DSCP filter */
+		cfgdscpenbl.disabled = true;
+		dscpCheck.disabled = true;
+		/* src ip */
+		srcipenbl.disabled = true;
+		srcAddr.disabled = true;
+		srcMask.disabled = true;
+		/* dst ip */
+		dstipenbl.disabled = true;
+		dstAddr.disabled = true;
+		dstMask.disabled = true;
+		/* protocol */
+		protenbl.disabled = true;
+		protocol.disabled = true;
+		cfgprotocol.disabled = true;
+		/*Service*/
+		serviceTypeenbl.disabled = true;
+		serviceType.disabled = true;
+		serviceTypeExclude.disabled = true;
+		/* packet length */
+		pktlenenbl.disabled = true;
+		startpktlen.disabled = true;
+		endpktlen.disabled = true;
+		/* 802.1P */
+		vlan8021penbl.disabled = true;
+		vlan8021p.disabled = true;
+		/* 802.1Q */
+		vlanidenbl.disabled = true;
+		vlanID.disabled = true;
+		/* ipopton */
+		ipoptionlistenbl.disabled = true;
+		ipoptionlist.disabled = true;
+		ipOptionValue.disabled = true;
+		//if (ethtypeenbl.checked == true) {
+			if((ethertype.options[ethertype.selectedIndex].value == '800' && found == 0) || 
+				 (ethertype.options[ethertype.selectedIndex].value == '86DD' && found == 0) || 
+				 (etherTypeRoute.options[etherTypeRoute.selectedIndex].value == '86DD' && found == 1)||
+				 (etherTypeRoute.options[etherTypeRoute.selectedIndex].value == '800' && found == 1)) {
+				dscp.disabled = false;
+				//dscpMark.disabled = false;
+				cfgdscpenbl.disabled = false;
+				dscpCheck.disabled = false;
+				srcipenbl.disabled = false;
+				//srcAddr.disabled = false;
+				//srcMask.disabled = false;
+				dstipenbl.disabled = false;
+				//dstAddr.disabled = false;
+				//dstMask.disabled = false;
+				/*Service*/
+		    serviceTypeenbl.disabled = false;
+		    serviceType.disabled = false;
+				protenbl.disabled = false;
+				protocol.disabled = false;
+				cfgprotocol.disabled = false;
+				pktlenenbl.disabled = false;
+				startpktlen.disabled = false;
+				endpktlen.disabled = false;
+				ipoptionlistenbl.disabled = false;
+				ipoptionlist.disabled = false;
+				ipOptionValue.disabled = false;
+			}
+			else if((ethertype.options[ethertype.selectedIndex].value == '8100') ||
+				 (etherTypeRoute.options[etherTypeRoute.selectedIndex].value == '8100')){
+				vlan8021penbl.disabled = false;
+				vlan8021p.disabled = false;
+				vlanidenbl.disabled = false;
+				vlanID.disabled = false;
+			}
+			else if((ethertype.options[ethertype.selectedIndex].value == '-1') ||
+				 (etherTypeRoute.options[etherTypeRoute.selectedIndex].value == '-1')){
+			}
+			
+
+			if((ethertype.options[ethertype.selectedIndex].value == '81DD') ||
+				 (etherTypeRoute.options[etherTypeRoute.selectedIndex].value == '81DD'))
+			{
+				ipoptionlist.length = 1;
+				ipoptionlist.selectedIndex = 0;
+			}
+			else
+			{
+				//Show selections for src ip, opt60 and opt77, opt61, opt125
+				ipoptionlist.length = 5;
+				ipoptionlist.options[1].value = 1;
+				ipoptionlist.options[1].text  = "<%ejGetML(MLG_QOS_QOSClassSetup_Str41)%>";
+				ipoptionlist.options[2].value = 2;
+				ipoptionlist.options[2].text  = "<%ejGetML(MLG_QOS_QOSClassSetup_Str42)%>";
+				ipoptionlist.options[3].value = 3;
+				ipoptionlist.options[3].text  = "<%ejGetML(MLG_QOS_QOSClassSetup_Str411)%>";
+				ipoptionlist.options[4].value = 4;
+				ipoptionlist.options[4].text  = "<%ejGetML(MLG_QOS_QOSClassSetup_Str421)%>";
+			}
+		//}
+		changeDscp();
+    changeProtocol();
+	}
+}
+
+function changeProtocol(){
+	with ( document.forms[0] ) {
+		/* protocol */
+		cfgprotocol.disabled = true;
+		/* src port range */
+		srcportenbl.disabled = true;
+		srcstartport.disabled = true;
+		srcendport.disabled = true;
+		/* dst port range */
+		dstportenbl.disabled = true;
+		dststartport.disabled = true;
+		dstendport.disabled = true;
+		/* TCP ACK */
+		tcpAck.disabled = true;
+		if (protenbl.checked == true && protenbl.disabled == false) {
+			serviceTypeenbl.disabled = true;
+			serviceType.disabled = true;
+			if (protocol.options[protocol.selectedIndex].value == -2) {
+				cfgprotocol.disabled = false;
+				dscp.disabled = false;
+			  //dscpMark.disabled = false;
+			  //wanVlan8021p.disabled = false;
+			  wanVlanIDList.disabled = false;
+			  //wanVlanID.disabled = false;
+			  cfgprotocol.value = "";
+			}
+			else if (protocol.options[protocol.selectedIndex].value == 6 ||
+				protocol.options[protocol.selectedIndex].value == 17) {
+				srcportenbl.disabled = false;
+				srcstartport.disabled = false;
+				srcendport.disabled = false;
+				dstportenbl.disabled = false;
+				dststartport.disabled = false;
+				dstendport.disabled = false;
+				dscp.disabled = false;
+			  //dscpMark.disabled = false;
+			  //wanVlan8021p.disabled = false;
+			  wanVlanIDList.disabled = false;
+			  //wanVlanID.disabled = false;
+				cfgprotocol.value = protocol.options[protocol.selectedIndex].value;
+				if (protocol.options[protocol.selectedIndex].value == 6 && protExclude.checked == false) {
+					if (/*ethtypeenbl.checked == true &&*/ 
+						(ethertype.options[ethertype.selectedIndex].value == '800' || ethertypeRoute.options[etherTypeRoute.selectedIndex].value == '800')) {
+						tcpAck.disabled = false;
+					}
+				}
+			}
+			else if (protocol.options[protocol.selectedIndex].value == 2)
+			{
+				cfgprotocol.value = protocol.options[protocol.selectedIndex].value;
+		  }
+		  else
+		  {
+				dscp.disabled = false;
+			  //dscpMark.disabled = false;
+			  //wanVlan8021p.disabled = false;
+			  wanVlanIDList.disabled = false;
+			  //wanVlanID.disabled = false;
+		    cfgprotocol.value = protocol.options[protocol.selectedIndex].value;
+		  }
+		}
+		else if(protenbl.checked == false && protenbl.disabled == false)
+		{
+		  serviceTypeenbl.disabled = false;
+		  serviceType.disabled = false;
+/*
+		  if (serviceTypeenbl.checked == true)
+		  {
+		    serviceTypeExclude.disabled = false;
+		    protenbl.disabled = true;
+		    protocol.disabled = true;
+		    cfgprotocol.disabled = true;
+      }
+*/
+    }
+/*
+		else if(serviceTypeenbl.checked == false && serviceTypeenbl.disabled == false)
+    {
+      protenbl.disabled = false;
+      protocol.disabled = false;
+      cfgprotocol.disabled = false;
+    }
+*/
+    checkOthersExcl();
+		checkSrcExcl();
+		checkDhcpOptionExcl();
+		checkDstExcl();
+	}
+}
+
+function resetCriteria() {
+	with ( document.forms[0] ) {
+		//classIfenbl.checked = false;
+		/*ethtypeenbl.checked = false;*/
+		srcmacenbl.checked = false;
+		srcMacAddr.value = ""; 
+		srcMacAddr.disabled = true;
+		srcMacMask.value = "";
+		srcMacMask.disabled = true;
+		srcipenbl.checked = false;
+		srcAddr.value = ""; 
+		srcAddr.disabled = true;
+		srcMask.value = ""; 
+		srcMask.disabled = true;
+		srcportenbl.checked = false;
+		srcstartport.value = "";
+		srcendport.value = "";
+		dstmacenbl.checked = false;
+		dstMacAddr.value = ""; 
+		dstMacAddr.disabled = true;
+		dstMacMask.value = ""; 
+		dstMacMask.disabled = true;
+		dstipenbl.checked = false;
+		dstAddr.value = ""; 
+		dstAddr.disabled = true;
+		dstMask.value = ""; 
+		dstMask.disabled = true;
+		dstportenbl.checked = false;
+		dststartport.value = "";
+		dstendport.value = "";
+		vlan8021penbl.checked = false;
+		vlanidenbl.checked = false;
+		vlanID.value = "";
+		/*Service*/
+		serviceTypeenbl.checked = false;
+		protenbl.checked = false;
+		cfgprotocol.value = "";
+		pktlenenbl.checked = false;
+		startpktlen.value = "";
+		endpktlen.value = "";
+		cfgdscpenbl.checked = false;
+		dscpCheck.value = "";
+		tcpAck.checked = false;
+		ipoptionlistenbl.checked = false;
+		ipOptionValue.value = "";
+
+		/* exclude */
+		srcMacExclude.checked = false;
+		srcIpExclude.checked = false;
+		srcPortExclude.checked = false;
+		dstMacExclude.checked = false;
+		destIpExclude.checked = false;
+		destportExclude.checked = false;
+		etherPrioExclude.checked = false;
+		vlanIDExclude.checked = false;
+		protExclude.checked = false;
+		pktLenExclude.checked = false;
+		dscpExclude.checked = false;
+		tcpAckExclude.checked = false;
+		ipOptionExclude.checked = false;
+		serviceTypeExclude.checked = false;
+
+		/* disabled init */
+		/* port range */
+		srcportenbl.disabled = true;
+		srcstartport.disabled = true;
+		srcendport.disabled = true;
+		srcPortExclude.disabled = true;
+		dstportenbl.disabled = true;
+		dststartport.disabled = true;
+		dstendport.disabled = true;
+		destportExclude.disabled = true;
+		/* 802.1P, 802.1Q*/
+		vlan8021penbl.disabled = true;
+		vlan8021p.disabled = true;
+		etherPrioExclude.disabled = true;
+		vlanidenbl.disabled = true;
+		vlanID.disabled = true;
+		vlanIDExclude.disabled = true;
+		/*Service*/
+		serviceTypeenbl.disabled = true;
+		serviceType.disabled = true;
+		serviceTypeExclude.disabled = true;
+		/* protocol */
+		protenbl.disabled = true;
+		protocol.disabled = true;
+		cfgprotocol.disabled = true;
+		protExclude.disabled = true;
+		/* IP length */
+		pktlenenbl.disabled = true;
+		startpktlen.disabled = true;
+		endpktlen.disabled = true;
+		pktLenExclude.disabled = true;
+		/* TCP ACK */
+		tcpAck.disabled = true;
+		tcpAckExclude.disabled = true;
+
+		/* exclude disabled */
+		srcMacExclude.disabled = true;
+		srcIpExclude.disabled = true;
+		srcPortExclude.disabled = true;
+		dstMacExclude.disabled = true;
+		destIpExclude.disabled = true;
+		destportExclude.disabled = true;
+		etherPrioExclude.disabled = true;
+		vlanIDExclude.disabled = true;
+		protExclude.disabled = true;
+		pktLenExclude.disabled = true;
+		dscpExclude.disabled = true;
+		tcpAckExclude.disabled = true;
+		ipOptionExclude.disabled = true;
+	}
+}
+
+function btnApply() {
+   with ( document.forms[0] ) {
+    // Sanity checks 
+      if ( clsName.value == '' ) {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str2)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if ( isValidName(clsName.value) == false ) {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str3)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if (clsName.value.length > 15) {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str4)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      
+      var qosClassifierName = "<%ejGetOther(qosClassifierName, all)%>";
+      var existClassifierName = qosClassifierName.split('|');
+      for ( i = 0; i < existClassifierName.length; i++ ) {
+        if (existClassifierName[i] != '')
+        {
+          if (existClassifierName[i] == clsName.value)
+          {
+            msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str5)%>';
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return;
+          }
+        }
+      }
+/*	  
+      if (classIfenbl.checked == false && ethtypeenbl.checked == false && 
+         srcmacenbl.checked == false && dstmacenbl.checked == false){
+         msg = 'At least one criterion must be specified for unspecified ethertype.'
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+*/	  
+      if (srcmacenbl.checked == true && (srcMacAddr.value == "" ||  isValidMacAddress(srcMacAddr.value) == false )) {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str6)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if((ethertype.options[ethertype.selectedIndex].value == '86DD' && found == 0) || 
+				 (etherTypeRoute.options[etherTypeRoute.selectedIndex].value == '86DD' && found == 1))
+			{
+	      if (srcipenbl.checked == true && srcAddr.disabled == false && (srcAddr.value == "" || isValidIpAddress6(srcAddr.value) == false)) {
+	         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str7)%>';
+	         hciAlert(msg, {height: 180, type: 2, title: ''});
+	         return;
+	      }
+			}
+			else
+			{
+	      if (srcipenbl.checked == true && srcAddr.disabled == false && (srcAddr.value == "" || isValidIpAddress(srcAddr.value) == false)) {
+	         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str7)%>';
+	         hciAlert(msg, {height: 180, type: 2, title: ''});
+	         return;
+	      }
+	    }
+      if (srcportenbl.checked == true && srcportenbl.disabled == false && (srcstartport.value == "" || 
+	  	  isValidPort(srcstartport.value) == false || (srcendport.value != "" && isValidPort(srcendport.value) == false))) {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str8)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if (srcportenbl.checked == true && srcportenbl.disabled == false && (parseInt(srcstartport.value) > parseInt(srcendport.value))) {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str9)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if (dstmacenbl.checked == true && (dstMacAddr.value == "" || isValidMacAddress(dstMacAddr.value) == false)) {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str10)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+			if((ethertype.options[ethertype.selectedIndex].value == '86DD' && found == 0) || 
+				 (etherTypeRoute.options[etherTypeRoute.selectedIndex].value == '86DD' && found == 1))
+			{
+	      if (dstipenbl.checked == true && dstAddr.disabled == false && (dstAddr.value == "" || isValidIpAddress6(dstAddr.value) == false)) {
+	         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str11)%>';
+	         hciAlert(msg, {height: 180, type: 2, title: ''});
+	         return;
+	      }
+			}
+			else
+			{
+	      if (dstipenbl.checked == true && dstAddr.disabled == false && (dstAddr.value == "" || isValidIpAddress(dstAddr.value) == false)) {
+	         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str11)%>';
+	         hciAlert(msg, {height: 180, type: 2, title: ''});
+	         return;
+	      }
+	    }
+      if (dstportenbl.checked == true && dstportenbl.disabled == false && (dststartport.value == "" || 
+	  	  isValidPort(dststartport.value) == false || (dstendport.value != "" && isValidPort(dstendport.value) == false))) {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str12)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if (dstportenbl.checked == true && dstportenbl.disabled == false && (parseInt(dststartport.value) > parseInt(dstendport.value))) {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str13)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if (vlanidenbl.checked == true && vlanidenbl.disabled == false && vlanID.value == "") {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str14)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      var msg = "";
+      if (vlanidenbl.checked == true && vlanidenbl.disabled == false && (isNaN(vlanID.value) == true || vlanID.value < 0 || vlanID.value > 4094)) {
+         msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str15)%>",vlanID.value);
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if (protenbl.checked == true && protenbl.disabled == false && protocol.options[protocol.selectedIndex].value == '-2') {
+        var msg = "";
+         if (cfgprotocol.value == "" || isNaN(cfgprotocol.value) == true || cfgprotocol.value < 1 || cfgprotocol.value > 252 )
+         {
+           msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str16)%>",cfgprotocol.value);
+           hciAlert(msg, {height: 180, type: 2, title: ''});
+           return;
+         }
+      }
+      if (pktlenenbl.checked == true && pktlenenbl.disabled == false && startpktlen.value == "") {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str17)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if (pktlenenbl.checked == true && pktlenenbl.disabled == false) {
+         var msg = "";
+         var startpktlenNum=parseInt(startpktlen.value);
+         if (isNaN(startpktlenNum) == true || startpktlen.value < 46 || startpktlen.value > 1500){
+            msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str18)%>",startpktlen.value);
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return;
+         }
+         var msg = "";
+         var endpktlenNum=parseInt(endpktlen.value);
+         if (isNaN(endpktlenNum) == true || endpktlen.value < 46 || endpktlen.value > 1500){
+            msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str19)%>",endpktlen.value);
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return;
+         }
+         if (parseInt(startpktlen.value) > parseInt(endpktlen.value)){
+            msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str20)%>';
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return;
+         }
+      }
+      if (cfgdscpenbl.checked == true && cfgdscpenbl.disabled == false && dscpCheck.value == "") {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str21)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      var msg = "";
+      if (cfgdscpenbl.checked == true && cfgdscpenbl.disabled == false && (isNaN(dscpCheck.value) == true || dscpCheck.value < 0 || dscpCheck.value > 63)) {
+         msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str22)%>",dscpCheck.value);
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if (ipoptionlistenbl.checked == true && ipoptionlistenbl.disabled == false && ipOptionValue.value == "") {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str23)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if((ethertype.options[ethertype.selectedIndex].value == '86DD' && found == 0) || 
+		 		(etherTypeRoute.options[etherTypeRoute.selectedIndex].value == '86DD' && found == 1))
+			{
+		  	if ( srcipenbl.checked == true && srcMask.disabled == false && srcMask.value != "" && isValidPrefixLength(srcMask.value) == false ) {
+	         msg = 'Source Prefix Length "' + srcMask.value + '" is invalid subnet mask.';
+	         hciAlert(msg, {height: 180, type: 2, title: ''});
+	         return;
+	      }
+	      if ( dstipenbl.checked == true && dstMask.disabled == false && dstMask.value != "" && isValidPrefixLength(dstMask.value) == false ) {
+	         msg = 'Destination Prefix Length "' + dstMask.value + '" is invalid subnet mask.';
+	         hciAlert(msg, {height: 180, type: 2, title: ''});
+	         return;
+	      }
+			}
+			else
+			{
+	      if ( srcipenbl.checked == true && srcMask.disabled == false && srcMask.value != "" && isValidSubnetMask(srcMask.value) == false ) {
+	         msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str24)%>",srcMask.value);
+	         hciAlert(msg, {height: 180, type: 2, title: ''});
+	         return;
+	      }
+	      if ( dstipenbl.checked == true && dstMask.disabled == false && dstMask.value != "" && isValidSubnetMask(dstMask.value) == false ) {
+	         msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str25)%>",dstMask.value);
+	         hciAlert(msg, {height: 180, type: 2, title: ''});
+	         return;
+	      }
+    	}
+      if ( srcmacenbl.checked == true && srcMacMask.value != "" && isValidMacMask(srcMacMask.value) == false ) {
+         msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str26)%>",srcMacMask.value);
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if ( dstmacenbl.checked == true && dstMacMask.value != "" && isValidMacMask(dstMacMask.value) == false ) {
+         msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str27)%>",dstMacMask.value);
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      if (dscp.options[dscp.selectedIndex].value == "-3" && dscp.disabled == false) {
+         if (dscpMark.value == "") {
+            msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str28)%>';
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return;
+         }
+         var msg = "";
+         var dscpMarkNum=parseInt(dscpMark.value);
+         if (isNaN(dscpMarkNum) == true || dscpMark.value < 0 || dscpMark.value > 63) {
+            msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str22)%>",dscpMark.value);
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return;
+         }
+      } else if (dscp.options[dscp.selectedIndex].value == "-2" && dscp.disabled == false) {
+      	dscpMark.disabled = false;
+      	dscpMark.value = -2;
+      }
+
+      if (wanVlan8021p.options[wanVlan8021p.selectedIndex].value != -1) {
+         if (wanVlanIDList.options[wanVlanIDList.selectedIndex].value == "3") {
+            msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str29)%>';
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return;
+         }
+      }
+
+      if (wanVlanIDList.options[wanVlanIDList.selectedIndex].value != "-1" && 
+          wanVlanIDList.options[wanVlanIDList.selectedIndex].value != "3") {
+         var tmp;
+         if (wanVlanID.value == "") {
+            msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str30)%>';
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return;
+         }
+         if (isNaN(wanVlanID.value)) {
+            msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str15)%>",wanVlanID.value);
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return;
+         }
+         tmp = parseInt(wanVlanID.value);
+         if (tmp < 0 || tmp > 4094) {
+            msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str15)%>",tmp);
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return;
+         }
+      }
+      
+      if (queuekey.value == 0) {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str31)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+      
+      if (queuekey.value == -1)
+      {
+        
+        if(srcmacenbl.checked != true && srcipenbl.checked != true &&
+          srcportenbl.checked != true && dstmacenbl.checked != true &&
+          dstipenbl.checked != true && dstportenbl.checked != true &&
+          serviceTypeenbl.checked != true && vlan8021penbl.checked != true &&
+          vlanidenbl.checked != true && protenbl.checked != true &&
+          pktlenenbl.checked != true && cfgdscpenbl.checked != true &&
+          ipoptionlistenbl.checked != true)
+          {
+            msg = "<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str32)%>";
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return;
+          }
+      }
+      
+      /*STEP1*/
+      if(rulsEnbl.checked == true)
+      	rulsEnbl.value = 1;
+      else
+      	rulsEnbl.value = 0;
+
+      /*STEP2*/
+        if ( found == 1)
+        {
+          for (i=0 ; i<ethertype.length ; i++) {
+            if (ethertype.options[i].value == etherTypeRoute.options[etherTypeRoute.selectedIndex].value)
+            ethertype.selectedIndex = i;
+          }
+        }
+
+        /*Sourece*/
+        if(srcipenbl.checked==true)
+          srcipenbl.value = 1;
+        else
+        	srcipenbl.value = 0;
+        	
+        if(srcIpExclude.checked==true)
+          srcIpExclude.value = 1;
+        else
+        	srcIpExclude.value = 0;
+        	
+        if(srcportenbl.checked==true)
+        {
+          srcportenbl.value = 1;
+          srcPort.value = srcstartport.value + ":" + srcendport.value;
+        }
+        else
+        {
+          srcportenbl.value = 0;
+        }
+        
+        if(srcPortExclude.checked==true)
+          srcPortExclude.value = 1;
+        else
+        	srcPortExclude.value = 0;
+        	
+        if(srcmacenbl.checked==true)
+          srcmacenbl.value = 1;
+        else
+        	srcmacenbl.value = 0;
+        
+        if(srcMacExclude.checked==true)
+          srcMacExclude.value = 1;
+        else
+        	srcMacExclude.value = 0;
+        	
+        /*Destination*/
+        if(dstipenbl.checked==true)
+          dstipenbl.value = 1;
+        else
+        	dstipenbl.value = 0;
+
+        if(destIpExclude.checked==true)
+          destIpExclude.value = 1;
+        else
+        	destIpExclude.value = 0;
+        	
+        if((dstportenbl.checked==true)&&(dstportenbl.disabled==false))
+        {
+          dstportenbl.value = 1;
+          dstPort.value = dststartport.value + ":" + dstendport.value;
+        }
+        else
+        	dstportenbl.value = 0;
+
+        if(destportExclude.checked==true)
+          destportExclude.value = 1;
+        else
+        	destportExclude.value = 0;
+        	
+        if(dstmacenbl.checked==true)
+          dstmacenbl.value = 1;
+        else
+        	dstmacenbl.value = 0;
+
+        if(dstMacExclude.checked==true)
+          dstMacExclude.value = 1;
+        else
+        	dstMacExclude.value = 0;
+        	
+        /*Others*/
+        if(protenbl.checked==true)
+          protenbl.value = 1;
+        else
+        	protenbl.value = 0;
+
+        if(protExclude.checked==true)
+          protExclude.value = 1;
+        else
+        	protExclude.value = 0;
+        	
+        if(ipoptionlistenbl.checked == true)
+          ipoptionlistenbl.value = 1;
+        else
+        {
+          ipoptionlist.value = 0;
+        	ipoptionlistenbl.value = 0;
+        }
+        
+        if(ipOptionExclude.checked==true)
+          ipOptionExclude.value = 1;
+        else
+        	ipOptionExclude.value = 0;
+        	
+        if(serviceTypeenbl.checked==true)
+          serviceTypeenbl.value = 1;
+        else
+        {
+        	serviceTypeenbl.value = 0;
+        }
+        
+        if(serviceTypeExclude.checked==true)
+          serviceTypeExclude.value = 1;
+        else
+        	serviceTypeExclude.value = 0;
+        	
+        if(pktlenenbl.checked==true)
+        {
+        	pktlenenbl.value = 1;
+          pktLen.value = startpktlen.value + ":" + endpktlen.value;
+        }
+        else
+        {
+        	pktlenenbl.value = 0;
+        }
+        
+        if(pktLenExclude.checked==true)
+          pktLenExclude.value = 1;
+        else
+        	pktLenExclude.value = 0;
+        	
+        if(cfgdscpenbl.checked==true)
+          cfgdscpenbl.value = 1;
+        else
+        	cfgdscpenbl.value = 0;
+        
+        if(dscpExclude.checked==true)
+          dscpExclude.value = 1;
+        else
+        	dscpExclude.value = 0;
+        	
+        if(vlan8021penbl.checked==true)
+          vlan8021penbl.value = 1;
+        else
+        	vlan8021penbl.value = 0;
+
+        if(etherPrioExclude.checked==true)
+          etherPrioExclude.value = 1;
+        else
+        	etherPrioExclude.value = 0;
+        	
+        if(vlanidenbl.checked==true)
+          vlanidenbl.value = 1;
+        else
+        	vlanidenbl.value = 0;
+
+        if(vlanIDExclude.checked==true)
+          vlanIDExclude.value = 1;
+        else
+        	vlanIDExclude.value = 0;
+        	
+        if (tcpAck.checked == true)
+          tcpAck.value = 1;
+        else
+          tcpAck.value = 0;
+
+        if(tcpAckExclude.checked==true)
+          tcpAckExclude.value = 1;
+        else
+        	tcpAckExclude.value = 0;
+        	
+      if((classIf.value == "NA") &&
+         ((eTypeRouteUsed == 0 && ethertype.value == "-1") ||
+         (eTypeRouteUsed == 1 && etherTypeRoute.value == "-1") ) &&
+         (srcipenbl.checked == false || srcipenbl.disabled == true) &&
+         (srcportenbl.checked == false || srcportenbl.disabled == true) &&
+         (srcmacenbl.checked == false || srcmacenbl.disabled == true) &&
+         (dstipenbl.checked == false || dstipenbl.disabled == true) &&
+         (dstportenbl.checked == false || dstportenbl.disabled == true) &&
+         (dstmacenbl.checked == false || dstmacenbl.disabled == true) )
+      {
+         msg = '<%ejGetML(MLG_QOS_QOSClassSetup_AlertMsg_Str33)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return;
+      }
+
+      /*STEP3*/
+      /*STEP4*/
+      /*STEP5*/
+      	
+			sessionKey.value = mainFrame.gblsessionKey;
+			submit();
+			$('.ui-dialog-titlebar-close').trigger('click');
+			$.openLoadingMask(1);
+			return;
+   }
+}
+
+function showEtherType(selectorName)
+{
+  if(selectorName == "eTypeRoute")
+  {
+    showhide("eType", "0");
+    showhide("eTypeRoute", "1");
+    eTypeRouteUsed = 1;
+  }
+  else if(selectorName == "eType")
+  {
+    showhide("eTypeRoute", "0");
+    showhide("eType", "1");
+    eTypeRouteUsed = 0;
+  }
+}
+
+function frmLoad() {
+  with ( document.forms[0] ) {
+
+    createclassIf();
+    createQueue(0,0);
+    createForwardInterface();
+    showEtherType("eType");
+    //showhide("ClassificaitonOrder", "1");
+
+    /* reset class criteria */
+    resetCriteria();
+
+    /* reset WAN Interface is select Route or Bridge */
+    changeclassIf();
+    
+    wanVlanID.disabled = true;
+
+    /* DSCP mark */
+    dscp.disabled = true;
+    dscpMark.disabled = true;
+    /* src MAC */
+    srcMacExclude.disabled = true;
+    srcMacAddr.disabled = true;
+    srcMacMask.disabled = true;
+    /* src ip */
+    srcipenbl.disabled = true;
+    srcAddr.disabled = true;
+    srcMask.disabled = true;
+    srcIpExclude.disabled = true;
+    /* dst MAC */
+    dstmacenbl.disabled = true;
+    dstMacExclude.disabled = true;
+    dstMacAddr.disabled = true;
+    dstMacMask.disabled = true;
+    /* dst ip */
+    dstipenbl.disabled = true;
+    dstAddr.disabled = true;
+    dstMask.disabled = true;
+    destIpExclude.disabled = true;
+    /* port range */
+    srcportenbl.disabled = true;
+    srcstartport.disabled = true;
+    srcendport.disabled = true;
+    srcPortExclude.disabled = true;
+    dstportenbl.disabled = true;
+    dststartport.disabled = true;
+    dstendport.disabled = true;
+    destportExclude.disabled = true;
+    /* 802.1P, 802.1Q*/
+    vlan8021penbl.disabled = true;
+    vlan8021p.disabled = true;
+    etherPrioExclude.disabled = true;
+    wanVlan8021p.disabled = true;
+    vlanidenbl.disabled = true;
+    vlanID.disabled = true;
+    vlanIDExclude.disabled = true;
+    /*Service*/
+    serviceTypeenbl.disabled = true;
+    serviceType.disabled = true;
+    serviceTypeExclude.disabled = true;
+    /* protocol */
+    protenbl.disabled = true;
+    protocol.disabled = true;
+    cfgprotocol.disabled = true;
+    protExclude.disabled = true;
+    /* IP length */
+    pktlenenbl.disabled = true;
+    startpktlen.disabled = true;
+    endpktlen.disabled = true;
+    pktLenExclude.disabled = true;
+    /* DSCP filter */
+    cfgdscpenbl.disabled = true;
+    dscpCheck.disabled = true;
+    dscpExclude.disabled = true;
+    /* TCP ACK */
+    tcpAck.disabled = true;
+    tcpAckExclude.disabled = true;
+    /* ipopton */
+    ipoptionlistenbl.disabled = true;
+    ipoptionlist.disabled = true;
+    ipOptionValue.disabled = true;
+    ipOptionExclude.disabled = true;
+      
+      changeEtherType();
+  }
+  
+  if (errMsg != '') {
+    hciAlert(errMsg, {height: 180,type: 2, title: ''});
+  }
+}
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnApply(); });
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+// done hiding -->
+</script>
+<form action="/pages/tabFW/qos-qoscls.cmd" method="post" target="mainFrame">
+  <input type="hidden" name="action" id="action" value="add">
+  <input type="hidden" name="sessionKey" id="sessionKey">
+  <input type="hidden" name="srcPort" id="srcPort">
+  <input type="hidden" name="dstPort" id="dstPort">
+  <input type="hidden" name="pktLen" id="pktLen">
+<div class="popup_frame" >
+<div class="data_frame2">
+  <ul>
+    <li class="set1">
+      <div class="title">
+        <span class="password_word"><%ejGetML(MLG_QOS_QOSClassSetup_Str190)%></span>
+      </div>
+    </li>
+    <div class="space"></div>
+    <li class="set1">
+      <div class="title"><%ejGetML(MLG_QOS_QOSClassSetup_Str16)%></div>
+      <div class="w_text">
+        <ul>
+          <li class="all_table"><input name="rulsEnbl" id="rulsEnbl" type="checkbox" />&nbsp;<%ejGetML(MLG_QOS_QOSClassSetup_Str17)%></li>
+        </ul>
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSClassSetup_Str6)%> :</li>
+          <li class="right_table"><input type="text" name="clsName" id="clsName" size="22"/></li>
+        </ul>
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSClassSetup_Str19)%></li>
+          <li class="right_table">
+            <select name="rulsOrder" id="rulsOrder" >
+<script language="javascript">
+<!-- hide
+{
+  var i = 0;
+  var order;
+  var queueclsrulsOrder = '<%ejGetOther(qosclsRulsOrder, all)%>';
+  var rules = queueclsrulsOrder.split('|');
+  var str = '';
+
+  rules.sort(sortNumber);
+  for ( i = 0; i < rules.length; i++ )
+  {
+    order = i + 1;
+    if (rules[i] == '<%ejGetML(MLG_QOS_QOSClassSetup_Str20)%>')
+    {
+      str += "<option value='" + order + "' selected>" + rules[i] + "</option>";
+    }
+    else if (rules[i] != '')
+    {
+        str += "<option value='" + order + "'>" + rules[i] + "</option>";
+    }
+  }
+  $('#rulsOrder').append(str);
+}
+// done hiding -->
+</script>
+            </select>
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li class="space"></li>
+    <li class="set1">
+      <div class="title"><%ejGetML(MLG_QOS_QOSClassSetup_Str21)%></div>
+      <div class="w_text"><%ejGetML(MLG_QOS_QOSClassSetup_Str22)%></div>
+    </li>
+    <li class="set2">
+      <div class="title2">
+        <span class="i_title2"><%ejGetML(MLG_QOS_QOSClassSetup_Str23)%></span>
+      </div>
+      <div class="w_text">
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSClassSetup_Str24)%></li>
+          <li class="right_table">
+            <select name="classIf" id="classIf" onChange="changeclassIf();">
+            </select>
+          </li>
+        </ul>
+      </div>
+<!--
+        <ul>
+          <li class="left_table">To Interface:</li>
+          <li class="right_table">
+            <select name="classEgressIfc" id="classEgressIfc" onChange="changeclassIf();">
+            </select>
+          </li>
+        </ul>
+-->
+			<div class="w_text" id= "eType">
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSClassSetup_Str26)%></li>
+          <li class="right_table">
+            <select name="ethertype" id="ethertype" onChange="changeEtherType();">
+              <option value='-1'><%ejGetML(MLG_QOS_QOSClassSetup_Str179)%></option>
+              <option value='800'><%ejGetML(MLG_QOS_QOSClassSetup_Str180)%></option>
+              <option value='806'><%ejGetML(MLG_QOS_QOSClassSetup_Str181)%> </option>
+              <option value='8863'><%ejGetML(MLG_QOS_QOSClassSetup_Str182)%></option>
+              <option value='8864'><%ejGetML(MLG_QOS_QOSClassSetup_Str183)%></option>
+              <option value='8100'><%ejGetML(MLG_QOS_QOSClassSetup_Str184)%></option>
+              <option value='86DD'><%ejGetML(MLG_QOS_QOSClassSetup_Str189)%></option>
+            </select>
+          </li>
+        </ul>
+      </div>
+			<div  id="eTypeRoute" class="w_text" >
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSClassSetup_Str26)%></li>
+          <li class="right_table">
+            <select name="etherTypeRoute" id="etherTypeRoute" onChange="changeEtherType();">
+              <option value='-1'><%ejGetML(MLG_QOS_QOSClassSetup_Str179)%></option>
+              <option value='800'><%ejGetML(MLG_QOS_QOSClassSetup_Str180)%></option>
+              <option value='8100'><%ejGetML(MLG_QOS_QOSClassSetup_Str184)%></option>
+              <option value='86DD'><%ejGetML(MLG_QOS_QOSClassSetup_Str189)%></option>
+            </select>
+          </li>
+        </ul>
+      </div>
+      <div class="title2"><span class="i_title2"><%ejGetML(MLG_QOS_QOSClassSetup_Str29)%></span></div>
+      <div class="w_text">
+        <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+          <tr>
+            <td>
+              <table width="100%" cellpadding="0" cellspacing="0" style="line-height:28px;"  >
+                <tr >
+                  <td ><center><input type="checkbox" name="srcipenbl" id="srcipenbl" onClick="checkSrcExcl();"/></center></td>
+                  <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str30)%></td>
+                  <td ><input type="text" name="srcAddr" id="srcAddr" size="39" maxlength="39"/> </td>
+                  <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str31)%>/<%ejGetML(MLG_Common_PrefixLength)%></td>
+                  <td ><input type="text" name="srcMask" id="srcMask" size="16" maxlength="16"/></td>
+                  <td ><center><input type="checkbox" name="srcIpExclude" id="srcIpExclude" /><%ejGetML(MLG_QOS_QOSClassSetup_Str32)%></center></td>
+                </tr>
+                <tr >
+                  <td ><center><input type="checkbox" name="srcportenbl" id="srcportenbl" onClick="checkSrcExcl();" /></center></td>
+                  <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str33)%></td>
+                  <td ><input type="text" name="srcstartport" id="srcstartport" size="5" maxlength="5" value=""/>~<input type="text" name="srcendport" id="srcendport" size="5" maxlength="5" value=""/></td>
+                  <td >&nbsp;</td>
+                  <td >&nbsp;</td>
+                  <td ><center><input type="checkbox" name="srcPortExclude" id="srcPortExclude" /> <%ejGetML(MLG_QOS_QOSClassSetup_Str32)%></center></td>
+                </tr>
+                <tr>
+                  <td ><center><input type="checkbox" name="srcmacenbl" id="srcmacenbl" onClick="checkSrcExcl();"/></center></td>
+                  <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str34)%></td>
+                  <!--  // __ZyXEL__, Albert, 20140117, add MAC address hint for Thailand    -->  
+                  <td ><input name="srcMacAddr" id="srcMacAddr" type="text" size="17" maxlength="17" value=""/>(xx:xx:xx:xx:xx:xx)</td>
+                  <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str35)%></td>
+                  <td ><input type="text" name="srcMacMask" id="srcMacMask" size="17" maxlength="17" value=""/></td>
+                  <td><center><input type="checkbox" name="srcMacExclude" id="srcMacExclude" /> <%ejGetML(MLG_QOS_QOSClassSetup_Str32)%></center></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="title2"><span class="i_title2"><%ejGetML(MLG_QOS_QOSClassSetup_Str36)%></span></div>
+      <div class="w_text">
+        <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+          <tr>
+            <td>
+              <table width="100%" cellpadding="0" cellspacing="0" style="line-height:28px;"  >
+                <tr >
+                  <td ><center><input type="checkbox" name="dstipenbl" id="dstipenbl" onClick="checkDstExcl();"/></center></td>
+                  <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str30)%></td>
+                  <td ><input type="text" name="dstAddr" id="dstAddr" size="39" maxlength="39" value=""/></td>
+                  <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str31)%>/<%ejGetML(MLG_Common_PrefixLength)%></td>
+                  <td ><input type="text" name="dstMask" id="dstMask" size="16" maxlength="16" value=""/></td>
+                  <td ><center><input type="checkbox" name="destIpExclude" id="destIpExclude" /><%ejGetML(MLG_QOS_QOSClassSetup_Str32)%></center></td>
+                </tr>
+                <tr>
+                  <td ><center><input type="checkbox" name="dstportenbl" id="dstportenbl" onClick="checkDstExcl();"/></center></td>
+                  <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str33)%></td>
+                  <td ><input type="text" name="dststartport" id="dststartport" size="5" maxlength="5" value=""/>~
+                  <input type="text" name="dstendport" id="dstendport" size="5" maxlength="5" value=""/></td>
+                  <td >&nbsp;</td>
+                  <td >&nbsp;</td>
+                  <td ><center><input type="checkbox" name="destportExclude" id="destportExclude" /> <%ejGetML(MLG_QOS_QOSClassSetup_Str32)%></center></td>
+                </tr>
+                <tr>
+                  <td ><center><input type="checkbox" name="dstmacenbl" id="dstmacenbl" onClick="checkDstExcl();"/></center></td>
+                  <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str34)%></td>
+                  <!--  // __ZyXEL__, Albert, 20140117, add MAC address hint for Thailand    -->  
+                  <td ><input name="dstMacAddr" id="dstMacAddr" type="text" size="17" maxlength="17" value=""/>(xx:xx:xx:xx:xx:xx)</td>
+                  <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str35)%></td>
+                  <td ><input type="text" name="dstMacMask" id="dstMacMask" size="17" maxlength="17" value=""/></td>
+                  <td ><center><input type="checkbox" name="dstMacExclude" id="dstMacExclude" /> <%ejGetML(MLG_QOS_QOSClassSetup_Str32)%></center></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="title2">
+        <span class="i_title2"><%ejGetML(MLG_QOS_QOSClassSetup_Str37)%></span>
+      </div>
+      <div class="w_text3">
+        <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+          <tr>
+            <table width="100%" cellpadding="0" cellspacing="0" style="line-height:28px;" >
+              <tr >
+                <td width="4%" ><center><input type="checkbox" name="serviceTypeenbl" id="serviceTypeenbl" value="" onClick="checkOthersExcl();" /></center></td>
+                <td width="15%" ><%ejGetML(MLG_QOS_QOSClassSetup_Str38)%></td>
+                <td width="50%" >
+                  <select name="serviceType" id="serviceType" >
+                    <option value="Age of Empires"> <%ejGetML(MLG_QOS_QOSClassSetup_Str58)%></option>
+                    <option value="Age of Empires II"> <%ejGetML(MLG_QOS_QOSClassSetup_Str59)%></option>
+                    <option value="Age of Empires III"> <%ejGetML(MLG_QOS_QOSClassSetup_Str60)%></option>
+                    <option value="Age of Mythology"> <%ejGetML(MLG_QOS_QOSClassSetup_Str61)%></option>
+                    <option value="Alien vs. Predator 2"> <%ejGetML(MLG_QOS_QOSClassSetup_Str62)%></option>
+                    <option value="Asherons Call"> <%ejGetML(MLG_QOS_QOSClassSetup_Str63)%></option>
+                    <option value="Baldurs Gate"> <%ejGetML(MLG_QOS_QOSClassSetup_Str64)%></option>
+                    <option value="Baldurs Gate II"> <%ejGetML(MLG_QOS_QOSClassSetup_Str65)%></option>
+                    <option value="Battlefield 1942"> <%ejGetML(MLG_QOS_QOSClassSetup_Str66)%></option>
+                    <option value="Battlefield Vietnam"> <%ejGetML(MLG_QOS_QOSClassSetup_Str67)%></option>
+                    <option value="Battlestations Midway"> <%ejGetML(MLG_QOS_QOSClassSetup_Str68)%></option>
+                    <option value="Black and White"> <%ejGetML(MLG_QOS_QOSClassSetup_Str69)%></option>
+                    <option value="Call of Duty"> <%ejGetML(MLG_QOS_QOSClassSetup_Str70)%></option>
+                    <option value="Call of Duty - United Offensive"> <%ejGetML(MLG_QOS_QOSClassSetup_Str71)%></option>
+                    <option value="Call of Duty 2"> <%ejGetML(MLG_QOS_QOSClassSetup_Str72)%></option>
+                    <option value="Call of Duty 4"> <%ejGetML(MLG_QOS_QOSClassSetup_Str73)%></option>
+                    <option value="Civilization III"> <%ejGetML(MLG_QOS_QOSClassSetup_Str74)%></option>
+                    <option value="Civilization IV"> <%ejGetML(MLG_QOS_QOSClassSetup_Str75)%></option>
+                    <option value="Close Combat"> <%ejGetML(MLG_QOS_QOSClassSetup_Str76)%></option>
+                    <option value="Close Combat III: The Russian Front"><%ejGetML(MLG_QOS_QOSClassSetup_Str77)%></option>
+                    <option value="Close Combat IV"> <%ejGetML(MLG_QOS_QOSClassSetup_Str78)%></option>
+                    <option value="Close Combat V"> <%ejGetML(MLG_QOS_QOSClassSetup_Str79)%></option>
+                    <option value="Command and Conquer 3 TW"> <%ejGetML(MLG_QOS_QOSClassSetup_Str80)%></option>
+                    <option value="Command and Conquer Generals"> <%ejGetML(MLG_QOS_QOSClassSetup_Str81)%></option>
+                    <option value="Dark Reign 2"> <%ejGetML(MLG_QOS_QOSClassSetup_Str82)%></option>
+                    <option value="Delta Force"> <%ejGetML(MLG_QOS_QOSClassSetup_Str83)%></option>
+                    <option value="Delta Force II"> <%ejGetML(MLG_QOS_QOSClassSetup_Str162)%></option>
+                    <option value="Diablo"> <%ejGetML(MLG_QOS_QOSClassSetup_Str84)%></option>
+                    <option value="Diablo II"> <%ejGetML(MLG_QOS_QOSClassSetup_Str85)%></option>
+                    <option value="DirecX 7-8 Games"> <%ejGetML(MLG_QOS_QOSClassSetup_Str86)%></option>
+                    <option value="Doom I-II-III"> <%ejGetML(MLG_QOS_QOSClassSetup_Str87)%></option>
+                    <option value="Dune 2000"> <%ejGetML(MLG_QOS_QOSClassSetup_Str88)%></option>
+                    <option value="Dungeons and Dragons Online"> <%ejGetML(MLG_QOS_QOSClassSetup_Str89)%></option>
+                    <option value="F-16 Mig. 29"> <%ejGetML(MLG_QOS_QOSClassSetup_Str90)%></option>
+                    <option value="F-22 Lightning 3"> <%ejGetML(MLG_QOS_QOSClassSetup_Str91)%></option>
+                    <option value="F-22 Raptor"> <%ejGetML(MLG_QOS_QOSClassSetup_Str92)%></option>
+                    <option value="Fighter Ace II"> <%ejGetML(MLG_QOS_QOSClassSetup_Str93)%></option>
+                    <option value="Flight Simulator 2000 - 2002"> <%ejGetML(MLG_QOS_QOSClassSetup_Str94)%></option>
+                    <option value="Flight Simulator 2004"> <%ejGetML(MLG_QOS_QOSClassSetup_Str95)%></option>
+                    <option value="GameSpy"> <%ejGetML(MLG_QOS_QOSClassSetup_Str96)%></option>
+                    <option value="Ghost Recon: Advanced Warfighter 2"> <%ejGetML(MLG_QOS_QOSClassSetup_Str97)%></option>
+                    <option value="GNUtella"> <%ejGetML(MLG_QOS_QOSClassSetup_Str98)%></option>
+                    <option value="Guild Wars"> <%ejGetML(MLG_QOS_QOSClassSetup_Str99)%></option>
+                    <option value="Half Life"> <%ejGetML(MLG_QOS_QOSClassSetup_Str100)%></option>
+                    <option value="Half Life II"> <%ejGetML(MLG_QOS_QOSClassSetup_Str101)%></option>
+                    <option value="Halo - Combat Evolved"> <%ejGetML(MLG_QOS_QOSClassSetup_Str102)%></option>
+                    <option value="Heretic II"> <%ejGetML(MLG_QOS_QOSClassSetup_Str103)%></option>
+                    <option value="Hexen II"> <%ejGetML(MLG_QOS_QOSClassSetup_Str104)%></option>
+                    <option value="Kali"> <%ejGetML(MLG_QOS_QOSClassSetup_Str105)%></option>
+                    <option value="KaZaA"> <%ejGetML(MLG_QOS_QOSClassSetup_Str106)%></option>
+                    <option value="Lord of the Rings Online"> <%ejGetML(MLG_QOS_QOSClassSetup_Str107)%></option>
+                    <option value="Lord of the Rings: Battle for Middle Earth"> <%ejGetML(MLG_QOS_QOSClassSetup_Str108)%></option>
+                    <option value="Lord of the Rings: Battle for Middle Earth 2"> <%ejGetML(MLG_QOS_QOSClassSetup_Str109)%></option>
+                    <option value="Lord of the Rings: War of the Rings"> <%ejGetML(MLG_QOS_QOSClassSetup_Str110)%></option>
+                    <option value="Madden 06"> <%ejGetML(MLG_QOS_QOSClassSetup_Str111)%></option>
+                    <option value="Madden 07"> <%ejGetML(MLG_QOS_QOSClassSetup_Str112)%></option>
+                    <option value="MechWarrior 4"> <%ejGetML(MLG_QOS_QOSClassSetup_Str113)%></option>
+                    <option value="MSN Gaming Zone"> <%ejGetML(MLG_QOS_QOSClassSetup_Str114)%></option>
+                    <option value="Need For Speed 3"> <%ejGetML(MLG_QOS_QOSClassSetup_Str115)%></option>
+                    <option value="Need for Speed Porsche"> <%ejGetML(MLG_QOS_QOSClassSetup_Str116)%></option>
+                    <option value="Outlaws"> <%ejGetML(MLG_QOS_QOSClassSetup_Str117)%></option>
+                    <option value="Rainbow 6"> <%ejGetML(MLG_QOS_QOSClassSetup_Str118)%></option>
+                    <option value="Rouge Spear"> <%ejGetML(MLG_QOS_QOSClassSetup_Str119)%></option>
+                    <option value="Starcraft"> <%ejGetML(MLG_QOS_QOSClassSetup_Str120)%></option>
+                    <option value="Star Wars"> <%ejGetML(MLG_QOS_QOSClassSetup_Str121)%></option>
+                    <option value="Supreme Commander"> <%ejGetML(MLG_QOS_QOSClassSetup_Str122)%></option>
+                    <option value="Tabula Rasa"> <%ejGetML(MLG_QOS_QOSClassSetup_Str123)%></option>
+                    <option value="Tiberian Sun"> <%ejGetML(MLG_QOS_QOSClassSetup_Str124)%></option>
+                    <option value="Ultima"> <%ejGetML(MLG_QOS_QOSClassSetup_Str125)%></option>
+                    <option value="Quake 3 Server"> <%ejGetML(MLG_QOS_QOSClassSetup_Str126)%></option>
+                    <option value="Quake 2 Server"> <%ejGetML(MLG_QOS_QOSClassSetup_Str127)%></option>
+                    <option value="World of Warcraft"> <%ejGetML(MLG_QOS_QOSClassSetup_Str128)%></option>
+                    <option value="Sony PS-2 - PS-3"> <%ejGetML(MLG_QOS_QOSClassSetup_Str129)%></option>
+                    <option value="Nintendo Wii"> <%ejGetML(MLG_QOS_QOSClassSetup_Str130)%></option>
+                    <option value="Xbox 360"> <%ejGetML(MLG_QOS_QOSClassSetup_Str131)%></option>
+                    <option value="DirecTV Receiver 1"> <%ejGetML(MLG_QOS_QOSClassSetup_Str132)%></option>
+                    <option value="DirecTV Receiver 2"> <%ejGetML(MLG_QOS_QOSClassSetup_Str133)%></option>
+                    <option value="DirecTV Receiver 3"> <%ejGetML(MLG_QOS_QOSClassSetup_Str134)%></option>
+                    <option value="ITunes Music Share"> <%ejGetML(MLG_QOS_QOSClassSetup_Str135)%></option>
+                    <option value="Net2Phone"> <%ejGetML(MLG_QOS_QOSClassSetup_Str136)%></option>
+                    <option value="NetFone"> <%ejGetML(MLG_QOS_QOSClassSetup_Str137)%></option>
+                    <option value="Slingbox"> <%ejGetML(MLG_QOS_QOSClassSetup_Str138)%></option>
+                    <option value="Quick Time 4 Server"> <%ejGetML(MLG_QOS_QOSClassSetup_Str139)%></option>
+                    <option value="Webphone"> <%ejGetML(MLG_QOS_QOSClassSetup_Str140)%></option>
+                    <option value="Gnutella"> <%ejGetML(MLG_QOS_QOSClassSetup_Str141)%></option>
+                    <option value="PC Anywhere"> <%ejGetML(MLG_QOS_QOSClassSetup_Str142)%></option>
+                    <option value="Remote Anything"> <%ejGetML(MLG_QOS_QOSClassSetup_Str143)%></option>
+                    <option value="Remote AnyWhere"> <%ejGetML(MLG_QOS_QOSClassSetup_Str144)%></option>
+                    <option value="Remote Desktop Connection"> <%ejGetML(MLG_QOS_QOSClassSetup_Str145)%></option>
+                    <option value="Windows 2000 Terminal"> <%ejGetML(MLG_QOS_QOSClassSetup_Str146)%></option>
+                    <option value="IPSec"> <%ejGetML(MLG_QOS_QOSClassSetup_Str147)%></option>
+                    <option value="L2TP"> <%ejGetML(MLG_QOS_QOSClassSetup_Str148)%></option>
+                    <option value="PPTP"> <%ejGetML(MLG_QOS_QOSClassSetup_Str149)%></option>
+                    <option value="Shiva VPN"> <%ejGetML(MLG_QOS_QOSClassSetup_Str150)%></option>
+                    <option value="DNS Server"> <%ejGetML(MLG_QOS_QOSClassSetup_Str151)%></option>
+                    <option value="FTP Server"> <%ejGetML(MLG_QOS_QOSClassSetup_Str152)%></option>
+                    <option value="LDAP Server"> <%ejGetML(MLG_QOS_QOSClassSetup_Str153)%></option>
+                    <option value="POP2 Mail Server"> <%ejGetML(MLG_QOS_QOSClassSetup_Str154)%></option>
+                    <option value="POP3 Mail Server"> <%ejGetML(MLG_QOS_QOSClassSetup_Str155)%></option>
+                    <option value="NNTP Server"> <%ejGetML(MLG_QOS_QOSClassSetup_Str156)%></option>
+                    <option value="SMTP Mail Server"> <%ejGetML(MLG_QOS_QOSClassSetup_Str157)%></option>
+                    <option value="Telnet Server"> <%ejGetML(MLG_QOS_QOSClassSetup_Str158)%></option>
+                    <option value="Web Server"> <%ejGetML(MLG_QOS_QOSClassSetup_Str159)%></option>
+                    <option value="SIP Server"> <%ejGetML(MLG_QOS_QOSClassSetup_Str160)%></option>
+                    <option value="RTSP Server"> <%ejGetML(MLG_QOS_QOSClassSetup_Str161)%></option>
+                  </select>
+                </td>
+                <td>&nbsp</td>
+                <td width="14%" ><center><input type="checkbox" name="serviceTypeExclude" id="serviceTypeExclude" /><%ejGetML(MLG_QOS_QOSClassSetup_Str32)%></center></td>
+              </tr>
+              <tr >
+                <td><center><input type="checkbox" name="protenbl" id="protenbl" onclick="changeProtocol();" /></center></td>
+                <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str39)%></td>
+                <td >
+                  <select name="protocol" id="protocol" onchange="changeProtocol();">
+                    <option value='6' > <%ejGetML(MLG_Common_TCP)%></option>
+                    <option value='17'> <%ejGetML(MLG_Common_UDP)%></option>
+                    <option value='1'> <%ejGetML(MLG_Common_ICMP)%></option>
+                    <option value='2'> <%ejGetML(MLG_Common_IGMP)%></option>
+                    <option value='-2'> <%ejGetML(MLG_QOS_QOSClassSetup_Str40)%></option>
+                  </select>
+                  <input type="text" name="cfgprotocol" id="cfgprotocol" size="5" maxlength="5" value=""/>
+                </td>
+                <td >&nbsp</td>
+                <td ><center><input type="checkbox" name="protExclude" id="protExclude" onClick="checkOthersExcl();"/><%ejGetML(MLG_QOS_QOSClassSetup_Str32)%></center></td>
+              </tr>
+              <tr >
+                <td >
+                  <center><input type="checkbox" name="ipoptionlistenbl" id="ipoptionlistenbl" onClick="checkOthersExcl();"/></center>
+                </td>
+                <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str167)%> </td>
+                <td >
+                  <select name="ipoptionlist" id="ipoptionlist" >
+                  	<option value='0'>&nbsp</option>
+                    <option value='1'><%ejGetML(MLG_QOS_QOSClassSetup_Str41)%></option>
+                    <option value='2'><%ejGetML(MLG_QOS_QOSClassSetup_Str42)%></option>
+                    <option value='3'><%ejGetML(MLG_QOS_QOSClassSetup_Str411)%></option>
+                    <option value='4'><%ejGetML(MLG_QOS_QOSClassSetup_Str421)%></option>
+                  </select>
+                    <input type="text" name="ipOptionValue" id="ipOptionValue" size="10"/>
+                </td>
+                <td>&nbsp</td>
+                <td >
+                  <center><input type="checkbox" name="ipOptionExclude" id="ipOptionExclude" /> <%ejGetML(MLG_QOS_QOSClassSetup_Str32)%></center>
+                </td>
+              </tr>
+              <tr >
+                <td >
+                  <center><input type="checkbox" name="pktlenenbl" id="pktlenenbl" onClick="checkOthersExcl();"/></center>
+                </td>
+                <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str43)%> </td>
+                <td >
+                  <input type="text" name="startpktlen" id="startpktlen" size="5" maxlength="5"/>~
+                  <input type="text" name="endpktlen" id="endpktlen" size="5" maxlength="5"/>
+                </td>
+                <td >&nbsp </td>
+                <td >
+                  <center><input type="checkbox" name="pktLenExclude" id="pktLenExclude" value="Active"/> <%ejGetML(MLG_QOS_QOSClassSetup_Str32)%></center>
+                </td>
+              </tr>
+              <tr>
+                <td >
+                  <center><input type="checkbox" name="cfgdscpenbl" id="cfgdscpenbl"  onClick="checkOthersExcl();"/></center>
+                </td>
+                <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str168)%> </td>
+                <td ><input type="text" name="dscpCheck" id="dscpCheck" size="5" maxlength="2"/>(0~63)</td>
+                <td >&nbsp </td>
+                <td >
+                  <center><input type="checkbox" name="dscpExclude" id="dscpExclude" /> <%ejGetML(MLG_QOS_QOSClassSetup_Str32)%></center>
+                </td>
+              </tr>
+              <tr>
+                <td ><center><input type="checkbox" name="vlan8021penbl" id="vlan8021penbl" onClick="checkOthersExcl();"/></center></td>
+                <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str169)%></td>
+                <td >
+                  <select name="vlan8021p" id="vlan8021p">
+                    <option value='0' selected="selected"><%ejGetML(MLG_QOS_QOSClassSetup_Str171)%></option>
+                    <option value='1'><%ejGetML(MLG_QOS_QOSClassSetup_Str172)%></option>
+                    <option value='2'><%ejGetML(MLG_QOS_QOSClassSetup_Str173)%></option>
+                    <option value='3'><%ejGetML(MLG_QOS_QOSClassSetup_Str174)%></option>
+                    <option value='4'><%ejGetML(MLG_QOS_QOSClassSetup_Str175)%></option>
+                    <option value='5'><%ejGetML(MLG_QOS_QOSClassSetup_Str176)%></option>
+                    <option value='6'><%ejGetML(MLG_QOS_QOSClassSetup_Str177)%></option>
+                    <option value='7'><%ejGetML(MLG_QOS_QOSClassSetup_Str178)%></option>
+                  </select>
+                </td>
+                <td >&nbsp </td>
+                <td >
+                  <center><input type="checkbox" name="etherPrioExclude" id="etherPrioExclude" /> <%ejGetML(MLG_QOS_QOSClassSetup_Str32)%></center>
+                </td>
+              </tr>
+              <tr>
+                <td >
+                  <center><input type="checkbox" name="vlanidenbl" id="vlanidenbl" onClick="checkOthersExcl();"/></center>
+                </td>
+                <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str170)%></td>
+                <td >
+                  <input type="text" name="vlanID" id="vlanID" size="5" maxlength="4"/>(0~4094)
+                </td>
+                <td >&nbsp </td>
+                <td >
+                  <center><input type="checkbox" name="vlanIDExclude" id="vlanIDExclude" /> <%ejGetML(MLG_QOS_QOSClassSetup_Str32)%></center>
+                </td>
+              </tr>
+              <tr>
+                <td >
+                  <center><input type="checkbox" name="tcpAck" id="tcpAck" onClick="checkOthersExcl();"/></center>
+                </td>
+                <td ><%ejGetML(MLG_QOS_QOSClassSetup_Str44)%></td>
+                <td >&nbsp;</td>
+                <td >&nbsp;</td>
+                <td >
+                  <center><input type="checkbox" name="tcpAckExclude" id="tcpAckExclude" /> <%ejGetML(MLG_QOS_QOSClassSetup_Str32)%></center>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+    </li>
+    <div class="space"></div>
+    <li class="set1">
+      <div class="title"><%ejGetML(MLG_QOS_QOSClassSetup_Str45)%></div>
+      <div class="w_text"><%ejGetML(MLG_QOS_QOSClassSetup_Str46)%></div>
+    </li>
+    <li class="set2">
+      <div class="w_text">
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSClassSetup_Str8)%>   :</li>
+          <li class="right_table">
+            <select name="dscp" id="dscp" onChange="changeDscp();">
+              <option value="-1" selected="selected"><%ejGetML(MLG_QOS_QOSClassSetup_Str12)%></option>
+              <option value="-2"><%ejGetML(MLG_QOS_QOSClassSetup_Str187)%></option>
+              <option value="-3"><%ejGetML(MLG_QOS_QOSClassSetup_Str47)%></option>
+            </select>
+              <input type="text" name="dscpMark" id="dscpMark" size="5" maxlength="2" /><font class="strNote">(0~63)</font>
+          </li>
+        </ul>
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSClassSetup_Str9)%>   :</li>
+          <li class="right_table">
+            <select name="wanVlan8021p" id="wanVlan8021p">
+              <option value='-1' selected="selected"><%ejGetML(MLG_QOS_QOSClassSetup_Str12)%></option>
+              <option value='0'><%ejGetML(MLG_QOS_QOSClassSetup_Str171)%></option>
+              <option value='1'><%ejGetML(MLG_QOS_QOSClassSetup_Str172)%></option>
+              <option value='2'><%ejGetML(MLG_QOS_QOSClassSetup_Str173)%></option>
+              <option value='3'><%ejGetML(MLG_QOS_QOSClassSetup_Str174)%></option>
+              <option value='4'><%ejGetML(MLG_QOS_QOSClassSetup_Str175)%></option>
+              <option value='5'><%ejGetML(MLG_QOS_QOSClassSetup_Str176)%></option>
+              <option value='6'><%ejGetML(MLG_QOS_QOSClassSetup_Str177)%></option>
+              <option value='7'><%ejGetML(MLG_QOS_QOSClassSetup_Str178)%></option>
+            </select>
+          </li>
+        </ul>
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSClassSetup_Str170)%>   :</li>
+          <li class="right_table">
+            <select name="wanVlanIDList" id="wanVlanIDList" onChange="changeWanVlanIDlist();">
+              <option value="-1" selected="selected"><%ejGetML(MLG_QOS_QOSClassSetup_Str12)%> </option>
+              <option value="2"><%ejGetML(MLG_QOS_QOSClassSetup_Str48)%> </option>
+              <option value="1" ><%ejGetML(MLG_QOS_QOSClassSetup_Str49)%> </option>
+              <option value="3"><%ejGetML(MLG_QOS_QOSClassSetup_Str50)%> </option>
+            </select>
+            <input type="text" name="wanVlanID" id="wanVlanID" size="5" maxlength="4"/>
+            <font class="strNote">(0~4094)</font></li>
+        </ul>
+      </div>
+    </li>
+    <div class="space"></div>
+    <li class="set1">
+      <div class="title"><%ejGetML(MLG_QOS_QOSClassSetup_Str191)%></div>
+      <div class="w_text"><%ejGetML(MLG_QOS_QOSClassSetup_Str192)%></div>
+    </li>
+    <li class="set2">
+      <div class="w_text">
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSClassSetup_Str188)%></li>
+          <li class="right_table">
+            <select name="fwIntf" id="fwIntf" >
+              <option value="Unchange" selected="selected"><%ejGetML(MLG_QOS_QOSClassSetup_Str12)%></option>
+            </select>
+          </li>
+        </ul>
+      </div>
+    </li>
+    <div class="space"></div>
+    <li class="set1">
+      <div class="title"><%ejGetML(MLG_QOS_QOSClassSetup_Str193)%></div>
+      <div class="w_text"><%ejGetML(MLG_QOS_QOSClassSetup_Str52)%></div>
+    </li>
+    <li class="set2">
+      <div class="w_text">
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSClassSetup_Str53)%></li>
+          <li class="right_table">
+            <select name="queuekey" id="queuekey" >
+            </select>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
+</div>
+</form>

@@ -1,0 +1,113 @@
+<script language="javascript">
+	
+function isDuplicateRecord(Oui, Ser)
+{
+   var Option125 = '<%ejGetOther(Option125Entry)%>';
+   var info = Option125.split('|');
+
+   if (info != '') {
+      for ( i = 0; i < info.length; i++ ) {
+         if (info[i] != '') {
+            var names = info[i].split('/');
+            if ((names[0] != '' && names[0] == Oui) || (names[1] != '' && names[1] == Ser)) {
+               return false;
+            }
+         }
+      }
+   }
+   return true;
+}
+
+function isValidHexString(value){
+   var hexExp = /^[0-9a-fA-F]+$/;
+   if (value.match(hexExp)) {
+       return true;
+   } else {
+       return false;
+   }
+}
+
+function btnSave() {
+  	with ( document.forms[0] ) {
+		var msg = "";
+		var hexExp = /^[0-9a-fA-F]+$/;
+		
+        if (HexBox.checked == true) {
+            op43Hex.value=1;
+        } else {
+            op43Hex.value=0;
+        }
+        
+		if (isDuplicateRecord(oui.value, serial.value) == false) {
+			msg = '<%ejGetML(MLG_Network_VendorSpecific_Str10)%>';
+			hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}
+		else if (oui.value == "" && serial.value != "" && product.value != "") {
+		    msg = '<%ejGetML(MLG_Network_VendorSpecific_Str11)%>';
+			hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}
+		else if (oui.value != "" && HexBox.checked == true && isValidHexString(oui.value) == false) { // for hex string
+		    msg = '<%ejGetML(MLG_Network_VendorSpecific_Str12)%>';
+			hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}
+		else {
+			sessionKey.value = mainFrame.gblsessionKey;
+			submit();
+			$('.ui-dialog-titlebar-close').trigger('click');
+			$.openLoadingMask(1);
+			return;
+        }
+    }
+}
+ 
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnSave(); });
+
+</script>
+   <form action="/pages/tabFW/homeNetworking-Option125Entry.cmd" method="post" target="mainFrame">
+      <input type="hidden" name="action" id="action" value="add">
+      <input type="hidden" name="sessionKey" id="sessionKey" value="">
+      <input type="hidden" name="op43Hex" id="op43Hex" value="">
+      <div class="popup_frame" >
+
+         <div class="data_frame"><ul>
+<!--level 1 start-->
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_VendorSpecific_Str2)%> :</li>
+                     <li class="right_table">
+                        <input name="oui" id="oui" size="25" maxlength="255" type="text" />
+                        <input type="checkbox" name="HexBox" value="1" checked /> HEX
+                     </li>
+                  </ul>
+               </div>
+            </li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_VendorSpecific_Str3)%> :</li>
+                     <li class="right_table">
+                        <input name="serial" id="serial" maxlength="255" size="25" />
+                     </li>
+                  </ul>
+               </div>
+            </li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_VendorSpecific_Str4)%> :</li>
+                     <li class="right_table">
+                        <input name="product" id="product" maxlength="255" size="25" />
+                     </li>
+                  </ul>
+               </div>
+            </li>
+         </ul></div>
+      </div>
+   </form>
+    

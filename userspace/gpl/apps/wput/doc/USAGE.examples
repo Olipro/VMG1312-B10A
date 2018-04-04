@@ -1,0 +1,64 @@
+Upon request here some examples on how to use wput:
+
+General Usage
+=============
+
+To transfer file 'test.txt' anonymously to ftp.somewhere.org:
+  wput ftp://ftp.somewhere.org/test.txt
+OR
+  wput test.txt ftp://ftp.somewhere.org/ 
+Or if you like to upload the file with a different filename:
+wput test.txt ftp://ftp.somewhere.org/othername.txt
+
+If you are in /home/user and a file /home/user/example/test.txt
+exists, you can do:
+  wput ftp://ftp.somewhere.org/some_folder/example/test.txt
+And wput will transfer test.txt there.
+But if /home/user/some_folder/example/test.txt exists, wput will prefer these.
+
+Using username: hell and password: heaven, you transfer:
+  wput ftp://hell:heaven@ftp.somewhere.org/test.txt
+wput is not capable of asking you for the password, but if you do not
+want to type the password on the commandline, you can use a passwordfile
+to store these data (see wputrc and passwordfile for reference).
+
+To upload a complete directory you use wput just as if you were
+going to upload files:
+  wput directory/ ftp://ftp.somewhere.org/
+which will create ftp://ftp.somewhere.org/directory/[files]
+
+See also USAGE.urlhandling
+
+Specific Tasks
+==============
+
+To transfer only the files that changed within the last 10 minutes, use:
+  find -cmin -10 ! -type d | wput -i - ftp://ftp.somewhere.org/
+Be aware of the "! -type d" flag, that will exclude the output of directories,
+because if a directory is supplied by find, wput would upload the whole
+directory.
+
+To upload only files that are newer than remote, use:
+  wput --timestamping --reupload --dont-continue ftp://ftp.somewhere.org/ dir/
+(the --timestamping-flag is described in the manpage)
+
+To tar directly to a remote url, you can use the --input-pipe flag:
+  tar cz directory | wput --input-pipe "cat; echo > /dev/null" ftp://host/file.tar.gz
+The echo > /dev/null is necessary, because wput passes additional arguments
+to the input-pipe-command, which you don't want to be passed to cat.
+See wput(1).
+
+Proxy Usage
+===========
+
+Export the environt-variable ftp_proxy:
+  export ftp_proxy=http://username:password@proxyhost:port
+(for windows users:)
+  set ftp_proxy=http://proxyhost
+
+This is for HTTP-proxies like squid. For Socks5-Proxies remove the
+http-prefix:
+  export ftp_proxy=proxyhost:port
+
+Wput will then automagically recognize these settings and use the proxy unless you
+specify --proxy off.

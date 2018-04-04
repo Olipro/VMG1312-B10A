@@ -1,0 +1,1249 @@
+<script language="javascript">
+
+var timestamp;
+var objXMLHTTP = null;
+var check = "<%ejGet(ntp_enabled)%>";
+var timeNow='<%ejGetOther(sysInfo, dateTime)%>';
+var ntpServerPrivilege = '<%ejGetOther(privilegeByUser, ntpServer)%>'; 
+
+
+var timeZonesHTML = new Array(Size);
+timeZonesHTML[0] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str59)%>';
+timeZonesHTML[1] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str60)%>';
+timeZonesHTML[2] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str61)%>';
+timeZonesHTML[3] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str62)%>';
+timeZonesHTML[4] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str63)%>';
+timeZonesHTML[5] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str64)%>';
+timeZonesHTML[6] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str65)%>';
+timeZonesHTML[7] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str66)%>';
+timeZonesHTML[8] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str67)%>';
+timeZonesHTML[9] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str68)%>';
+timeZonesHTML[10] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str69)%>';
+timeZonesHTML[11] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str70)%>';
+timeZonesHTML[12] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str71)%>';
+timeZonesHTML[13] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str72)%>';
+timeZonesHTML[14] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str73)%>';
+timeZonesHTML[15] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str74)%>';
+timeZonesHTML[16] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str75)%>';
+timeZonesHTML[17] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str76)%>';
+timeZonesHTML[18] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str77)%>';
+timeZonesHTML[19] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str78)%>';
+timeZonesHTML[20] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str79)%>';
+timeZonesHTML[21] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str80)%>';
+timeZonesHTML[22] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str81)%>';
+timeZonesHTML[23] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str82)%>';
+timeZonesHTML[24] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str83)%>';
+timeZonesHTML[25] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str84)%>';
+timeZonesHTML[26] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str85)%>';
+timeZonesHTML[27] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str86)%>';
+timeZonesHTML[28] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str87)%>';
+timeZonesHTML[29] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str88)%>';
+timeZonesHTML[30] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str89)%>';
+timeZonesHTML[31] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str90)%>';
+timeZonesHTML[32] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str91)%>';
+timeZonesHTML[33] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str92)%>';
+timeZonesHTML[34] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str93)%>';
+timeZonesHTML[35] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str94)%>';
+timeZonesHTML[36] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str95)%>';
+timeZonesHTML[37] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str96)%>';
+timeZonesHTML[38] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str97)%>';
+timeZonesHTML[39] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str98)%>';
+timeZonesHTML[40] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str99)%>';
+timeZonesHTML[41] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str100)%>';
+timeZonesHTML[42] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str101)%>';
+timeZonesHTML[43] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str102)%>';
+timeZonesHTML[44] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str103)%>';
+timeZonesHTML[45] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str104)%>';
+timeZonesHTML[46] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str105)%>';
+timeZonesHTML[47] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str106)%>';
+timeZonesHTML[48] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str107)%>';
+timeZonesHTML[49] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str108)%>';
+timeZonesHTML[50] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str109)%>';
+timeZonesHTML[51] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str110)%>';
+timeZonesHTML[52] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str111)%>';
+timeZonesHTML[53] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str112)%>';
+timeZonesHTML[54] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str113)%>';
+timeZonesHTML[55] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str114)%>';
+timeZonesHTML[56] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str115)%>';
+timeZonesHTML[57] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str116)%>';
+timeZonesHTML[58] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str117)%>';
+timeZonesHTML[59] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str118)%>';
+timeZonesHTML[60] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str119)%>';
+timeZonesHTML[61] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str120)%>';
+timeZonesHTML[62] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str121)%>';
+timeZonesHTML[63] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str122)%>';
+timeZonesHTML[64] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str123)%>';
+timeZonesHTML[65] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str124)%>';
+timeZonesHTML[66] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str125)%>';
+timeZonesHTML[67] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str126)%>';
+timeZonesHTML[68] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str127)%>';
+timeZonesHTML[69] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str128)%>';
+timeZonesHTML[70] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str129)%>';
+timeZonesHTML[71] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str130)%>';
+timeZonesHTML[72] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str131)%>';
+timeZonesHTML[73] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str132)%>';
+timeZonesHTML[74] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str133)%>';
+timeZonesHTML[75] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str134)%>';
+timeZonesHTML[76] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str135)%>';
+timeZonesHTML[77] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str136)%>';
+timeZonesHTML[78] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str137)%>';
+timeZonesHTML[79] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str138)%>';
+timeZonesHTML[80] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str139)%>';
+timeZonesHTML[81] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str140)%>';
+timeZonesHTML[82] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str141)%>';
+timeZonesHTML[83] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str142)%>';
+timeZonesHTML[84] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str143)%>';
+timeZonesHTML[85] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str144)%>';
+timeZonesHTML[86] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str145)%>';
+timeZonesHTML[87] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str146)%>';
+timeZonesHTML[88] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str147)%>';
+timeZonesHTML[89] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str148)%>';
+timeZonesHTML[90] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str149)%>';
+timeZonesHTML[91] = '<%ejGetML(MLG_Maintenance_TimeSetting_Str150)%>';
+
+
+function strFormat(str,iLen)   
+{   
+	if(str.length<iLen)   
+	{   
+		for(iIndex=0;iIndex<iLen-str.length;iIndex++)   
+		{
+		  
+			str="0"+str;   
+		}   
+		return str;   
+	}   
+	else {
+		return str;
+	}
+}
+
+function IncreaseSec()
+{
+	var now = new Date(timestamp);
+	var days = strFormat(now.getDate().toString(),2);
+	var years = now.getFullYear();
+	var months = now.toString().substr(4,3);
+	var hr = strFormat(now.getHours().toString(),2);
+	var min = strFormat(now.getMinutes().toString(),2);
+	var sec = strFormat(now.getSeconds().toString(),2);
+	$("#clock1").html(days+" "+months+"  "+years);
+	$("#showTime").html(hr + ":" + min + ":" + sec);
+	timestamp +=1000;
+	setTimeout('IncreaseSec()', 1000);
+}
+
+function getonlinetime()
+{
+	if ( objXMLHTTP != null ) {
+		objXMLHTTP.open("POST","/pages/maintenance/time/TimeZoneGetNew.html",true);
+		objXMLHTTP.onreadystatechange = function() 
+		{
+			if(objXMLHTTP.readyState == 4) {
+				var servertime=objXMLHTTP.responseText;
+				servertimestamp = Date.parse(servertime);
+				if ( !isNaN ( servertimestamp ) ) {
+					timestamp = servertimestamp;
+				}
+				
+				setTimeout('getonlinetime()', 10000);
+			}
+		}
+		objXMLHTTP.send(null);
+	}
+}
+
+var state = '<%ejGet(sntpRefresh)%>';
+if ( state == '1' ) {
+	sntpRefresh.value = 0;
+}
+
+function writeTimeZoneList() {
+	var str='';
+	for( var i = 0; i < Size; i++ )
+	{
+		//__Change for multilingual, Read the string from HTML
+		str += "<option value=" + getLocalTimeZoneName(i) + ">" + timeZonesHTML[i] + "</option>";
+		//str += "<option value=" + getLocalTimeZoneName(i) + ">" + timeZones[i][0] + "</option>";
+	}
+	$('#cboTimeZone').append(str);
+}
+
+function ntpChange(showMsg) {
+	var i = 0;
+	var SV1, SV2, IV1, IV2;
+	var err = 0;
+	for ( i = 0 ; i < 5 ; i ++ ) {
+		for ( j = i+1 ; j < 5 ; j ++ ) {
+			SV1 = $("select[name^=ntpServerSel]")[i][$("select[name^=ntpServerSel]")[i].selectedIndex].value;
+			SV2 = $("select[name^=ntpServerSel]")[j][$("select[name^=ntpServerSel]")[j].selectedIndex].value;
+			if ( SV1 == SV2 && SV1 != "Other" && SV1 != "None" ) {
+				$("select[name^=ntpServerSel]")[j].selectedIndex = 0;
+				err = 1;
+			}
+			if ( SV1 == "Other" ) {
+				IV1 = $("input[name^=ntpServerOther]")[i].value;
+				IV2 = $("input[name^=ntpServerOther]")[j].value;
+				if ( IV1 == IV2 && IV1 != "" ) {
+					$("input[name^=ntpServerOther]")[j].value = "";
+					err = 1;
+				}
+			}
+		}
+		if( $("select[name^=ntpServerSel]")[i][$("select[name^=ntpServerSel]")[i].selectedIndex].value == "Other" )
+			 $("input[name^=ntpServerOther]")[i].disabled = false;
+		else {
+			$("input[name^=ntpServerOther]")[i].value = "";
+			$("input[name^=ntpServerOther]")[i].disabled = true;
+		}
+	}
+	if ( err == 1 && showMsg == 1 ) {
+		hciAlert('<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str7)%>', {height: 180, type: 2, title: ''});
+		//AlertOpen('NTP Time Server has been exist',2);
+	}
+}
+
+function btnApply() 
+{
+	with( document.forms[0] ) 
+	{
+		ntp_enabled.value = 1;
+		if( ntpServerSel1.selectedIndex == ntpServers.length ) 
+		{
+			if( ntpServerOther1.value.length == 0 ) 
+			{ 
+					hciAlert('<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str1)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return;
+			}
+			else if(!isValidHostName(ntpServerOther1.value))
+			{
+						hciAlert('<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str8)%>',2);
+					return;
+			}
+			else
+				ntpServer1.value = ntpServerOther1.value;
+		}
+		else
+			ntpServer1.value = ntpServerSel1.value;	
+		
+		if( ntpServerSel2.selectedIndex == ntpServers.length+1 ) 
+		{
+			if( ntpServerOther2.value.length == 0 ) 
+			{ 
+					hciAlert('<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str2)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return;
+			}
+			else if(!isValidHostName(ntpServerOther2.value))
+			{
+						hciAlert('<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str8)%>',2);
+					return;
+			}
+			else
+				ntpServer2.value = ntpServerOther2.value; 
+		}
+		else if( ntpServerSel2.selectedIndex == 0 ) 
+			ntpServer2.value = ""; 
+		else
+			ntpServer2.value = ntpServerSel2.value;
+		
+		if( ntpServerSel3.selectedIndex == ntpServers.length+1 ) 
+		{
+			if( ntpServerOther3.value.length == 0 )
+			{ 
+					hciAlert('<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str3)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return;
+			}
+			else if(!isValidHostName(ntpServerOther3.value))
+			{
+						hciAlert('<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str8)%>',2);
+					return;
+			}
+			else
+				ntpServer3.value = ntpServerOther3.value; 
+		} 
+		else if( ntpServerSel3.selectedIndex == 0 ) 
+			ntpServer3.value = "";
+		else
+			ntpServer3.value = ntpServerSel3.value;
+		
+		if( ntpServerSel4.selectedIndex == ntpServers.length+1 ) 
+		{
+			if( ntpServerOther4.value.length == 0 ) 
+			{ 
+					hciAlert('<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str4)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return;
+			}
+			else if(!isValidHostName(ntpServerOther4.value))
+			{
+						hciAlert('<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str8)%>',2);
+					return;
+			}
+			else
+				ntpServer4.value = ntpServerOther4.value; 
+		}
+		else if( ntpServerSel4.selectedIndex == 0 ) 
+			ntpServer4.value = ""; 
+		else
+			ntpServer4.value = ntpServerSel4.value;
+		
+		if( ntpServerSel5.selectedIndex == ntpServers.length+1 ) 
+		{
+			if( ntpServerOther5.value.length == 0 ) 
+			{ 
+				hciAlert("<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str5)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return;
+			}
+			else if(!isValidHostName(ntpServerOther5.value))
+			{
+						hciAlert('<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str8)%>',2);
+					return;
+			}
+			else
+				ntpServer5.value = ntpServerOther5.value; 
+		} 
+		else if( ntpServerSel5.selectedIndex == 0 ) 
+			ntpServer5.value = ""; 
+		else
+			ntpServer5.value = ntpServerSel5.value;
+		
+		//timezone.value = cboTimeZone[cboTimeZone.selectedIndex].value;
+		if ( $('input[name=DSTRule]').get(0).checked == true ) {
+			timezone.value = timeZones[cboTimeZone.selectedIndex][1];
+			if ( DSTSM.value == -1 ) {
+				hciAlert("<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str6)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return;
+			}
+			var month = parseInt(DSTSM.value) +1;
+			if ( sdayrule[1].checked == true ) {
+				if ( DSTSWM.value == -1 || DSTSDW.value == -1 ) {
+					hciAlert("<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str6)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+					return;
+				}
+				else {
+					timezone.value += "," + "M" + month + "." + DSTSWM.value + "." + DSTSDW.value;
+					if ( DSTSH.value != -1 ) {
+						timezone.value += "/" + DSTSH.value;
+						if ( DSTSMI.value != -1 ) {
+							timezone.value += ":" + DSTSMI.value;
+						}
+					}
+				}
+			}
+			else {
+				if ( DSTSD.value == -1 ) {
+					hciAlert("<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str6)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+					return;
+				}
+				
+                /* Zyxel Ryan add.  It can't set incorrect day on Daylight Saving*/
+                if(month==2 && ((DSTSD.value==30)|(DSTSD.value==31)) ){
+					hciAlert("<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str6)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+					return;
+                }
+
+				if( ((month==4)|(month==6)|(month==9)|(month==11))&&(DSTSD.value==31) ){
+					hciAlert("<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str6)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+					return;	
+				}
+				
+				timezone.value += "," + "M" + month + ".D" + DSTSD.value;
+				if ( DSTSH.value != -1 ) {
+					timezone.value += "/" + DSTSH.value;
+					if ( DSTSMI.value != -1 ) {
+						timezone.value += ":" + DSTSMI.value;
+					}
+				}
+			}
+
+			if ( DSTEM.value == -1 ) {
+				hciAlert("<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str6)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return;
+			}
+			month = parseInt(DSTEM.value) +1;
+			if ( edayrule[1].checked == true ) {
+				if ( DSTEWM.value == -1 || DSTEDW.value == -1 ) {
+					hciAlert("<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str6)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+					return;
+				}
+				else {
+					timezone.value += "," + "M" + month + "." + DSTEWM.value + "." + DSTEDW.value;
+					if ( DSTEH.value != -1 ) {
+						timezone.value += "/" + DSTEH.value;
+						if ( DSTEMI.value != -1 ) {
+							timezone.value += ":" + DSTEMI.value;
+						}
+					}
+				}
+			}
+			else {
+				if ( DSTED.value == -1 ) {
+					hciAlert("<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str6)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+					return;
+				}
+                 /* Zyxel Ryan add.  It can't set incorrect day on Daylight Saving*/
+				if(month==2 && ((DSTED.value==30)|(DSTED.value==31)) ){
+					hciAlert("<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str6)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+					return;
+                }
+
+				if( ((month==4)|(month==6)|(month==9)|(month==11))&&(DSTED.value==31) ){
+					hciAlert("<%ejGetML(MLG_Maintenance_TimeSetting_AlertMsg_Str6)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+					return;	
+				}
+				
+				timezone.value += "," + "M" + month + ".D" + DSTED.value;
+				if ( DSTEH.value != -1 ) {
+					timezone.value += "/" + DSTEH.value;
+					if ( DSTEMI.value != -1 ) {
+						timezone.value += ":" + DSTEMI.value;
+					}
+				}
+			}
+		}
+		else {
+			timezone.value = getLocalTimeZone(cboTimeZone.selectedIndex);
+		}
+		timezone_offset.value = getTimeZoneName(cboTimeZone.selectedIndex);
+		//	  use_dst.value = 0;
+		$('.ui-dialog-titlebar-close').trigger('click');
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+function parseRuleString ( Str, field ) {
+	var Month;
+	var weekofM;
+	var dayofW;
+	var day;
+	var hour = 0;
+	var min = 0;
+	var dayrule;
+	var timerule = '';
+
+	var strPart = Str.split("/");
+	if ( strPart.length == 2 ) { //M3.2.1/4:45
+		dayrule = strPart[0];
+		timerule = strPart[1];
+	}
+	else if ( strPart.length == 1 ) { //M3.2.1
+		dayrule = strPart[0];
+	}
+	else {
+		return -1;
+	}
+	
+	var dayrulePart = dayrule.split(".");
+	if ( dayrulePart.length == 3 ) { //M3.2.1
+		Month=parseInt(dayrulePart[0].substr(1,dayrulePart[0].length));
+		weekofM=parseInt(dayrulePart[1]);
+		dayofW=parseInt(dayrulePart[2]);
+		day = -1;
+	}
+	else if ( dayrulePart.length == 2 ) { //M3.D2
+		Month=parseInt(dayrulePart[0].substr(1,dayrulePart[0].length));
+		day=parseInt(dayrulePart[1].substr(1,dayrulePart[1].length));
+		weekofM = -1
+		dayofW = -1;
+	}
+	else {
+		return -1;
+	}
+
+	if ( timerule != '' ) {
+		var timerulePart = timerule.split(":");
+		if ( timerulePart.length == 2 ) { //4:45
+			hour=parseInt(timerulePart[0]);
+			min=parseInt(timerulePart[1]);
+		}
+		else if ( timerulePart.length == 1 ) { //4
+			hour=parseInt(timerulePart[0]);
+		}
+		else {
+			return -1;
+		}
+	}
+
+	switch ( field ) {
+		case 1:
+			return Month;
+			break;
+		case 2:
+			return weekofM;
+			break;
+		case 3:
+			return dayofW;
+			break;
+		case 4:
+			return day;
+			break;
+		case 5:
+			return hour;
+			break;
+		case 6:
+			return min;
+			break;
+		default:
+			return -1;
+			break;
+	}
+	return -1;
+}
+
+function DSTRuleChange () {
+	
+	if ( $('input[name=DSTRule]').get(0).checked == true ) {
+		$('#ruleDetail1').show();
+		$('#ruleDetail2').show();
+		$('#ruleDetail3').show();
+		$('#ruleDetail4').show();
+	}
+	else {
+		$('#ruleDetail1').hide();
+		$('#ruleDetail2').hide();
+		$('#ruleDetail3').hide();
+		$('#ruleDetail4').hide();
+	}
+}
+
+function DSTDoMSRuleChange () {
+	$('input[name=sdayrule]').get(0).checked = true;
+}
+
+function DSTDoMERuleChange () {
+	$('input[name=edayrule]').get(0).checked = true;
+}
+
+function DSTSRuleChange () {
+	$('input[name=sdayrule]').get(1).checked = true;
+}
+
+function DSTERuleChange () {
+	$('input[name=edayrule]').get(1).checked = true;
+}
+
+function DSTSetRule ( ruleStr ) {
+	with( document.forms[0] ) 
+	{
+		var rulePart = ruleStr.split(',');
+		if ( rulePart.length == 3 ) {
+			//NAB-8BBB,M3.2.1,M4.3.1
+			DSTSM.value = parseRuleString( rulePart[1], 1 )-1;
+			DSTSWM.value = parseRuleString( rulePart[1], 2 );
+			DSTSDW.value = parseRuleString( rulePart[1], 3 );
+			DSTSD.value = parseRuleString( rulePart[1], 4 );
+			DSTSH.value = parseRuleString( rulePart[1], 5 );
+			DSTSMI.value = parseRuleString( rulePart[1], 6 );
+			if ( DSTSD.value != -1 ) {
+				$('input[name=sdayrule]').get(0).checked = true;
+			}
+			else {
+				$('input[name=sdayrule]').get(1).checked = true;
+			}
+
+			DSTEM.value = parseRuleString( rulePart[2], 1 )-1;
+			DSTEWM.value = parseRuleString( rulePart[2], 2 );
+			DSTEDW.value = parseRuleString( rulePart[2], 3 );
+			DSTED.value = parseRuleString( rulePart[2], 4 );
+			DSTEH.value = parseRuleString( rulePart[2], 5 );
+			DSTEMI.value = parseRuleString( rulePart[2], 6 );
+			if ( DSTED.value != -1 ) {
+				$('input[name=edayrule]').get(0).checked = true;
+			}
+			else {
+				$('input[name=edayrule]').get(1).checked = true;
+			}
+      $('input[name=DSTRule]').get(0).checked = true;
+		}
+		else {
+			$('input[name=DSTRule]').get(1).checked = true;
+		}
+	}
+	DSTRuleChange();
+}
+
+function DSTSetRuleOnChange () {
+	with( document.forms[0] ) 
+	{
+		DSTSetRule(cboTimeZone[cboTimeZone.selectedIndex].value);
+	}
+}
+ 
+function frmLoad() {
+  var i = 0;
+  var ntp1 = "<%ejGet(ntpServer1)%>";
+  var ntp2 = "<%ejGet(ntpServer2)%>";
+  var ntp3 = "<%ejGet(ntpServer3)%>";
+  var ntp4 = "<%ejGet(ntpServer4)%>";
+  var ntp5 = "<%ejGet(ntpServer5)%>";
+  var tz_name = "<%ejGet(timezone_offset)%>";
+  var ltz_name = "<%ejGet(timezone)%>";
+
+  with (document.forms[0]) {
+    if( ntp1.length ) {
+      for( i = 0; i < ntpServers.length; i++ ) {
+        if( ntp1 == ntpServers[i] ) {
+          ntpServerSel1.selectedIndex = i;
+          break;
+        }
+      }
+      if( i == ntpServers.length ) {
+        ntpServerSel1.selectedIndex = i; // Set to 'Other'
+        ntpServerOther1.value = ntp1;
+      }
+    }
+    else {
+    	ntpServerSel1.selectedIndex = 0;
+    }
+
+    if( ntp2.length ) {
+      for( i = 0; i < ntpServers.length; i++ ) {
+        if( ntp2 == ntpServers[i] ) {
+          ntpServerSel2.selectedIndex = i+1;
+          break;
+        }
+      }
+      if( i == ntpServers.length ) {
+        ntpServerSel2.selectedIndex = i+1; // Set to 'Other'
+        ntpServerOther2.value = ntp2;
+      }
+    }
+    else {
+    	ntpServerSel2.selectedIndex = 0;
+    }
+
+    if( ntp3.length ) {
+      for( i = 0; i < ntpServers.length; i++ ) {
+        if( ntp3 == ntpServers[i] ) {
+          ntpServerSel3.selectedIndex = i+1;
+          break;
+        }
+      }
+      if( i == ntpServers.length ) {
+        ntpServerSel3.selectedIndex = i+1; // Set to 'Other'
+        ntpServerOther3.value = ntp3;
+      }
+    }
+    else {
+    	ntpServerSel3.selectedIndex = 0;
+    }
+
+    if( ntp4.length ) {
+      for( i = 0; i < ntpServers.length; i++ ) {
+        if( ntp4 == ntpServers[i] ) {
+          ntpServerSel4.selectedIndex = i+1;
+          break;
+        }
+      }
+      if( i == ntpServers.length ) {
+        ntpServerSel4.selectedIndex = i+1; // Set to 'Other'
+        ntpServerOther4.value = ntp4;
+      }
+    }
+    else {
+    	ntpServerSel4.selectedIndex = 0;
+    }
+
+    if( ntp5.length ) {
+      for( i = 0; i < ntpServers.length; i++ ) {
+        if( ntp5 == ntpServers[i] ) {
+          ntpServerSel5.selectedIndex = i+1;
+          break;
+        }
+      }
+      if( i == ntpServers.length ) {
+        ntpServerSel5.selectedIndex = i+1; // Set to 'Other'
+        ntpServerOther5.value = ntp5;
+      }
+    }
+    else {
+    	ntpServerSel5.selectedIndex = 0;
+    }
+    ntpChange(0);
+
+    if ( tz_name != '' && tz_name != '(null)' ) {
+       cboTimeZone.selectedIndex = getTimeZoneNameIndex(tz_name);
+       if ( ltz_name != '' && ltz_name != '(null)' ) {
+       	 DSTSetRule(ltz_name);
+       }
+       else {
+         DSTSetRule(cboTimeZone[cboTimeZone.selectedIndex].value);
+       }
+    }
+    else if ( ltz_name != '' && ltz_name != '(null)' ) {
+       cboTimeZone.selectedIndex = getLocalTimeZoneNameIndex(ltz_name);
+       DSTSetRule(ltz_name);
+    }
+
+    //DSTSetRuleOnChange ();
+    //ntpEnblChange();
+  }
+}
+
+function writeNtpList(needed, num) {
+	var str = '';
+	if(!needed)
+		str += "<option value=None><%ejGetML(MLG_Common_None)%></option>";	
+	for( var i = 0; i < ntpServers.length; i++ )
+		str += "<option value=" + ntpServers[i] + ">" + ntpServers[i] + "</option>";
+	str += "<option value=Other><%ejGetML(MLG_Maintenance_Other)%></option>";
+	if(num == "1")
+		$('#ntpServerSel1').append(str);
+	else if(num == "2")
+		$('#ntpServerSel2').append(str);
+	else if(num == "3")
+		$('#ntpServerSel3').append(str);
+	else if(num == "4")
+		$('#ntpServerSel4').append(str);
+	else if(num == "5")
+		$('#ntpServerSel5').append(str);
+}
+
+$(document).ready(function() {
+	timestamp = Date.parse(timeNow);
+  IncreaseSec();
+  if ( check == 1 ) {
+		if (window.XMLHttpRequest)  {
+			objXMLHTTP=new XMLHttpRequest();
+			setTimeout('getonlinetime()', 10000);
+		}// code for IE
+		else if (window.ActiveXObject)  {
+			objXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+			setTimeout('getonlinetime()', 10000);
+		}
+  }
+  writeNtpList(true, 1);
+  writeNtpList(false, 2);
+  writeNtpList(false, 3);
+  writeNtpList(false, 4);
+  writeNtpList(false, 5);
+  writeTimeZoneList();
+  frmLoad();
+});
+
+</script>
+<form method="post" action="/pages/tabFW/time-cfg.cgi">
+<input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>"/>
+<input type="hidden" name="sntpRefresh" id="sntpRefresh">
+<input type="hidden" name="ntp_enabled" id="ntp_enabled">
+<input type="hidden" name="timezone_offset" id="timezone_offset">
+<input type="hidden" name="timezone" id="timezone">
+<!--<input type="hidden" name="use_dst" id="use_dst">-->
+<div class="content_frame" >
+
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Maintenance_TimeSetting_Explain)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+
+<!--Set area start-->
+<div class="data_frame"><ul>
+<li class="title"><%ejGetML(MLG_Maintenance_TimeSetting_Str2)%></li>
+<li class="set1"> 
+	<div class="w_text">
+  		<ul>
+				<li class="left_table"><%ejGetML(MLG_Maintenance_TimeSetting_Current_Time)%>  : </li>
+			<li class="right_table">
+				<span id = "showTime"></span>			
+			</li>
+  		</ul>
+  		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_TimeSetting_Current_Date)%>  : </li>
+			<li class="right_table">
+					<span id='clock1'></span></span>			
+		 </li>
+  		</ul>
+	</div>
+</li>
+<li class="space"> </li>
+<li class="title"><%ejGetML(MLG_Maintenance_TimeSetting_Str4)%></li>
+<li class="set1">
+	<div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_TimeSetting_Str5)%> :</li>
+			<li class="right_table">
+				<select name='ntpServerSel1' id="ntpServerSel1" size="1" onChange='ntpChange(1)'>
+				</select>
+				<input type='text' name='ntpServerOther1' maxlength="29" onChange='ntpChange(1)'>
+				<input type="hidden" name="ntpServer1" id="ntpServer1">
+			</li>
+		</ul>
+	</div>
+</li>
+<li class="set1">
+	<div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_TimeSetting_Str6)%> :</li>
+			<li class="right_table">
+				<select name='ntpServerSel2' id="ntpServerSel2" size="1" onChange='ntpChange(1)'>
+				</select>
+				<input type='text' name='ntpServerOther2' maxlength="29" onChange='ntpChange(1)'>				
+				<input type="hidden" name="ntpServer2" id="ntpServer2">
+			</li>
+		</ul>
+	</div>
+</li>
+<li class="set1">
+	<div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_TimeSetting_Str7)%> :</li>
+			<li class="right_table">
+				<select name='ntpServerSel3' id="ntpServerSel3" size="1" onChange='ntpChange(1)'>
+				</select>
+				<input type='text' name='ntpServerOther3' maxlength="29" onChange='ntpChange(1)'>
+				<input type="hidden" name="ntpServer3" id="ntpServer3">
+			</li>
+		</ul>
+	</div>
+</li>
+<li class="set1">
+	<div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_TimeSetting_Str8)%> :</li>
+			<li class="right_table">
+				<select name='ntpServerSel4' id="ntpServerSel4" size="1" onChange='ntpChange(1)'>
+				</select>
+				<input type='text' name='ntpServerOther4' maxlength="29" onChange='ntpChange(1)'>
+				<input type="hidden" name="ntpServer4" id="ntpServer4">
+			</li>
+		</ul>
+	</div>
+</li>
+<li class="set1">
+	<div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_TimeSetting_Str9)%> :</li>
+			<li class="right_table">
+				<select name='ntpServerSel5' id="ntpServerSel5" size="1" onChange='ntpChange(1)'>
+				</select>
+				<input type='text' name='ntpServerOther5' maxlength="29" onChange='ntpChange(1)'>
+				<input type="hidden" name="ntpServer5" id="ntpServer5">
+			</li>
+		</ul>
+	</div>
+</li>
+<li class="space"> </li>
+<li class="title"><%ejGetML(MLG_Maintenance_TimeSetting_Str17)%></li>
+<li class="set1">
+	<div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_TimeSetting_Str18)%>:</li>
+			<li class="right_table">
+				<select name='cboTimeZone' id="cboTimeZone" size="1" onChange="DSTSetRuleOnChange();">
+				</select>
+			</li>
+		</ul>
+	</div>
+</li>
+<li class="space"> </li>
+<li class="title"><%ejGetML(MLG_Maintenance_TimeSetting_Str24)%></li>
+<!--level 1 start-->
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Common_State)%> :</li>
+     <li class="right_table">
+      <input name="DSTRule" id="DSTRule" type="radio" value="1" onClick="DSTRuleChange();"/>
+      <%ejGetML(MLG_Common_Enable)%>
+      <input name="DSTRule" id="DSTRule" type="radio" value="0" onClick="DSTRuleChange();"/>
+      <%ejGetML(MLG_Common_Disable)%> </li>
+  </ul>
+</div>
+</li>
+<!--level 1 end-->
+<li class="title2" id="ruleDetail1" ><span class="i_title2"><%ejGetML(MLG_Maintenance_TimeSetting_Str25)%></span></li>
+<li class="set1" id="ruleDetail2" style="display:none; ">
+	<div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_TimeSetting_Str26)%> : </li>
+			<li class="right_table">
+				<input type=radio name="sdayrule" id="sdayrule" onClick="DSTDoMSRuleChange();">
+				<select name="DSTSD" id="DSTSD" onChange="DSTDoMSRuleChange();">
+					<option value="-1"><%ejGetML(MLG_Maintenance_TimeSetting_Str26)%></option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+					<option value="13">13</option>
+					<option value="14">14</option>
+					<option value="15">15</option>
+					<option value="16">16</option>
+					<option value="17">17</option>
+					<option value="18">18</option>
+					<option value="19">19</option>
+					<option value="20">20</option>
+					<option value="21">21</option>
+					<option value="22">22</option>
+					<option value="23">23</option>
+					<option value="24">24</option>
+					<option value="25">25</option>
+					<option value="26">26</option>
+					<option value="27">27</option>
+					<option value="28">28</option>
+					<option value="29">29</option>
+					<option value="30">30</option>
+					<option value="31">31</option>
+				</select> <%ejGetML(MLG_Maintenance_TimeSetting_Str27)%> 
+			</li>
+		</ul>
+	</div>
+	<div class="w_text">
+		<ul>
+			<li class="left_table">&nbsp;</li>
+			<li class="right_table"><input type=radio name="sdayrule" id="sdayrule" onClick="DSTSRuleChange();">
+				<select name="DSTSWM" id="DSTSWM" onChange="DSTSRuleChange();" >
+					<option value="-1"><%ejGetML(MLG_Maintenance_TimeSetting_Str52)%></option>
+					<option value="1"><%ejGetML(MLG_Maintenance_TimeSetting_Str53)%></option>
+					<option value="2"><%ejGetML(MLG_Maintenance_TimeSetting_Str54)%></option>
+					<option value="3"><%ejGetML(MLG_Maintenance_TimeSetting_Str55)%></option>
+					<option value="4"><%ejGetML(MLG_Maintenance_TimeSetting_Str56)%></option>
+					<option value="5"><%ejGetML(MLG_Maintenance_TimeSetting_Str57_1)%></option>
+				</select>
+				<select name="DSTSDW" id="DSTSDW" onChange="DSTSRuleChange();" >
+					<option value="-1"><%ejGetML(MLG_Maintenance_TimeSetting_Str28)%></option>
+					<option value="0"><%ejGetML(MLG_Maintenance_TimeSetting_Str29)%></option>
+					<option value="1"><%ejGetML(MLG_Maintenance_TimeSetting_Str30)%></option>
+					<option value="2"><%ejGetML(MLG_Maintenance_TimeSetting_Str31)%></option>
+					<option value="3"><%ejGetML(MLG_Maintenance_TimeSetting_Str32)%></option>
+					<option value="4"><%ejGetML(MLG_Maintenance_TimeSetting_Str33)%></option>
+					<option value="5"><%ejGetML(MLG_Maintenance_TimeSetting_Str34)%></option>
+					<option value="6"><%ejGetML(MLG_Maintenance_TimeSetting_Str35)%></option>
+				</select> <%ejGetML(MLG_Maintenance_TimeSetting_Str27)%> 
+			</li>
+		</ul>
+	</div>
+	<div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_TimeSetting_Str36)%> : </li>
+			<li class="right_table">
+				<select name="DSTSM" id="DSTSM" >
+					<option value="-1"><%ejGetML(MLG_Maintenance_TimeSetting_Str36)%></option>
+					<option value="0"><%ejGetML(MLG_Maintenance_TimeSetting_Str37)%></option>
+					<option value="1"><%ejGetML(MLG_Maintenance_TimeSetting_Str38)%></option>
+					<option value="2"><%ejGetML(MLG_Maintenance_TimeSetting_Str39)%></option>
+					<option value="3"><%ejGetML(MLG_Maintenance_TimeSetting_Str40)%></option>
+					<option value="4"><%ejGetML(MLG_Maintenance_TimeSetting_Str41)%></option>
+					<option value="5"><%ejGetML(MLG_Maintenance_TimeSetting_Str42)%></option>
+					<option value="6"><%ejGetML(MLG_Maintenance_TimeSetting_Str43)%></option>
+					<option value="7"><%ejGetML(MLG_Maintenance_TimeSetting_Str44)%></option>
+					<option value="8"><%ejGetML(MLG_Maintenance_TimeSetting_Str45)%></option>
+					<option value="9"><%ejGetML(MLG_Maintenance_TimeSetting_Str46)%></option>
+					<option value="10"><%ejGetML(MLG_Maintenance_TimeSetting_Str47)%></option>
+					<option value="11"><%ejGetML(MLG_Maintenance_TimeSetting_Str48)%></option>
+				</select>
+			</li>
+		</ul>
+	</div>
+	<div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_TimeSetting_Str49)%> : </li>
+			<li class="right_table">
+				<select name="DSTSH" id="DSTSH" >
+					<option value="-1"><%ejGetML(MLG_Maintenance_TimeSetting_Str51)%></option>
+					<option value="0">0</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+					<option value="13">13</option>
+					<option value="14">14</option>
+					<option value="15">15</option>
+					<option value="16">16</option>
+					<option value="17">17</option>
+					<option value="18">18</option>
+					<option value="19">19</option>
+					<option value="20">20</option>
+					<option value="21">21</option>
+					<option value="22">22</option>
+					<option value="23">23</option>
+				</select> :
+				<select name="DSTSMI" id="DSTSMI" >
+					<option value="-1"><%ejGetML(MLG_Maintenance_TimeSetting_Str58)%></option>
+					<option value="0">0</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+					<option value="13">13</option>
+					<option value="14">14</option>
+					<option value="15">15</option>
+					<option value="16">16</option>
+					<option value="17">17</option>
+					<option value="18">18</option>
+					<option value="19">19</option>
+					<option value="20">20</option>
+					<option value="21">21</option>
+					<option value="22">22</option>
+					<option value="23">23</option>
+					<option value="24">24</option>
+					<option value="25">25</option>
+					<option value="26">26</option>
+					<option value="27">27</option>
+					<option value="28">28</option>
+					<option value="29">29</option>
+					<option value="30">30</option>
+					<option value="31">31</option>
+					<option value="32">32</option>
+					<option value="33">33</option>
+					<option value="34">34</option>
+					<option value="35">35</option>
+					<option value="36">36</option>
+					<option value="37">37</option>
+					<option value="38">38</option>
+					<option value="39">39</option>
+					<option value="40">40</option>
+					<option value="41">41</option>
+					<option value="42">42</option>
+					<option value="43">43</option>
+					<option value="44">44</option>
+					<option value="45">45</option>
+					<option value="46">46</option>
+					<option value="47">47</option>
+					<option value="48">48</option>
+					<option value="49">49</option>
+					<option value="50">50</option>
+					<option value="51">51</option>
+					<option value="52">52</option>
+					<option value="53">53</option>
+					<option value="54">54</option>
+					<option value="55">55</option>
+					<option value="56">56</option>
+					<option value="57">57</option>
+					<option value="58">58</option>
+					<option value="59">59</option>
+				</select>
+			</li>
+		</ul>
+	</div>
+</li>
+<li class="title2" id="ruleDetail3" ><span class="i_title2"><%ejGetML(MLG_Maintenance_TimeSetting_Str50)%></span></li>
+<li class="set1" id="ruleDetail4" style="display:none; ">
+<div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_TimeSetting_Str26)%> : </li>
+			<li class="right_table">
+				<input type=radio name="edayrule" id="edayrule" onClick="DSTDoMERuleChange();">
+				<select name="DSTED" id="DSTED" onChange="DSTDoMERuleChange();">
+					<option value="-1"><%ejGetML(MLG_Maintenance_TimeSetting_Str26)%></option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+					<option value="13">13</option>
+					<option value="14">14</option>
+					<option value="15">15</option>
+					<option value="16">16</option>
+					<option value="17">17</option>
+					<option value="18">18</option>
+					<option value="19">19</option>
+					<option value="20">20</option>
+					<option value="21">21</option>
+					<option value="22">22</option>
+					<option value="23">23</option>
+					<option value="24">24</option>
+					<option value="25">25</option>
+					<option value="26">26</option>
+					<option value="27">27</option>
+					<option value="28">28</option>
+					<option value="29">29</option>
+					<option value="30">30</option>
+					<option value="31">31</option>
+				</select> <%ejGetML(MLG_Maintenance_TimeSetting_Str27)%> 
+			</li>
+		</ul>
+	</div>
+	<div class="w_text">
+		<ul>
+			<li class="left_table">&nbsp;</li>
+			<li class="right_table"><input type=radio name="edayrule" id="edayrule" onClick="DSTERuleChange();">
+				<select name="DSTEWM" id="DSTEWM" onChange="DSTERuleChange();" >
+					<option value="-1"><%ejGetML(MLG_Maintenance_TimeSetting_Str52)%></option>
+					<option value="1"><%ejGetML(MLG_Maintenance_TimeSetting_Str53)%></option>
+					<option value="2"><%ejGetML(MLG_Maintenance_TimeSetting_Str54)%></option>
+					<option value="3"><%ejGetML(MLG_Maintenance_TimeSetting_Str55)%></option>
+					<option value="4"><%ejGetML(MLG_Maintenance_TimeSetting_Str56)%></option>
+					<option value="5"><%ejGetML(MLG_Maintenance_TimeSetting_Str57_1)%></option>
+				</select>
+				<select name="DSTEDW" id="DSTEDW" onChange="DSTERuleChange();" >
+					<option value="-1"><%ejGetML(MLG_Maintenance_TimeSetting_Str28)%></option>
+					<option value="0"><%ejGetML(MLG_Maintenance_TimeSetting_Str29)%></option>
+					<option value="1"><%ejGetML(MLG_Maintenance_TimeSetting_Str30)%></option>
+					<option value="2"><%ejGetML(MLG_Maintenance_TimeSetting_Str31)%></option>
+					<option value="3"><%ejGetML(MLG_Maintenance_TimeSetting_Str32)%></option>
+					<option value="4"><%ejGetML(MLG_Maintenance_TimeSetting_Str33)%></option>
+					<option value="5"><%ejGetML(MLG_Maintenance_TimeSetting_Str34)%></option>
+					<option value="6"><%ejGetML(MLG_Maintenance_TimeSetting_Str35)%></option>
+				</select> <%ejGetML(MLG_Maintenance_TimeSetting_Str27)%> 
+			</li>
+		</ul>
+	</div>
+	<div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_TimeSetting_Str36)%> : </li>
+			<li class="right_table">
+				<select name="DSTEM" id="DSTEM" >
+					<option value="-1"><%ejGetML(MLG_Maintenance_TimeSetting_Str36)%></option>
+					<option value="0"><%ejGetML(MLG_Maintenance_TimeSetting_Str37)%></option>
+					<option value="1"><%ejGetML(MLG_Maintenance_TimeSetting_Str38)%></option>
+					<option value="2"><%ejGetML(MLG_Maintenance_TimeSetting_Str39)%></option>
+					<option value="3"><%ejGetML(MLG_Maintenance_TimeSetting_Str40)%></option>
+					<option value="4"><%ejGetML(MLG_Maintenance_TimeSetting_Str41)%></option>
+					<option value="5"><%ejGetML(MLG_Maintenance_TimeSetting_Str42)%></option>
+					<option value="6"><%ejGetML(MLG_Maintenance_TimeSetting_Str43)%></option>
+					<option value="7"><%ejGetML(MLG_Maintenance_TimeSetting_Str44)%></option>
+					<option value="8"><%ejGetML(MLG_Maintenance_TimeSetting_Str45)%></option>
+					<option value="9"><%ejGetML(MLG_Maintenance_TimeSetting_Str46)%></option>
+					<option value="10"><%ejGetML(MLG_Maintenance_TimeSetting_Str47)%></option>
+					<option value="11"><%ejGetML(MLG_Maintenance_TimeSetting_Str48)%></option>
+				</select>
+			</li>
+		</ul>
+	</div>
+	<div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_TimeSetting_Str49)%> : </li>
+			<li class="right_table">
+				<select name="DSTEH" id="DSTEH" >
+					<option value="-1"><%ejGetML(MLG_Maintenance_TimeSetting_Str51)%></option>
+					<option value="0">0</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+					<option value="13">13</option>
+					<option value="14">14</option>
+					<option value="15">15</option>
+					<option value="16">16</option>
+					<option value="17">17</option>
+					<option value="18">18</option>
+					<option value="19">19</option>
+					<option value="20">20</option>
+					<option value="21">21</option>
+					<option value="22">22</option>
+					<option value="23">23</option>
+				</select> :
+				<select name="DSTEMI" id="DSTEMI" >
+					<option value="-1"><%ejGetML(MLG_Maintenance_TimeSetting_Str58)%></option>
+					<option value="0">0</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+					<option value="13">13</option>
+					<option value="14">14</option>
+					<option value="15">15</option>
+					<option value="16">16</option>
+					<option value="17">17</option>
+					<option value="18">18</option>
+					<option value="19">19</option>
+					<option value="20">20</option>
+					<option value="21">21</option>
+					<option value="22">22</option>
+					<option value="23">23</option>
+					<option value="24">24</option>
+					<option value="25">25</option>
+					<option value="26">26</option>
+					<option value="27">27</option>
+					<option value="28">28</option>
+					<option value="29">29</option>
+					<option value="30">30</option>
+					<option value="31">31</option>
+					<option value="32">32</option>
+					<option value="33">33</option>
+					<option value="34">34</option>
+					<option value="35">35</option>
+					<option value="36">36</option>
+					<option value="37">37</option>
+					<option value="38">38</option>
+					<option value="39">39</option>
+					<option value="40">40</option>
+					<option value="41">41</option>
+					<option value="42">42</option>
+					<option value="43">43</option>
+					<option value="44">44</option>
+					<option value="45">45</option>
+					<option value="46">46</option>
+					<option value="47">47</option>
+					<option value="48">48</option>
+					<option value="49">49</option>
+					<option value="50">50</option>
+					<option value="51">51</option>
+					<option value="52">52</option>
+					<option value="53">53</option>
+					<option value="54">54</option>
+					<option value="55">55</option>
+					<option value="56">56</option>
+					<option value="57">57</option>
+					<option value="58">58</option>
+					<option value="59">59</option>
+				</select>
+			</li>
+		</ul>
+	</div>
+</li>
+
+
+<li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe"><div class="button_position">
+<input name="button" type="button" onclick='btnApply();' value="<%ejGetML(MLG_Common_Apply)%>"/>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick="frmLoad();"/>
+</div>
+</li>
+<!--Button define end-->
+
+</ul></div>
+<!--Set area end-->
+	</div>
+	<br/><br/>
+  </form>
+

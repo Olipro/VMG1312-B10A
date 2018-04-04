@@ -1,0 +1,256 @@
+<script language="javascript">
+<!-- hide
+var wdsMacIdx = '<%ejGetWl(wdsIdx)%>';
+
+var xmlHttp;
+var tableHeader;
+var SSIDrule;
+
+function isDuplicateRecord(mac)
+{
+   var list = '<%ejGetWl(wdsMacList)%>';
+   var info = list.split(',');
+
+   for ( i = 0; i < info.length; i++ ) {
+      if (info[i] != '' && (wdsMacIdx != (i+1))) {
+         if (info[i] == mac) {
+            return false;
+         }
+      }
+   }
+}
+
+function btnSave() {
+   with ( document.forms[0] ) {
+      sessionKey.value = mainFrame.glbSessionKey;
+      wdsIdx.value = wdsMacIdx;
+      
+      if(wdsMacL == ''){
+         return;
+      }
+
+      var rules = wdsMacL.split('|');
+
+      rules.sort();
+      
+      if(SSIDrule>1)
+      {
+            for(i = 0; i<wl_WdsScan.length ; i++){
+                  if(wl_WdsScan[i].checked == true){
+                        var scanSSIDMac = rules[i + 1].split('/');
+                        wlWdsAddr.value = scanSSIDMac[1].toUpperCase();
+                  }
+            }
+      }
+      else
+      {
+            i=0;
+            var scanSSIDMac = rules[i + 1].split('/');
+            wlWdsAddr.value = scanSSIDMac[1].toUpperCase();
+      }
+
+
+	  if(wlWdsAddr.value.length != 17){
+         msg = MLG_Makestring("<%ejGetML(MLG_WLAN_MACAuthentication_AlertMsg_Str4)%>", wl_wdsAddr.value );
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return false;
+      }else if (isValidMacAddress(wlWdsAddr.value) == false) {
+         msg = MLG_Makestring("<%ejGetML(MLG_WLAN_MACAuthentication_AlertMsg_Str4)%>", wl_wdsAddr.value );
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return false;
+      } else if (isDuplicateRecord(wlWdsAddr.value) == false) {
+         msg = '<%ejGetML(MLG_WLAN_WDS_AlertMsg_Str3)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return false;
+      }
+
+	  wl_WdsScan.disabled = true;
+      if(SSIDrule>1)
+      {
+            for(i = 0; i<wl_WdsScan.length; i++){
+                  wl_WdsScan[i].disabled = true;
+            }
+      }
+      else
+      {
+            wl_WdsScan.disabled = true;
+      }
+   }
+
+   return true;
+}
+
+function doRefresh(){
+   
+   with ( document.forms[0] ) {
+      refresh_btn.disabled = true;
+      $('#refreshIcon').show();
+
+      $.ajax({
+         url: "wireless-wds.cmd",
+         type: 'POST',
+         async: true,
+         cache: false,
+         timeout: 60000,
+         data:  "sessionKey=" + mainFrame.glbSessionKey + "&action=wlWdsAutoScan",
+         success: function(data){
+                     response = data;
+
+                     var meta_response = response.split("@");
+
+                     if(meta_response.length < 2){
+                        $('#refreshIcon').hide();
+                        eval("top.location='/login/login.html'");
+                     }
+
+                     var key = meta_response[0];
+                     mainFrame.glbSessionKey = key;
+                     
+                     wdsMacL = meta_response[1];
+                     var str = '';
+                     var rules = wdsMacL.split('|');
+
+                     //note: after sort, the 0 index is empty
+                     rules.sort();      
+
+                     str += "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" id=\"macListTable\" class=\"table_frame\">";
+                     str += "<tr align=\"center\" >";
+                     str += "<td width=\"5%\" class=\"top_font\">#</td>";
+                     str += "<td class=\"top_font\">SSID</td>";
+                     str += "<td class=\"top_font\">BSSID</td>";
+                     str += "</tr>";
+                  
+                     SSIDrule=0;
+                  
+                     for ( i = 0; i < rules.length; i++ ) {
+                        if(rules[i] != ''){
+                           order = i + 1;
+                           var scanSSIDMac = rules[i].split('/');
+                  	  
+                     SSIDrule=i;
+                  	  
+                           str += "<tr align=\"center\" >";
+                           //str += "<td class=\"table_font\">" + order + "</td>";
+                           //"<input name=\"wl_WdsScan\" type=\"radio\" value=\"" + i + "\" onClick=\"wlScanSelect()\" />"
+                  		 if (i == 1){
+                              str += "<td class=\"table_font\"><input name=\"wl_WdsScan\" type=\"radio\" value=\"" + i + "\" checked=\"checked\" /></td>";
+                  		 } else {
+                              str += "<td class=\"table_font\"><input name=\"wl_WdsScan\" type=\"radio\" value=\"" + i + "\" /></td>";
+                  		 }
+                           str += "<td class=\"table_font\">" + scanSSIDMac[0] + "</td>";
+                           str += "<td class=\"table_font\">" + scanSSIDMac[1] + "</td>";
+                           str += "</tr>";
+                        }
+                     }
+
+                     str += "</table>";
+                     
+                     $('#macListTable').replaceWith(str);
+                     refresh_btn.disabled = false;
+                     $('#refreshIcon').hide();
+                     
+                  },
+         error:   function(){
+                     var str = '';
+                     str += "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" id=\"macListTable\" class=\"table_frame\">";
+                     str += "<tr align=\"center\" >";
+                     str += "<td width=\"5%\" class=\"top_font\">#</td>";
+                     str += "<td class=\"top_font\">SSID</td>";
+                     str += "<td class=\"top_font\">BSSID</td>";
+                     str += "</tr>";
+                     str += "</table>";
+                     $('#macListTable').replaceWith(str);
+                     refresh_btn.disabled = false;
+                     $('#refreshIcon').hide();
+                  }
+      });
+      
+   }
+
+}
+
+function doSubmit() {
+   if (btnSave()) {
+      document.forms[0].submit();
+      $('.ui-dialog-titlebar-close').trigger('click');
+      $.openLoadingMask(1);
+   }
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var OkBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+OkBtn.click(function(){ doSubmit(); });
+
+function frmLoad() {
+   /*with ( document.forms[0] ) {
+      for (i = 0 ; i < document.getElementById("macListTable").rows.length; i++) {
+         document.getElementById("macListTable").deleteRow(i);
+      }
+   }*/
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+// done hiding -->
+</script>
+   <form action="/pages/tabFW/wireless-wds_edit.wl" method="post" target="mainFrame">
+      <input size="15" type="hidden" name="sessionKey" />
+      <input size="15" type="hidden" name="wdsIdx" />
+      <input size="15" type="hidden" name="wlWdsAddr" />  
+      <div class="popup_frame" >
+         <div class="data_frame"><ul>
+            <li class="title"><%ejGetML(MLG_WLAN_WDS_Str17)%></li>
+            <li class="set1">
+               <div id="AutoScan" class="w_table" >
+                  <input type="button" name="refresh_btn" value="<%ejGetML(MLG_WLAN_Wirelsss_Btn4)%>" onclick="doRefresh();" />
+                  <span id="refreshIcon" style="display:none;"><img src="../../images/grid-loading.gif" width="16" height="16"/></span>
+                  <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="macListTable">
+                                       <tr align="center" >
+                                          <td width="5%" class="top_font">#</td>
+                                          <td class="top_font"><%ejGetML(MLG_WLAN_WDS_Str16)%></td>
+                                          <td class="top_font"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str33)%></td>
+                                       </tr>
+
+<script language="javascript">
+<!-- hide
+{
+   var str = '';
+   var wdsMacL = '<%ejGetWl(wdsMacListAutoScan)%>';
+   var rules = wdsMacL.split('|');
+   SSIDrule=0;
+   //note: after sort, the 0 index is empty
+   rules.sort();
+   
+   for ( i = 0; i < rules.length; i++ ) {
+      if(rules[i] != ''){
+         order = i + 1;
+         var scanSSIDMac = rules[i].split('/');
+         SSIDrule=i;
+	  
+         str += "<tr align=\"center\" >";
+         //str += "<td class=\"table_font\">" + order + "</td>";
+         //"<input name=\"wl_WdsScan\" type=\"radio\" value=\"" + i + "\" onClick=\"wlScanSelect()\" />"
+		 if (i == 1){
+            str += "<td class=\"table_font\"><input name=\"wl_WdsScan\" type=\"radio\" value=\"" + i + "\" checked=\"checked\" /></td>";
+		 } else {
+            str += "<td class=\"table_font\"><input name=\"wl_WdsScan\" type=\"radio\" value=\"" + i + "\" /></td>";
+		 }
+         str += "<td class=\"table_font\">" + scanSSIDMac[0] + "</td>";
+         str += "<td class=\"table_font\">" + scanSSIDMac[1] + "</td>";
+         str += "</tr>";
+      }
+   }
+
+   $('#macListTable').append(str);
+   
+}
+// done hiding -->
+</script>
+                  </table>
+               </div>
+            </li>
+         </ul></div>
+      </div>
+   </form>
+

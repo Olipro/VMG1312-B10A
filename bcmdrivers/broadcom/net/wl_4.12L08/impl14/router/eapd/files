@@ -1,0 +1,6 @@
+FILES = eapd_linux.c
+FILES += eapd.c
+FILES += nas_eap.c
+FILES += ses_eap.c
+FILES += wps_eap.c
+FILES += evt_dslcpe_eap.c

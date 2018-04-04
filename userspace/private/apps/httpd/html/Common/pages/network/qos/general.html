@@ -1,0 +1,221 @@
+<script language="javascript">
+<!-- hide
+clearTimeout(gblTimeValue);
+var enblQosVar = '<%ejGetOther(qosMgmtDefEnbl, all)%>';
+var defMark = '<%ejGetOther(qosMgmtDefMark, all)%>';
+var upstreamBW = '<%ejGetOther(lineRate, 0, 0)%>';
+var upstreamRate = '<%ejGetOther(qosMgmtTotalRate, upstream)%>';
+var downstreamRate = '<%ejGetOther(qosMgmtTotalRate, downstream)%>';
+var autoMapType = '<%ejGetOther(qosMgmtAutoMapType, all)%>'; /* __OBM__, Auto priority mapping, Jones */
+var errMsg = "<%ejGetOther(errMsg)%>";
+function clickEnableQos(){
+	with (document.forms[0]){
+		if ($("input[name='enableQos']").get(0).checked == true) {
+			upTotalRate.disabled = false;
+			downTotalRate.disabled = false;
+			AutoMapSel.disabled = false; /* __OBM__, Auto priority mapping, Jones */			
+		}
+		else {
+			upTotalRate.disabled = true;
+			downTotalRate.disabled = true;
+			AutoMapSel.disabled = true; /* __OBM__, Auto priority mapping, Jones */			
+		}
+	}
+}
+
+function btnSave() {
+   
+   with ( document.forms[0] ) {
+   	if (upTotalRate.value != '' && (isNaN(upTotalRate.value) || parseInt(upTotalRate.value) <= 0))
+   	{ 
+   		msg='<%ejGetML(MLG_QOS_QOSGeneral_AlertMsg_Str1)%>';
+		  //AlertOpen (msg, 2);
+		  hciAlert(msg, {height: 180, type: 2, title: ''});
+		  return;
+   	}
+   	
+   	if (downTotalRate.value != '' && (isNaN(downTotalRate.value) || parseInt(downTotalRate.value) <= 0))
+   	{ 
+   		msg='<%ejGetML(MLG_QOS_QOSGeneral_AlertMsg_Str2)%>';
+		  //AlertOpen (msg, 2);
+		  hciAlert(msg, {height: 180, type: 2, title: ''});
+		  return;
+   	}
+   	
+   	if (parseInt(upTotalRate.value) > 1024000)
+   	{
+   	  msg='<%ejGetML(MLG_QOS_QOSGeneral_AlertMsg_Str3)%>';
+		  //AlertOpen (msg, 2);
+		  hciAlert(msg, {height: 180, type: 2, title: ''});
+		  return;
+   	}
+   	
+   	if (parseInt(downTotalRate.value) > 1024000)
+   	{
+   	  msg='<%ejGetML(MLG_QOS_QOSGeneral_AlertMsg_Str4)%>';
+		  //AlertOpen (msg, 2);
+		  hciAlert(msg, {height: 180, type: 2, title: ''});
+		  return;
+   	}
+
+      if ($("input[name='enableQos']").get(0).checked == true) {
+         /*if(defaultqueue.value == '0')
+         {
+            alert('Please assign default queue!');
+            return;
+         }*/
+   
+         enblQos.value=1;
+         //loc += '&AutoMapSel=' + AutoMapSel.options[AutoMapSel.selectedIndex].value; /* __OBM__, Auto priority mapping, Jones */
+         /*loc += '&defaultQueue=' + defaultqueue.value;
+         loc += '&defaultQueue=' + '-1';*/
+      } else {
+         enblQos.value=0;
+         /*loc += '&defaultQueue=' + '-1';
+         loc += '&defaultDscpMark=' + '-1';*/
+         if (enblQosVar != '1')
+         {
+         	return;
+         }
+      }
+      $.openLoadingMask(1);
+      submit();
+   }
+}
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+      if(errMsg != ""){
+         hciAlert(errMsg, {height: 180, type: 2, title: ''});
+         return;
+	  }
+      if (enblQosVar == '1') {
+      	 $("input[name='enableQos']").get(0).checked = true;
+/*
+         for (var i=0; i< defaultDscpMark.options.length; i++) {
+            if (defaultDscpMark.options[i].value == defMark) {
+                defaultDscpMark.options[i].selected = true;
+                break;
+            }
+         }
+*/
+      } else {
+         $("input[name='enableQos']").get(1).checked = true;
+      }
+      clickEnableQos();
+      if (upstreamRate > 0)
+         upTotalRate.value = upstreamRate;
+      else
+         upTotalRate.value = '';
+      if (downstreamRate > 0)
+         downTotalRate.value = downstreamRate;
+      else
+         downTotalRate.value = '';
+      /* __OBM__, Auto priority mapping, Jones */
+		  for(i=0;i< AutoMapSel.length;i++){
+			  if (AutoMapSel.options[i].value == autoMapType)
+				  AutoMapSel.selectedIndex = i;
+		  }   
+   }
+}
+
+function doSubmit() {
+   if (btnSave()) {
+      document.forms[0].submit();
+   }
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+// done hiding -->
+</script>
+<form action="/pages/tabFW/qos-qosmgmt.cmd" method="post">
+  <input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">
+  <input type="hidden" name="action" id="action" value="savapply">
+  <input type="hidden" name="enblQos" id="enblQos" value="0">
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div>
+  <b class="r1"></b>
+  <b class="r2"></b>
+  <b class="r3"></b>
+  <b class="r4"></b>
+  <b class="r4"></b>
+</div>
+<div class="explain_text"><%ejGetML(MLG_QOS_QOSGeneral_Str1)%></div>
+<div>
+  <b class="r4"></b>
+  <b class="r4"></b>
+  <b class="r3"></b>
+  <b class="r2"></b>
+  <b class="r1"></b>
+</div>
+</div>
+<!--Unit Explain End-->
+<div class="data_frame">
+  <ul>
+    <li class="set1">
+      <div class="w_text">
+        <ul>
+          <li class="left_table" ><%ejGetML(MLG_QOS_QOSGeneral_Str2)%></li>
+          <li class="right_table">
+            <input name="enableQos" id="enableQos" type="radio" value="1" onClick="clickEnableQos()"/><%ejGetML(MLG_Common_Enable)%>
+            <input name="enableQos" id="enableQos" type="radio" value="0" onClick="clickEnableQos()"/><%ejGetML(MLG_Common_Disable)%>&nbsp;(<%ejGetML(MLG_Security_MACFilter_Note3)%>)
+          </li>
+        </ul>
+      </div>
+      <div class="w_text">
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSGeneral_Str16)%>&nbsp;</li>
+          <li class="right_table"><input name="upTotalRate" type="text" size="7" /> &nbsp;(<%ejGetML(MLG_Common_Kbps)%>)</li>
+        </ul>
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSGeneral_Str17)%>&nbsp;</li>
+          <li class="right_table"><input name="downTotalRate" type="text" size="7" /> &nbsp;(<%ejGetML(MLG_Common_Kbps)%>)</li>
+        </ul>
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSGeneral_Str18)%>&nbsp;</li>
+          <li class="right_table">
+            <select name="AutoMapSel">
+              <option value="0" ><%ejGetML(MLG_QOS_QOSGeneral_Str11)%> </option>
+              <option value="1" ##AutoMap_EtherPri##><%ejGetML(MLG_QOS_QOSGeneral_Str12)%> </option>
+              <option value="2" ##AutoMap_DSCP##><%ejGetML(MLG_QOS_QOSGeneral_Str13)%> </option>
+              <option value="4" ##AutoMap_PktLen##><%ejGetML(MLG_QOS_QOSGeneral_Str14)%> </option>
+            </select>
+          </li>
+        </ul>
+<!--
+        <ul>
+          <li class="left_table">Select Default DSCP Mark</li>
+          <li class="right_table">
+              <select name="defaultDscpMark" id="defaultDscpMark" >
+              <option value="-1"> No Change </option>
+              <option value="0"> Default </option>
+            </select>
+          </li>
+        </ul>
+-->
+      </div>
+    </li>
+    <li class="space"> </li>
+    <li class="space"> </li>
+<!--Note define start-->
+    <li class="noteframe">
+        <div class="w_text">
+          <span class="i_note"><%ejGetML(MLG_Network_Note)%>:</span>
+        </div>
+          <div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_QOS_QOSGeneral_Str15)%></div>
+    </li>
+    <li class="space"> </li>
+    <li class="buttonframe">
+        <div class="button_position">
+            <input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="btnSave();"/>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+            <input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick="frmLoad();"/>
+        </div>
+    </li>
+  </ul>
+</div>
+</div>
+</form>

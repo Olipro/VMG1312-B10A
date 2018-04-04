@@ -1,0 +1,104 @@
+<html>
+  <head>
+    <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+    <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+function btnApply() {
+  var loc = 'ippcfg.cmd?action=savapply&ippEnabled=';
+
+  with( document.forms[0] ) {
+    if( ippEnabled.checked ) {
+
+      loc += '1';
+      if ( (ippMake.value.length == 0)  ||  (ippMake.value.length > 80) ) {
+        alert('Make and model length is invalid [1-80].');
+        return;
+      }
+      loc += '&ippMake='+ippMake.value;
+      
+      if ( (ippName.value.length == 0) || (ippName.value.length > 80) ) {
+        alert('Make and model length is invalid [1-80].');
+        return;
+      }
+      loc += '&ippName='+ippName.value;
+    }
+    else {
+      loc += '0';
+    }
+  }
+  loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+  var code = 'location="' + loc + '"';
+  eval(code);
+}
+
+function ippEnblChange() {
+  if( document.forms[0].ippEnabled.checked )
+    hideIppConfig(0);
+  else
+    hideIppConfig(1);
+}
+
+function hideIppConfig(hide) {
+  var status = 'visible';
+                                                                                
+  if(hide)
+    status = 'hidden';
+                                                                                
+  if( document.getElementById )
+    document.getElementById('ippConfig').style.visibility = status;
+  else
+    if(!document.layers)
+      document.all.ippConfig.style.visibility = status;
+}
+
+
+function frmLoad() {
+  var i = 0;
+  var enable = "<%ejGetOther(sysInfo, ippEnabled)%>";
+
+  with (document.forms[0]) {
+    ippMake.value = "<%ejGetOther(sysInfo, ippMake)%>";
+    ippName.value = "<%ejGetOther(sysInfo, ippName)%>";
+    if (enable == "1" ) {
+      ippEnabled.checked = true;
+    } else {
+      ippEnabled.checked = false;
+    }
+  }
+  ippEnblChange();
+}
+
+// done hiding -->
+    </script>
+  </head>
+  <body onLoad='frmLoad()'>
+    <blockquote>
+      <form>
+        <b>Print Server settings</b><br><br>
+        This page allows you to enable / disable printer support.
+        <br><br>
+        <input type='checkbox' name='ippEnabled' onClick='ippEnblChange()'> Enable on-board print server.
+        <br><br>
+        <div id="ippConfig">
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width='150'>Printer name</td>
+              <td><input type='text' name='ippName'></td>
+            </tr>
+            <tr>
+              <td width='150'>Make and model</td>
+              <td><input type='text' name='ippMake'></td>
+            </tr>
+          </table>
+        </div>
+        <br><br>
+        <center>
+        <input type="button" value="Apply/Save" onClick='btnApply()'>
+        </center>
+      </form>
+    </blockquote>
+  </body>
+</html>

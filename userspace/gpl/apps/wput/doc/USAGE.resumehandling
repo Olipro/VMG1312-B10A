@@ -1,0 +1,13 @@
+Wput's upload / resume / skip behaviour:
+
+   Filesize
+Local Remote |default  dont-continue  reupload  skip-larger  skip-existing
+2     1	     |resume   upload                                skip
+2     2	     |skip  	              upload                 skip
+1     2      |upload                            skip         skip
+
+A filesize of 0 is 0 or unexisting.
+Suplied arguments will override the default table in order of appearance.
+--dont-continue --skip-existing will there be the same as --skip-existing
+but --skip-existing --dont-continue will only upload files that are remotely
+larger.

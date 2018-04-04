@@ -1,0 +1,30 @@
+*************** Sync {
+*** 23,36 ****
+  
+  		#
+  		# If the firewall replica goes from primary to backup,
+- 		# the conntrackd -t command is invoked in the script. 
+- 		# This command resets the timers of the conntracks that
+- 		# live in the kernel to this new value. This is useful
+- 		# to purge the connection tracking table of zombie entries
+- 		# and avoid clashes with old entries if you trigger 
+- 		# several consecutive hand-overs.
+  		#
+- 		PurgeTimeout 15
+  
+  		# Set the acknowledgement window size. If you decrease this
+  		# value, the number of acknowlegdments increases. More
+--- 23,35 ----
+  
+  		#
+  		# If the firewall replica goes from primary to backup,
++ 		# the conntrackd -t command is invoked in the script.
++ 		# This command schedules a flush of the table in N seconds.
++ 		# This is useful to purge the connection tracking table of
++ 		# zombie entries and avoid clashes with old entries if you
++ 		# trigger several consecutive hand-overs. Default is 60 seconds.
+  		#
++ 		# PurgeTimeout 60
+  
+  		# Set the acknowledgement window size. If you decrease this
+  		# value, the number of acknowlegdments increases. More

@@ -1,0 +1,526 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<title>.::<%ejGetML(MLG_Common_Login_Str1)%><%ejGet(modelName)%>::.</title>
+<link href="../css/brick.css" rel="stylesheet" type="text/css" />
+<script src="../js/jquery-1.3.2.min.js" type="text/javascript"></script>
+<script src="../js/jquery.validate.pack.js" type="text/javascript"></script>
+<script src="../js/functions.js" type="text/javascript"></script>
+<script src="../js/jquery.cookie.js" type="text/javascript"></script>
+<script type="text/javascript" src="../js/common.js"></script>   
+<script type="text/javascript">
+var wpakeyLoginshow = '<%ejGet(wpakeyLoginMsg)%>';
+var forEircom  = '<%ejGetOther(sysInfo, forEircom)%>';
+var reload = '<%ejGetOther(sysInfo, reload)%>'; //ZyXEL, GUI Issue, Albert
+var forCodetel = '<%ejGetOther(sysInfo, trueLANIP)%>'; //ZyXEL, GUI Issue, Albert
+var loginrandom = '<%ejGetOther(sysInfo, login_pass_random_len)%>';
+var advancedaccountsecurity = '<%ejGetOther(sysInfo, advanced_account_security)%>';
+var customer = '<%ejGetOther(customer)%>';
+var modelname= '<%ejGet(modelName)%>';
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; 
+
+function CheckSumit() {
+	if ( loginrandom != '1' ) {
+		$("#AuthPassword").val($("#Display").val());
+	}
+}
+
+var ncomplete = 0;
+function checkcomplete(){
+	ncomplete++;
+	if(ncomplete > 19)
+		document.getElementById('submit').style.visibility = 'visible'; 
+}
+
+$(document).ready(function() {
+
+	document.getElementById('submit').style.visibility = 'hidden';
+	setTimeout(function() {
+	
+		var js0,js1,js2,js3,js4,js5,js6,js7,js8,js9;
+		var js10,js11,js12,js13,js14,js15,js16,js17,js18,js19;
+
+		// preload image
+		new Image().src = "../images/menu_bg.jpg";
+		new Image().src = "../images/menu_a_left.gif";
+		new Image().src = "../images/loading.gif";
+		new Image().src = "../images/bg.gif";
+		new Image().src = "../images/menu_a_right.gif";
+		new Image().src = "../images/top_style_bg.jpg";
+		new Image().src = "../images/i_2tiers.gif";
+		new Image().src = "../images/i_wizard.gif";
+		new Image().src = "../images/i_logout.gif";
+		new Image().src = "../images/i_right_arrow.gif";
+		new Image().src = "../images/i_left_arrow.gif";
+		new Image().src = "../images/network/i_pc.gif";
+		new Image().src = "../images/network/i_router.gif";
+		new Image().src = "../images/network/i_s_pc.gif";
+		new Image().src = "../images/network/i_internet.gif";
+		new Image().src = "../images/network/i_downarrow.gif";
+
+		// reference to <head>
+		var head = document.getElementsByTagName('head')[0];
+		// a new JS
+		js0  = document.createElement("script");
+		js0.type = "text/javascript";
+		js0.src  = "../js/jquery.layout.js";
+
+		js1  = document.createElement("script");
+		js1.type = "text/javascript";
+		js1.src  = "../js/util.js";
+		
+		js2  = document.createElement("script");
+		js2.type = "text/javascript";
+		js2.src  = "../js/jquery-ui-1.7.2.custom.min.js";
+
+		js3  = document.createElement("script");
+		js3.type = "text/javascript";
+		js3.src  = "../js/TimeZone.js";
+		
+		js4  = document.createElement("script");
+		js4.type = "text/javascript";
+		js4.src  = "../js/jquery.zyCheckTree.js";
+
+		js5  = document.createElement("script");
+		js5.type = "text/javascript";
+		js5.src  = "../js/jquery.simplemodal-1.3.min.js";
+
+		js6  = document.createElement("script");
+		js6.type = "text/javascript";
+		js6.src  = "../js/jquery.easing.1.3.js";
+
+		js7  = document.createElement("script");
+		js7.type = "text/javascript";
+		js7.src  = "../js/zyMacUi.js";
+
+		js8  = document.createElement("script");
+		js8.type = "text/javascript";
+		js8.src  = "../js/userSwitchPanel.js";
+
+		js9  = document.createElement("script");
+		js9.type = "text/javascript";
+		js9.src  = "../js/jsonParser.js";
+
+		js10  = document.createElement("script");
+		js10.type = "text/javascript";
+		js10.src  = "../js/zyUiDialog.js";
+
+		js11  = document.createElement("script");
+		js11.type = "text/javascript";
+		js11.src  = "../js/brickRichMenu.js";
+
+		js12  = document.createElement("script");
+		js12.type = "text/javascript";
+		js12.src  = "../js/tools.scrollable-1.1.0.min.js";
+		
+		js13  = document.createElement("script");
+		js13.type = "text/javascript";
+		js13.src  = "../js/quickStart.js";
+
+		js14  = document.createElement("script");
+		js14.type = "text/javascript";
+		js14.src  = "../pages/VD/VDcomponent.js";
+
+		js15  = document.createElement("script");
+		js15.type = "text/javascript";
+		js15.src  = "../js/jquery.tooltip.min.js";
+
+		js16  = document.createElement("script");
+		js16.type = "text/javascript";
+		js16.src  = "../js/jquery.tools.min_tab.js";
+
+		js17  = document.createElement("script");
+		js17.type = "text/javascript";
+		js17.src  = "../js/common2.js";
+
+		js18  = document.createElement("script");
+		js18.type = "text/javascript";
+		js18.src  = "../js/voipSipServer.js";
+
+		js19  = document.createElement("script");
+		js19.type = "text/javascript";
+		js19.src  = "../js/voipSipAccount.js";
+		
+		js0.onload = js0.onreadystatechange = function() {  checkcomplete();}
+		js1.onload = js1.onreadystatechange = function() {  checkcomplete();}
+		js2.onload = js2.onreadystatechange = function() {  checkcomplete();}
+		js3.onload = js3.onreadystatechange = function() {  checkcomplete();}
+		js4.onload = js4.onreadystatechange = function() {  checkcomplete();}
+		js5.onload = js5.onreadystatechange = function() {  checkcomplete();}
+		js6.onload = js6.onreadystatechange = function() {  checkcomplete();}
+		js7.onload = js7.onreadystatechange = function() {  checkcomplete();}
+		js8.onload = js8.onreadystatechange = function() {  checkcomplete();}
+		js9.onload = js9.onreadystatechange = function() {  checkcomplete();}
+		js10.onload = js10.onreadystatechange = function() { checkcomplete();}
+		js11.onload = js11.onreadystatechange = function() { checkcomplete();}
+		js12.onload = js12.onreadystatechange = function() { checkcomplete();}
+		js13.onload = js13.onreadystatechange = function() { checkcomplete();}
+		js14.onload = js14.onreadystatechange = function() { checkcomplete();}
+		js15.onload = js15.onreadystatechange = function() { checkcomplete();}
+		js16.onload = js16.onreadystatechange = function() { checkcomplete();}
+		js17.onload = js17.onreadystatechange = function() { checkcomplete();}
+		js18.onload = js18.onreadystatechange = function() { checkcomplete();}
+		js19.onload = js19.onreadystatechange = function() { checkcomplete();}
+	
+		
+		// preload JS and CSS
+		head.appendChild(js0);
+		head.appendChild(js1);
+		head.appendChild(js2);
+		head.appendChild(js3);
+		head.appendChild(js4);
+		head.appendChild(js5);
+		head.appendChild(js6);
+		head.appendChild(js7);
+		head.appendChild(js8);
+		head.appendChild(js9);
+		head.appendChild(js10);
+		head.appendChild(js11);
+		head.appendChild(js12);
+		head.appendChild(js13);
+		head.appendChild(js14);
+		head.appendChild(js15);
+		head.appendChild(js16);
+		head.appendChild(js17);
+		head.appendChild(js18);
+		head.appendChild(js19);
+		
+		// preload image
+		new Image().src = "../images/mConnectionStatus_on.jpg";
+		new Image().src = "../images/mMaintenance.jpg";
+		new Image().src = "../images/mSystemMonitor.jpg";
+		new Image().src = "../images/mSecurity.jpg";
+		new Image().src = "../images/mNetworkSetting.jpg";
+		new Image().src = "../images/mConnectionStatus.jpg";
+		new Image().src = "../images/mVoIP.jpg";
+
+		new Image().src = "../images/i_wps_top.jpg";
+		new Image().src = "../images/i_wps_top.jpg";
+		new Image().src = "../images/i_percentage_center.gif";
+		new Image().src = "../images/i_percentage_blue.gif";
+		new Image().src = "../images/table_top.gif";
+		new Image().src = "../pages/VD/vd/images/i_vd.gif";
+			
+	}, 500);
+
+});
+
+function frmLoad () {
+	var status = '<%ejGet(loginStatus)%>';
+	var count = '<%ejGetOther(AuthMsg, count)%>';
+	var Retry = '<%ejGetOther(AuthMsg, Retry)%>';
+	var period = '<%ejGetOther(AuthMsg, Period)%>';
+	var LockTime;
+	var waitTime;
+
+	if ( advancedaccountsecurity == '0' ) {
+		loginrandom = '0';
+	}
+	
+	if ( Retry != '' && parseInt(Retry) < 1262304000 ) {
+		LockTime = timestampToDayStr ( parseInt(Retry) );
+	} else if ( Retry != '' ) {
+		LockTime = timestampToFullStr ( parseInt(Retry) );
+	}
+
+	if ( period != '' )
+		waitTime = timestampToDayStr ( parseInt(period) );
+
+	if ( status != '0' ) {
+		if ( count == '0' ) {
+			$("#Message").html("<font color='#DD0000'><%ejGetML(MLG_Common_Login_AlertMsg_Str19)%>" + LockTime + "</font>");
+		}
+		else if ( count == '' ) {
+			if ( $.cookie("count") == null ) {
+				$("#Message").html("<font color='#DD0000'><%ejGetML(MLG_Common_Login_AlertMsg_Str3)%></font>");
+			}
+			else {
+				if ( $.cookie("Retry") == null ) {
+					$("#Message").html("<font color='#DD0000'><%ejGetML(MLG_Common_Login_AlertMsg_Str20)%>" + $.cookie("count") + "<%ejGetML(MLG_Common_Login_AlertMsg_Str21)%></font>");
+				}
+				else {
+					if ( parseInt($.cookie("Left")) < 1262304000 ) {
+						LockTime = timestampToDayStr ( parseInt($.cookie("Left")) );
+					} else {
+						LockTime = timestampToFullStr ( parseInt($.cookie("Left")) );
+					}
+					$("#Message").html("<font color='#DD0000'><%ejGetML(MLG_Common_Login_AlertMsg_Str22)%>" + LockTime + "</font>");
+					$("#AuthName").attr("disabled", true);
+					$("#Display").attr("disabled", true);
+				}
+			}
+		}
+		else {
+			//$("#Message").html("<font color='#DD0000'>The username will be temporarily invalid for "+ waitTime +" after "+ count +" failed login attempts.</font>");
+			$("#Message").html("<font color='#DD0000'><%ejGetML(MLG_Common_Login_AlertMsg_Str3)%></font>");
+		}
+	}
+
+	if ( loginrandom == '1' ) {
+		$("#login").validate(
+		{
+			event: "keyup",
+			rules:{
+				AuthName:{required:true},
+				Display:{
+					required: {
+						depends: function(element) {
+							return $("#AuthPassword").val().length == 0;
+						}
+					},
+					maxlength: {
+						depends: function(element) {
+							return $("#AuthPassword").val().length > 20;
+						}
+					}
+				}
+			},
+			messages: {
+				AuthName: {
+					required: "Username is required."
+				},
+				Display: {
+					required: "<%ejGetML(MLG_Common_Login_AlertMsg_Str2)%>",
+					maxlength: "The password is not correct."
+				}
+			}
+	
+		});
+	
+		function randomString() {
+			var string_length = 20;
+			var randomstring = '';
+			var tmpStr = $("#AuthPassword").val();
+			var len = tmpStr.length;
+			var rnum = Math.floor(Math.random() * 100+tmpStr.length)%16+1;
+			for (var i=0; i<rnum; i++) {
+				randomstring += "*";
+			}
+			return randomstring;
+		};
+	
+		$("#Display").keypress(function (e) {
+			if ( 32 <= e.which && e.which <= 126 ) {
+				var c = String.fromCharCode(e.which);
+				$("#AuthPassword").val( $("#AuthPassword").val()+ c );
+				$("#AuthPassword").trigger("keyup");
+				$("#login").trigger("keyup");
+				$("#Display").trigger("keyup");
+			}
+			if ( typeof(e.which)!= 'undefined' ) {
+				if ( $("#AuthPassword").val() != "" ) {
+					$("#Display").val( randomString() );
+				}
+				else {
+					$("#Display").val( "" );
+				}
+			}
+		});
+		
+		$("#Display").keydown(function (e) {
+			if ( e.which == 8 || e.which == 46 ) {
+				var tmpStr = $("#AuthPassword").val();
+				if (tmpStr != "" ) {
+					tmpStr = tmpStr.substring(0, tmpStr.length - 1 );
+				}
+				$("#AuthPassword").val(tmpStr);
+				$("#AuthPassword").trigger("keyup");
+				$("#login").trigger("keyup");
+				$("#Display").trigger("keyup");
+			}
+			if ( e.which != 9 && !(16 <= e.which && e.which <= 20) && e.which != 27 && !(33 <= e.which && e.which <= 40) && !( 45 <= e.which && e.which <= 46) && !( 144 <= e.which && e.which <= 145)) {
+				if ( $("#AuthPassword").val() != "" ) {
+					$("#Display").val( randomString() );
+				}
+				else {
+					$("#Display").val( "" );
+				}
+			}
+		});
+	}
+	else {
+		$("#login").validate(
+		{
+			event: "keyup",
+			rules:{
+				AuthName:{required:true},
+				Display:{required:true,maxlength:20}
+			},
+			messages: {
+				AuthName: {
+					required: "Username is required."
+				},
+				Display: {
+					required: "<%ejGetML(MLG_Common_Login_AlertMsg_Str2)%>",
+					maxlength: "The password is not correct."
+				}
+			}
+	
+		});
+	}
+	
+	if (wpakeyLoginshow != '1'){
+		document.getElementById("WPAkeyLoginMsg").style.display='none';
+	}
+
+	if(forEircom==1)
+	{
+		document.forms[0].AuthName.value="admin";
+		document.getElementById("loginText").style.color="#736C66";
+	}
+	if(forEircom==0)
+	{
+		$('#loginText_Common').fadeIn(0);
+		$('#loginText_Eircom').fadeOut(0);
+		$('#loginTitle_Common').fadeIn(0);
+		$('#loginTitle_Eircom').fadeOut(0);
+	}
+	else
+	{
+		$('#loginText_Common').fadeOut(0);
+		$('#loginText_Eircom').fadeIn(0);
+		$('#loginTitle_Common').fadeOut(0);
+		$('#loginTitle_Eircom').fadeIn(0);
+	}
+
+	if (customer == "Turkey" || customer == "Portugal")
+	{
+		if(modelname=='VMG1312-B10A')
+		{
+			$('#login_description').html('<%ejGetML(MLG_Common_Login_Str6)%>');
+		}
+		else if(modelname=='VMG8924-B10A')
+		{
+			$('#login_description').html('<%ejGetML(MLG_Common_Login_Str7)%>');
+		}
+	}
+    /*if (customer == "ISKON")
+    {
+        $('#iskon_logo').css('display','inline');
+        $('#common_logo').css('display','none');
+    } else {
+        $('#iskon_logo').css('display','none');
+        $('#common_logo').css('display','inline');
+    }*/
+	if (customer == "ISKON"){
+		$('#common_logo').css('display','none');
+		$('#zap_logo').css('display','none');   
+	}else if((customizationFlag & 0x40000000) == 0x40000000){
+		$('#common_logo').css('display','none');   
+		$('#iskon_logo').css('display','none');      
+//      $('#zap_logo').css('display','none');              
+	}else{
+		$('#iskon_logo').css('display','none');
+		$('#zap_logo').css('display','none');
+	}
+}
+
+window.onload = function() {
+	frmLoad();
+	if (reload == '1' && forCodetel == 1) //ZyXEL, GUI Issue, Albert
+	{
+		window.location.reload(true);
+	}
+};
+
+</script>
+<link href="../css/brick.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="loginbg">
+<div class="logo"><img src="../images/logo.gif" alt="" /></div>
+<div class="wraplogin">
+<div class="header_position">
+<div class="logoWb" id="common_logo">
+<img src="../images/logo.gif" alt="" />
+</div>
+<!--
+<div class="logoWb_iskon" id="iskon_logo">
+<img src="../images/iskon.png" alt="" />
+<img src="../images/logo2.gif" alt="" />
+</div>
+-->
+<div class="logoWb_zap" id="zap_logo">
+</div>
+<div class="logoWb_iskon" id="iskon_logo">
+</div>
+<script language="javascript">
+<!-- hide
+{
+	if (customer == "ISKON")
+	{
+		var str = '';
+		str += '<img src="../images/iskon.png" alt="" />';
+		str += '<img src="../images/logo2.gif" alt="" />';
+		$('#iskon_logo').append(str);
+	}else if((customizationFlag & 0x40000000) == 0x40000000){
+		var str = '';
+		str += '<img src="../images/logo_zap.gif" alt="" />';
+		$('#zap_logo').append(str);
+	}
+}
+// done hiding -->
+</script>
+</div>
+<div class="logincenter"><div class="login_left_pic"><img src="../images/p_login.gif"/></div>
+<div class="login_right" id="loginText">
+<div>
+<ul>
+<span class="title_index" id="loginTitle_Common"  style="display:none;"><%ejGetML(MLG_Common_Login_Str2)%></span>
+<span class="title_index" id="loginTitle_Eircom"  style="display:none;">eircom broadband</span>
+<br />
+  <!--<li class="content_word">Welcome to <script>document.write(sysVar['model-name']);</script> configuration interface. Please enter username and password to login. -->
+  <li class="content_word"><div id="login_description">Welcome to <%ejGet(modelName)%> configuration interface. Please enter username and password to login.</div>
+    <div id="WPAkeyLoginMsg">
+      <ul><li class="space" ></li>
+        <li class="space" id="loginText_Common"  style="display:none;"><%ejGetML(MLG_Common_Login_Str5)%></li>
+        <li class="space" id="loginText_Eircom"  style="display:none;">Your <span style="font-weight: bold">default</span> password is the same as the Wireless Security Key printed on the label on the underside of your modem</li>
+        <li class="space"></li><li class="space"></li>
+      </ul></div>
+    <label id="Message"></label>
+    <div>
+      <form action="/login/login-page.cgi" method="post" id="login" onSubmit="CheckSumit();">
+        <fieldset>
+          <ul>
+            <li style=" margin-top:10px;" >
+              <span >
+                <label for="AuthName" class="login_content_word" style="width: 100px;">
+                  <span class="required"><%ejGetML(MLG_Common_Username)%>:</span>
+                </label>
+              </span>
+              <span style="position:absolute; left:120px;"> 
+                <input name="AuthName" type="text" class="text required" id="AuthName" size="20" maxlength="256" />
+              </span>
+            </li>
+            <li>
+              <label for="AuthName" class="error"><%ejGetML(MLG_Common_Login_AlertMsg_Str16)%> </label>
+            </li>
+            <br />
+            <li style=" margin-top:10px; clear:both;">
+              <span >
+                <label for="Display" class="login_content_word" style="width: 100px;">
+                  <span class="required"><%ejGetML(MLG_Common_Password)%>:</span>
+                </label>
+              </span>
+              <span style="position:absolute; left:120px;">
+                <input name="Display" autocomplete="new-password" type="password" class="text" id="Display" size="20" maxlength="256" />
+                <input name="AuthPassword" type="hidden" id="AuthPassword" size="20" maxlength="256" />
+              </span>
+            </li>
+            <li>
+              <label for="AuthPassword" class="error"><%ejGetML(MLG_Common_Login_AlertMsg_Str4)%> </label>
+            </li>
+            <li class="login_button">
+              <input type="submit"value="<%ejGetML(MLG_Common_Login)%>" id="submit" />
+            </li>
+          </ul>
+        </fieldset>
+      </form>
+    </div>
+  </li>
+</ul>
+</div></div></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,3162 @@
+<script language="javascript">
+<!-- hide
+var syncNvram = '<%ejGetWl(wlSyncNvram)%>';
+var ssid = '<%ejGetWl(wlSsid)%>';
+var ssidIdx = parseInt('<%ejGetWl(wlSsidIdx)%>');
+var mainEnbl = '<%ejGetWl(wlEnbl_wl0v0)%>';
+var enbl = '<%ejGetWl(wlEnbl)%>';
+var hide = '<%ejGetWl(wlHide)%>';
+var apisolate = '<%ejGetWl(wlAPIsolation)%>';
+var mbssisolate = '<%ejGetWl(wlBssidIsolation)%>';
+var mode = '<%ejGetWl(wlAuthMode)%>';
+var wlRefresh = '<%ejGetWl(wlRefresh)%>';
+var band = '<%ejGetWl(wlBand)%>';
+var nbwcap = '<%ejGetWl(wlNBwCap)%>'; 
+var nctrlsb = '<%ejGetWl(wlNCtrlsb)%>';
+var phy = '<%ejGetWl(wlPhyType)%>';
+var radiusServerIP = '<%ejGetWl(wlRadiusServerIP)%>';
+var bit = '<%ejGetWl(wlKeyBit)%>';
+var keys128 = new Array( "<%ejGetWl(wl128Key1Asterisk)%>", "<%ejGetWl(wl128Key2Asterisk)%>","<%ejGetWl(wl128Key3Asterisk)%>", "<%ejGetWl(wl128Key4Asterisk)%>" );
+var keys64 = new Array( "<%ejGetWl(wl64Key1Asterisk)%>", "<%ejGetWl(wl64Key2Asterisk)%>","<%ejGetWl(wl64Key3Asterisk)%>", "<%ejGetWl(wl64Key4Asterisk)%>" );
+var autoWepKey64 = '<%ejGetWl(wlDefaultKey64)%>';
+var autoWepKey128 = '<%ejGetWl(wlDefaultKey128)%>';
+var autoWpaKey = '<%ejGetWl(wlDefaultWpaKey)%>';
+var useDefaultWepKey = '<%ejGetWl(wlUseDefaultWepKey)%>';
+var useDefaultWpaKey = '<%ejGetWl(wlUseDefaultWpaKey)%>';
+var keyIdx = '<%ejGetWl(wlKeyIndex)%>';
+var wpaPskKey = '<%ejGetWl(wlWpaPskAsterisk)%>';
+var wpaGTKRekey = '<%ejGetWl(wlWpaGTKRekey)%>';
+var radiusPort = '<%ejGetWl(wlRadiusPort)%>';
+var radiusKey = '<%ejGetWl(wlRadiusKeyAsterisk)%>';
+var wep = '<%ejGetWl(wlWep)%>';
+var wpa = '<%ejGetWl(wlWpa)%>';
+var auth = '<%ejGetWl(wlAuth)%>';
+var wlCorerev = '<%ejGetWl(wlCoreRev)%>';
+var varPreauth = '<%ejGetWl(wlPreauth)%>';
+var varNetReauth = '<%ejGetWl(wlNetReauth)%>';
+var WscMode = '<%ejGetWl(wlWscMode)%>';
+var WscAPMode  = '<%ejGetWl(wlWscAPMode)%>';
+var enableWmf = '<%ejGetWl(wlEnableWmf)%>';
+var wmf = '<%ejGetWl(wlHasWmf)%>';
+var nmode = '<%ejGetWl(wlNmode)%>';
+var nreqd = '<%ejGetWl(wlNReqd)%>';  //cathy add
+var sessionkey = mainFrame.glbSessionKey;
+var passphraseUI = '<%ejGetWl(wlPassphraseUI)%>';
+var oldWepPassphraseKey = '<%ejGetWl(wlWepPassphraseKey)%>';
+var newWepPassphraseKey = '<%ejGetWl(wlWepPassphraseKey)%>';
+var maxAssoc = '<%ejGetWl(wlMaxAssoc)%>';
+
+var periousValue;
+var oldpKey1, oldpKey2, oldpKey3, oldpKey4, oldpKey0;
+var wepAsterisk = "***************************";
+var wpaAsterisk = "*****************************************************************";
+
+var enblsubnet = '<%ejGetWl(wlEnblSubnet)%>';
+var minAddress = '<%ejGetWl(wlMinAddress)%>';
+var maxAddress = '<%ejGetWl(wlMaxAddress)%>';
+var subnetMask = '<%ejGetWl(wlSubnetMask)%>';
+var gateway = '<%ejGetWl(wlGateway)%>';
+var wlSendEmailEnable='<%ejGetWl(wlEmailEnable)%>';
+var wlEmailSelect= '<%ejGetWl(wlSelectEmailSend)%>';
+var wl_sendmailto = '<%ejGetWl(wlSendEmailTo)%>';
+var wl_sendmailti = '<%ejGetWl(wlSendEmailTitle)%>';
+var supportEmailNotification='<%ejGetOther(sysInfo, buildEmailNotification)%>';
+var subDomain=new Array(4);
+subDomain[0] = '<%ejGetWl(wlDomain0)%>';
+subDomain[1] = '<%ejGetWl(wlDomain1)%>';
+subDomain[2] = '<%ejGetWl(wlDomain2)%>';
+subDomain[3] = '<%ejGetWl(wlDomain3)%>';
+
+var CondPoolEnbl = '<%ejGetWl(wlCondPoolEnbl)%>';
+
+var maxBandwidth='<%ejGetWl(wlMaxBandwidth)%>';
+var upRate = '<%ejGetOther(lineRate, 0, 0)%>';
+var downRate = '<%ejGetOther(lineRate, 1, 0)%>';
+var forNorwaywl  = '<%ejGetOther(sysInfo, forNorwaywl)%>';
+
+var GuestWLANEnbl = '<%ejGetWl(wlGuestWLAN_Enable)%>'; 
+var GuestWLANScenario = '<%ejGetWl(wlGuestWLAN_Scenario)%>'; 
+var maxDownBW = '<%ejGetWl(wlMaxDownBandwidth)%>'; 
+var supportEmailNotification='<%ejGetOther(sysInfo, buildEmailNotification)%>';
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; //ZyXEL, cathy, open tkip only for b/g/n mixed or n only mode
+var SupportSpecialCharacters = '<%ejGetOther(specialcharactersforwpapsk)%>'; //ZyXEL, ShuYing, Support Special characters for wlWpaPsk
+
+//hide all selections	
+function stopSilde(silderValue){
+   for (var x = 1; x <= optionLength - 1; x++) {
+      if (silderValue == x) 
+         continue;
+      $('#select_' + x).find('._on').attr('style', 'display:none;');
+      $('#select_' + x).find('._off').removeAttr('style');
+   }
+   $('#error_mssage').fadeOut('fast');
+}
+
+function changeGWMode()
+{
+   with (document.forms[0]) 
+   {
+      if (wlGWMode.value == '0')
+		  {
+		     var db1 = window.parent.$.zyUiDialog
+		     ({
+		         width: '360',
+		         height: 330,
+		         title: 'External Guest',
+		         
+		         buttons: {
+            'Cancel': function(){ db1.dialog('close'); },
+            'Apply':function(){db1.dialog('close');}
+         }
+  
+          });
+			   var link = 'pages/network/wireless/wlan_moreap_img_eg.html';
+			   db1.load(link);
+			   db1.dialog('open');
+	   }
+	   else if (wlGWMode.value == '1')
+	   {
+	       var db1 = window.parent.$.zyUiDialog
+		     ({
+		         width: '360',
+		         height: 350,
+		         title: 'Home Guest',
+		         
+		         buttons: {
+            'Cancel': function(){ db1.dialog('close'); },
+            'Apply':function(){db1.dialog('close');}
+            }
+  
+          });
+			   var link = 'pages/network/wireless/wlan_moreap_img_hg.html';
+			   db1.load(link);
+			   db1.dialog('open');
+	   }
+   }//end with
+      
+}//end changeGWMode
+
+function changeGuestWLAN()
+{
+   with (document.forms[0]) {
+       if (wl_enablegw.checked == true) {
+         $("#div_gwmode").show();
+        
+      } else {
+         $("#div_gwmode").hide();
+      }
+   }
+}
+
+function changeWlan()
+{
+   with (document.forms[0]) {
+      if (wlEnbl[0].checked == true) {
+         $("#WLBSSID").show();
+      } else {
+         $("#WLBSSID").hide();
+      }
+   }
+}
+
+
+function updateCurwepkey() {	
+/*check is IE? and version under 8? : Peter.Lee.MitraStar 2012-09-20*/
+   if($.browser.msie && (parseInt($.browser.version, 10) < 8))
+   		return;
+
+   with (document.forms[0]) {	
+   var obj_old,keyindex;
+   var obj_array=new Array("","","","");
+   var chk1,chk2;
+
+
+		var objXMLHTTP;
+			
+		    if (window.XMLHttpRequest) {
+			      objXMLHTTP=new XMLHttpRequest();
+			} else if (window.ActiveXObject) {
+			      // code for IE
+			      objXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+			}
+		   
+			if ( objXMLHTTP != null ) {
+			    objXMLHTTP.open("POST","wireless-wepkey.cmd?encry="+wlWepEncryption.value+"&", true);
+			  //  objXMLHTTP.open("POST","wireless-wepkey.cmd?index="+(keyindex+1)+"&encry="+wlWepEncryption.value+"&", false);
+			    objXMLHTTP.onreadystatechange = function() 
+			    {
+							//success response
+			         if((objXMLHTTP.readyState == 4) && objXMLHTTP.status == 200) {
+					 	//TODO: using responseXML?
+			            var result = objXMLHTTP.responseText;
+			            if (result != "") {	
+							var index_num=0;					
+							var split_buf=result.split(/\r?\n/);
+
+							//catch the min index number, so that to avoid undefine error
+							index_num= Math.min(obj_array.length,split_buf.length);
+							
+							for(i=0;i<index_num;i++)
+							{
+								var temp="WepKey"+(i+1);
+								var temp_ch1="input_wlKey"+(i+1);
+								chk1= document.getElementById(temp_ch1).value;
+								chk2=chk1.charCodeAt(0);
+								if( split_buf[i].search(/temp/)) {								   
+									if( (split_buf[i].substring(temp.length+1)) == chk1 || (chk2 == '42') ){
+	 								obj_array[i].value = split_buf[i].substring(temp.length+1);
+									}else{
+										obj_array[i].value = chk1;
+									}
+								}
+							}
+			            }
+			         }
+		         }
+	   	         objXMLHTTP.send(null);
+			} //end if( objXMLHTTP != null )
+
+    if( box_unmaskwepkey.checked==true) 
+	{
+	  	 	for( i=0; i< wlKeyIndex.length ; i++)	{
+				//obj_old = wlKeys[i];
+		 		obj_array[i]=changeInputType(wlKeys[i], 'text');
+	  		}		
+
+	} else {
+	
+	   	for( i=0; i< wlKeyIndex.length ; i++)	{
+			//	obj_old = wlKeys[i];
+				obj_array[i]=changeInputType(wlKeys[i], 'password');
+	   	}//end for loop
+	  
+    }
+   }
+}
+
+
+function updateCurwpakey() {
+   if($.browser.msie && (parseInt($.browser.version, 10) < 8))
+   		return;
+
+   with (document.forms[0]) {	
+	var new_obj;
+	var chk1,chk2;
+                           
+    if( box_unmaskwpakey.checked==true)
+	{
+		var objXMLHTTP;
+		
+	    if (window.XMLHttpRequest) {
+		      objXMLHTTP=new XMLHttpRequest();
+		} else if (window.ActiveXObject) {
+		      // code for IE
+		      objXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+
+		if ( objXMLHTTP != null ) {
+		    objXMLHTTP.open("POST","wireless-wpakey.cmd", true);
+		    objXMLHTTP.onreadystatechange = function() 
+		    {
+						//success response
+		         if(objXMLHTTP.readyState == 4) {
+		            var result = objXMLHTTP.responseText;
+		            if (result != "") {
+						chk1 = document.getElementById("input_wlWpaPsk").value;
+						chk2=chk1.charCodeAt(0);					
+						if( (result == chk1) || (chk2 == '42') ){
+						new_obj.value = result;
+						}else{
+							new_obj.value = chk1;
+						}
+		            }
+		         }
+	         }
+   	         objXMLHTTP.send(null);
+		} //end if( objXMLHTTP != null )
+	   new_obj=changeInputType(wlWpaPsk, 'text');
+
+	} else {
+	  new_obj=changeInputType(wlWpaPsk, 'password');
+    }
+
+    $("#input_wlWpaPsk").attr("autocomplete", "new-password");
+	
+   }
+}
+
+function updateCurRadiuskey() {
+   if($.browser.msie && (parseInt($.browser.version, 10) < 8))
+   		return;
+   with (document.forms[0]) {	
+	var new_obj;
+	var chk1,chk2;;
+                           
+    if( box_unmaskradiuskey.checked==true)
+	{
+		var objXMLHTTP;
+		
+	    if (window.XMLHttpRequest) {
+		      objXMLHTTP=new XMLHttpRequest();
+		} else if (window.ActiveXObject) {
+		      // code for IE
+		      objXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+
+		if ( objXMLHTTP != null ) {
+		    objXMLHTTP.open("POST","wireless-RadiusKey.cmd", true);
+		    objXMLHTTP.onreadystatechange = function() 
+		    {
+				//success response
+		        if(objXMLHTTP.readyState == 4) {
+		           var result = objXMLHTTP.responseText;
+		           chk1 = document.getElementById("wlRadiusKey").value;
+		           chk2=chk1.charCodeAt(0);		
+		           if (result != "") {
+						if( (result == chk1) || (chk2 == '42') ){
+					new_obj.value = result;
+		           } else {
+							new_obj.value = chk1;
+						}
+		           }else{
+				 		 if(chk2 == '42'){
+		            new_obj.value = "";
+				  		}else{
+		            		new_obj.value = chk1;
+				  		}
+		           }
+		        }
+	         }
+   	         objXMLHTTP.send(null);
+		} //end if( objXMLHTTP != null )
+	   new_obj=changeInputType(wlRadiusKey, 'text');
+
+	} else {
+	  new_obj=changeInputType(wlRadiusKey, 'password');
+    }
+
+    $("#wlRadiusKey").attr("autocomplete", "new-password");	
+	
+   }
+}
+
+//replace input box type
+//only for brower support
+//using javascript to change input box attribute between "text" and "password"
+//This method is restricted by browser, for example: the version of IE which under 7 will cause "null object" fail
+function changeInputType(oldObject, oType) {
+   if($.browser.msie && (parseInt($.browser.version, 10) < 8))
+   		return;
+  with (document.forms[0]) {
+	  var newObject = document.createElement('input');
+	
+	  newObject.type = oType;
+	  if(oldObject.size) newObject.size = oldObject.size;
+	  if(oldObject.value) newObject.value = oldObject.value;
+	  if(oldObject.name) newObject.name = oldObject.name;
+	  if(oldObject.id) newObject.id = oldObject.id;
+	  if(oldObject.className) newObject.className = oldObject.className;
+  	  if(oldObject.maxlength) newObject.maxlength = oldObject.maxlength;
+
+	  oldObject.parentNode.replaceChild(newObject,oldObject);
+      return newObject;
+  }  
+
+
+}
+
+
+function changeSubnet(){
+   with (document.forms[0]) {
+      if (SubnetEnbl[0].checked == true) {
+         wlEnblSubnet.value = 1;
+         $(".subnet_pane").show();
+      } else {
+         wlEnblSubnet.value = 0;
+         $(".subnet_pane").hide();
+      }
+   }
+}
+
+var CACHE_NUM = 4;
+var arrayPassphraseCache = new Array(CACHE_NUM);
+for(i = 0; i < CACHE_NUM; i++){arrayPassphraseCache[i] = new Array("","","","","","","");}
+function setPassphraseCache(pass, wep64_1, wep64_2, wep64_3, wep64_4, wep128, wpapsk){
+   for(i = 1; i < CACHE_NUM; i++){
+      arrayPassphraseCache[i-1] = arrayPassphraseCache[i];      
+   }
+   arrayPassphraseCache[CACHE_NUM -1] = new Array(pass, wep64_1, wep64_2, wep64_3, wep64_4, wep128, wpapsk);
+
+}
+
+function getPassphraseCache(pass){
+   var tempArray;
+   var isFound = 0;
+   for(i = 0; i < CACHE_NUM; i++){
+      tempArray = arrayPassphraseCache[i];
+      if(tempArray[0] == pass){
+         isFound = 1;
+         break;
+      }
+   }
+
+   if(isFound == 1){
+      return tempArray;
+   }else{
+      return new Array("","","","","","","");
+   }
+}
+
+
+//detectPassphraseKey()
+//Call this funtion when you want to calculate the key from ui, and wait user to completed keying
+//Parameters:
+//    delay
+//       >0: call from user input, and wait ? ms for finish keying
+//       =0: call from function, not trigger by key input
+//Returns:
+//    none
+var detectVal = 0;
+function detectPassphraseKey(e, delay){
+   with(document.forms[0]) {
+      var icon_delay = 250;
+      if(delay == 0){
+         icon_delay = 0;
+      }
+
+      //denied the left, up, right, down key which is user input
+      var event = window.event||e;
+      if(event.type == "keyup"){
+         //no change, no calculate
+         if(wlPassphraseUI.value == 1){
+            if($('#pKey1').attr('value') == oldpKey1 &&
+               $('#pKey2').attr('value') == oldpKey2 &&
+               $('#pKey3').attr('value') == oldpKey3 &&
+               $('#pKey4').attr('value') == oldpKey4){
+               return;
+            }
+         }else if(wlPassphraseUI.value == 2){
+            if($('#pKey0').attr('value') == oldpKey0){
+               return;
+            }
+         }
+      }
+      
+      var tempDetect;
+      var tempPassphrase;
+      
+      if(detectVal + 1 > 10000){
+         detectVal = 0;
+         tempDetect = 0;
+      }else{
+         detectVal++;
+         tempDetect = detectVal;
+      }
+      
+      //clean icon
+      $('#span_pkCheck').html("");      
+
+      //clean the setting fields
+      if(wl_usedefaultwepkey.checked == true){
+         $('#text_wlKey1').html("<img src=\"../../images/grid-loading.gif\" width=\"16\" height=\"16\"/>");
+         $('#text_wlKey2').html("<img src=\"../../images/grid-loading.gif\" width=\"16\" height=\"16\"/>");
+         $('#text_wlKey3').html("<img src=\"../../images/grid-loading.gif\" width=\"16\" height=\"16\"/>");
+         $('#text_wlKey4').html("<img src=\"../../images/grid-loading.gif\" width=\"16\" height=\"16\"/>");
+      }
+
+      if(wl_usedefaultwpakey.checked == true){
+         $('#text_wlWpaPsk').html("<img src=\"../../images/grid-loading.gif\" width=\"16\" height=\"16\"/>");
+
+      }
+      
+      setTimeout(function(){
+         if(detectVal == tempDetect){
+            
+            //"none" mode does not need to check passphrase
+            if(wlPassphraseUI.value != 0){
+
+               //get latest passphrase
+               if(wlPassphraseUI.value == 1){
+                  tempPassphrase = $('#pKey1').attr('value') + $('#pKey2').attr('value') + $('#pKey3').attr('value') + $('#pKey4').attr('value');      
+               }else if(wlPassphraseUI.value == 2){
+                  tempPassphrase = $('#pKey0').attr('value');
+               }
+               
+               //sync
+               syncPassphraseKey(tempPassphrase);
+
+               //is user key in?
+               if(delay != 0){
+                  //invalid password
+/*
+                  if(tempPassphrase.length < 16 ||
+                     isValidKeyPassphrase(tempPassphrase) == false){
+*/
+                  if(tempPassphrase.length == 0) {
+                     $("#text_wlKey1").html("N/A");
+                     $("#text_wlKey2").html("N/A");
+                     $("#text_wlKey3").html("N/A");
+                     $("#text_wlKey4").html("N/A");
+                     $('#text_wlWpaPsk').html("N/A");
+
+                     //denied icon
+                     $('#span_pkCheck').hide();
+                     $('#span_pkCheck').html("<img src=\"../../images/i_block_on.gif\" width=\"10\" height=\"10\"/>");
+                     $('#span_pkCheck').fadeIn('slow');
+                     
+                     return;
+                  }
+               
+                  //accept icon
+                  $('#span_pkCheck').hide();
+                  $('#span_pkCheck').html("<img src=\"../../images/i_accept_on.gif\" width=\"10\" height=\"10\"/>");
+                  $('#span_pkCheck').fadeIn('slow');
+
+               }
+            }
+
+            //for icon show correctly, open another thread
+            setTimeout(function(){
+               changePassphraseKey();
+            }, icon_delay);
+            
+         }
+      }, delay);
+   }
+}
+
+//changePassphraseKey()
+//update all key field from keypassphrase
+function changePassphraseKey(){
+   with(document.forms[0]) {
+      var tempPassphrase;
+      var tempWpa = "";
+      var tempWep;
+      var tempWarp;
+
+      if(wlPassphraseUI.value == 0){
+
+         //write the default value
+         if(wl_usedefaultwepkey.checked == true){
+            //128bits or 64 bits? set 1st~3rd value
+            if (wlWepEncryption.selectedIndex == 0) {
+               wlKeys[1].value = wepAsterisk;
+               wlKeys[2].value = wepAsterisk;
+               wlKeys[3].value = wepAsterisk;
+
+               $('#text_wlKey2').text(wlKeys[1].value);
+               $('#text_wlKey3').text(wlKeys[2].value);
+               $('#text_wlKey4').text(wlKeys[3].value);
+               
+            } else {
+               wlKeys[1].value = wepAsterisk;
+               wlKeys[2].value = wepAsterisk;
+               wlKeys[3].value = wepAsterisk;
+
+               $('#text_wlKey2').text(wlKeys[1].value);
+               $('#text_wlKey3').text(wlKeys[2].value);
+               $('#text_wlKey4').text(wlKeys[3].value);
+            }
+
+            //set the 0 index default value
+            if (wlWepEncryption.selectedIndex == 0){
+               tempWarp = strWarp(autoWepKey128, 13);
+               $('#text_wlKey1').html(tempWarp);
+               wlKeys[0].value = autoWepKey128;
+            }else{
+
+               $('#text_wlKey1').text(autoWepKey64);
+               wlKeys[0].value = autoWepKey64;
+            }
+         }else{
+            if (wlWepEncryption.selectedIndex == 0) {
+               //user input
+               wlKeys[0].value = keys128[0];
+               wlKeys[1].value = keys128[1];
+               wlKeys[2].value = keys128[2];
+               wlKeys[3].value = keys128[3];
+            }else{
+               wlKeys[0].value = keys64[0];
+               wlKeys[1].value = keys64[1];
+               wlKeys[2].value = keys64[2];
+               wlKeys[3].value = keys64[3];
+            }
+         }         
+         
+
+         if(wl_usedefaultwpakey.checked == true){
+            wlWpaPsk.value = autoWpaKey;
+            if (forNorwaywl == 1){
+               tempWarp = strWarp(autoWpaKey, 13);
+            }else{
+            tempWarp = strWarp(autoWpaKey, 10);  
+            }
+            $('#text_wlWpaPsk').html(tempWarp);
+         }else{
+            wlWpaPsk.value = wpaAsterisk;
+         }
+
+         return;
+      }else if(wlPassphraseUI.value == 1){
+         //get latest passphrase
+         tempPassphrase = $('#pKey1').attr('value') + $('#pKey2').attr('value') + $('#pKey3').attr('value') + $('#pKey4').attr('value');      
+
+         //write the default value
+         if(wl_usedefaultwepkey.checked == true){
+            //do nothing
+         }else{
+            if (wlWepEncryption.selectedIndex == 0){
+               //user input
+               wlKeys[0].value = wepAsterisk;
+               wlKeys[1].value = wepAsterisk;
+               wlKeys[2].value = wepAsterisk;
+               wlKeys[3].value = wepAsterisk;
+            }else{
+               wlKeys[0].value = wepAsterisk;
+               wlKeys[1].value = wepAsterisk;
+               wlKeys[2].value = wepAsterisk;
+               wlKeys[3].value = wepAsterisk;
+            }
+         }
+
+         if(wl_usedefaultwpakey.checked == true){
+            //do nothing
+         }else{
+            wlWpaPsk.value = wpaAsterisk;
+         }
+         
+      }else if(wlPassphraseUI.value == 2){
+         //get latest passphrase
+         tempPassphrase = $('#pKey0').attr('value');
+
+         //write the default value
+         if(wl_usedefaultwepkey.checked == true){
+            //do nothing
+         }else{
+            if (wlWepEncryption.selectedIndex == 0){
+               //user input
+               wlKeys[0].value = wepAsterisk;
+               wlKeys[1].value = wepAsterisk;
+               wlKeys[2].value = wepAsterisk;
+               wlKeys[3].value = wepAsterisk;
+            }else{
+               wlKeys[0].value = wepAsterisk;
+               wlKeys[1].value = wepAsterisk;
+               wlKeys[2].value = wepAsterisk;
+               wlKeys[3].value = wepAsterisk;
+            }
+         }
+
+         if(wl_usedefaultwpakey.checked == true){
+            //do nothing
+         }else{
+            wlWpaPsk.value = wpaAsterisk;
+         }
+      }
+/*
+      //invalid password
+      if(tempPassphrase.length < 16 ||
+         isValidKeyPassphrase(tempPassphrase) == false){
+*/
+      if(tempPassphrase.length == 0) {
+         $("#text_wlKey1").html("N/A");
+         $("#text_wlKey2").html("N/A");
+         $("#text_wlKey3").html("N/A");
+         $("#text_wlKey4").html("N/A");
+         $('#text_wlWpaPsk').html("N/A");
+         
+         return;
+      }
+
+      //cache pass
+      var tempCache = getPassphraseCache(tempPassphrase);
+      if(tempCache[0] != ""){
+         tempWep = new Array(tempCache[1],tempCache[2],tempCache[3],tempCache[4],tempCache[5]);
+         tempWpa = tempCache[6];
+      }else{
+         tempWep = getWepKeyFromPassphrase(tempPassphrase);
+
+         if((navigator.userAgent.search("MSIE") > -1) == true){
+            //IE core
+            $.ajax({
+              url: "wireless-wpapass.cmd",
+              type: 'POST',
+              async: false,
+              cache: false,
+              timeout: 10000,
+              data:  "sessionKey=" + sessionkey + "&passphrase=" + tempPassphrase + "&ssid=" + $('#wlSsid').attr('value'),
+              success:  function(data){
+                           var params = data.split("@");
+                           sessionkey = params[0];
+                           tempWpa = params[1];
+                        }
+            });
+         }else{
+            //non-IE core
+            tempWpa = getWpaPskKeyFromPassphrase(tempPassphrase, $('#wlSsid').attr('value'));
+         }
+
+         setPassphraseCache(tempPassphrase, tempWep[0], tempWep[1], tempWep[2], tempWep[3], tempWep[4], tempWpa);
+      }
+
+      //wep      
+      if(wl_usedefaultwepkey.checked == true){
+         if($("#wlWepEncryption").attr("selectedIndex") == '1'){
+            //64 bits
+            $("#text_wlKey1").html(tempWep[0]);
+            $("#text_wlKey2").html(tempWep[1]);
+            $("#text_wlKey3").html(tempWep[2]);
+            $("#text_wlKey4").html(tempWep[3]);
+            wlKeys[0].value = tempWep[0];
+            wlKeys[1].value = tempWep[1];
+            wlKeys[2].value = tempWep[2];
+            wlKeys[3].value = tempWep[3];
+         }else{
+            //128 bits
+            tempWarp = strWarp(tempWep[4], 13);
+            $("#text_wlKey1").html(tempWarp);
+            wlKeys[0].value = tempWep[4];
+
+            wlKeys[1].value = keys128[1];
+            wlKeys[2].value = keys128[2];
+            wlKeys[3].value = keys128[3];
+
+            var wlWpaPskWarp;
+            if(isRepeatedStr(wlKeys[1].value, "*", 27) == false){
+               wlWpaPskWarp = strWarp(wlKeys[1].value, 13);
+               $('#text_wlKey2').html(wlWpaPskWarp);
+            }else{
+               $('#text_wlKey2').text(wlKeys[1].value);
+            }
+
+            if(isRepeatedStr(wlKeys[2].value, "*", 27) == false){
+               wlWpaPskWarp = strWarp(wlKeys[2].value, 13);
+               $('#text_wlKey3').html(wlWpaPskWarp);
+            }else{
+               $('#text_wlKey3').text(wlKeys[2].value);
+            }
+
+            if(isRepeatedStr(wlKeys[3].value, "*", 27) == false){
+               wlWpaPskWarp = strWarp(wlKeys[3].value, 13);
+               $('#text_wlKey4').html(wlWpaPskWarp);
+            }else{
+               $('#text_wlKey4').text(wlKeys[3].value);
+            }
+         }
+      }
+
+      //wpa        
+      if(wl_usedefaultwpakey.checked == true){
+         tempWarp = strWarp(tempWpa, 20);
+         $('#text_wlWpaPsk').html(tempWarp);
+         wlWpaPsk.value = tempWpa;
+      }
+   }
+
+   
+}
+
+//changePassphraseType
+//Trigger when password type is set
+//onLoadPage
+//    0: Normal
+//    1: First load
+//    2: No trigger update newWepPassphraseKey
+function changePassphraseType(onLoadPage){
+   with(document.forms[0]) {
+      if(onLoadPage == 1){
+         if(newWepPassphraseKey != "" && passphraseUI == 0){
+            wlPassphraseUI.value = 1;
+         }else{
+            wlPassphraseUI.value = passphraseUI;
+         }
+         
+         if(newWepPassphraseKey.length > 16){
+            wlPassphraseUI.value = 2;
+         }else if(useDefaultWepKey == '1' || useDefaultWpaKey == '1'){
+            wlPassphraseUI.value = 0;
+         }else if(newWepPassphraseKey == "" && useDefaultWepKey == '0' && useDefaultWpaKey == '0'){
+            wlPassphraseUI.value = 0;
+         }
+      }
+
+      if(wlPassphraseUI.value == 0) {
+         $('#div_passphrase2').hide();
+         
+      }else if(wlPassphraseUI.value == 1) {
+
+         if(onLoadPage == 0){
+            //update val from another
+            newWepPassphraseKey = $('#pKey0').attr('value');
+         }else if(onLoadPage == 1){
+            //copy val to another when frmLoad
+            syncPassphraseKey(newWepPassphraseKey);
+         }
+
+         if($('#div_passphrase').css('display') == 'block'){
+            $('#div_passphrase2').show();
+         }else{
+            $('#div_passphrase2').hide();
+         }
+         
+         $('#span_pkFixed').show();
+         $('#span_pkVariable').hide();
+
+         $('#pKey1').attr('value', newWepPassphraseKey.substring(0, 4));
+         if(newWepPassphraseKey.length > 4) $('#pKey2').attr('value', newWepPassphraseKey.substring(4, 8)); else $('#pKey2').attr('value', "");
+         if(newWepPassphraseKey.length > 8) $('#pKey3').attr('value', newWepPassphraseKey.substring(8, 12)); else $('#pKey3').attr('value', "");
+         if(newWepPassphraseKey.length > 12) $('#pKey4').attr('value', newWepPassphraseKey.substring(12, 16)); else $('#pKey4').attr('value', "");
+         if(newWepPassphraseKey.length > 16) $('#pKey5').attr('value', newWepPassphraseKey.substring(16, newWepPassphraseKey.length)); else $('#pKey5').attr('value', "");
+      }else if(wlPassphraseUI.value == 2){
+
+         if(onLoadPage == 0){
+            //update val from another
+            newWepPassphraseKey = $('#pKey1').attr('value') + $('#pKey2').attr('value') + $('#pKey3').attr('value') + $('#pKey4').attr('value') + $('#pKey5').attr('value');
+         }else if(onLoadPage == 1){
+            //copy val to another when frmLoad
+            syncPassphraseKey(newWepPassphraseKey);
+         }
+
+         if($('#div_passphrase').css('display') == 'block'){
+            $('#div_passphrase2').show();
+         }else{
+            $('#div_passphrase2').hide();
+         }
+         
+         $('#span_pkFixed').hide();
+         $('#span_pkVariable').show();
+         $('#pKey0').attr('value', newWepPassphraseKey);
+      }
+   }
+}
+
+function syncPassphraseKey(pass){
+   //sync newWepPassphraseKey
+   newWepPassphraseKey = pass;
+
+   //sync wep
+   $('#pKey1').attr('value', newWepPassphraseKey.substring(0, 4));
+   if(newWepPassphraseKey.length > 4) $('#pKey2').attr('value', newWepPassphraseKey.substring(4, 8)); else $('#pKey2').attr('value', "");
+   if(newWepPassphraseKey.length > 8) $('#pKey3').attr('value', newWepPassphraseKey.substring(8, 12)); else $('#pKey3').attr('value', "");
+   if(newWepPassphraseKey.length > 12) $('#pKey4').attr('value', newWepPassphraseKey.substring(12, 16)); else $('#pKey4').attr('value', "");
+   if(newWepPassphraseKey.length > 16) $('#pKey5').attr('value', newWepPassphraseKey.substring(16, newWepPassphraseKey.length)); else $('#pKey5').attr('value', "");
+   
+   //sync wpa
+   $('#pKey0').attr('value', newWepPassphraseKey);
+
+   //sync old data
+   oldpKey1 = $('#pKey1').attr('value');
+   oldpKey2 = $('#pKey2').attr('value');
+   oldpKey3 = $('#pKey3').attr('value');
+   oldpKey4 = $('#pKey4').attr('value');
+   oldpKey0 = $('#pKey0').attr('value');   
+}
+
+function loadAuthMode()
+{
+   with (document.forms[0]) {
+      if (WscMode == "enabled") {
+         moreSecurity[0] = new Option("<%ejGetML(MLG_WLAN_WPAPSK)%>","psk");
+         moreSecurity[1] = new Option("<%ejGetML(MLG_WLAN_WPA2PSK)%>","psk2");
+      } else {
+         moreSecurity[0] = new Option("<%ejGetML(MLG_WLAN_WPAPSK)%>","psk");
+         moreSecurity[1] = new Option("<%ejGetML(MLG_WLAN_WPA2PSK)%>","psk2");
+         moreSecurity[2] = new Option("<%ejGetML(MLG_WLAN_WPA)%>","wpa");
+         moreSecurity[3] = new Option("<%ejGetML(MLG_WLAN_WPA2)%>","wpa2");
+      }
+
+      if (mode == 'open' && wep == 'disabled') {
+         $('#select_1').trigger('selectMe');
+         stopSilde('1');
+      } else if (mode == 'open' && wep == 'enabled') {
+         $('#select_2').trigger('selectMe');
+         stopSilde('2');
+      } else if (mode == 'psk') {
+         $('#select_3').trigger('selectMe');
+         moreSecurity.selectedIndex = 0;
+         stopSilde('3');
+      } else if (mode == 'psk2') {
+        $('#select_3').trigger('selectMe');
+         moreSecurity.selectedIndex = 1;
+         stopSilde('3');
+      } else if (mode == 'wpa') {
+         $('#select_3').trigger('selectMe');
+         moreSecurity.selectedIndex = 2;
+         stopSilde('3');
+      } else if (mode == 'wpa2') {
+         $('#select_3').trigger('selectMe');
+         moreSecurity.selectedIndex = 3;
+         stopSilde('3');
+      } else if (mode == 'psk psk2') {
+         $('#select_3').trigger('selectMe');
+         moreSecurity.selectedIndex = 1;
+         stopSilde('3');
+      } else if (mode == 'wpa wpa2') {
+         $('#select_3').trigger('selectMe');
+         moreSecurity.selectedIndex = 3;
+         stopSilde('3');
+      }
+
+      $('#moreSecurity').trigger('change');
+   }
+}
+
+
+function refreshUsePassphraseUI(){
+   with (document.forms[0]) {
+      if (periousValue == 1) {
+         wlPassphraseUI.disabled = false;
+         pKey0.disabled = false;
+         pKey1.disabled = false;
+         pKey2.disabled = false;
+         pKey3.disabled = false;
+         pKey4.disabled = false;
+         pKey5.disabled = false;
+      }else if (periousValue == 2) {
+         if (wl_usedefaultwepkey.checked == true) {
+            wlPassphraseUI.disabled = false;
+            pKey0.disabled = false;
+            pKey1.disabled = false;
+            pKey2.disabled = false;
+            pKey3.disabled = false;
+            pKey4.disabled = false;
+            pKey5.disabled = false;
+         }else{                     
+            wlPassphraseUI.disabled = true;
+            pKey0.disabled = true;
+            pKey1.disabled = true;
+            pKey2.disabled = true;
+            pKey3.disabled = true;
+            pKey4.disabled = true;
+            pKey5.disabled = true;
+         }
+      }else if (periousValue == 3) {
+         if (wl_usedefaultwpakey.checked == true) {
+            wlPassphraseUI.disabled = false;
+            pKey0.disabled = false;
+            pKey1.disabled = false;
+            pKey2.disabled = false;
+            pKey3.disabled = false;
+            pKey4.disabled = false;
+            pKey5.disabled = false;
+         }else{                     
+            wlPassphraseUI.disabled = true;
+            pKey0.disabled = true;
+            pKey1.disabled = true;
+            pKey2.disabled = true;
+            pKey3.disabled = true;
+            pKey4.disabled = true;
+            pKey5.disabled = true;
+         }
+      }
+      $('#span_pkCheck').hide();
+   }
+}
+
+//refreshUseDefaultWepKey()
+//Replace between input text and label text
+function refreshUseDefaultWepKey(onLoadPage) {
+   with (document.forms[0]) {
+
+      //for set wlKeys values on frm load
+      if(onLoadPage == 1){
+         if (wlWepEncryption.selectedIndex == 0) {
+            wlKeys[0].value = keys128[0];
+            wlKeys[1].value = keys128[1];
+            wlKeys[2].value = keys128[2];
+            wlKeys[3].value = keys128[3];
+
+            tempWarp=strWarp(wlKeys[0].value,13);
+            $('#text_wlKey1').html(tempWarp);
+            tempWarp=strWarp(wlKeys[1].value,13);
+            $('#text_wlKey2').html(tempWarp);
+            tempWarp=strWarp(wlKeys[2].value,13);
+            $('#text_wlKey3').html(tempWarp);
+            tempWarp=strWarp(wlKeys[3].value,13);
+            $('#text_wlKey4').html(tempWarp);
+         } else {
+            wlKeys[0].value = keys64[0];
+            wlKeys[1].value = keys64[1];
+            wlKeys[2].value = keys64[2];
+            wlKeys[3].value = keys64[3];
+
+            $('#text_wlKey1').text(keys64[0]);
+            $('#text_wlKey1').text(keys64[1]);
+            $('#text_wlKey1').text(keys64[2]);
+            $('#text_wlKey1').text(keys64[3]);
+         }
+      }
+
+
+
+      //default, passphrase or none?
+      if (wl_usedefaultwepkey.checked == true) { // enable
+         wlKeys[0].disabled = true;
+         wlKeys[1].disabled = true;
+         wlKeys[2].disabled = true;
+         wlKeys[3].disabled = true;
+
+         if((wlPassphraseUI.value == 1 || wlPassphraseUI.value == 2) && wlWepEncryption.selectedIndex == 1){
+            wlKeyIndex[0].disabled = false;
+            wlKeyIndex[1].disabled = false;
+            wlKeyIndex[2].disabled = false;
+            wlKeyIndex[3].disabled = false;
+         }else{
+            wlKeyIndex[0].disabled = true;
+            wlKeyIndex[1].disabled = true;
+            wlKeyIndex[2].disabled = true;
+            wlKeyIndex[3].disabled = true;
+
+            wlKeyIndex[0].checked = true;
+         }
+         
+         wlKey1.disabled = true;
+         wlKey2.disabled = true;
+         wlKey3.disabled = true;
+         wlKey4.disabled = true;         
+
+         $('#input_wlKey1').hide();
+         $('#input_wlKey2').hide();
+         $('#input_wlKey3').hide();
+         $('#input_wlKey4').hide();
+         $('#box_unmaskwepkey').hide();
+         $('#wep_text_unmask').hide();
+		 
+         $('#text_wlKey1').show();
+         $('#text_wlKey2').show();
+         $('#text_wlKey3').show();
+         $('#text_wlKey4').show();
+
+         if (onLoadPage == '1') {
+            if (keyIdx == '1')
+               wlKeyIndex[0].checked = true;
+            else if (keyIdx == '2')
+               wlKeyIndex[1].checked = true;
+            else if (keyIdx == '3')
+               wlKeyIndex[2].checked = true;
+            else if (keyIdx == '4')
+               wlKeyIndex[3].checked = true;
+         }
+         
+      } else { // disable
+         wlKeys[0].disabled = false;
+         wlKeys[1].disabled = false;
+         wlKeys[2].disabled = false;
+         wlKeys[3].disabled = false;
+         wlKeyIndex[0].disabled = false;
+         wlKeyIndex[1].disabled = false;
+         wlKeyIndex[2].disabled = false;
+         wlKeyIndex[3].disabled = false;
+         wlKey1.disabled = false;
+         wlKey2.disabled = false;
+         wlKey3.disabled = false;
+         wlKey4.disabled = false;
+
+         $('#input_wlKey1').show();
+         $('#input_wlKey2').show();
+         $('#input_wlKey3').show();
+         $('#input_wlKey4').show();
+		 //request wep key again
+ 	     updateCurwepkey();		 
+         $('#box_unmaskwepkey').show();
+         $('#wep_text_unmask').show();		 
+		 
+         $('#text_wlKey1').hide();
+         $('#text_wlKey2').hide();
+         $('#text_wlKey3').hide();
+         $('#text_wlKey4').hide();
+
+         //if (onLoadPage == '1') {
+            if (keyIdx == '1')
+               wlKeyIndex[0].checked = true;
+            else if (keyIdx == '2')
+               wlKeyIndex[1].checked = true;
+            else if (keyIdx == '3')
+               wlKeyIndex[2].checked = true;
+            else if (keyIdx == '4')
+               wlKeyIndex[3].checked = true;
+         //}
+
+      }
+
+   }
+}
+
+//refreshUseDefaultWpaKey()
+//Replace between input text and label text
+function refreshUseDefaultWpaKey(onLoadPage) {
+   with (document.forms[0]) {
+      
+      if (wl_usedefaultwpakey.checked == true) { // enable
+         wlWpaPsk.disabled = true;
+         
+         $('#text_wlWpaPsk').show();         
+         $('#input_wlWpaPsk').hide();
+         $('#wpa_text_unmask').hide();
+         $('#box_unmaskwpakey').hide();      
+         
+      }else{
+         wlWpaPsk.disabled = false;
+
+		 updateCurwpakey();	 
+	 	 $('#text_wlWpaPsk').hide();  
+         $('#input_wlWpaPsk').show();
+         $('#wpa_text_unmask').show();
+         $('#box_unmaskwpakey').show();
+      }
+
+   }
+}
+
+
+function loadWpaEncryption(OnPageLoad) {
+   with ( document.forms[0] ) {
+      if (OnPageLoad == 1) {
+         // Define new algorithms
+         if (wlCorerev >= 3) {
+		 	if(customizationFlag & 0x00000100) //ZyXEL, cathy, open tkip only for b/g/n mixed or n only mode
+		 	{
+		 		if (nmode == 'auto' && nreqd == '1')  //n only
+					algos =  new Array("AES", "TKIP+AES");
+				else
+				algos = new Array("TKIP", "AES", "TKIP+AES");
+			}
+			else{
+            	if (phy == 'n' && nmode != "off")
+               		algos = new Array("<%ejGetML(MLG_WLAN_AES)%>", "<%ejGetML(MLG_WLAN_TKIPAES)%>");
+            	else
+               		algos = new Array("TKIP", "AES", "TKIP+AES");
+			}
+         } else {
+            algos = new Array("TKIP");
+         }
+
+         // Reconstruct algorithm array from new algorithms
+         wlWpa.length = algos.length;
+
+         for (var i in algos) {
+            wlWpa[i] = new Option(algos[i], algos[i].toLowerCase());
+            wlWpa[i].value = algos[i].toLowerCase();
+
+            if (algos[i].toLowerCase() == wpa)
+               wlWpa[i].selected = true;
+         }
+      } else {
+/*
+         //advice default cipher selection,remove if not desired
+          if (authMode == "wpa" || authMode == "psk")
+             wlWpa.selectedIndex = 0;
+          if (authMode == "wpa2" || authMode == "psk2")
+             wlWpa.selectedIndex = 1;
+          if (authMode == "wpa wpa2" || authMode == "psk psk2")
+             wlWpa.selectedIndex = 2;
+
+          wpa=wlWpa[wlWpa.selectedIndex].value;
+*/
+      }
+   }
+}
+
+function isValidWPAPskKey(val) {
+   var ret = false;
+   var len = val.length;
+   var maxSize = 64;
+   var minSize = 8;
+
+   if (len >= minSize && len < maxSize){
+      if (SupportSpecialCharacters == 1){
+          var regex = /^[A-Za-z0-9`~!@#$%^&*()-_.]+$/;
+      }
+      else{
+          var regex = /^[A-Za-z0-9._-]+$/;
+      }
+      if (val.match(regex) != null){
+         ret = true;
+      }
+   } else if (len == maxSize) {
+      for (i = 0; i < maxSize; i++ ){
+         if (isHexaDigit(val.charAt(i)) == false){
+            break;
+         }
+      }
+      
+      if (i == maxSize){
+         ret = true;
+      }
+      
+   } else{
+      ret = false;
+   }
+
+   return ret;
+}
+
+
+function changeSecurityValue() {
+   with (document.forms[0]) {
+      if (periousValue == 1) {
+         wlAuthMode.value = "open";
+         wlWep.value = "disabled";
+      } else if (periousValue == 2) {
+         wlAuthMode.value = "open";
+         wlWep.value = "enabled";
+		 if (wl_usedefaultwepkey.checked == false ) {
+		 	updateCurwepkey();
+		 }
+      } else if (periousValue == 3) {
+         if (moreSecurity.value == "psk")
+            wlAuthMode.value = "psk";
+         else if (moreSecurity.value == "psk2" && WPAPSKCompatible[0].checked == false)
+            wlAuthMode.value = "psk2";
+         else if (moreSecurity.value == "psk2" && WPAPSKCompatible[0].checked == true)
+            wlAuthMode.value = "psk psk2";
+         else if (moreSecurity.value == "wpa")
+            wlAuthMode.value = "wpa";
+         else if (moreSecurity.value == "wpa2" && WPACompatible[0].checked == false)
+            wlAuthMode.value = "wpa2";
+         else if (moreSecurity.value == "wpa2" && WPACompatible[0].checked == true)
+            wlAuthMode.value = "wpa wpa2";
+
+         wlWep.value = "disabled";
+		 
+		 switch(moreSecurity.value)
+		 {
+		   case "psk":
+		   case "psk2":
+			 if (wl_usedefaultwpakey.checked == false ) {
+			 	 updateCurwpakey();
+			 }		   	
+		   	break;
+
+		   case "wpa":
+		   case "wpa2":
+				 updateCurRadiuskey();
+		   	break;		 
+		 }	 
+      }
+   }
+}
+
+function frmLoad() {
+	if(supportEmailNotification==1)
+	{     
+              showhide("EmailTopic", "1");
+  		showhide("EmailEnable", "1");
+		 if(wlSendEmailEnable==1)
+ 		{     
+ 			showhide("EmailSever", "1");
+ 			showhide("EmailTitle", "1");
+ 			showhide("EmailAddress", "1");
+		}
+		  if(wlSendEmailEnable==0)
+		 {
+ 			showhide("EmailSever", "0");
+ 			showhide("EmailTitle", "0");
+ 			showhide("EmailAddress", "0");
+		 }	
+	}
+	else
+	{
+	       showhide("EmailTitle", "0");
+		showhide("EmailEnable", "0");
+		showhide("EmailSever", "0");
+		showhide("EmailTitle", "0");
+		showhide("EmailAddress", "0");
+	}
+        if(SupportSpecialCharacters == 1){
+            showhide("wpapsk_ori", "0");
+            showhide("wpapsk_sc", "1");
+        }else{
+            showhide("wpapsk_ori", "1");
+            showhide("wpapsk_sc", "0");
+        }
+
+
+   $("#wepmode").hide();
+   $("#secmode").hide();
+   $("#div_gwmode").hide();
+   $("#wepmore").hide();
+   with (document.forms[0]) {
+
+   if (GuestWLANEnbl=='1')
+       wl_enablegw.checked = true;
+   else
+      wl_enablegw.checked = false;
+      
+   if (GuestWLANScenario=='0')
+         wlGWMode.value=0;
+   else
+         wlGWMode.value=1; 
+            
+         changeGuestWLAN();
+    }
+	
+   optionLength = 4;
+   for (var x = 1; x <= optionLength - 1; x++) {
+      $('#select_' + x).bind('selectMe', function(e){
+         {
+            // $(e.target).find('._off').fadeOut('fast');
+            // $(e.target).find('._on').fadeIn('fast');
+            $(e.target).find('._on').slideDown('fast');
+         }
+      });
+   }
+   $('#btn_channel').click(function(){
+      if ($(this).html() == '<%ejGetML(MLG_Common_less)%>')
+         $(this).html('<%ejGetML(MLG_Common_more)%>...');
+      else if ($(this).html() == '<%ejGetML(MLG_Common_more)%>...')
+         $(this).html('<%ejGetML(MLG_Common_less)%>');
+   });
+   $('#select_1').bind('selectMe', function(e){
+      $('#wepmode').fadeOut(0);
+      $('#secmode').fadeOut(0);
+   });
+   $('#select_2').bind('selectMe', function(e){
+      $('#wepmode').fadeIn(0);
+      $('#secmode').fadeOut(0);
+   });
+   $('#select_3').bind('selectMe', function(e){
+      $('#wepmode').fadeOut(0);
+      $('#secmode').fadeIn(0);
+   });
+
+   //show/hide WEP more setting
+   $('#btn_wepmore').click(function(){
+      $('#wepmore').toggle(0);
+      $('#wepdesc').toggle(0);
+
+      if ($(this).html() == '<%ejGetML(MLG_Common_less)%>')
+         $(this).html('<%ejGetML(MLG_Common_more)%>...');
+      else if ($(this).html() == '<%ejGetML(MLG_Common_more)%>...')
+         $(this).html('<%ejGetML(MLG_Common_less)%>');
+   });
+
+   //show/hide WPA-PSK more setting
+   $('#btn_wpapskmore').click(function(){
+      $('#encryp').toggle(0);
+      $('#timer').toggle(0);
+
+      if ($(this).html() == '<%ejGetML(MLG_Common_less)%>')
+         $(this).html('<%ejGetML(MLG_Common_more)%>...');
+      else if ($(this).html() == '<%ejGetML(MLG_Common_more)%>...')
+         $(this).html('<%ejGetML(MLG_Common_less)%>');
+   });
+
+   //show/hide WPA-PSK more setting
+   $('#btn_wpa2pskmore').click(function(){
+      $('#pskcom').toggle(0);
+      $('#encryp').toggle(0);
+      $('#timer').toggle(0);
+
+      if ($(this).html() == '<%ejGetML(MLG_Common_less)%>')
+         $(this).html('<%ejGetML(MLG_Common_more)%>...');
+      else if ($(this).html() == '<%ejGetML(MLG_Common_more)%>...')
+         $(this).html('<%ejGetML(MLG_Common_less)%>');
+   });
+
+   //show/hide WPA more setting
+   $('#btn_wpamore').click(function(){
+      $('#encryp').toggle(0);
+      $('#timer').toggle(0);
+
+      if ($(this).html() == '<%ejGetML(MLG_Common_less)%>') 
+         $(this).html('<%ejGetML(MLG_Common_more)%>...');
+      else if ($(this).html() == '<%ejGetML(MLG_Common_more)%>...') 
+         $(this).html('<%ejGetML(MLG_Common_less)%>');
+   });
+
+   //show/hide WPA2 more setting
+   $('#btn_wpa2more').click(function(){
+      $('#encryp').toggle(0);
+      $('#timer').toggle(0);
+      $('#wpacom').toggle(0);
+      $('#wpa2').toggle(0);
+      $('#wpa2_reauth').toggle(0);
+
+      if ($(this).html() == '<%ejGetML(MLG_Common_less)%>') 
+         $(this).html('<%ejGetML(MLG_Common_more)%>...');
+      else if ($(this).html() == '<%ejGetML(MLG_Common_more)%>...') 
+         $(this).html('<%ejGetML(MLG_Common_less)%>');
+   });
+
+   $("#moreSecurity").change(function(){
+      $('.moreBtn').html('<%ejGetML(MLG_Common_more)%>...');
+
+      var secType = $(this).val();
+      if (secType == 'psk'){
+         $("#pwd").fadeIn(0);
+         $("#authserver").fadeOut(0);
+         $("#btn_wpapskmore").fadeIn(0);
+         $("#btn_wpa2pskmore").fadeOut(0);
+         $('#pskcom').hide(0);
+         $('#encryp').hide(0);
+         $('#timer').hide(0);
+         $('#wpacom').hide(0);
+         $('#wpa2').hide(0);
+      }	else if (secType == 'psk2'){
+      	 $("#pwd").fadeIn(0);
+         $("#authserver").fadeOut(0);
+         $("#btn_wpapskmore").fadeOut(0);
+         $("#btn_wpa2pskmore").fadeIn(0);
+         $('#pskcom').hide(0);
+         $('#encryp').hide(0);
+         $('#timer').hide(0);
+         $('#wpacom').hide(0);
+         $('#wpa2').hide(0);
+      } else if (secType == 'wpa'){
+         $("#pwd").fadeOut(0);
+         $("#authserver").fadeIn(0);
+         $("#btn_wpamore").fadeIn(0);
+         $("#btn_wpa2more").fadeOut(0);
+         $('#pskcom').hide(0);
+         $('#encryp').hide(0);
+         $('#timer').hide(0);
+         $('#wpacom').hide(0);
+         $('#wpa2').hide(0);
+      } else if (secType == 'wpa2'){
+         $("#pwd").fadeOut(0);
+         $("#authserver").fadeIn(0);
+         $("#btn_wpamore").fadeOut(0);
+         $("#btn_wpa2more").fadeIn(0);
+         $('#pskcom').hide(0);
+         $('#encryp').hide(0);
+         $('#timer').hide(0);
+         $('#wpacom').hide(0);
+         $('#wpa2').hide(0);
+      }
+   });
+
+   if (mode == 'open' && wep == 'disabled') {
+      periousValue = 1;
+   } else if (mode == 'open' && wep == 'enabled') {
+      periousValue = 2;
+   } else if (mode == 'psk') {
+      periousValue = 3;
+   } else if (mode == 'psk2') {
+      periousValue = 3;
+   } else if (mode == 'wpa') {
+      periousValue = 3;
+   } else if (mode == 'wpa2') {
+      periousValue = 3;
+   } else if (mode == 'psk psk2') {
+      periousValue = 3;
+   } else if (mode == 'wpa wpa2') {
+      periousValue = 3;
+   }
+
+   var silder;
+ 
+   silder = $("#silder").slider({
+      value: periousValue,
+      animate: true,
+      orientation: 'horizontal',
+      min: 1,
+      max: 3,
+      //handle: $('.draw_btn'),
+      step: 1,
+         //modify 20100114 start
+         change: function(event, ui){
+         if (periousValue != ui.value) {
+            stopSilde();
+            $('#select_' + ui.value).trigger('selectMe');
+            updateSliderHandlePQAAttr(ui.value);
+            periousValue = ui.value;
+            refreshUsePassphraseUI();
+         //modify 20100114 end
+         }
+         changeSecurityValue();
+      }
+    });
+
+   //install zyMacUI
+   macStrLength = 4;
+   $('#pKey1').bind('focus', function(){
+      nextfield = 'pKey2'; 
+      prevfield = 'pKey1';
+   }).bind('keydown', function(event){
+      return doKeyDownEvent(event);
+   }).bind('keyup', function(event){
+      return doMacStrKeyUp(event);
+   }).bind('keypress', function(event){
+      return disableEnterKey(event);
+   });
+
+   $('#pKey2').bind('focus', function(){
+      nextfield = 'pKey3'; 
+      prevfield = 'pKey1';
+   }).bind('keydown', function(event){
+      return doKeyDownEvent(event);
+   }).bind('keyup', function(event){
+      return doMacStrKeyUp(event);
+   }).bind('keypress', function(event){
+      return disableEnterKey(event);
+   });
+
+   $('#pKey3').bind('focus', function(){
+      nextfield = 'pKey4'; 
+      prevfield = 'pKey2';
+   }).bind('keydown', function(event){
+      return doKeyDownEvent(event);
+   }).bind('keyup', function(event){
+      return doMacStrKeyUp(event);
+   }).bind('keypress', function(event){
+      return disableEnterKey(event);
+   });
+
+   $('#pKey4').bind('focus', function(){
+      nextfield = 'pKey4'; 
+      prevfield = 'pKey3';
+   }).bind('keydown', function(event){
+      return doKeyDownEvent(event);
+   }).bind('keyup', function(event){
+      return doMacStrKeyUp(event);
+   }).bind('keypress', function(event){
+      return disableEnterKey(event);
+   });
+	
+    function updateSliderHandlePQAAttr(value){
+        switch (value) {
+            case 1:
+                $('#silder .ui-slider-handle').attr('pqaattr', 'No Security');
+                break;
+            case 2:
+                $('#silder .ui-slider-handle').attr('pqaattr', 'Basic');
+                break;
+            case 3:
+                $('#silder .ui-slider-handle').attr('pqaattr', 'More Secure');
+                break;
+  
+        }
+    }
+    
+   updateSliderHandlePQAAttr(periousValue);
+
+   $('li.sliderBlock').each(function(i, d){
+      $(this).click(function(){
+         $("#silder").slider('value', i + 1); 
+      })
+   });
+   
+   // $('#select_'+periousValue).trigger('selectMe');//define initial value 
+
+   with (document.forms[0]) {
+      if (enbl == '1') {
+         wlEnbl[0].checked = true;
+         wlEnbl[1].checked = false;
+      } else {
+         wlEnbl[0].checked = false;
+         wlEnbl[1].checked = true;
+      }
+
+//Passphrase Key
+      changePassphraseType(1);
+
+      wlSsid.value = ssid;
+
+      if (hide == '1') {
+         wl_hide.checked = true;
+      } else {
+         wl_hide.checked = false;
+      }
+
+     
+
+      if (enableWmf == '1') {
+         wl_enablewmf.checked = true;
+      } else {
+         wl_enablewmf.checked = false;
+      }
+
+
+      if(supportEmailNotification==1)
+	{
+		if(wlSendEmailEnable == '1')   
+		{
+			WireLessEmailEnableSend.checked=true;
+		
+		}else
+		{
+
+			WireLessEmailEnableSend.checked=false;
+		}
+
+		WireLessSendEmailTo.value=wl_sendmailto;     
+		WireLessSendEmailTitle.value=wl_sendmailti;  
+	 
+		$("#WireLess_EmailSelect").attr("value", '<%ejGetWl(wlSelectEmailSend)%>'); 
+      	}	
+		
+
+
+      if (wmf != '0') {
+           wlEnableWmf.disabled = false;
+      } else {
+           wlEnableWmf.disabled = true;
+      }
+      
+      if (maxBandwidth != '') {
+         wlMaxBandwidth.value = maxBandwidth; 
+      }
+     if (maxDownBW != '') {
+        wlMaxDownBandwidth.value = maxDownBW; 
+     }
+      changeWlan();
+
+      if (mode == "psk psk2") { // mix psk
+         // setSelect(wlAuthMode, "psk2");
+         WPAPSKCompatible[0].checked = true;
+         WPAPSKCompatible[1].checked = false;
+      } else {
+         WPAPSKCompatible[0].checked = false;
+         WPAPSKCompatible[1].checked = true;
+      }
+      if (mode == "wpa wpa2") { // mix psk
+         // setSelect(wlAuthMode, "wpa2");
+         WPACompatible[0].checked = true;
+         WPACompatible[1].checked = false;
+      } else {
+         WPACompatible[0].checked = false;
+         WPACompatible[1].checked = true;
+      }
+      loadAuthMode();
+
+      if (useDefaultWepKey == '1'){         
+         wl_usedefaultwepkey.checked = true;
+      }else{
+         wl_usedefaultwepkey.checked = false;
+      }
+
+      if (useDefaultWpaKey == '1'){
+         wl_usedefaultwpakey.checked = true;
+      }else{
+         wl_usedefaultwpakey.checked = false;
+      }
+
+      if(newWepPassphraseKey != ""){
+         wl_usedefaultwepkey.checked = true;
+         wl_usedefaultwpakey.checked = true;
+      }else{
+
+      }
+
+      if (bit == '0') // 128-bit
+         wlWepEncryption.selectedIndex = 0;
+      else // 64-bit
+         wlWepEncryption.selectedIndex = 1;
+
+      wlWpaPsk.value = wpaPskKey;   //no gen key
+      refreshUseDefaultWepKey(1);   //update WEP UI
+      refreshUseDefaultWpaKey(1);   //update WPA UI   
+      refreshUsePassphraseUI();     //update KeyPassphrase UI
+
+      //update initial password, not calculate
+      var tempWarp;
+      if (wlWepEncryption.selectedIndex == 0) {
+         wlKeys[0].value = keys128[0];
+         wlKeys[1].value = keys128[1];
+         wlKeys[2].value = keys128[2];
+         wlKeys[3].value = keys128[3];
+
+         tempWarp=strWarp(wlKeys[0].value,13);
+         $('#text_wlKey1').html(tempWarp);
+         //tempWarp=strWarp(wlKeys[1].value,13);
+         $('#text_wlKey2').html(wlKeys[1].value,13);
+         //tempWarp=strWarp(wlKeys[2].value,13);
+         $('#text_wlKey3').html(wlKeys[2].value,13);
+         //tempWarp=strWarp(wlKeys[3].value,13);
+         $('#text_wlKey4').html(wlKeys[3].value,13);
+      }else{
+         wlKeys[0].value = keys64[0];
+         wlKeys[1].value = keys64[1];
+         wlKeys[2].value = keys64[2];
+         wlKeys[3].value = keys64[3];
+
+         $('#text_wlKey1').text(keys64[0]);
+         $('#text_wlKey2').text(keys64[1]);
+         $('#text_wlKey3').text(keys64[2]);
+         $('#text_wlKey4').text(keys64[3]);
+      }  
+      
+      wlWpaPsk.value = wpaPskKey;
+      if(useDefaultWpaKey == '1'){
+         if (forNorwaywl == 1){
+            tempWarp = strWarp(wpaPskKey, 13);
+         }else{
+         tempWarp = strWarp(wpaPskKey, 10);
+         }
+      }else{
+         tempWarp = strWarp(wpaPskKey, 20);
+      }
+      $('#text_wlWpaPsk').html(tempWarp);
+      
+ 	    //we must check the browser type and version
+		// if is IE and version under 7, we need to ignore all of plain text feature, otherwise it will cause error. Peter.Lee	
+		if($.browser.msie && (parseInt($.browser.version, 10) < 8))
+		{
+	/*		$("#box_unmaskradiuskey").hide();
+			$("#radius_text_unmask").hide();
+			$("#box_unmaskwpakey").hide();
+			$("#wpa_text_unmask").hide();	
+			$("#box_unmaskwepkey").hide();
+			$("#wep_text_unmask").hide();		*/
+				
+/*using visibility to instad of JQuery .hide() method 
+It can hide the element forever even there have some .show() code in this file
+: Peter.Lee.MitraStar 2012-09-20*/
+			box_unmaskradiuskey.style.visibility="hidden";
+			box_unmaskwpakey.style.visibility="hidden";
+			box_unmaskwepkey.style.visibility="hidden";
+			radius_text_unmask.style.visibility="hidden";
+			wpa_text_unmask.style.visibility="hidden";
+			wep_text_unmask.style.visibility="hidden";
+			box_unmaskradiuskey.disable = true;			
+			box_unmaskwpakey.disable = true;
+			box_unmaskwepkey.disable = true;
+			radius_text_unmask.disable = true;
+			wpa_text_unmask.disable = true;
+			wep_text_unmask.disable = true;
+		}  
+      
+      loadWpaEncryption(1);
+      wlWpaGtkRekey.value = wpaGTKRekey;
+
+      wlRadiusServerIP.value = radiusServerIP;
+      wlRadiusPort.value = radiusPort;
+      wlRadiusKey.value = radiusKey;
+
+      if (varPreauth == '1') {
+         wlPreauth[0].checked = true;
+         wlPreauth[1].checked = false;
+      } else {
+         wlPreauth[0].checked = false;
+         wlPreauth[1].checked = true;
+      }
+      wlNetReauth.value = varNetReauth;
+
+
+      if(CondPoolEnbl == 1){
+         //ssid subnet setting
+         if (enblsubnet == 1){
+            SubnetEnbl[0].checked = true;
+         }else{
+            SubnetEnbl[1].checked = true;
+         }
+         wlEnblSubnet.value = enblsubnet;
+         wlMinAddress.value = minAddress;
+         wlMaxAddress.value = maxAddress;
+         wlSubnetMask.value = subnetMask;
+         wlGateway.value = gateway;
+         
+         changeSubnet();
+      }else{
+         $(".main_subnet_pane").hide();
+         SubnetEnbl[0].disabled = true;
+         SubnetEnbl[1].disabled = true;
+         wlEnblSubnet.disabled = true;
+         wlMinAddress.disabled = true;
+         wlMaxAddress.disabled = true;
+         wlSubnetMask.disabled = true;
+         wlGateway.disabled = true;
+         wlSetSubnet.disabled = true;
+      }
+      wlMaxAssoc.value = maxAssoc;
+   }
+}
+
+function enableAllColumns() {
+   with ( document.forms[0] ) {
+      wl_hide.disabled = false;
+    
+      wl_enablewmf.disabled = false;
+      moreSecurity.disabled = false;
+      WPAPSKCompatible[0].disabled = false;
+      WPAPSKCompatible[1].disabled = false;
+      WPACompatible[0].disabled = false;
+      WPACompatible[1].disabled = false;
+      wlWpaPsk.disabled = false;
+      wlWpaGtkRekey.disabled = false;
+      wlNetReauth.disabled = false;
+      wlWpa.disabled = false;
+      wlRadiusServerIP.disabled = false;
+      wlRadiusPort.disabled = false;
+      wlRadiusKey.disabled = false;
+      wlPreauth[0].disabled = false;
+      wlPreauth[1].disabled = false;
+      wlWepEncryption.disabled = false;
+      wl_usedefaultwepkey.disabled = false;
+      wl_usedefaultwpakey.disabled = false;
+      wlKeyIndex[0].disabled = false;
+      wlKeyIndex[1].disabled = false;
+      wlKeyIndex[2].disabled = false;
+      wlKeyIndex[3].disabled = false;
+      wlKeys[0].disabled = false;
+      wlKeys[1].disabled = false;
+      wlKeys[2].disabled = false;
+      wlKeys[3].disabled = false;
+      wlHide.disabled = false;
+    
+      wlEnableWmf.disabled = false;
+      wlSsidIdx.disabled = false;
+      wlUseDefaultSsid.disabled = false;
+      wlAuthMode.disabled = false;
+      wlUseDefaultWepKey.disabled = false;
+      wlUseDefaultWpaKey.disabled = false;
+      wlWep.disabled = false;
+      wlAuth.disabled = false;
+      wlKeyBit.disabled = false;
+      wlKey1.disabled = false;
+      wlKey2.disabled = false;
+      wlKey3.disabled = false;
+      wlKey4.disabled = false;
+      if(CondPoolEnbl == 1){
+         SubnetEnbl[0].disabled = false;
+         SubnetEnbl[1].disabled = false;
+         wlEnblSubnet.disabled = false;
+         wlMinAddress.disabled = false;
+         wlMaxAddress.disabled = false;
+         wlSubnetMask.disabled = false;
+         wlGateway.disabled = false;
+         wlSetSubnet.disabled = false;
+      }
+   
+      refreshUsePassphraseUI();
+   }
+}
+
+
+function emailEnableSendClick(){
+   with ( document.forms[0] ) {
+	if( WireLessEmailEnableSend.checked)
+	{           
+		showhide("EmailSever", "1");
+		showhide("EmailTitle", "1");
+		showhide("EmailAddress", "1");
+
+	}
+	else
+	{
+		showhide("EmailSever", "0");
+		showhide("EmailTitle", "0");
+		showhide("EmailAddress", "0");
+	}
+   }
+}
+
+
+function checkMaxBandwidth()
+{
+	with (document.forms[0]) {
+	  //If can not get DSL upRate, use Ethernet 100Mbps
+		if (upRate == '' || upRate == '0')
+			upRate = 100000;
+		 //If can not get DSL downRate, use Ethernet 100Mbps
+		if (downRate == '' || downRate == '0')
+			downRate = 100000;
+
+		if(wlMaxBandwidth.value!="" && 
+		 (wlMaxBandwidth.value==0 || isNaN(wlMaxBandwidth.value) || parseInt(wlMaxBandwidth.value)>parseInt(upRate))){
+			return false;
+		}
+		else if(wlMaxDownBandwidth.value!="" && 
+		 (wlMaxDownBandwidth.value==0 || isNaN(wlMaxDownBandwidth.value) || parseInt(wlMaxDownBandwidth.value)>parseInt(downRate))){
+			return false;
+		}
+		return true;		
+	}
+}
+
+function btnApply() {
+   with ( document.forms[0] ) {	
+      wlSsidIdx.value = ssidIdx;
+
+      var msg = "";
+
+
+
+      //auto gen key
+      if((periousValue == 1) ||
+         (periousValue == 2 && wl_usedefaultwepkey.checked == true) ||
+         (periousValue == 3 && wl_usedefaultwpakey.checked == true)){
+
+         if(wlPassphraseUI.value == 0){
+            newWepPassphraseKey = "";
+
+            if(periousValue == 2){
+               wlUseDefaultWepKey.value = "1";
+            }else if(periousValue == 3){
+               wlUseDefaultWpaKey.value = "1";
+            }
+         }else if(wlPassphraseUI.value == 1){
+            newWepPassphraseKey = pKey1.value + pKey2.value + pKey3.value + pKey4.value;
+
+            if(periousValue == 2){
+               wlUseDefaultWepKey.value = "0";
+            }else if(periousValue == 3){
+               wlUseDefaultWpaKey.value = "0";
+            }
+         }else if(wlPassphraseUI.value == 2){
+            newWepPassphraseKey = pKey0.value;
+
+            if(periousValue == 2){
+               wlUseDefaultWepKey.value = "0";
+            }else if(periousValue == 3){
+               wlUseDefaultWpaKey.value = "0";
+            }
+         }
+
+/*
+         if(wlPassphraseUI.value != 0){
+            if((newWepPassphraseKey.length < 16 ) && 
+               !(newWepPassphraseKey.length == 0 && periousValue == 1)){
+               msg = 'Invalid passphrase key. It should be at least 16 characters.';
+               hciAlert(msg, {height: 180, type: 2, title: ''});
+               enableAllColumns();
+               return false;
+            }else if(isValidKeyPassphrase(newWepPassphraseKey) == false &&
+               newWepPassphraseKey.length != 0){
+               msg = 'Invalid passphrase key. It should be a combination of both alpha character and digits 0-9.';
+               hciAlert(msg, {height: 180, type: 2, title: ''});
+               enableAllColumns();
+               return false;
+            }
+         }
+*/
+      }else{
+         //user enter key
+         newWepPassphraseKey = "";
+
+         if(periousValue == 2){
+            wlUseDefaultWepKey.value = "0";
+         }else if(periousValue == 3){
+            wlUseDefaultWpaKey.value = "0";
+         }
+      }
+      pKey1.disabled = true;
+      pKey2.disabled = true;
+      pKey3.disabled = true;
+      pKey4.disabled = true;
+      pKey5.disabled = true;
+      pKey0.disabled = true;
+      wlWepPassphraseKey.value = newWepPassphraseKey;
+      wlWpaPassphraseKey.value = newWepPassphraseKey; //wpa and wep use the same key
+      wl_usedefaultwepkey.disabled = true;
+      wl_usedefaultwpakey.disabled = true;
+
+
+      
+      // basic settings
+      if ( wlSsid.value == '' ) {
+         msg = '<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str1)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         enableAllColumns();
+         return false;
+      }
+
+      var str = new String();
+      str = wlSsid.value;
+      if ( str.length > 32 ) {
+         msg = '<%ejGetML(MLG_WLAN_AdditionalWLANs_Str4)%> "' + wlSsid.value + '" <%ejGetML(MLG_WLAN_AdditionalWLANs_AlertMsg_Str1)%>';
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         enableAllColumns();
+         return false;
+      }
+      
+      error = checkUrlEncode(wlSsid.value);
+      if(error == -1){
+         //wlSsid.value = encodeUrl(wlSsid.value);
+      }else{
+         msg = MLG_Makestring("<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str3)%>", (error+1));
+         hciAlert(msg, {height: 180, type: 2, title: ''});
+         return false;
+      }
+
+
+
+if(supportEmailNotification==1)
+{
+	if(WireLessEmailEnableSend.checked)     
+	{
+		wlEmailEnable.value = 1;
+		if(WireLess_EmailSelect.value == "")
+		{        
+			hciAlert('<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str7)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}
+		if(isValidIpAddress(WireLess_EmailSelect.value) == false && isValidHostName(WireLess_EmailSelect.value) == false ) 
+		{
+			hciAlert('<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str7)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}			
+		wlSelectEmailSend.value = WireLess_EmailSelect.value;
+		if( isValidEmail(WireLessSendEmailTo.value) == false )
+		{
+			var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str15)%>";
+			hciAlert(MLG_Makestring(tmpStr, WireLessSendEmailTo.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}
+		wlSendEmailTo.value = WireLessSendEmailTo.value;
+		if ( WireLessSendEmailTitle.value == "")
+		{
+			hciAlert('<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str16)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}
+		wlSendEmailTitle.value = WireLessSendEmailTitle.value;
+		}
+         else
+         {
+		wlEmailEnable.value = 0;
+         }	
+}
+      if (wl_hide.checked == true)
+         wlHide.value = "1";
+      else
+         wlHide.value = "0";
+
+      wl_hide.disabled = true;
+     if (wl_enablegw.checked == true)
+     {
+    	  wlGuestWLAN_Enable.value = "1";
+    	  if (wlGWMode.value == 0){ //External Guest
+    		  wlAPIsolation.value = "1"; // Isolated the same ssid
+              wlBssidIsolation.value = "1"; //Isolated the different ssid and LAN
+          }
+          else if (wlGWMode.value == 1){//Home Guest
+    	      wlAPIsolation.value = "0"; 
+              wlBssidIsolation.value = "1"; //Isolated the different ssid and LAN
+          }
+     }
+     else
+     {
+        wlGuestWLAN_Enable.value = "0";
+        wlAPIsolation.value = "0";
+        wlBssidIsolation.value = "0";
+     }
+      
+     if (wlGWMode.value == 0)  
+     		  wlGuestWLAN_Scenario.value = "0";
+     else if (wlGWMode.value == 1)
+     		  wlGuestWLAN_Scenario.value = "1";
+      if (wl_enablewmf.checked == true)
+         wlEnableWmf.value = "1";
+      else
+         wlEnableWmf.value = "0";
+
+      wl_enablewmf.disabled = true;
+      if (wlSsid.value != ssid)
+         wlUseDefaultSsid.value = "0";
+      else
+         wlUseDefaultSsid.disabled = true;
+
+      //subnet
+      if (CondPoolEnbl == 1){
+         SubnetEnbl[0].disabled = true;
+         SubnetEnbl[1].disabled = true;
+         if( wlEnblSubnet.value == 1){
+            wlSetSubnet.value = 1;
+         }else{
+            wlSetSubnet.value = 0;
+         }
+
+         var is_subnet_invalid=checkSubnet();
+         if(is_subnet_invalid){
+            enableAllColumns();
+            return false;
+         }
+      }
+/*
+      // WDS
+      if (((wlmode != 'ap') || (wllazy != '0')) &&
+         ((authMode != "wep") && (authMode != "open") && (authMode != "psk") && (authMode != "psk2")))
+      {
+         loc += '&wlMode=ap';
+         loc += '&wlLazyWds=0';
+         alert("The WDS status will be changed to AP mode when security mode is not \"open\" or \"wep\"!"); 
+      }
+*/
+
+      // no shared mode, wlAuth is 1 when shared mode is selected
+
+		if (!( wlMaxAssoc.value < 33 && wlMaxAssoc.value >0))	
+		{
+			hciAlert('<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str24)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return false;
+		}
+
+      wlAuth.value = "0";
+      moreSecurity.disabled = true;
+      WPAPSKCompatible[0].disabled = true;
+      WPAPSKCompatible[1].disabled = true;
+      WPACompatible[0].disabled = true;
+      WPACompatible[1].disabled = true;
+      if (wlAuthMode.value.indexOf("psk")!= -1) {
+         value = wlWpaPsk.value;
+         if ( isValidWPAPskKey(value) == false && isRepeatedStr(value, "*", 65) == false) {
+            if (SupportSpecialCharacters == 1){
+              msg = "WPA Pre-Shared Key should be between 8 and 63 characters(a-z, A-Z, 0-9 and `~!@#$%^&*()-_. special characters) or 64 hexadecimal digits.";
+            }
+            else{
+              msg = "<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str23)%>";
+            }
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            enableAllColumns();
+            return false;
+         }
+         
+         error = checkUrlEncode(wlWpaPsk.value);
+         if(error == -1){
+            wlWpaPsk.value = wlWpaPsk.value;
+            
+            if(wlWpaPsk.value.length > 64){
+               wlWpaPsk.disabled = true;
+            }            
+            
+         }else{
+            msg = MLG_Makestring("<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str5)%>", (error+1));
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return false;
+         }
+      } else {
+         wlWpaPsk.disabled = true;
+         wlUseDefaultWpaKey.disabled = true;
+		 box_unmaskwpakey.disabled = true;		 
+      }
+
+      if ((wlAuthMode.value.indexOf("wpa")!= -1 || wlAuthMode.value.indexOf("psk")!= -1)) {
+         //check GTK interval
+         value = parseInt(wlWpaGtkRekey.value);
+         if ( isNaN(value) == true || value < 0 || value > 0x7fffffff ) {
+            msg = MLG_Makestring("<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str6)%>", wlWpaGtkRekey.value);
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            enableAllColumns();
+            return false;
+         }
+
+         //check Reauth interval
+         if (wlAuthMode.value.indexOf("wpa")!= -1) {
+            value = parseInt(wlNetReauth.value);
+            if ( isNaN(value) == true || value < 0 || value > 0x7fffffff ) {
+               msg = MLG_Makestring("<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str7)%>", wlNetReauth.value);
+               hciAlert(msg, {height: 180, type: 2, title: ''});
+               enableAllColumns();
+               return false;
+            }
+         } else {
+            wlNetReauth.disabled = true;
+         }
+      } else {
+         wlWpaGtkRekey.disabled = true;
+         wlNetReauth.disabled = true;
+         wlWpa.disabled = true;
+      }
+
+      if (wlAuthMode.value.indexOf("wpa") != -1) {
+         if ( isValidIpAddress(wlRadiusServerIP.value) == false ) {
+            msg = MLG_Makestring("<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str8)%>", wlRadiusServerIP.value);
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            enableAllColumns();
+            return false;
+         }
+
+         value = parseInt(wlRadiusPort.value);
+         if (isNaN(value) == true || value <= 0 || value > 65535) {
+            msg = MLG_Makestring("<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str9)%>", wlRadiusPort.value);
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            enableAllColumns();
+            return false;
+         }
+
+         if (wlRadiusKey.value == '') {
+            msg = MLG_Makestring("<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str10)%>", wlRadiusKey.value);
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            enableAllColumns();
+            return false;
+         }
+
+         if(wlRadiusKey.value.length > 80 && isRepeatedStr(wlRadiusKey.value, "*", 81)){
+            wlRadiusKey.disabled = true;
+         }
+      } else {
+         wlRadiusServerIP.disabled = true;
+         wlRadiusPort.disabled = true;
+         wlRadiusKey.disabled = true;
+         wlPreauth[0].disabled = true;
+         wlPreauth[1].disabled = true;
+      }
+
+      if ((wlAuthMode.value == "open" && wlWep.value == "enabled")) {
+         var i, val;
+         var cbit = getSelect(wlWepEncryption);
+         var num;
+
+         wlKeyBit.value = wlWepEncryption.options[wlWepEncryption.selectedIndex].value;
+         wlWepEncryption.disabled = true;
+         if (wlKeyIndex[0].checked == true) {
+            num = 0;
+         } else if (wlKeyIndex[1].checked == true) {
+            num = 1;
+         } else if (wlKeyIndex[2].checked == true) {
+            num = 2;
+         } else if (wlKeyIndex[3].checked == true) {
+            num = 3;
+         }
+         else {
+            msg = "<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str13)%>";
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            enableAllColumns();
+            return false;
+         }
+
+         val = wlKeys[num].value;
+         if ( val == '' && !(swep == 'enabled' && wlAuthMode.value == 'radius')) {
+            msg = '<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str14)%>';
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            enableAllColumns();
+            return false;
+         }
+         if ( val != '' ) {
+            if ( cbit == '0' ) {
+               if ( isValidKey(val, 13) == false && isRepeatedStr(val, "*", 27) == false) {
+                  msg = MLG_Makestring("<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str15)%>", val);
+                  hciAlert(msg, {height: 180, type: 2, title: ''});
+                  enableAllColumns();
+                  return false;
+               }
+            } else {
+               if ( isValidKey(val, 5) == false && isRepeatedStr(val, "*", 27) == false) {
+                  msg = MLG_Makestring("<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str16)%>", val);
+                  hciAlert(msg, {height: 180, type: 2, title: ''});
+                  enableAllColumns();
+                  return false;
+               }
+            }
+         }
+         wlKeys[0].disabled = true;
+         wlKeys[1].disabled = true;
+         wlKeys[2].disabled = true;
+         wlKeys[3].disabled = true;
+         
+         error = checkUrlEncode(wlKeys[0].value);
+         if(error == -1){
+            wlKey1.value = wlKeys[0].value;
+
+            if(wlKey1.value.length > 26){
+               wlKey1.disabled = true;
+            }
+			/*  WEP Key1 shouldn't accept password is include Special characters.. by Ricky*/
+			if(wl_usedefaultwepkey.checked == false){
+	            check_key1 = wlKey1.value.search(/^[A-Z0-9]+$/);
+	  		    if(check_key1 == -1){
+				   msg = MLG_Makestring("<%ejGetML(MLG_WLAN_LogsSetting_AlertMsg_Str1)%>", wlKey1.value);
+				   hciAlert(msg, {height: 180, type: 2, title: ''});
+                   enableAllColumns();				   
+				   return false;
+			    }
+	        }
+			/*End  WEP Key1 shouldn't accept password is include Special characters.. by Ricky*/
+         }else{
+            msg = MLG_Makestring("<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str18_1)%>", (error+1));
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return false;
+         }
+
+         error = checkUrlEncode(wlKeys[1].value);
+         if(error == -1){
+            wlKey2.value = wlKeys[1].value;
+
+            if(wlKey2.value.length > 26){
+               wlKey2.disabled = true;
+            }
+			/*  WEP Key2 shouldn't accept password is include Special characters.. by Ricky*/
+			if(wl_usedefaultwepkey.checked == false){			
+				check_key2 = wlKey2.value.search(/^[A-Z0-9]+$/);
+	  		    if(check_key2 == -1){
+				   msg = MLG_Makestring("<%ejGetML(MLG_WLAN_LogsSetting_AlertMsg_Str2)%>", wlKey2.value);
+				   hciAlert(msg, {height: 180, type: 2, title: ''});
+                   enableAllColumns();				   
+				   return false;
+			    }
+			}
+			/*End  WEP Key2 shouldn't accept password is include Special characters.. by Ricky*/
+         }else{
+            msg = MLG_Makestring("<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str18)%>", (error+1));
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return false;
+         }
+         
+         error = checkUrlEncode(wlKeys[2].value);
+         if(error == -1){
+            wlKey3.value = wlKeys[2].value;
+
+            if(wlKey3.value.length > 26){
+               wlKey3.disabled = true;
+            }            
+			/*  WEP Key3 shouldn't accept password is include Special characters.. by Ricky*/
+			if(wl_usedefaultwepkey.checked == false){	
+			    check_key3 = wlKey3.value.search(/^[A-Z0-9]+$/);
+	  		    if(check_key3 == -1){
+				   msg = MLG_Makestring("<%ejGetML(MLG_WLAN_LogsSetting_AlertMsg_Str3)%>", wlKey3.value);
+				   hciAlert(msg, {height: 180, type: 2, title: ''});
+                   enableAllColumns();				   
+				   return false;
+			    }
+			}
+			/*End  WEP Key3 shouldn't accept password is include Special characters.. by Ricky*/
+         }else{
+            msg = MLG_Makestring("<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str19)%>", (error+1));
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return false;
+         }
+         
+         error = checkUrlEncode(wlKeys[3].value);
+         if(error == -1){
+            wlKey4.value = wlKeys[3].value;
+
+            if(wlKey4.value.length > 26){
+               wlKey4.disabled = true;
+            }
+			/*  WEP Key4 shouldn't accept password is include Special characters.. by Ricky*/
+			if(wl_usedefaultwepkey.checked == false){				
+			    check_key4 = wlKey4.value.search(/^[A-Z0-9]+$/);
+	  		    if(check_key4 == -1){
+				   msg = MLG_Makestring("<%ejGetML(MLG_WLAN_LogsSetting_AlertMsg_Str4)%>", wlKey4.value);
+				   hciAlert(msg, {height: 180, type: 2, title: ''});
+                   enableAllColumns();				   
+				   return false;
+			    }
+			}
+			/*End  WEP Key4 shouldn't accept password is include Special characters.. by Ricky*/
+         }else{
+            msg = MLG_Makestring("<%ejGetML(MLG_WLAN_BasicWirelessSetup_AlertMsg_Str20)%>", (error+1));
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return false;
+         }
+      }
+    	else if(((wlAuthMode.value == "open" && wlWep.value == "enabled" )&& wlBand.value == "1")&& checkvalue != 0){
+    	    msg = "<%ejGetML(MLG_WLAN_BasicWirelessSetup_Str60)%>";
+          hciAlert(msg, {height: 180, type: 2, title: ''});
+          enableAllColumns();
+          return false;
+    	}
+      else {
+         wl_usedefaultwepkey.disabled = true;
+         wl_usedefaultwpakey.disabled = true;
+         wlKeyBit.disabled = true;
+         wlWepEncryption.disabled = true;
+         wlKeyIndex[0].disabled = true;
+         wlKeyIndex[1].disabled = true;
+         wlKeyIndex[2].disabled = true;
+         wlKeyIndex[3].disabled = true;
+		 box_unmaskwepkey.disable = true;		 
+         wlUseDefaultWepKey.disabled = true;
+         wlKeys[0].disabled = true;
+         wlKeys[1].disabled = true;
+         wlKeys[2].disabled = true;
+         wlKeys[3].disabled = true;
+         wlKey1.disabled = true;
+         wlKey2.disabled = true;
+         wlKey3.disabled = true;
+         wlKey4.disabled = true;
+      }
+      
+      if(checkMaxBandwidth()==false){
+          msg = "Invalid maximum bandwidth.";
+          hciAlert(msg, {height: 180, type: 2, title: ''});
+          return false;
+      }
+
+      sessionKey.value = sessionkey;
+   }
+
+   return true;
+}
+
+function doSubmit() {
+   if (btnApply()) {
+      document.forms[0].submit();
+      $('.ui-dialog-titlebar-close').trigger('click');
+      $.openLoadingMask(1);
+   }
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ doSubmit(); });
+
+
+
+function checkSubnet(){
+	var invalid=0;
+	with (document.forms[0]) {
+                if (wlSetSubnet.value == 0)
+                   return invalid;
+		var str_min = wlMinAddress.value;
+		var str_max = wlMaxAddress.value;
+		var str_mask = wlSubnetMask.value;
+		var str_gateway = wlGateway.value;
+		var array_min = str_min.split('.');;
+		var array_max = str_max.split('.');;
+		var array_mask = str_mask.split('.');;
+		var array_gateway = str_gateway.split('.');;
+  		
+		var is_invalid_ip_start=0;
+		var is_invalid_ip_end=0;
+		var is_invalid_ip_mask=0;
+		var is_invalid_ip_gate=0;
+
+
+      //check if ip valid  
+      if(!isValidIpAddress(str_min)){
+         is_invalid_ip_start=1;
+      }else if(!isValidIpAddress(str_max)){
+         is_invalid_ip_end=1;
+      }else if(!isValidSubnetMask(str_mask)){
+         is_invalid_ip_mask=1;
+      }else if(!isValidIpAddress(str_gateway)){
+         is_invalid_ip_gate=1;
+      }
+	  
+	  //check if start and end address are the same with gateway address
+	  if((array_gateway[0] == array_min[0])&&
+	     (array_gateway[1] == array_min[1])&&
+	     (array_gateway[2] == array_min[2])&&
+	     (array_gateway[3] == array_min[3])){
+	  	is_invalid_ip_start = 1;
+	  }	else
+	  if((array_gateway[0] == array_max[0])&&
+	     (array_gateway[1] == array_max[1])&&
+	     (array_gateway[2] == array_max[2])&&
+	     (array_gateway[3] == array_max[3])){
+	  	is_invalid_ip_end = 1;
+	  }	
+	  
+	  //check if they are in the same subnet
+	  var is_dif_subnet = 1;
+	  var is_dif_subnet_with_gate = 1;
+	  if(((array_min[0]&array_mask[0]) == (array_max[0]&array_mask[0])) &&
+	  ((array_min[1]&array_mask[1]) == (array_max[1]&array_mask[1])) &&
+	  ((array_min[2]&array_mask[2]) == (array_max[2]&array_mask[2])) &&
+	  ((array_min[3]&array_mask[3]) == (array_max[3]&array_mask[3]))){
+	  	is_dif_subnet = 0;
+	  }
+	  if(((array_min[0]&array_mask[0]) == (array_gateway[0]&array_mask[0])) &&
+	  ((array_min[1]&array_mask[1]) == (array_gateway[1]&array_mask[1])) &&
+	  ((array_min[2]&array_mask[2]) == (array_gateway[2]&array_mask[2])) &&
+	  ((array_min[3]&array_mask[3]) == (array_gateway[3]&array_mask[3]))){
+	  	is_dif_subnet_with_gate = 0;
+	  }
+	  
+	  //check array_broadcastcast address
+	  var inv_array_mask = new Array(4);
+	  inv_array_mask[0] = 255 - array_mask[0];
+	  inv_array_mask[1] = 255 - array_mask[1];
+	  inv_array_mask[2] = 255 - array_mask[2];
+	  inv_array_mask[3] = 255 - array_mask[3];
+	  
+	  var array_broadcast = new Array(4);
+	  array_broadcast[0] = array_min[0] | inv_array_mask[0];
+	  array_broadcast[1] = array_min[1] | inv_array_mask[1];
+	  array_broadcast[2] = array_min[2] | inv_array_mask[2];
+	  array_broadcast[3] = array_min[3] | inv_array_mask[3];
+	  
+	  var is_same_array_broadcast_start = 0;
+	  if((array_min[0] == array_broadcast[0]) &&
+	  (array_min[1] == array_broadcast[1]) &&
+	  (array_min[2] == array_broadcast[2]) &&
+	  (array_min[3] == array_broadcast[3])){
+	  	is_same_array_broadcast_start = 1;
+	  }
+	  
+	  var is_same_array_broadcast_end = 0;
+	  if((array_min[0] == array_broadcast[0] )&&
+	  (array_max[1] == array_broadcast[1]) &&
+	  (array_max[2] == array_broadcast[2]) &&
+	  (array_max[3] == array_broadcast[3])){
+	  	is_same_array_broadcast_end = 1;
+	  }
+	  
+	  var is_same_array_broadcast_gate = 0;
+	  if((array_gateway[0] == array_broadcast[0]) &&
+	  (array_gateway[1] == array_broadcast[1]) &&
+	  (array_gateway[2] == array_broadcast[2]) &&
+	  (array_gateway[3] == array_broadcast[3])){
+	  	is_same_array_broadcast_gate = 1;
+	  }
+	  
+	  //check the start and end ip range
+	  var is_invalid_range = 0;
+	  if((parseInt(array_min[0])>parseInt(array_max[0])) ||
+	  (parseInt(array_min[1])>parseInt(array_max[1])) ||
+	  (parseInt(array_min[2])>parseInt(array_max[2])) ||
+	  (parseInt(array_min[3])>parseInt(array_max[3]))){
+	  	is_invalid_range=1;
+	  }
+	  
+	  //check if the gateway is in the start and end range
+	  if((array_min[0] <= array_gateway[0] && array_max[0] >= array_gateway[0]) &&
+	     (array_min[1] <= array_gateway[1] && array_max[1] >= array_gateway[1]) &&
+	     (array_min[2] <= array_gateway[2] && array_max[2] >= array_gateway[2]) &&
+	     (array_min[3] <= array_gateway[3] && array_max[3] >= array_gateway[3])){
+	  	 is_invalid_ip_gate = 1;
+	  }
+	  
+	  //check if defined subnet is in use by other wl
+	  var is_subnet_use = 0;
+	  var array_domain = new Array(4);
+	  array_domain[0] = array_min[0] & array_mask[0];
+	  array_domain[1] = array_min[1] & array_mask[1];
+	  array_domain[2] = array_min[2] & array_mask[2];
+	  array_domain[3] = array_min[3] & array_mask[3];
+	  var i = 0;
+	  var array_domainStr = array_domain[0] + "." + array_domain[1] + "."+array_domain[2] + "."+array_domain[3];
+	  for(i = 0 ; i < subDomain.length ; i++){
+	  	if(i != ssidIdx){
+	  		if(array_domainStr == subDomain[i]){
+	  			is_subnet_use = 1;
+	  		}
+	  	}
+	  }
+		
+		if (is_invalid_ip_start) {
+            hciAlert('<%ejGetML(MLG_WLAN_AdditionalWLANs_AlertMsg_Str2)%>', {height: 180, type: 2, title: ''});
+			invalid = 1;
+		} else if (is_invalid_ip_end) {
+            hciAlert('<%ejGetML(MLG_WLAN_AdditionalWLANs_AlertMsg_Str3)%>', {height: 180, type: 2, title: ''});
+			invalid = 1;
+		} else if (is_invalid_ip_mask) {
+            hciAlert('<%ejGetML(MLG_WLAN_AdditionalWLANs_AlertMsg_Str4)%>', {height: 180, type: 2, title: ''});
+			invalid = 1;
+		} else if(is_invalid_ip_gate) {
+            hciAlert('<%ejGetML(MLG_WLAN_AdditionalWLANs_AlertMsg_Str5)%>', {height: 180, type: 2, title: ''});
+			invalid = 1;
+		} else if(is_subnet_use) {
+            hciAlert('<%ejGetML(MLG_WLAN_AdditionalWLANs_AlertMsg_Str6)%>', {height: 180, type: 2, title: ''});
+			invalid = 1;
+		} else if(is_dif_subnet) {
+            hciAlert('<%ejGetML(MLG_WLAN_AdditionalWLANs_AlertMsg_Str4)%>', {height: 180, type: 2, title: ''});
+			invalid = 1;
+		} else if(is_dif_subnet_with_gate) {
+            hciAlert('<%ejGetML(MLG_WLAN_AdditionalWLANs_AlertMsg_Str4)%>', {height: 180, type: 2, title: ''});
+			invalid = 1;
+		} else if(is_same_array_broadcast_start) {
+            hciAlert('<%ejGetML(MLG_WLAN_AdditionalWLANs_AlertMsg_Str2)%>', {height: 180, type: 2, title: ''});
+			invalid = 1;
+		} else if(is_same_array_broadcast_end) {
+            hciAlert('<%ejGetML(MLG_WLAN_AdditionalWLANs_AlertMsg_Str3)%>', {height: 180, type: 2, title: ''});
+			invalid = 1;
+		} else if(is_same_array_broadcast_gate) {
+            hciAlert('<%ejGetML(MLG_WLAN_AdditionalWLANs_AlertMsg_Str5)%>', {height: 180, type: 2, title: ''});
+			invalid = 1;
+		} else if(is_invalid_range) {
+            hciAlert('<%ejGetML(MLG_WLAN_AdditionalWLANs_AlertMsg_Str2)%>', {height: 180, type: 2, title: ''});
+			invalid = 1;
+		}
+	}
+	
+	return invalid;
+}
+
+// done hiding -->
+</script>
+   <form action="/pages/tabFW/wireless-moreap_edit.wl" method="post" target="mainFrame" onSubmit="return false;">
+      <input size="15" type="hidden" name="sessionKey" />
+      <input size="15" type="hidden" name="wlSyncNvram" value="1" />
+      <input size="15" type="hidden" name="wlHide" />
+      <input size="15" type="hidden" name="wlAPIsolation" />
+      <input size="15" type="hidden" name="wlBssidIsolation" />
+      <input size="15" type="hidden" name="wlEnableWmf" />
+      <input size="15" type="hidden" name="wlSsidIdx" />
+      <input size="15" type="hidden" name="wlUseDefaultSsid" />
+      <input size="15" type="hidden" name="wlAuthMode" />
+      <input size="15" type="hidden" name="wlUseDefaultWepKey" />
+      <input size="15" type="hidden" name="wlUseDefaultWpaKey" />
+      <input size="15" type="hidden" name="wlWep" />
+      <input size="15" type="hidden" name="wlAuth" />
+      <input size="15" type="hidden" name="wlKeyBit" />
+      <input size="15" type="hidden" name="wlKey1" />
+      <input size="15" type="hidden" name="wlKey2" />
+      <input size="15" type="hidden" name="wlKey3" />
+      <input size="15" type="hidden" name="wlKey4" />
+      <input size="15" type="hidden" name="wlWepPassphraseKey" />
+      <input size="15" type="hidden" name="wlWpaPassphraseKey" />
+      <input size="15" type="hidden" name="wlGuestWLAN_Enable" />
+      <input size="15" type="hidden" name="wlGuestWLAN_Scenario" />
+      <input name="wlEmailEnable" type="HIDDEN" id="wlEmailEnable" value="0"; />		
+      <input name="wlSelectEmailSend" type="HIDDEN" id="wlSelectEmailSend" value=""; />	
+      <input name="wlSendEmailTo" type="HIDDEN" id="wlSendEmailTo" value=""; />		
+      <input name="wlSendEmailTitle" type="HIDDEN" id="wlSendEmailTitle" value=""; />	
+      <div class="popup_frame" >
+<!--Unit Explain start-->
+         <div class="explain">
+            <div>
+               <b class="r1"></b>
+               <b class="r2"></b>
+               <b class="r3"></b>
+               <b class="r4"></b>
+               <b class="r4"></b>
+            </div>
+            <div class="explain_text"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str1)%></div>
+            <div>
+               <b class="r4"></b>
+               <b class="r4"></b>
+               <b class="r3"></b>
+               <b class="r2"></b>
+               <b class="r1"></b>
+            </div>
+         </div>
+<!--Unit Explain End-->
+<!--Set area start-->
+         <div class="data_frame"><ul>
+            <li class="title"><%ejGetML(MLG_Network_General_Str2)%></li>
+            <li class="set1"> 
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table" ><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str3)%> :</li>
+                     <li class="right_table">
+                        <input name="wlEnbl" type="radio" value="1" /> <%ejGetML(MLG_Common_Enable)%>&nbsp;
+                        <input name="wlEnbl" type="radio" value="0" /> <%ejGetML(MLG_Common_Disabled)%> (<%ejGetML(MLG_WLAN_BasicWirelessSetup_Str59)%>)
+                     </li>
+                  </ul>
+                  <br style="clear:both;" />
+               </div>
+            </li>
+<!--Key passphrase-->            
+            <li id="div_passphrase" class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str35)%> :</li>
+                     <li class="right_table">
+                        <select name='wlPassphraseUI' id='wlPassphraseUI' size="1" onChange="refreshUseDefaultWepKey(0);changePassphraseType(0);detectPassphraseKey(event, 0);" >
+                           <option value="0"><%ejGetML(MLG_Common_None)%></option>
+                           <option value="1"><%ejGetML(MLG_Common_Fixed)%></option>
+                           <option value="2"><%ejGetML(MLG_Common_Variable)%></option>
+                        </select>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+            <li id="div_passphrase2" class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str36)%> :</li>
+                     <li class="right_table">
+                     <span id="span_pkFixed">
+                        <input type="text" id='pKey1' name='pKey1' maxlength="4" size="4" onKeyUp="detectPassphraseKey(event, 1500)"/>-
+                        <input type="text" id='pKey2' name='pKey2' maxlength="4" size="4" onKeyUp="detectPassphraseKey(event, 1500)"/>-
+                        <input type="text" id='pKey3' name='pKey3' maxlength="4" size="4" onKeyUp="detectPassphraseKey(event, 1500)"/>-
+                        <input type="text" id='pKey4' name='pKey4' maxlength="4" size="4" onKeyUp="detectPassphraseKey(event, 1500)"/>
+                        <input type="hidden" id='pKey5' name='pKey5' maxlength="4" size="4" />
+                     </span>
+                     <span id="span_pkVariable">
+                        <input type="text" id='pKey0' name='pKey0' maxlength="63" size="20" onKeyUp="detectPassphraseKey(event, 1500)"/> 
+                     </span>
+                     <span id="span_pkCheck">
+                     </span>
+                     </li>
+                  </ul>
+               </div>
+            </li>       
+<!--Key passphrase end-->               
+<!--Note define start-->
+            <li class="noteframe">
+               <div class="note_text"></div>
+            </li>
+<!--Note define end-->
+            <div class="space"></div>
+            <li class="title"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str22)%></li>
+            <li class="set1"> 
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str23)%><span class="right_table">(<%ejGetML(MLG_WLAN_AdditionalWLANs_Str4)%>)</span>:</li>
+                     <li class="right_table">
+                        <input type="text" name='wlSsid' id='wlSsid' maxlength="32" size="20" />
+                     </li>
+                  </ul>
+               </div>
+               <div class="w_text">
+                  <ul>
+                    <li class="left_table">
+                      <%ejGetML(MLG_WLAN_General_Str1)%>:</li>
+                    <li class="right_table">
+                      <input type="text" name='wlMaxAssoc' id='wlMaxAssoc' maxlength="3" size="10" />
+                    </li>
+                  </ul>
+               </div>
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table">&nbsp;</li>
+                     <li class="right_table">
+                        <input type="checkbox" name="wl_hide" /> <%ejGetML(MLG_WLAN_BasicWirelessSetup_Str24)%>
+                     </li>
+                  </ul>
+               </div>
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table">&nbsp;</li>
+                     <li class="right_table">
+                        <input type="checkbox" name="wl_enablewmf" /> <%ejGetML(MLG_WLAN_BasicWirelessSetup_EnhanceMulticastForwarding)%>
+                     </li>
+                  </ul>
+               </div>
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table">&nbsp;</li>
+                     <li class="right_table">
+                        <input type="checkbox" name="wl_enablegw" onClick="changeGuestWLAN()" /> <%ejGetML(MLG_WLAN_AdditionalWLANs_GuestWLAN)%>
+                     </li>
+                  </ul>
+               </div>
+               
+               <li id="div_gwmode" class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table">&nbsp; </li>
+                    <li class="right_table"><%ejGetML(MLG_WLAN_General_Str7)%>:
+                        <select name='wlGWMode' id='wlGWMode' size="1" onChange="changeGWMode()" >
+                           <option value="0"><%ejGetML(MLG_WLAN_AdditionalWLANs_ExternalGuest)%></option>
+                           <option value="1"><%ejGetML(MLG_WLAN_AdditionalWLANs_GuestHome)%></option>
+                        </select>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+               
+              <div class="w_text">
+              <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_General_MaxUpstreamBandwidth)%>: </li>
+                <li class="right_table">
+                  <input type="text" name="wlMaxBandwidth" size="10" maxlength="32"/> Kbps
+                </li>
+              </ul>
+            </div>
+            <div class="w_text">
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_WLAN_General_MaxDownstreamBandwidth)%>: </li>
+                <li class="right_table">
+                  <input type="text" name="wlMaxDownBandwidth" size="10" maxlength="32"/> Kbps
+                </li>
+              </ul>
+            </div>
+            
+            <br>
+            <!--Note define start-->
+              <div class="w_text">
+                  <span class="i_note"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Note)%>:</span>
+               </div>
+               <div class="note_text"><%ejGetML(MLG_WLAN_General_Str3)%><br>
+               <%ejGetML(MLG_WLAN_General_Str4)%><br>
+               <%ejGetML(MLG_WLAN_General_Str5)%>
+               </div>
+               <div id="WLBSSID" class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str33)%>:</li>
+                     <li class="right_table"><%ejGetWl(wlBssid)%></li>
+                  </ul>
+               </div>
+<!--  add feature about "Enable Email Notification while wireless is connected -->
+        <ul id="EmailTopic">
+        <li class="set1">
+          <div class="title">
+            <%ejGetML(MLG_WLAN_BasicWirelessSetup_EmailNotificationSetting)%>
+          </div>
+         </li>
+        </ul>      
+          <li class="set1">
+<div class="w_text" style="line-height:25px;">
+      <ul id="EmailEnable"><li class="left_table" style="line-height:25px;">
+          <li class="left_table" style="line-height:25px;">
+              <input type="checkbox" name="WireLessEmailEnableSend"  onClick="emailEnableSendClick();"><%ejGetML(MLG_WLAN_General_Str6)%>
+          </li>
+      </ul>
+      <ul id="EmailSever">
+           <li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Maintenance_LogsSetting_Str9)%>: </li>
+           <li class="right_table">
+    	   <select name="WireLess_EmailSelect" id="WireLess_EmailSelect" size="1">
+
+
+    	        	<script TYPE="text/javascript">
+<!-- hide 
+{
+   	var i = 0;	
+   	var ServerList = '<%ejGetOther(mailServerList)%>';
+	var mailServer = ServerList.split('|');	
+
+	   for (i=0; i<mailServer.length; i++)
+	   {
+		var names = mailServer[i].split('/');
+		$('#WireLess_EmailSelect').append('<option value="'+names[0]+'">'+names[0]+'</option>'); 
+	   }
+}
+// done hiding -->
+			</script>
+    	    </select>
+	    </li> 
+        </ul>
+     <ul id="EmailTitle">
+          <li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;Email Title:</li>
+          <li class="right_table">
+          <input name="WireLessSendEmailTitle" size="30" maxlength="127" value="" type="text" /></li>
+     </ul>
+     <ul id="EmailAddress">
+          <li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_WAN_3gbackup_Str43)%>: </li>
+          <li class="right_table">
+          <input name="WireLessSendEmailTo" size="30" maxlength="127" value="" type="text" /></li>
+     </ul>
+</div>
+           </li>
+<!-- END here add feature about "Enable Email Notification while wireless is connected-->
+   <li class="set1">
+      <div class="w_text">
+        <ul>
+           <li class="left_table"></li>
+        </ul>
+      </div>
+    </li>
+<!--DHCP Conditional Serving Pool start-->
+               <div class="w_text main_subnet_pane">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_AdditionalWLANs_Str6)%>:</li>
+                     <li class="right_table">
+                        <input name="SubnetEnbl" type="radio" value="1" onClick="changeSubnet();" /> <%ejGetML(MLG_Common_Enable)%>&nbsp;
+                        <input name="SubnetEnbl" type="radio" value="0" onClick="changeSubnet();" /> <%ejGetML(MLG_Common_Disabled)%>
+                        <input name="wlEnblSubnet" id="wlEnblSubnet" type="hidden"/>
+                     <li>
+                  </ul>
+                  <ul class = "subnet_pane">
+                     <li class="left_table"><%ejGetML(MLG_WLAN_AdditionalWLANs_Str8)%>:</li>
+                     <li class="right_table"><input type="text" name='wlMinAddress' id='wlMinAddress' maxlength="32" size="20"/><li>
+                  </ul>
+                  <ul class = "subnet_pane">
+                     <li class="left_table"><%ejGetML(MLG_WLAN_AdditionalWLANs_Str9)%>:</li>
+                     <li class="right_table"><input type="text" name='wlMaxAddress' id='wlMaxAddress' maxlength="32" size="20"/><li>
+                  </ul>
+                  <ul class = "subnet_pane">
+                     <li class="left_table"><%ejGetML(MLG_WLAN_AdditionalWLANs_Str10)%>:</li>
+                     <li class="right_table"><input type="text" name='wlSubnetMask' id='wlSubnetMask' maxlength="32" size="20"/><li>
+                  </ul>
+                  <ul class = "subnet_pane">
+                     <li class="left_table"><%ejGetML(MLG_WLAN_AdditionalWLANs_Str11)%>:</li>
+                     <li class="right_table"><input type="text" name='wlGateway' id='wlGateway' maxlength="32" size="20"/><li>
+                  </ul>
+                  <input type="hidden" name='wlSetSubnet' value='1'/>
+               </div>
+<!--DHCP Conditional Serving Pool end-->
+            </li>
+            <div class="space"></div>
+            <li class="title"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str61)%></li>
+            <div class="w_text">
+               <li class="set1"> 
+                  <div class="w_slider" style="margin-left:-50px; margin-top:20px;">
+                     <div class="i_wifi_img"></div>
+                     <div class="w_level_color">
+                        <ul>
+                           <li><img src="images/i_s_bar_left.gif" /></li>
+                           <li class="s01"><span class="triangle" style="margin-left:60px;"></span></li>
+                           <li class="s02"><span class="triangle"></span></li>
+                           <li class="s03"><span class="triangle"></span></li>
+                           <li><img src="images/i_s_bar_right.gif" /></li>
+                        </ul>
+                     </div>
+                     <div class="w_draw">
+                        <div style="position:absolute; z-index:100; width:260px; margin:0 auto; margin-top:10px; left: 63px; top: -17px;">
+                           <div id='silder' style='background-color:transparent; border:0;'><a href="#"></a></div>
+                        </div>
+                        <ul>
+                           <li class="w_draw_center" >&nbsp;</li>
+                        </ul>
+                     </div>
+                     <span id ='select_1'>
+                        <div id="w_no" class='_off'><ul><li><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str62)%></li></ul></div>
+                        <div id="w_no_on" class='_on' style="display:none;"><ul><li><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str62)%></li></ul></div>
+                     </span>
+                     <span id ='select_2'>
+                        <div id="w_basic" class='_off'><ul><li><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str63)%></li></ul></div>
+                        <div id="w_basic_on" style="display:none;" class='_on'><ul><li><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str63)%><span class="selectarrow"></span></li></ul></div>
+                     </span>
+                     <span id ='select_3'>
+                        <div id="w_more"  class='_off'><ul><li><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str64)%><br />(<%ejGetML(MLG_WLAN_BasicWirelessSetup_Str65)%>)</li></ul></div>
+                        <div id="w_more_on"  style="display:none;" class='_on'><ul><li><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str64)%><br />(<%ejGetML(MLG_WLAN_BasicWirelessSetup_Str65)%>)<span class="selectarrow" style="margin-left:5px;"></span></li></ul></div>
+                     </span>
+                  </div>
+               </li>
+            </div>
+<!--Basic start-->
+            <div id="wepmode" class="selectframe clearfix">
+               <li class="set1">
+                  <div class="w_text" style="*margin-left:-15px">
+                     <ul>
+                        <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str34)%>:</li>
+                        <li class="right_table"><%ejGetML(MLG_Common_WEP)%></li>
+                     </ul>
+                  </div>
+                  <div class="w_text" >
+                     <input type="checkbox" name="wl_usedefaultwepkey" id="wl_usedefaultwepkey" onClick="refreshUsePassphraseUI();refreshUseDefaultWepKey(0);detectPassphraseKey(event, 0);" /> <%ejGetML(MLG_WLAN_BasicWirelessSetup_Str57)%> 
+                  </div>
+                  <div class="w_text" style="line-height:16px;"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str45)%>: <%ejGetML(MLG_WLAN_BasicWirelessSetup_Str66)%></div> 
+                  <div class="w_text" style="line-height:16px;"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str44)%>: <%ejGetML(MLG_WLAN_BasicWirelessSetup_Str67)%></div>
+                 <div class="w_text3" id="wepdesc" style="display:none;"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str38)%></div>
+                  <div class="w_text3">
+                     <ul>
+                        <li class="left_table">
+                           <input name="wlKeyIndex" type="radio" value="1" /> <%ejGetML(MLG_WLAN_BasicWirelessSetup_Str39)%>:
+                        </li>
+                        <li class="right_table">
+                           <table width="100%">
+                              <td valign="top">
+                                 <span id="text_wlKey1">0</span>
+                                 <input type="password" name="wlKeys" id="input_wlKey1" size='20' maxlength='26' autocomplete="new-password"/> 
+                                 <br>
+                                 <div class="w_text">
+                                 <input id="box_unmaskwepkey" type="checkbox" name="box_unmaskwepkey" onclick="updateCurwepkey()" />
+                                 <span id="wep_text_unmask"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str71)%></span>
+                                 </div> 
+                              </td>
+                              <td width="32%" valign="top">                          
+                                 <span class="linking moreBtn" id="btn_wepmore"><%ejGetML(MLG_Common_more)%>...</span>
+                              </td>
+                           </table>
+                        </li>
+                     </ul>
+                  </div>
+<!-- WEP more setting beginning -->
+                  <!--<div id="wepmore" class="clearfix"> ZyXEL, cathy mark -->
+                  <div id="wepmore" class="clearfix" style="clear: both">
+                     <div class="w_text3">
+                        <ul>
+                           <li class="left_table">
+                              <input name="wlKeyIndex" type="radio" value="2" /> <%ejGetML(MLG_WLAN_BasicWirelessSetup_Str40)%>:
+                           </li>
+                           <li class="right_table">
+                              <table width="100%">
+                                 <td valign="top">
+                                    <span id="text_wlKey2">0</span>
+                                    <input type="password" name="wlKeys" id="input_wlKey2" size='20' maxlength='26' autocomplete="new-password"/>
+                                 </td>
+                                 <td valign="top" width="32%">
+                                 </td>
+                              </table>
+                           </li>
+                        </ul>
+                     </div>
+                     <div class="w_text3">
+                        <ul>
+                           <li class="left_table">
+                              <input name="wlKeyIndex" type="radio" value="3" /> <%ejGetML(MLG_WLAN_BasicWirelessSetup_Str41)%>:
+                           </li>
+                           <li class="right_table">
+                              <table width="100%">
+                                 <td valign="top">
+                                    <span id="text_wlKey3">0</span>
+                                    <input type="password" name="wlKeys"  id="input_wlKey3" size='20' maxlength='26' autocomplete="new-password"/>
+                                 </td>
+                                 <td valign="top" width="32%">
+                                 </td>
+                              </table>
+                           </li>
+                        </ul>
+                     </div>
+                     <div class="w_text3">
+                        <ul>
+                           <li class="left_table">
+                              <input name="wlKeyIndex" type="radio" value="4" /> <%ejGetML(MLG_WLAN_BasicWirelessSetup_Str42)%>:
+                           </li>
+                           <li class="right_table">
+                              <table width="100%">
+                                 <td valign="top">
+                                    <span id="text_wlKey4">0</span>
+                                    <input type="password" name="wlKeys" id="input_wlKey4" size='20' maxlength='26' autocomplete="new-password"/>
+                                 </td>
+                                 <td valign="top" width="32%">
+                                 </td>
+                              </table>
+                           </li>
+                        </ul>
+                     </div>
+                     <div class="w_text3">
+                        <ul>
+                           <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str43)%>:</li>
+                           <li class="right_table">
+                              <select name="wlWepEncryption" id="wlWepEncryption" onChange="refreshUsePassphraseUI();refreshUseDefaultWepKey(0);detectPassphraseKey(event, 0);">
+                                 <option value="0"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str44)%></option>
+                                 <option value="1"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str45)%></option>
+                              </select>
+                           </li>
+                        </ul>
+                        <div class="br"></div>
+                     </div>
+                  </div>
+<!-- WEP more setting ending -->
+               </li>
+            </div>
+<!--Basic end-->
+<!--More Security start-->
+            <div id="secmode" class="selectframe clearfix"><ul>
+               <li class="set1" >
+                  <div class="w_text">
+                     <ul>
+                        <li class="left_table" ><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str34)%>:</li>
+                        <li class="right_table">
+                           <select name="moreSecurity" id="moreSecurity" onChange="changeSecurityValue();">
+                           </select>
+                        </li>
+                     </ul>
+                  </div>
+<!-- WPA-PSK/WPA2-PSK setting beginning -->
+                  <div class="space"></div>
+                  <div id="pwd">
+					 <div id="pwd_auto" class="w_text" style="line-height:16px;">
+                    	<ul>
+                        	<input type="checkbox" name="wl_usedefaultwpakey" id="wl_usedefaultwpakey" onClick="refreshUsePassphraseUI();refreshUseDefaultWpaKey(0);changePassphraseKey();" /> <%ejGetML(MLG_WLAN_BasicWirelessSetup_Str57)%> 
+                    	</ul>
+                     </div>	
+                     <div id="wpapsk_ori" class="w_text" style="line-height:16px;"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str46)%></div>
+                     <div id="wpapsk_sc" class="w_text" style="line-height:16px;">Enter 8-63 characters (a-z, A-Z, 0-9 and `~!@#$%^&*()-_. special characters), other characters are not allowed.</div>
+                     <div class="w_text3">
+                        <ul>
+                           <li class="left_table"><%ejGetML(MLG_Common_Password)%>:</li>
+                           <li class="right_table">
+                              <table width="100%">
+                                 <td>
+                                  <span id="text_wlWpaPsk">0</span>
+                                  <input type="password" name="wlWpaPsk" id="input_wlWpaPsk" size='20' maxlength='64' autocomplete="new-password" />
+				                    <br>
+				                    <input id="box_unmaskwpakey" type="checkbox" name="box_unmaskwpakey" onclick="updateCurwpakey()" />
+									<span id="wpa_text_unmask"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str71)%></span>                                      
+                                 </td>
+                                 <td width="32%" valign="top">
+                              <span class="linking moreBtn" id="btn_wpapskmore"><%ejGetML(MLG_Common_more)%>...</span>
+                              <span class="linking moreBtn" id="btn_wpa2pskmore" style="display:none;"><%ejGetML(MLG_Common_more)%>...</span>
+                                  <td>
+                              </table>  
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+<!-- WPA-PSK/WPA2-PSK setting ending -->
+<!-- WPA/WPA2 setting beginning -->
+                  <div id="authserver" style="display:none;">
+                     <div class="w_text"> <%ejGetML(MLG_WLAN_BasicWirelessSetup_Str47)%></div>
+                     <div class="w_text3" >
+                        <ul>
+                           <li class="left_table">&nbsp;&nbsp;<%ejGetML(MLG_WLAN_BasicWirelessSetup_Str48)%>:</li>
+                           <li class="right_table">
+                              <input type="text" name="wlRadiusServerIP" size='20' maxlength='15' />
+                           </li>
+                        </ul>
+                     </div>
+                     <div class="w_text3" >
+                        <ul>
+                           <li class="left_table">&nbsp;&nbsp;<%ejGetML(MLG_WLAN_BasicWirelessSetup_Str49)%>:</li>
+                           <li class="right_table">
+                              <input type="text" name="wlRadiusPort" size='20' maxlength='5' />
+                           </li>
+                        </ul>
+                     </div>
+                     <div class="w_text3" >
+                        <ul>
+                           <li class="left_table">&nbsp;&nbsp;<%ejGetML(MLG_WLAN_BasicWirelessSetup_Str50)%>:</li>
+                           <li class="right_table">
+
+                              <table width="100%">
+                                 <td>
+                <input type="password" name="wlRadiusKey" id="wlRadiusKey" size='20' maxlength='80' autocomplete="new-password" />
+					                <br>
+					                <input id="box_unmaskradiuskey" type="checkbox" name="box_unmaskradiuskey" onclick="updateCurRadiuskey()" />
+								    <span id="radius_text_unmask"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str71)%></span>              	                    
+                                 </td>
+                                 <td width="32%" valign="bottom">
+		                              <span class="linking moreBtn" id="btn_wpamore"><%ejGetML(MLG_Common_more)%>...</span>
+		                              <span class="linking moreBtn" id="btn_wpa2more"><%ejGetML(MLG_Common_more)%>...</span>
+                                  <td>
+                              </table>  
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+<!-- WPA/WPA2 setting ending -->
+<!-- only for WPA2-PSK more setting beginning -->
+                  <div class="w_text3" id="pskcom" style="display:none; ">
+                     <ul>
+                        <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str51)%>:</li>
+                        <li class="right_table">
+                           <input name="WPAPSKCompatible" type="radio" value="1" onClick="changeSecurityValue();" /> <%ejGetML(MLG_Common_Enable)%> 
+                           <input type="radio" name="WPAPSKCompatible" value="0" onClick="changeSecurityValue();" /> <%ejGetML(MLG_Common_Disabled)%>
+                        </li>
+                     </ul>
+                  </div>
+<!-- only for WPA2-PSK more setting ending -->
+<!-- only for WPA2 more setting beginning -->
+                  <div class="w_text3" id="wpacom" style="display:none;">
+                     <ul>
+                        <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str52)%>:</li>
+                        <li class="right_table">
+                           <input name="WPACompatible" type="radio" value="0" onClick="changeSecurityValue();" /> <%ejGetML(MLG_Common_Enable)%>
+                           <input type="radio" name="WPACompatible" value="1" onClick="changeSecurityValue();" /> <%ejGetML(MLG_Common_Disabled)%>
+                        </li>
+                     </ul>
+                  </div>
+<!-- only for WPA2 more setting ending -->
+<!-- WPA-PSK/WPA2-PSK/WPA more setting beginning -->
+                  <div class="w_text3" id="encryp" style="display:none;">
+                     <ul>
+                        <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str53)%>:</li>
+                        <li class="right_table">
+                           <select name="wlWpa" onChange="loadWpaEncryption(0);">
+                           </select>
+                        </li>
+                     </ul>
+                  </div>
+<!-- WPA-PSK/WPA2-PSK/WPA more setting ending -->
+<!-- only for WPA2 more setting beginning -->
+                  <div id="wpa2" style="display:none;">
+                     <div class="w_text3">
+                        <ul>
+                           <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str54)%>:</li>
+                           <li class="right_table">
+                              <input name="wlPreauth" type="radio" value="1" /> <%ejGetML(MLG_Common_Enable)%>
+                              <input type="radio" name="wlPreauth" value="0" /> <%ejGetML(MLG_Common_Disabled)%>
+                           </li>
+                        </ul>
+                     </div>
+                     <div class="w_text3">
+                        <ul>
+                           <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str55)%>:</li>
+                           <li class="right_table">
+                              <input type="text" name="wlNetReauth" size='20' maxlength='10' /> <%ejGetML(MLG_Common_Sec)%>
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+<!-- only for WPA2 more setting ending -->
+<!-- WPA-PSK/WPA2-PSK/WPA more setting beginning -->
+                  <div id="timer" style="display:none;">
+                     <div class="w_text3">
+                        <ul>
+                           <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str56)%>:</li>
+                           <li class="right_table">
+                              <input type="text" name="wlWpaGtkRekey" size='20' maxlength='10' /> <%ejGetML(MLG_Common_Sec)%>
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+<!-- WPA-PSK/WPA2-PSK/WPA more setting ending -->
+               </li>
+            </ul></div>
+<!--More Security end-->
+            <li class="space"></li>
+<!--Button define start-->
+           <li class="buttonframe"></li>
+<!--Button define end-->
+         </ul></div>
+<!--Set area end-->
+      </div>
+   </form>
+<br/><br/>
+<script language='JavaScript'>
+<!--
+$(document).ready(function() {
+
+	frmLoad();
+});
+//-->
+</script>
+

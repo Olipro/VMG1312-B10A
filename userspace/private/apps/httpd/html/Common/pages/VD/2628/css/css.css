@@ -1,0 +1,35 @@
+/*@import url("reset.css");*/
+/* Lan----------------------------------*/ 
+#vd2628 .vdFrame{ position:relative; width:503px; height:350px; background:url(../images/i_vd.gif) no-repeat; margin:0 auto; color:#fff;}
+#vd2628 .lanFrame{ position:absolute; top:134px; left:191px;width:155px; height:28px;}
+#vd2628 .lanFrame ul li{ float:right;display:block; margin-left:4px; margin-top:11px;text-align:center; width:33px; height:54px; font-size:7px;line-height:15px;  position:relative; }
+#vd2628 .lan_on{background:url(../images/earthnet.gif) no-repeat; display:block; width:33px; height:54px; }
+#vd2628 .wifiSignal_off{ width:40px; height:38px; position:absolute; right:0px; top:25px;}
+#vd2628 .wifiSignal_on{ background:url(../images/i_wifi_on.gif) no-repeat; width:40px; height:38px; position:absolute;  left:465px; top:48px;}
+#vd2628 .wan_on{ background:url(../images/wan.gif); width:33px; height:54px; position:absolute; right:115px; top:145px;}
+#vd2628 .dslline_on{ background:url(../images/wan.gif); width:33px; height:54px; position:absolute; left:103px; top:145px;}
+
+.off .dslname{ display:none;}
+.dslline_on .dslname{ position:relative; top:70px;  left:3px;}
+.lan_on .lanname1{position:relative; top:70px;  left:3px;}
+.off .lanname1{display:none;}
+.lan_on .lanname2{position:relative; top:70px;  left:3px;}
+.off .lanname2{display:none;}
+.lan_on .lanname3{position:relative; top:70px;  left:3px;}
+.off .lanname3{display:none;}
+.lan_on .lanname4{position:relative; top:70px;  left:3px;}
+.off .lanname4{display:none;}
+.wan_on .wanname{position:relative; top:70px;  left:3px;}
+.off .wanname{display:none;}
+.wifiSignal_on .wifiSignalname{position:relative; top:162px;  left:3px;}
+.wifiSignal_off .wifiSignalname{display:none;}
+
+/* Traffic for WAN---------------------------------*/
+#vd2628 .sent{ display:block; font-weight:bold; top:130px; left:60px; width:200px; margin-left:15px; overflow:hidden; text-align:right;}
+html* #vd2628 .sent{display:block; font-weight:bold; top:130px; left:60px; width:200px; margin-left:15px;word-break:break-all;}
+#vd2628 .sent span{ display:block;}
+#vd2628 .received{display:block;font-weight:bold; top:130px; right:40px; width:200px;overflow:hidden;}
+html* #vd2628 .received{display:block;font-weight:bold; top:130px; right:40px; width:200px; word-break:break-all;}
+#vd2628 .received span{ display:block;}
+#vd2628 .nat_1{position:relative; background:url(../images/i_router.gif); height:90px; width:131px; margin-left:10px; margin-right:20px; }
+#vd2628 .nat_1 span{ position:absolute;background:url(../images/i_internet.gif) no-repeat;;width:57px;height:55px; left:90px; top:30px;}

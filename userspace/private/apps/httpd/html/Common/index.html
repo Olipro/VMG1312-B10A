@@ -1,0 +1,1065 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" style='width:100%; height:100%;'>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<title id='title'>.::<%ejGetML(MLG_Common_Login_Str4)%>::.</title>
+<link type="text/css" href="css/basic.css" rel="stylesheet" />
+<link type="text/css" href="css/popup/popup.css" rel="stylesheet" />
+<link href="css/brick.css" rel="stylesheet" type="text/css" />
+<link type="text/css" href="css/quickstart.css" rel="stylesheet" />
+<link type="text/css" href="css/2tierCSS.css" rel="stylesheet" />
+<link type="text/css" href="css/jquery.zyCheckTree.css" rel="stylesheet" />
+<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="js/common.js"></script>    
+<script type="text/javascript" src="js/util.js"></script>
+<script type="text/javascript" src="js/zyMacUi.js"></script>
+<script type="text/javascript" src="js/jsonParser.js"></script>  
+<script type="text/javascript">
+   this.parseObj = $.jsonParser();
+</script>  
+<script type="text/javascript" src="js/jquery.layout.js"></script>
+<script type="text/javascript" src="js/jquery.easing.1.3.js"></script>
+<script type="text/javascript" src="js/tools.scrollable-1.1.0.min.js"></script>
+<script type="text/javascript" src="js/jquery.mousewheel.js"></script>
+<script type="text/javascript" src="js/jquery.getParams.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
+<script type="text/javascript" src="js/zyJqFunctions.js"></script>
+<script type="text/javascript" src="js/zyUiDialog.js"></script>
+<script type="text/javascript" src="js/jquery.simplemodal-1.3.min.js"></script>
+<script type="text/javascript" src="js/zyMask.js"></script>
+<script type="text/javascript" src="js/jquery.pngFix.pack.js"></script>
+<script type="text/javascript" src="js/jquery.bgiframe.pack.js"></script>
+<script type="text/javascript" src="js/brickRichMenu.js"></script>  
+<script type="text/javascript" src="js/functions.js"></script>  
+<script type="text/javascript" src="js/quickStart.js"></script>
+<script type="text/javascript" src="js/jquery.zyCheckTree.js"></script>
+<script type="text/javascript" src="js/TimeZone.js"></script>
+<script type="text/javascript" src="js/jquery.text-overflow.js"></script>
+<script type="text/javascript" src="js/voipSipServer.js"></script>
+<script type="text/javascript" src="js/voipSipAccount.js"></script>
+<script type="text/javascript" src="js/common2.js"></script>
+<script type="text/javascript">       
+var languages = '<%ejGet(currentLanguage)%>';   
+var wizardEnable='';
+var save_btn = '<%ejGetML(MLG_Common_Save)%>';
+var next_btn = '<%ejGetML(MLG_Common_Next)%>';
+var objInfoXMLHTTP = null;
+var count = '0';
+var tiersBtnPrv = '<%ejGetOther(privilegeByUser, loginPrivilege)%>';
+var wizardBtnPrv = '<%ejGetOther(privilegeByUser, wizard)%>';
+var forEircom  = '<%ejGetOther(sysInfo, forEircom)%>';
+var localAdmin= "<%ejGet(localAdminCheck)%>";
+var $menuDiv;
+var $frameObj;
+
+var $subMenuDiv;
+var scrollApi;   
+var defaultPage = '';
+var scrollSize;
+//var defaultURL = "pages/network/deviceMode/deviceMode.html";
+var outerLayout;
+var parseObj;
+var activePage; 
+var changeScrollMenu;
+var actionItemID = null;
+var tabIndex;
+var customer = '<%ejGetOther(customer)%>';  //__ZyXEL__, Ryan ,get customer 
+var reload = '<%ejGetOther(sysInfo, reload)%>'; //ZyXEL, GUI Issue, Albert
+var forCodetel = '<%ejGetOther(sysInfo, trueLANIP)%>'; //ZyXEL, GUI Issue, Albert
+
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; 
+
+$(document).ready(function() {
+	$.openLoadingMask = function(flag){ 
+		var content;
+		var contentSize;
+		if (flag == undefined || flag == 1) {
+			content = '<div><img src="images/loading.gif" style="margin-Left:6px;" /> <div><%ejGetML(MLG_Common_Loading)%><div></div>'
+			contentSize = [55, 55];
+		}
+		else 
+			if (flag == 2) {
+				content = '<div class="wait" ><table width="100%" border="0" cellspacing="3" cellpadding="2" ><tr><td align="center">&nbsp;</td><td class="w_red">&nbsp;</td></tr><tr><td width="3%" align="right" ><img src="images/loading.gif"  style="margin-right:10px;" /></td><td width="69%" class="w_red"><%ejGetML(MLG_Maintenance_Reboot_Str3)%></td></tr><tr><td colspan="2">&nbsp;</td></tr><tr><td colspan="2" class="white_12" ><%ejGetML(MLG_Maintenance_Configuration_AlertMsg_Str14)%></td></tr><tr><td colspan="2" class="white_12" >&nbsp;</td></tr></table></div>';
+				contentSize = [386, 182];
+			}
+			
+		return $.zyMask(content, contentSize);
+	};
+	
+	$.openLoadingMask(1);
+
+	$.zyBRMenu.modifyLayout();
+	outerLayout = $('div.index').layout($.zyBRMenu.layoutOption);
+});
+
+$(window).load(function() {
+	if (reload == '1' && forCodetel == 1) //ZyXEL, GUI Issue, Albert
+	{
+		window.location.reload(true);
+	}
+	parseObj = $.jsonParser();
+	if (window.XMLHttpRequest) {
+		objInfoXMLHTTP = new XMLHttpRequest();
+	} else if (window.ActiveXObject) {
+		// code for IE
+		objInfoXMLHTTP = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+
+	$.fn.delay = function(time, callback){
+		// Empty function:jQuery.fx.step.delay = function() { };   
+		// You can set the second argument as CSS properties    
+		if (typeof callback == "object") {
+			var cssObj = callback;
+			callback = function(){
+				$(this).css(cssObj);
+			}
+		}
+	
+		return this.animate({
+		delay: 1
+		}, time, callback);
+	}
+
+	$.isSubFrame = function(){
+		return true;
+	} 
+
+	$.openLoadingMask = function(flag){
+		var content;
+		var contentSize;
+		if (flag == undefined || flag == 1) {
+			content = '<div><img src="images/loading.gif" style="margin-Left:6px;" /> <div><%ejGetML(MLG_Common_Loading)%><div></div>'
+			 contentSize = [55, 55];
+		}
+		else 
+			if (flag == 2) {
+				content = '<div class="wait" ><table width="100%" border="0" cellspacing="3" cellpadding="2" ><tr><td align="center">&nbsp;</td><td class="w_red">&nbsp;</td></tr><tr><td width="3%" align="right" ><img src="images/loading.gif"  style="margin-right:10px;" /></td><td width="69%" class="w_red"><%ejGetML(MLG_Maintenance_Reboot_Str3)%></td></tr><tr><td colspan="2">&nbsp;</td></tr><tr><td colspan="2" class="white_12" ><%ejGetML(MLG_Maintenance_Reboot_AlertMsg_Str2)%></td></tr><tr><td colspan="2" class="white_12" >&nbsp;</td></tr></table></div>';
+				contentSize = [386, 182];
+			}
+		
+		$.zyMask(content, contentSize);
+	};
+
+	$.hciAlert=function(str, param){
+		var dparam = 
+		{
+			type: 0,
+			height: 180,
+			title: '',
+			modal: false,
+			func: undefined,
+			onClose: undefined,
+			onOpen: undefined
+		}
+
+		param = $.extend({}, dparam, param);
+
+		var table = $('<table width="100%" height="35px" border="0" cellspacing="0" cellpadding="0"></table>');
+		var tr = $('<tr></tr>');
+		var imgSrc;
+		var title;
+
+		switch(parseInt(param.type))
+		{
+			case 0://alert
+				title = '<%ejGetML(MLG_Common_Alert)%>';
+				imgSrc = 'images/popup_i_warning.gif'
+				break;
+			case 1://message
+				title = '<%ejGetML(MLG_Common_Message)%>';
+				imgSrc = 'images/popup_i_message.gif'
+				break;
+			case 2://error
+				title = '<%ejGetML(MLG_Common_Error)%>';
+				imgSrc = 'images/popup_i_error.gif'
+				break;
+		}
+
+		if(param.title!='')
+			title = param.title;
+
+		var imgtd = $('<td width="20%" ><center><img src="'+ imgSrc +'" width="38" height="35"  style="display:block; margin-top:4px;"/></center></td>');
+		var strtd = $('<td>'+str+'</td>')
+
+		tr.append(imgtd).append(strtd)
+		table.append(tr);
+
+		var db= $(table).zyUiDialog({
+			width: 450,
+			height: param.height,
+			title: title,
+			buttons: {
+				'<%ejGetML(MLG_Common_OK)%>': function(){
+					if(param.func != undefined)
+						param.func();
+					db.dialog('close')
+				}
+			},
+			close: function(ev, ui) {
+				if(param.onClose != undefined)
+					param.onClose();
+			},
+			open: function() {
+				if(param.onOpen != undefined)
+					param.onOpen();
+			}
+		});
+		db.dialog('open');
+	}
+
+	$.closeLoadingMask = function(){
+		$.closezyMask();
+	};
+
+	$.alertLowBattery = function(){
+		var db1 = $.zyUiDialog({
+			width: 450,
+			height: 220,
+			title: 'UPS battery status',
+			buttons: {
+				'<%ejGetML(MLG_Common_OK)%>': function(){ db1.dialog('close')}
+			}
+		});
+		var link = 'pages/batterylow.html';
+		if($.browser.safari && parseInt($.browser.version)<=525 )  
+			link='../'+link;
+		db1.load(link);
+		db1.dialog('open');
+	};
+
+	$.alertDetectNoUPS = function(){
+		var db1 = $.zyUiDialog({
+			width: 450,
+			height: 220,
+			title: 'UPS battery status',
+			buttons: {
+				'<%ejGetML(MLG_Common_OK)%>': function(){ db1.dialog('close')}
+			}
+		});
+		
+		var link = 'pages/detectNoUPS.html';
+		if($.browser.safari && parseInt($.browser.version)<=525 )  
+			link='../'+link;
+		db1.load(link);
+		db1.dialog('open');
+	};
+	
+	$(document).pngFix();
+	$menuDiv = $('#menuDiv');
+	$frameObj = $('#mainFrame');
+	$subMenuDiv=$('#subMenuDiv');
+
+	$(window).resize(doNResize)
+	$(window).bind('dResize', function(){
+		 modifyScrollMenu();
+		 scrollToCurrentItem();   //scroll to current item
+	});
+
+	document.activePage = function(menuData, tabIndex){
+		activeItem(menuData , tabIndex);
+	};
+
+	changeScrollMenu = function(){
+		modifyScrollMenu();
+	};
+	
+	//parseJson
+	if (parseObj.getCompletedFlag()) {
+		parseMenuJsonCompleted();
+	}
+	else {
+		$('body').bind('parseCompleted', function(){
+			parseMenuJsonCompleted();
+		});
+	}
+	
+	$('html').css('overflow-y', 'hidden');
+	$('html').css('overflow-x', 'auto');
+
+
+	//mouse wheel
+	$('.outer-south').mousewheel(function(event, delta){
+		var index = scrollApi.getIndex();
+		var size = scrollApi.getSize();
+		var visibleSize = scrollApi.getVisibleItems().length;
+
+		if (delta < 0 && index + visibleSize < size) {
+			scrollApi.nextPage();
+			$('.subItems').caaHide();
+		}
+		else 
+			if (delta > 0 && index > 0) {
+				scrollApi.prevPage();
+				$('.subItems').caaHide();
+			} 
+	});
+	
+	$('.outer-west').mousewheel(mouseWheelHandler);
+	$('.west-west').mousewheel(mouseWheelHandler);
+	 
+	$('.logoutBtn').click(function(){
+		$.zyUiDialog({
+			width: 450,
+			height: 180,
+			title: '<%ejGetML(MLG_Common_Logout)%>',
+			buttons: {
+				'<%ejGetML(MLG_Common_No)%>': function(){ $(this).dialog('close');},
+				'<%ejGetML(MLG_Common_Yes)%>': function(){
+					sendLogoutmsg();
+					$(this).dialog('close')
+				}
+			}
+		}).setBtnAttr(['noBtn', 'yesBtn']).load('login/passLogout.html').dialog('open');
+
+	// $('button[btnAttr=noBtn]').click(function(){alert('btn attr success !');});
+	});
+	
+	 // 2 tiers interface
+	$('.2tiersBtn').click(function(){
+		$.zyUiDialog({
+			width: 700,
+			height: 540,
+			title: '<%ejGetML(MLG_Common_LoginPrivilege)%>',
+			buttons: {
+				'<%ejGetML(MLG_Common_Close)%>': function(){ $(this).dialog('close');},
+				'<%ejGetML(MLG_Common_Save)%>': function(){
+				}
+
+			}
+		}).load('pages/loginPrivilege/loginPrivilege.html').dialog('open');
+	});
+
+	$('.wizardBtn').click(function(){
+		// updateQuickStart();
+		wizardEnable = "<%ejGet(EnableQuickStar)%>";
+		var wizardObj;
+		var db1 = $.zyUiDialog({
+			width: 650,
+			height: 450,
+			title: '<%ejGetML(MLG_Common_QuickStart)%>',
+			buttons: {
+				'<%ejGetML(MLG_Common_Close)%>': function(e){$.cancelBubble(e);$(this).dialog('close');},
+				
+				'<%ejGetML(MLG_Common_Next)%>': function(e){
+						nextWizardState($(this), $(this).find('.state:visible').attr('id'), save_btn);
+					},
+				'<%ejGetML(MLG_Common_Back)%>': function(e){
+						backWizardState($(this), $(this).find('.state:visible').attr('id'), next_btn);
+					},
+				'<%ejGetML(MLG_Common_Retry)%>': function(){wizardObj.prev().next();}
+			}
+		});
+
+		var buttomPana =db1.parents('.ui-dialog').find('.ui-dialog-buttonpane')
+
+		var ctrlBtns = {
+			all: buttomPana.children(),
+			close: buttomPana.children('Button:nth-child(1)'),
+			next: buttomPana.children('Button:nth-child(2)'),
+			back: buttomPana.children('Button:nth-child(3)'),
+			retry: buttomPana.children('Button:nth-child(4)').hide()
+		
+		};
+
+		db1.bind('wizardInit', function(e, wObj){
+			wizardObj = wObj;
+			wizardObj.ctrlBtns=ctrlBtns;
+			db1.unbind('wizardClick');
+			db1.bind('wizardClick', function(e, index){    
+				//default Btn Status
+				ctrlBtns.back.show();
+				ctrlBtns.next.show();
+				ctrlBtns.retry.hide();
+				buttomPana.children().removeAttr('disabled');
+				ctrlBtns.back.removeAttr('disabled');       
+				var wizardItem = wizardObj.contentArry[index];
+				var status =wizardItem.status; 
+
+				switch(status)
+				{
+					case 'next-only':
+						ctrlBtns.back.hide();
+						break;
+
+					case 'step':
+						if(wizardItem.step!=undefined && wizardItem.step==1)
+							ctrlBtns.back.attr('disabled','disabled');
+						break;
+
+					case 'waiting': //waiting
+						buttomPana.children().attr('disabled','disabled');
+						break;
+
+					case 'result': //result
+					   ctrlBtns.next.hide();
+						break;
+				}
+			});
+		});
+
+		db1.load('pages/wizard/quickstart.html?index=2', function(){
+			   if (wizardEnable == 0)
+				  var initCtrl = '<div style=" position:absolute; bottom:20px; left:15px;"><input type="checkbox" id="quickshow" value="0" onclick="Savequickshow()" /> <%ejGetML(MLG_Common_QuickStartmeg)%></div>'
+			   else
+				  var initCtrl = '<div style=" position:absolute; bottom:20px; left:15px;"><input type="checkbox" id="quickshow" value="1" onclick="Savequickshow()" checked /> <%ejGetML(MLG_Common_QuickStartmeg)%></div>'
+			   $(this).parent('.ui-dialog').append(initCtrl);
+			}
+		);
+		db1.dialog('open');
+	});
+       
+	$('.browse.right').click(function(){
+		scrollApi.nextPage(); 
+	});
+
+	$('.browse.left').click(function(){
+		scrollApi.prevPage();
+	});
+
+	
+	frmLoad_dolanguage();
+    /*if (customer == "ISKON")
+    {
+        $('#iskon_logo').css('display','inline');
+        $('#common_logo').css('display','none');
+    } else {
+        $('#iskon_logo').css('display','none');
+        $('#common_logo').css('display','inline');
+    }*/
+	if (customer == "ISKON"){
+		$('#common_logo').css('display','none');
+		$('#zap_logo').css('display','none');  
+	} else if((customizationFlag & 0x40000000) == 0x40000000){
+		$('#iskon_logo').css('display','none');
+		$('#common_logo').css('display','none');
+	}else {
+		$('#iskon_logo').css('display','none');
+		$('#zap_logo').css('display','none');       
+	}
+
+    
+    //following variables defined in commonDef.js
+  
+    //var defaultURL = "pages/network/deviceMode/deviceMode.html"
+	var defaultURL = "pages/connectionStatus/naviView_partialLoad.html"
+    //open default page
+    //openPage(defaultURL);
+	
+	openPage(defaultURL);
+	
+	if (forEircom == 1 ){
+		if(localAdmin==0)
+		{
+			$('#logoutBtn').fadeOut(0);
+			$('#logoutName').fadeOut(0);
+		}
+		else
+		{
+			$('#logoutBtn').fadeIn(0);
+			$('#logoutName').fadeIn(0);
+		}
+	}else{
+		$('#logoutBtn').fadeIn(0);
+		$('#logoutName').fadeIn(0);
+	}
+
+	if (forEircom == 1 ){
+		$('#wizardBtn').fadeOut(0);
+		$('#wizardName').fadeOut(0);
+		$('#languageSelect').fadeOut(0);
+		$('#languageBtn').fadeOut(0);
+		$('#helpBtn').fadeIn(0);
+		$('#helpName').fadeIn(0);
+	}else{
+		$('#wizardBtn').fadeIn(0);
+		$('#wizardName').fadeIn(0);
+		$('#languageSelect').fadeIn(0);
+		$('#languageBtn').fadeIn(0);
+		$('#helpBtn').fadeOut(0);
+		$('#helpName').fadeOut(0);
+	}
+	
+	frmLoad_doprivilege();
+});
+
+function setPageIndex(menuIndex, tabIndex){
+	actionItemID = menuIndex;
+	adjustHighlight();
+}
+
+function setTabIndex(tabIndex){
+	tabIndex = tabIndex;
+}
+        
+function findJsonItemFromID(id, json){
+	if(json==undefined)
+		json = parseObj.getJsonData();
+
+	var jsonItem = null;
+	var splitID = id.split('-')[0];
+	var retainID = null;
+	var nn = id.indexOf(id.split('-')[1]);
+	if (nn != -1) 
+		retainID = id.slice(nn);
+	
+	$.each(json, function(i, item){
+		if (i == splitID) {
+			if (retainID != null) 
+				jsonItem = findJsonItemFromID(retainID, item.submenu);
+			else 
+				jsonItem = item;
+				
+			return false;  
+		}
+	});
+	return jsonItem;
+}
+
+function adjustHighlight(){
+	if (parseObj.getJsonData() == undefined) 
+	return;
+	
+	//remove highlight
+	$.each(parseObj.getJsonData(), function(i, d){
+		if (i == 'defaultPage') 
+			return true;
+		var obj = $('#' + i);
+		if (d.switchCls != undefined) {
+			var onCls = d.switchCls.on;
+			var offCls = d.switchCls.off;
+			obj.removeClass(onCls).addClass(offCls);
+		}
+	});
+	
+   
+	var $menuDiv = $('#menuDiv');       
+	if (this.actionItemID != undefined) {
+		var actionItemID = this.actionItemID;
+		var activeMainMenuID = actionItemID.split('-')[0];
+		var actionJsonItem = findJsonItemFromID(activeMainMenuID);
+		if (actionJsonItem != null && actionJsonItem.switchCls != undefined) {
+			var currentItem =  $('#' + activeMainMenuID);
+			currentItem.removeClass(actionJsonItem.switchCls.off);
+			currentItem.addClass(actionJsonItem.switchCls.on);
+		}
+	}
+}
+
+function initMainFrame(){
+	if ($frameObj.attr('src').indexOf('?tabJson') == -1) 
+		$.closeLoadingMask();
+	$frameObj.contents().pngFix();
+}
+
+function openPage(url){
+	try {
+		$.openLoadingMask(1)
+		/* $frameObj.src(url, function(){
+			 initMainFrame();
+		});*/
+		$frameObj.attr('src',url);
+		$frameObj[0][document.all ? "onreadystatechange" : "onload"] = function(){
+			if (document.all && this.readyState != "loaded" && this.readyState != "complete") {
+				return;
+			}
+			initMainFrame();
+			$frameObj[0][document.all ? "onreadystatechange" : "onload"] = null;
+			//__MSTC__, Justin, Pop QuickStart after Login.
+			wizardEnable ="<%ejGet(EnableQuickStar)%>";
+			
+			
+			if (wizardBtnPrv == '1' && wizardEnable == '0' && url.search('connectionStatus') != -1 && count == '0')
+			{
+				var db1 = window.parent.$.zyUiDialog({
+					width: 650,
+					height: 450,
+					title: '<%ejGetML(MLG_Common_QuickStart)%>',
+					//hciAlert(title, 2);
+					buttons: {
+						'<%ejGetML(MLG_Common_Close)%>': function(e){$.cancelBubble(e);$(this).dialog('close');},
+						'<%ejGetML(MLG_Common_Next)%>': function(e){
+							nextWizardState($(this), $(this).find('.state:visible').attr('id'), save_btn);
+						},
+						'<%ejGetML(MLG_Common_Back)%>': function(e){
+							backWizardState($(this), $(this).find('.state:visible').attr('id'), next_btn);
+						}
+					}
+				});
+				count = '1';
+				if(forEircom!=1)
+				{
+					db1.load('pages/wizard/quickstart.html?index=2', function(){
+						var initCtrl = '<div style=" position:absolute; bottom:20px; left:15px;"><input type="checkbox" id="quickshow" value="<%ejGet(EnableQuickStar)%>" onclick="Savequickshow()" />  <%ejGetML(MLG_Common_QuickStartmeg)%></div>'
+						$(this).parent('.ui-dialog').append(initCtrl);
+					});
+					db1.dialog('open');
+				}
+			}
+		//__MSTC__, Justin, (END)
+		} 
+	} 
+	catch (e) {
+		alert(e)
+	}
+}
+    
+function sliceString(str, clipIndex){
+	retStr = null;
+	var nn = str.indexOf(str.split('-')[clipIndex+1]);
+  
+	if (nn != -1) 
+		retStr = str.slice(nn);
+	
+	return retStr;
+}
+
+function activeItem(activeID, tabIndex, type){
+/*
+	var activeMainMenuID;
+	var previousJsonItem;
+  
+   $.each(parseObj.getJsonData(), function(i, d){
+	   if(i=='defaultPage')
+	   return true;
+	   var obj =   $('#' + i);
+	   if (d.switchCls != undefined) {
+		   var onCls = d.switchCls.on;
+		   var offCls = d.switchCls.off;
+		   obj.removeClass(onCls).addClass(offCls);
+	   }
+   });
+ 
+	actionItemID = activeID;
+
+	activeMainMenuID = actionItemID.split('-')[0];
+	
+	var actionJsonItem = findJsonItemFromID(activeMainMenuID);
+	if (actionJsonItem != null && actionJsonItem.switchCls != undefined) {
+	   var currentItem =  $menuDiv.find('ul li[id=' + activeMainMenuID + ']');
+	   currentItem.removeClass(actionJsonItem.switchCls.off);
+	   currentItem.addClass(actionJsonItem.switchCls.on);
+	  
+	   if(type!='click')
+		 scrollToCurrentItem();
+	}
+*/
+	var tabStr = '';
+	if(tabIndex != undefined)
+
+	tabStr='&&tabIndex='+tabIndex;
+ 
+	if (type != 'init') {
+		var jsonItem = findJsonItemFromID(activeID);
+		if (jsonItem != null) {
+			var url = jsonItem.url;
+			if (url.indexOf('?tabJson') != -1) 
+				openPage(url + tabStr);
+			else 
+				openPage(url);
+		}
+		else 
+			alert("url error:  " + activeID);
+	}
+	else//init
+	{
+		actionItemID = activeID;
+		tabIndex = tabIndex;
+		adjustHighlight();
+	}
+}
+    
+function hideSubMenuPanel(panel, liObj, delayTime){
+	
+	if (delayTime!=undefined && delayTime == 0) {
+		panel.attr('isAnimation', 'true');
+		panel.caaHide(0, function(){
+			$(this).attr('isAnimation', 'false');
+		});
+		liObj.removeClass('hover');
+		return;
+	}
+	
+	panel.delay(50, function(){
+		panel.attr('isAnimation', 'true');
+		panel.caaHide(200, function(){
+			$(this).attr('isAnimation', 'false');
+			$(this).css('display', 'none');
+		});
+		liObj.removeClass('hover');
+	});
+}
+
+function showSubMenuPanel(panel, liObj)
+{
+	if (panel.attr('isAnimation') == undefined || panel.attr('isAnimation') == 'true') {
+		panel.stop(true, true);
+		panel.attr('isAnimation', 'true');
+		panel.css('display', 'block');
+		panel.caaShow(200, function(){
+			$(this).attr('isAnimation', 'false');
+		});
+	}
+	else 
+		panel.stop(true, false).caaShow(0, function(){
+			$(this).attr('isAnimation', 'false');
+		});;
+	
+	liObj.addClass('hover');
+}
+  
+function hideSubMenu($liObj, delayTime){//call this outer
+	var id = $liObj.attr('id');
+	var subMenu = $subMenuDiv.children('.subItems[targetID=' + id + ']');
+	hideSubMenuPanel(subMenu, $liObj, delayTime);
+}    
+	
+function showSubMenu($liObj){//call this outer
+	var id = $liObj.attr('id');
+	var subMenu = $subMenuDiv.children('.subItems[targetID=' + id + ']');
+		subMenu.bgiframe({opacity:false, left:3, width:160 , top:5, height: subMenu.height()-15, src:'bgiframe.htm' });
+
+	$.zyBRMenu.modifySubMenuPos(subMenu, $liObj);
+	showSubMenuPanel(subMenu, $liObj);
+}
+
+function modifySubmenuPosition(){
+	var subMenuGroup =  $subMenuDiv.children('.subItems[targetID]');
+	$.each(subMenuGroup,
+	function(i, subMenu){
+		var targetUL =  $('#'+$(subMenu).attr('targetID'));
+		var position =  targetUL.position();
+		var left = position.left + targetUL.parent().position().left;
+		$(subMenu).css('left', left-30);
+	});
+}
+
+function setScrollable(){
+	scrollApi = $("div.scrollable").scrollable($.zyBRMenu.getScrollOption(scrollSize));
+}
+
+//mouse wheel
+function mouseWheelHandler(event, delta){
+	var index = scrollApi.getIndex();
+	var size = scrollApi.getSize();
+	var visibleSize = scrollApi.getVisibleItems().length;
+
+	if (delta < 0 && index + visibleSize < size) {
+		scrollApi.nextPage();
+		$('.subItems').caaHide();
+	}
+	else 
+		if (delta > 0 && index > 0) {
+			scrollApi.prevPage();
+			$('.subItems').caaHide();
+		} 
+}
+
+function sendLogoutmsg() {
+	var loc = 'login/login-logout.cgi';   
+	var code = 'location="' + loc + '"';
+	eval(code);
+}
+
+function modifyScrollMenu(){
+	$menuDiv.removeData();
+
+	scrollSize = $.zyBRMenu.getScrollSize();
+
+	$menuDiv.bind('itemEnter', function(e, item){
+		showSubMenu($(item));
+	}).bind('itemLeave', function(e, item){
+		hideSubMenu($(item));
+	}).bind('itemClick', function(e, id){
+		activeItem(id, 0, 'click');
+	}).bind('hideSubmenu', function(e, item){
+		var subMenu = $subMenuDiv.children('.subItems[targetID=' + $(item).attr('id') + ']');
+		hideSubMenuPanel(subMenu, $(item));
+	});
+
+	setScrollable(); 
+	$.zyBRMenu.afterSetScrollable(scrollSize);
+}
+
+function parseMenuJsonCompleted(){
+	$menuDiv.append(parseObj.getHtmlWrap());
+	$subMenuDiv.append(parseObj.getSubMenu());
+
+	setTimeout(function(){ //fix get wrong size in Opera
+		modifyScrollMenu();
+		defaultPage = parseObj.getDefaultPage();
+
+		if ($.getURLParam("menu") != null) {
+			var menuData = $.getURLParam("menu");
+			var tabIndex = $.getURLParam("tabIndex");
+			activeItem(menuData, tabIndex);
+		}
+		else 
+			activeItem(defaultPage, 0, 'init');
+	}, 10);
+
+	doNResize();
+}
+
+function scrollToCurrentItem(){
+	if(actionItemID==null)
+		return;
+	var currentItem = $('#' + actionItemID.split('-')[0]);
+	//   alert(actionItemID.length)
+	if (currentItem.length == 1) {
+		var i = currentItem.prevAll().length;
+		scrollApi.setPage(parseInt(i / scrollSize));
+	}
+}
+
+var timeoutID;
+function doNResize(){
+	if (timeoutID != undefined) 
+		clearTimeout(timeoutID)
+	timeoutID = setTimeout(function(){
+		$(window).trigger('dResize')
+	}, 100);
+}
+
+function frmLoad_doprivilege(){
+	if (tiersBtnPrv != '1')
+		$('.2tiersBtn').hide();
+	if (wizardBtnPrv != '1')
+		$('.wizardBtn').hide();
+}
+
+
+function ConfirmOpen ( msg, callbackOk, callbackCancel, w, h, t ) {
+	var icon;
+	var Title;
+	var Width;
+	var Height;
+	var CallOk;
+	var CallCancel;
+
+	if('undefined' == typeof(w)){
+		Width = 450;
+	}
+	else {
+		Width = w;
+	}
+
+	if('undefined' == typeof(h)){
+		Height = 200;
+	}
+	else {
+		Height = h;
+	}
+	
+	if('undefined' == typeof(t)){
+		Title = "<%ejGetML(MLG_Common_Confirm)%>";
+	}
+	else {
+		Title = t;
+	}
+
+	if('undefined' == typeof(callbackOk)){
+		CallOk = null;
+	}
+	else {
+		CallOk = callbackOk;
+	}
+	
+	if('undefined' == typeof(callbackCancel)){
+		CallCancel = null;
+	}
+	else {
+		CallCancel = callbackCancel;
+	}
+
+	icon = "popup_i_warning.gif";
+
+	var table = $('<table class="deleteframe" width="100%" height="35px" border="0" cellspacing="0" cellpadding="0"></table>');
+	var tr = $('<tr></tr>');
+	var imgtd = $('<td width="20%" ><center><img src="/images/'+ icon +'" width="38" height="35"  style="display:block; margin-top:4px;"/></center></td>');
+	var strtd = $('<td>'+msg+'</td>');
+	tr.append(imgtd).append(strtd)
+	table.append(tr);
+
+	var dg = $(table).zyUiDialog({
+		width: Width,
+		height: Height,
+		title: Title,
+		buttons: {
+			'<%ejGetML(MLG_Common_Cancel)%>': function(){
+				dg.dialog('close');
+				if ( CallCancel != null ) {
+					CallCancel();
+				}
+			},
+			'<%ejGetML(MLG_Common_Confirm)%>': function(){
+				dg.dialog('close');
+				if ( CallOk != null ) {
+					CallOk();
+				}
+			}
+		}
+	});
+	dg.dialog('open');
+}
+
+function editPCPClick(pcpname, hostmac)
+{
+	var loc = 'parentalControl-cfg.cmd?action=view&pcpname=' + pcpname;
+	loc += '&hostMac=' + hostmac;
+	loc += '&enterPCPPage=NetworkMap';
+	loc += '&sessionKey=' + mainFrame.glbSessionKey;
+	var db1 = window.parent.$.zyUiDialog({
+			width: '70%',
+			height: 500,
+			title: '<%ejGetML(MLG_Security_ParentalControl_Str18)%>',
+	
+			buttons: {
+				'<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close');  },
+				'<%ejGetML(MLG_Common_Apply)%>':function(){}
+			}
+			});
+	db1.load(loc);
+	db1.dialog('open');
+}
+//__MSTC__, Justin
+function updatQuickStartInfo(msg)
+{
+	var upDate = msg.replace(/\r\n/ig, "").replace(/\n/ig, "");
+	
+	var upDates = upDate.split('@');
+	wizardEnable = upDates[5];
+}
+
+function updateQuickStart()
+{
+	if ( objInfoXMLHTTP != null ) {
+		objInfoXMLHTTP.open("GET","/pages/connectionStatus/GetNetworkMapInfo.html",true);
+		objInfoXMLHTTP.onreadystatechange = function() 
+		{
+			if(objInfoXMLHTTP.readyState == 4) {
+				var updateValueStr = objInfoXMLHTTP.responseText;
+				updatQuickStartInfo(updateValueStr);
+			}
+		}
+		objInfoXMLHTTP.send(null);
+	}
+}
+//__MSTC__, Justin, end
+function frmLoad_dolanguage(){
+	
+	//ZyXEL, Ryan, support Turkish in GUI
+	if ((customer != "Turkey") && (customer != "Superonline")) {
+		showhide("Turkey_option","0");
+	}
+	if (customer != "Portugal") {
+		showhide("Portugal_option","0");
+	}
+	
+	var languages = '<%ejGet(currentLanguage)%>';
+	$("#currentLanguage").val(languages);
+}
+
+function refreshIndex() {
+	var loc = '/index.html';
+	var code = 'window.top.location="' + loc + '"';
+	eval(code);
+}
+
+function changeLanguagePost(){
+	$.openLoadingMask(1);
+	var language = $('#currentLanguage').attr('value');
+	if (language !=0 && language !=1 && language !=2) return;
+	$.ajax({
+			url: "language/language-changeLanguage.cgi",
+			type: 'POST',
+			async: true,
+			cache: false,
+			timeout: 30000,
+			data:  "currentLanguage=" + language,
+			success: function(data){//alert('1');
+						//data: 1@success
+						//response = data;
+					},
+			error: function(){//alert('reset wireless ajax error');
+					},
+			complete: function(){//alert("reset wireless ajax complete");
+						setTimeout("refreshIndex()", 1000);
+					}
+	});
+}
+</script>
+<script type="text/javascript" src="js/userSwitchPanel.js"></script>
+</head>
+<body style="height:100%;">
+<div class = "index">
+<div class="outer-north">
+<div class="header_position_index">
+    <div class="logo" id="common_logo"><img src="images/logo.gif" alt="" /></div>
+<!--
+<div class="logoWb_iskon" id="iskon_logo">
+<img src="../images/iskon.png" alt="" />
+<img src="../images/logo2.gif" alt="" />
+</div>
+-->
+<div class="logoWb_iskon" id="iskon_logo">
+</div>
+<div class="logoWb_zap" id="zap_logo">
+</div>
+<script language="javascript">
+<!-- hide
+{
+    if (customer == "ISKON")
+    {
+        var str = '';
+        str += '<img src="../images/iskon.png" alt="" />';
+        str += '<img src="../images/logo2.gif" alt="" />';
+        $('#iskon_logo').append(str);
+    }else if((customizationFlag & 0x40000000) == 0x40000000){
+        var str = '';
+        str += '<img src="../images/logo_zap.gif" alt="" />';
+        $('#zap_logo').append(str);	  	
+    }
+}
+// done hiding -->
+</script>
+    <!-- <div class="model-name"><script>document.write(sysVar['model-name']);</script></div> -->
+    <div class="model-name"><%ejGet(modelName)%></div>
+    <div class="top_bg_style"></div>
+    <ul class="header-right">
+        <li class="language-icon languageBtn" style="display:none;" id="languageBtn" title="<%ejGetML(MLG_Common_Language)%>"></li>
+
+        <li class="select" style="display:none;" id="languageSelect">
+            <select name="select" id='currentLanguage' onchange="changeLanguagePost()">
+                <option value="0" selected="selected" ><%ejGetML(MLG_Common_English)%></option>
+                <option value="1" id="Turkey_option" selected="selected" ><%ejGetML(MLG_Common_Turkish)%></option>
+                <option value="2" id="Portugal_option" selected="selected" ><%ejGetML(MLG_Common_Portugal)%></option>
+            </select>
+        </li>
+
+        <li class='tiers-icon 2tiersBtn' title="Login Privilege"></li>
+        <li class="text 2tiersBtn"><a href="#"><%ejGetML(MLG_Common_LoginPrivilege)%></a></li>
+        <li class='wizard-icon wizardBtn' title='<%ejGetML(MLG_Common_QuickStart)%>' id="wizardBtn"  style="display:none;"></li>
+        <li class="text wizardBtn" id="wizardName"  style="display:none;"><a href="#"><%ejGetML(MLG_Common_QuickStart)%></a></li>
+        <!-- <li class='voip-icon voip-iconBtn' title="SIP Account"></li>
+        <li class="text voip-iconBtn" ><a href="#">SIP Account</a></li> -->
+        <li class='help-icon helpBtn' title="Help" id="helpBtn" style="display:none;"></li>
+        <li class="text helpBtn"  id="helpName" style="display:none;"><a href="http://support.eircom.net" target=_blank>Help</a></li>
+        <li class='logout-icon logoutBtn' title="<%ejGetML(MLG_Common_Logout)%>" id="logoutBtn" style="display:none;"></li>
+        <li class="text logoutBtn"  id="logoutName" style="display:none;"><a href="#"><%ejGetML(MLG_Common_Logout)%></a></li>
+    </ul>
+</div>
+</div> 
+    <div class="outer-center">
+        <div class='centerDiv'>
+            <iframe id="mainFrame" name='mainFrame' allowtransparency="true" frameborder="0" src=""></iframe>
+        </div>  
+    </div>
+    
+    <div class="outer-south"></div>
+    <div class='outer-west'></div>
+    <div class='outer-east'></div> 
+    
+</div>
+</body>
+</html>

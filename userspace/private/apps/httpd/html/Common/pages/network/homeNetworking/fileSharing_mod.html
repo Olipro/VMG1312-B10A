@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"  />
+<title>.::<%ejGetML(MLG_Common_Login_Str4)%>::.</title>
+<link href="images/expert.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../js/baseJS.js" ></script>
+</head>
+<body  >
+<div id="tabs"><ul>
+</ul><br class="clearfloat" /></div>
+<div id="table">
+<ul>
+<li class="table_top"></li>
+<li class="table_content"><br />
+<div class="data">
+<ul>
+<div class="title">Modify Share </div>
+<div class="w_text">
+<ul>
+<li class="left_table"> Share Name :</li>
+<li class="right_table"><span class="cfig_word">
+  <input type="text" name="CIFS_Adduser_username" size="30" maxlength="50" />
+</span></li>
+</ul>
+</div>
+<div class="w_text">
+<ul>
+<li class="left_table"> Volume :</li>
+<li class="right_table"><span class="cfig_word">
+  <select name="users" disabled="disabled" style="width:179">
+    <option selected="selected" value="1">sda1</option>
+    <option value="2">sdb1</option>
+  </select>
+</span></li>
+</ul>
+</div>
+<div class="w_text">
+<ul>
+<li class="left_table"><%ejGetML(MLG_Common_Description)%> :</li>
+<li class="right_table">
+<select name="select" size="1">
+<option>VC </option>
+<option selected="selected">LLC </option>
+</select>
+</li>
+</ul>
+</div>
+<div class="w_text">
+  <ul>
+    <li class="left_table">Access Level :</li>
+    <li class="right_table">
+      <select name="select5" size="1">
+        <option>VC </option>
+        <option selected="selected">LLC </option>
+      </select>
+    </li>
+  </ul>
+</div>
+<div class="w_text"></div>
+<div class="w_text">
+  <ul>
+    <li class="all_table">Share Access : </li>
+  </ul>
+</div>
+<table width="85%" border="0" align="center" cellpadding="1" cellspacing="0">
+  <tr>
+    <td width="23%"><select id="allusers" name="allusers" size="10" multiple="multiple" style="width:250px;" >
+      <option value="admin">admin</option>
+      <option value="pc-guest">pc-guest</option>
+    </select>    </td>
+    <td width="8%"><div align="center">
+      <input type="button" name="sysSubmit" value="&gt;&gt;" />
+      <br />
+      <br />
+      <input type="button" name="sysSubmit" value="&lt;&lt;" />
+    </div></td>
+    <td width="69%"><select id="allowusers" name="allowusers" size="10" multiple="multiple" style="width:250px;">
+      <option value="admin">pc-admin</option>
+      <option value="pc-guest">pc-guest</option>
+    </select></td>
+  </tr>
+  <tr>
+    <td> Available Users </td>
+    <td>&nbsp;</td>
+    <td> Allow Users </td>
+  </tr>
+</table>
+<div class="w_text"></div>
+<div class="w_text"><ul><li class="all_table">
+  <input name="CIFS_browseable" type="checkbox" value="CIFS_browseable">
+Enable this share</li></ul></div>
+<div class="w_text"><ul><li class="all_table">
+  <input name="CIFS_browseable2" type="checkbox" value="CIFS_browseable">
+Publish this share to Media Server</li></ul></div>
+</ul>
+<ul>
+  <div class="w_text"></div>
+</ul>
+<br/>
+<br/>
+</div>
+</li>
+<li class="table_button">
+<div class="button"><center><input name="Back" type="submit" id="Back" onclick="MM_goToURL('parent.frames[\'mainFrame\']','CIFS_Share.html');return document.MM_returnValue"value="Back" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="sysSubmit2" value="<%ejGetML(MLG_Common_Apply)%>" type="submit" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="reset" /></center></div>
+</li>
+</ul>
+<br/>
+<br/>
+</div>
+</body>
+<script language="JavaScript">showFullPath(' Configuration > USB Services > File Sharing > Share Configuration > Modify Share');</script>
+</html>

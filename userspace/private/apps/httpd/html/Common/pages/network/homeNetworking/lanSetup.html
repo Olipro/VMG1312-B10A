@@ -1,0 +1,2134 @@
+<script language="javascript">
+<!-- hide
+var ipAddress = '<%ejGet(ethIpAddress)%>';
+var hostIpAddress = '<%ejGet(hostIpAddress)%>';
+var accessMode = '<%ejGet(accessMode)%>';
+var subnetMask = '<%ejGet(ethSubnetMask)%>';
+var oldSubnetMask = '<%ejGet(ethSubnetMask)%>';
+var oldEthIpAddress = '<%ejGet(ethIpAddress)%>';
+
+var dhcpEnbl = '<%ejGet(enblDhcpSrv)%>';
+var dhcpStart = '<%ejGet(dhcpEthStart)%>';
+var dhcpEnd = '<%ejGet(dhcpEthEnd)%>';
+var dhcpLease = '<%ejGet(dhcpLeasedTime)%>';
+var dhcpAutoReserve = '<%ejGet(enblDhcpAutoReserve)%>';
+var supportAutoReserveLanIp = '<%ejGetOther(sysInfo, supportAutoReserveLanIp)%>';
+var relayServer = '<%ejGet(dhcpRelayServer)%>';
+
+var natEnbl = '<%ejGetOther(sysInfo, enblNat)%>';
+var buildDhcpRelay = '<%ejGetOther(sysInfo, buildDhcpRelay)%>';
+
+var isEnblIgmpSnp = '<%ejGetOther(sysInfo, enblIgmpSnp)%>';
+var igmpModeSel = '<%ejGetOther(sysInfo, enblIgmpMode)%>';
+
+var dns1 = '<%ejGet(lanDnsPrimary)%>'; if ( dns1 == '&nbsp' ) dns1 = '0.0.0.0';
+var dns2 = '<%ejGet(lanDnsSecondary)%>'; if ( dns2 == '&nbsp' ) dns2 = '0.0.0.0';
+var lanDomainNameType = '<%ejGet(lanDnsType)%>';
+var clientIP = '<%ejGet(pcIpAddr)%>';
+
+//ipv6 start
+var buildMstcIPv6 = '<%ejGetOther(sysInfo, buildMstcIPv6)%>';
+var ipv6Enable = '<%ejGetOther(enblIpv6Lan, all)%>';
+var radvdEnbl = '<%ejGetOther(enblRadvd, all)%>';
+var radvdDNSEnbl = '<%ejGetOther(enblRadvdDNS, all)%>';
+var slaacEnbl = '<%ejGetOther(enblSLAAC, all)%>';
+var ipv6PrefixByNtpEnable = '<%ejGetOther(enblIpv6PrefixByNtp, all)%>';
+var ipv6Address = '<%ejGet(lanIntfAddr6)%>';
+var dhcpv6Start = '<%ejGet(ipv6IntfIDStart)%>';
+var dhcpv6End = '<%ejGet(ipv6IntfIDEnd)%>';
+var dhcpv6Lease = '<%ejGet(dhcp6LeasedTime)%>';
+var dhcpv6Enbl = '<%ejGetOther(enblDhcp6s, all)%>';
+var dhcpv6State = '<%ejGet(enblDhcp6sStateful)%>';
+var dnsv6State = '<%ejGet(enblDns6Stateful)%>';
+var ipv6PdWanIf = '<%ejGetOther(ipv6PDWanIfSelect, all)%>';
+var ipv6PdAddr = '<%ejGetOther(lanIntfPrefix6)%>';
+var ipv6AllWanPrefix = '<%ejGetOther(ipv6AllWanPrefix, all)%>';
+var dns6State1 = '<%ejGet(sysLanFirDns6State)%>';
+var dns6State2 = '<%ejGet(sysLanSecDns6State)%>';
+var dns6State3 = '<%ejGet(sysLanThiDns6State)%>';
+var dns6Addr1 = '<%ejGet(sysLanFirDns6Addr)%>';
+var dns6Addr2 = '<%ejGet(sysLanSecDns6Addr)%>';
+var dns6Addr3 = '<%ejGet(sysLanThiDns6Addr)%>';
+var ip6DomainName = '<%ejGet(ipv6DomainName)%>';
+var dnsQueryOption = '<%ejGet(dnsQueryScenario)%>';
+var dhcpv6RelayEnbl = '<%ejGetOther(enblDhcp6Relay, all)%>';
+var isEnblMldSnp = '<%ejGetOther(sysInfo, enblMldSnp)%>';
+var mldModeSel = '<%ejGetOther(sysInfo, enblMldMode)%>';
+var ulaAddress = '<%ejGet(ipv6UlaAddress)%>';
+var wanip6enb = '<%ejGetOther(ipv6WanEnable, all)%>';
+var SupportDhcpOptions = '<%ejGet(SupportDhcpOptions)%>';
+var lanDhcpGwOpt = '<%ejGet(dhcpGwOpt)%>';
+//ipv6 end
+
+// unnumbered mode
+var buildUnnumberedMode = '<%ejGetOther(sysInfo, buildUnnumberedMode)%>';
+var isUsePublic = '<%ejGet(usePublicIP)%>';
+var publicStart = '<%ejGet(publicDhcpEthStart)%>';
+var publicEnd = '<%ejGet(publicDhcpEthEnd)%>';
+var proto = '<%ejGetOther(sysInfo, noBrPrtcl)%>';
+var glbSessionKey = '<%ejGetOther(sessionKey)%>';
+var ipv6RLT = '<%ejGet(ipv6RouteLifeTime)%>';
+
+function igmpClick() {
+   with ( document.forms[0] ) {
+      if (chkIgmpSnp.checked == true) {
+         showhide('igmpMode', 1);
+         if ( igmpModeSel == '1' ) {
+            igmpMode[0].checked = false;
+            igmpMode[1].checked = true;
+         } else {
+            igmpMode[0].checked = true;
+            igmpMode[1].checked = false;
+         }
+      } else {
+         showhide('igmpMode', 0);
+      }
+   }
+}
+
+function DHCPLeaseTimeToDay(inputTime){
+   with ( document.forms[0] ) {
+      var time = parseInt(inputTime);
+      time = time / 60;
+      minute.value = parseInt(time % 60);
+      time = (time - (time % 60)) / 60;
+      hour.value = parseInt(time % 24);
+      time = (time - (time % 24)) / 24;
+      day.value = parseInt(time);
+   }
+}
+
+function setDhcpAddresses() {
+   var ipArr = [0, 0, 0, 0],  maskArr = [0, 0, 0, 0], startArr = [0, 0, 0, 0],  endArr = [0, 0, 0, 0];
+   
+   // __ZyXEL__, Albert, 20140212,Bug fix, DHCP pool will be reset after disable then enable DHCP
+   var EthStart = [0, 0, 0, 0], EthEnd = [0, 0, 0, 0];
+   var flag = 0;
+   with ( document.forms[0] ) {
+      if ((buildUnnumberedMode == '0') || (isUsePublic == '0')) {
+         var lanIp = ethIpAddress.value;
+         var subnetMaskIP = ethSubnetMask.value;
+         if ( isValidIpAddress(lanIp) == false ) {
+            msg = MLG_Makestring("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str1)%>", lanIp );
+            //AlertOpen(msg, 2);
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }
+         if ( isValidIpAddress(subnetMaskIP) == false ) {
+            //msg = 'Address "' + subnetMaskIP + '" is invalid IP address.';
+            msg = MLG_Makestring("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str2)%>", subnetMaskIP );
+            //AlertOpen(msg, 2);
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }      
+         addrParts = lanIp.split('.');
+         maskParts = subnetMaskIP.split('.');       
+         // __ZyXEL__, Albert, 20140212,Bug fix, DHCP pool will be reset after disable then enable DHCP		 
+		 var EthStartParts = dhcpStart.split('.');
+		 var EthEndParts = dhcpEnd.split('.');		 
+		 
+         if ( addrParts.length != 4 || maskParts.length != 4 || EthStartParts.length != 4) {
+            msg = "<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str6)%>";
+            //AlertOpen(msg, 2);
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }         
+         for (i = 0; i < 4; i++) {
+            ipArr[i] = parseInt(addrParts[i]);
+            startArr[i] = parseInt(addrParts[i]);
+            endArr[i] = parseInt(addrParts[i]);
+            maskArr[i] = parseInt(maskParts[i]);
+            // __ZyXEL__, Albert, 20140212,Bug fix, DHCP pool will be reset after disable then enable DHCP			
+			EthStart[i] = parseInt(EthStartParts[i]);
+			EthEnd[i] = parseInt(EthEndParts[i]);
+         }
+         m3 = maskArr[3];
+         bcast = 255;
+         n3 = 0;
+         if (maskArr[0] == 255 && maskArr[1] == 0 &&  maskArr[2] == 0 && maskArr[3] == 0) {
+            /* 255.0.0.0 is only class A supported */
+            endArr[1] = 255;
+            endArr[2] = 255;
+         }
+         else if (maskArr[0] == 255 && maskArr[1] == 255 &&  maskArr[2] == 0 && maskArr[3] == 0) 
+            /* 255.255.0.0 is only class B supported */
+            endArr[2] = 255;
+         else if ((maskArr[0] == 255 && maskArr[1] == 255 &&  maskArr[2] == 255 ) &&
+                  (m3 == 0 || m3 == 128 || m3 == 192 || m3 == 224 || m3== 240 || m3 == 248 ||  m3 == 252)) {
+            /* 255.255.255.0/128/192... class C supported */
+            n3 = ipArr[3] & m3;
+            hosts = 255 - m3;
+            bcast = n3 + hosts;
+         }
+         else {
+            msg = "<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str16)%>";
+            //AlertOpen(msg, 2);
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+	      ethSubnetMask.value = subnetMask;
+            return;         
+         }
+         if (ipArr[3] == bcast) {
+            msg = "<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str8)%>";
+            //AlertOpen(msg, 2);
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }
+         dhcpEthStart.value = dhcpEthEnd.value = "";      
+         for (i = 0; i < 3; i++) {
+            dhcpEthStart.value = dhcpEthStart.value + startArr[i] + ".";
+            dhcpEthEnd.value = dhcpEthEnd.value + endArr[i] + ".";
+
+            // __ZyXEL__, Albert, 20140212,Bug fix, DHCP pool will be reset after disable then enable DHCP			
+			if((startArr[i] & maskArr[i]) != (EthStart[i] & maskArr[i]))
+				flag = 1;
+				
+         }
+         if (ipArr[3] == (bcast-1)) {
+           startArr[3] = n3 + 1;
+           endArr[3] = bcast -2;
+		   
+           // __ZyXEL__, Albert, 20140212,Bug fix, DHCP pool will be reset after disable then enable DHCP		   
+		   if((startArr[3] > EthStart[3]) || (endArr[3] < EthEnd[3]) )
+		   	flag = 1;
+         }
+         else {
+           startArr[3] = ipArr[3] + 1;
+           endArr[3] = bcast -1;
+		   
+           // __ZyXEL__, Albert, 20140212,Bug fix, DHCP pool will be reset after disable then enable DHCP		   
+   		   if(startArr[3] > EthStart[3])
+ 			flag = 1;
+           
+         }      
+
+         // __ZyXEL__, Albert, 20140212,Bug fix, DHCP pool will be reset after disable then enable DHCP		 
+		 if(flag == 0){
+           dhcpEthStart.value = dhcpStart;
+           dhcpEthEnd.value = dhcpEnd;
+		 }else{
+         dhcpEthStart.value = dhcpEthStart.value + startArr[3];
+         dhcpEthEnd.value = dhcpEthEnd.value + endArr[3];
+         }
+      }
+   }
+}
+
+function enableDhcpSrv(formLoad) {
+   with ( document.forms[0] ) {
+      enblDhcpSrv[0].checked = true;
+      showhide("ipAddrBlock", 1);
+      showhide("dhcpLeaseTimeBlock", 1);
+	  if(SupportDhcpOptions == 1)
+		showhide("dhcpOptionsBlock", 1);
+	  else
+		showhide("dhcpOptionsBlock", 0);
+      showhide("dnsBlock", 1);
+
+      if ((buildUnnumberedMode == '1') && (isUsePublic == '1')) {
+         dhcpEthStart.value = publicStart;
+         dhcpEthEnd.value = publicEnd;
+         dhcpEthStart.disabled = true;
+         dhcpEthEnd.disabled = true;
+      } else {
+         if (formLoad == 0) {
+            setDhcpAddresses();
+         } else {
+            dhcpEthStart.value = dhcpStart;
+            dhcpEthEnd.value = dhcpEnd;
+         }
+         dhcpEthStart.disabled = false;
+         dhcpEthEnd.disabled = false;
+      }
+      
+      DHCPLeaseTimeToDay(dhcpLease);
+   }
+}
+
+function disableDhcpSrv() {
+   with ( document.forms[0] ) {
+      enblDhcpSrv[1].checked = true;
+
+      showhide("dhcpLeaseTimeBlock", 0);
+	  showhide("dhcpOptionsBlock", 0);
+      showhide("dnsBlock", 0);
+      showhide("ipAddrBlock", 0);
+   }
+}
+
+function disableDhcpSrvRelay() {
+   with ( document.forms[0] ) {
+      enblDhcpSrv[2].checked = false;
+
+      showhide("dhcpRelayBlock", 0);
+      showhide("dhcpLeaseTimeBlock", 1);
+	  if(SupportDhcpOptions == 1)
+		showhide("dhcpOptionsBlock", 1);
+	  else
+		showhide("dhcpOptionsBlock", 0);
+      showhide("dnsBlock", 1);
+   }
+}
+
+function enableDhcpSrvRelay(formLoad) {
+   with ( document.forms[0] ) {
+      enblDhcpSrv[2].checked = true;
+      if (formLoad == 1)
+         dhcpRelayServer.value = relayServer;
+
+      showhide("dhcpRelayBlock", 1);
+   }
+}
+
+function disableAll() {
+   with ( document.forms[0] ) {
+      showhide("dhcpRelayBlock", 0);
+      showhide("dhcpLeaseTimeBlock", 0);
+	  showhide("dhcpOptionsBlock", 0);
+      showhide("dnsBlock", 0);
+      showhide("ipAddrBlock", 0);
+   }
+}
+
+function typeClick() {
+   with ( document.forms[0] ) {
+      // if any protocol has NAT enabled then
+      // don't show DHCP relay
+      disableAll();
+
+      if(enblDhcpSrv[0].checked == true) {
+         enableDhcpSrv(0);
+      } else if(enblDhcpSrv[2].checked == true) {
+         enableDhcpSrvRelay(0);
+      }
+   }
+}
+
+function DNSTypeChange() {
+   with ( document.forms[0] ) {
+      if (dnsType[0].checked == true || enblDhcpSrv[1].checked || enblDhcpSrv[2].checked) {
+         dns_server_1.disabled = true;
+         dns_server_2.disabled = true;
+         lanDnsType.value = "Dynamic";
+      } else if (dnsType[2].checked == true) {
+         dns_server_1.disabled = true;
+         dns_server_2.disabled = true;
+         lanDnsType.value = "From_ISP";
+      } else if (dnsType[3].checked == true) {
+         dns_server_1.disabled = true;
+         dns_server_2.disabled = true;
+         lanDnsType.value = "None";
+      } else {
+         dns_server_1.disabled = false;
+         dns_server_2.disabled = false;
+         lanDnsType.value = "Static";
+      }
+   }
+}
+
+function changeBrName() {
+   with ( document.forms[0] ) { 
+      action.value = 'RELOAD';
+      sessionKey.value = glbSessionKey;
+   }
+   doSubmit();
+}
+
+function changeLanIp(){
+   //send request
+   with(document.forms[0]){
+      $.ajax({
+         url: "/pages/tabFW/homeNetworking-lanSetup.cgi",
+         type: 'POST',
+         async: true,
+         cache: false,
+         timeout: 60000,
+         data:  $('#main_form').serialize(),
+         success: function(data){
+                     //do nothing
+                     
+                  },
+         error:   function(){
+                     //do nothing
+                  }   
+
+      });
+   
+      //open loading
+//__ZYXEL__, Chi-Hsiang change the open loading mask.	  
+//      window.parent.$.openLoadingMask(2);
+      //window.parent.$.openLoadingMask(1);
+	
+      window.parent.$.openLoadingMask(1);
+	
+      //wait to refresh	 
+     if(accessMode==2){ // 2:WAN 1:LAN
+	 location.replace(location);
+    }else{	
+	 setTimeout(function(){top.location = 'http://' + ethIpAddress.value;},3000);
+	
+    }
+	 //alert("accessMode = " + accessMode + "hostIpAddress = " + hostIpAddress + "ethIpAddress.value = " + ethIpAddress.value);
+   }
+	
+}
+
+function changeEthStart(ip) {
+   with ( document.forms[0] ) {
+      if ( isValidIpAddress(ip) == false ) {
+         msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str11)%>";
+         //AlertOpen(msg, 2);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if (ethIpAddress.value == ip) {
+         msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str12)%>";
+         //AlertOpen(msg, 2);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      addrParts = ip.split('.');
+      startParts = dhcpEthStart.value.split('.');
+      ipParts = ethIpAddress.value.split('.');
+
+      if ( addrParts.length != 4 )
+         return false;
+      t1 = parseInt(addrParts[3]);
+      t2 = parseInt(startParts[3]);
+      t3 = parseInt(ipParts[3]);
+
+      if (dhcpEthStart.value != '' && t1 >= 255) {
+         msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str13)%>";
+         //AlertOpen(msg, 2);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return false;
+      }
+
+      if (t3 > t2 && t3 < t1)
+      {
+         msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str14)%>";
+         //AlertOpen(msg, 2);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return false;
+      }
+
+      ethIpAddress.value = dhcpEthStart.value = dhcpEthEnd.value = "";
+      for (i = 0; i < 3; i++) {
+         ethIpAddress.value = ethIpAddress.value + addrParts[i] + ".";
+         dhcpEthStart.value = dhcpEthStart.value + addrParts[i] + ".";
+         dhcpEthEnd.value = dhcpEthEnd.value + addrParts[i] + ".";
+      }
+      ethIpAddress.value = ethIpAddress.value + ipParts[3];
+      dhcpEthStart.value = dhcpEthStart.value +startParts[3];
+      dhcpEthEnd.value = dhcpEthEnd.value +addrParts[3];
+   }
+}
+
+//ipv6 start
+function IPv6FeatureChange() {
+    with ( document.forms[0] ) {
+      if (enblIpv6Lan[0].checked == true) {
+         showhide("Ipv6Info", "1");
+      } else {
+         showhide("Ipv6Info", "0");
+      }
+    }
+}
+
+function IPv6PrefixAssign() {
+    with ( document.forms[0] ) {
+      if (ip6PrefixType[0].checked == true) {
+         showhide("IPv6PrefixDelegated", "1");
+         showhide("IPv6PrefixAddress", "0");
+         IPv6PDWanIfSelectChange();
+   
+      } else if(ip6PrefixType[1].checked == true){
+         showhide("IPv6PrefixAddress", "1");
+         showhide("IPv6PrefixDelegated", "0");
+         LanIntfPrefix6Change();
+
+      } else if(ip6PrefixType[2].checked == true){
+         showhide("IPv6PrefixAddress", "0");
+         showhide("IPv6PrefixDelegated", "0");
+      }
+    }
+}
+
+function DnsQueryScenarioAssign() {
+	with ( document.forms[0] ) {
+       if(dnsServerAssign.selectedIndex == 0) {
+		   dnsQueryScenario.value = "0";
+	   }
+	   else if(dnsServerAssign.selectedIndex == 1) {
+           dnsQueryScenario.value = "1";
+	   }
+	   else if(dnsServerAssign.selectedIndex == 2) {
+           dnsQueryScenario.value = "2";
+	   }	
+	   else if(dnsServerAssign.selectedIndex == 3) {
+           dnsQueryScenario.value = "3";
+	   }	
+	   else if(dnsServerAssign.selectedIndex == 4) {
+           dnsQueryScenario.value = "4";
+	   }	
+	}
+}
+
+function IPv6PDWanIfSelectChange() {
+    with ( document.forms[0] ) {
+       var temp1 = ipv6AllWanPrefix.split(';');
+       for(var i = 0; i < temp1.length ; i++)
+       {
+          var temp2 = temp1[i].split(',');
+          if(ipv6PDWanIfSelect.selectedIndex != '-1' && temp2[0] == ipv6PDWanIfSelect.options[ipv6PDWanIfSelect.selectedIndex].value)
+          {
+             statefulPrefix.value = temp2[1];
+             break;
+          }
+          statefulPrefix.value = "N/A";
+       }
+       Ipv6IntfIDStartCreate();
+       Ipv6IntfIDEndCreate();
+    }
+}
+
+function IPv6LanAddrAssign() {
+    with ( document.forms[0] ) {
+       if(ip6LanAddrAssign.selectedIndex == 0) {
+	   	  //LTflag = 1;
+	   	  if(ip6DNSAssign.selectedIndex == 0){ 
+            showhide("Ipv6Dhcpv6_disable", "1");
+            showhide("Ipv6Dhcpv6_server", "0");
+            showhide("Ipv6Dhcpv6_relay", "0");
+            showhide("Ipv6Dhcpv6Values", "0");
+	   	  }
+		  else {
+            showhide("Ipv6Dhcpv6_disable", "0");
+            showhide("Ipv6Dhcpv6_server", "1");
+            showhide("Ipv6Dhcpv6_relay", "0");
+            showhide("Ipv6Dhcpv6Values", "0");
+		  }
+          enblDhcp6s.value = "1";
+          enblDhcp6sStateful.value = "0";
+          enblRadvd.value = "1";
+		  enblSLAAC.value = "1";
+          enblDhcp6Relay.value = "0";
+       }
+       else if(ip6LanAddrAssign.selectedIndex == 1) {
+          showhide("Ipv6Dhcpv6_disable", "0");
+          showhide("Ipv6Dhcpv6_server", "1");
+          showhide("Ipv6Dhcpv6_relay", "0");
+          showhide("Ipv6Dhcpv6Values", "1");
+          enblDhcp6s.value = "1";
+          enblDhcp6sStateful.value = "1";
+          enblRadvd.value = "1";
+		  enblSLAAC.value = "0";
+          enblDhcp6Relay.value = "0";
+       }
+       else if(ip6LanAddrAssign.selectedIndex == 2) {
+          showhide("Ipv6Dhcpv6_disable", "0");
+          showhide("Ipv6Dhcpv6_server", "1");
+          showhide("Ipv6Dhcpv6_relay", "0");
+          showhide("Ipv6Dhcpv6Values", "1");
+          enblDhcp6s.value = "1";
+          enblDhcp6sStateful.value = "1";
+          enblRadvd.value = "1";
+		  enblSLAAC.value = "1";
+          enblDhcp6Relay.value = "0";
+       }
+    }
+}
+
+function IPv6DNSAssign() {
+    with ( document.forms[0] ) {
+       if(ip6DNSAssign.selectedIndex == 0) {
+          showhide("Ipv6DnsValues", "1");
+          enblDns6Stateful.value = "0";
+		  enblRadvdDNS.value = "1";
+		  if(ip6LanAddrAssign.selectedIndex == 0){
+		  	showhide("Ipv6Dhcpv6_disable", "1");
+            showhide("Ipv6Dhcpv6_server", "0");
+            showhide("Ipv6Dhcpv6_relay", "0");
+		  }
+		  else {
+		  	showhide("Ipv6Dhcpv6_disable", "0");
+            showhide("Ipv6Dhcpv6_server", "1");
+            showhide("Ipv6Dhcpv6_relay", "0");
+		  }
+       }
+       else if(ip6DNSAssign.selectedIndex == 1){
+          showhide("Ipv6DnsValues", "1");
+          enblDns6Stateful.value = "1";
+		  enblRadvdDNS.value = "0";
+		  showhide("Ipv6Dhcpv6_disable", "0");
+          showhide("Ipv6Dhcpv6_server", "1");
+          showhide("Ipv6Dhcpv6_relay", "0");
+	   }
+       else {
+          showhide("Ipv6DnsValues", "1");
+          enblDns6Stateful.value = "1";
+		  enblRadvdDNS.value = "1";
+		  showhide("Ipv6Dhcpv6_disable", "0");
+          showhide("Ipv6Dhcpv6_server", "1");
+          showhide("Ipv6Dhcpv6_relay", "0");
+       }
+    }
+}
+
+function IPv6DnsState1Change() {
+    with ( document.forms[0] ) {
+       if(sysLanFirDns6State.selectedIndex == 1)
+          sysLanFirDns6Addr.disabled = false;
+       else
+          sysLanFirDns6Addr.disabled = true;
+    }
+}
+
+function IPv6DnsState2Change() {
+    with ( document.forms[0] ) {
+       if(sysLanSecDns6State.selectedIndex == 1)
+          sysLanSecDns6Addr.disabled = false;
+       else
+          sysLanSecDns6Addr.disabled = true;
+    }
+}
+
+function IPv6DnsState3Change() {
+    with ( document.forms[0] ) {
+       if(sysLanThiDns6State.selectedIndex == 1)
+          sysLanThiDns6Addr.disabled = false;
+       else
+          sysLanThiDns6Addr.disabled = true;
+    }
+}
+
+function LanIntfPrefix6Change() {
+    with ( document.forms[0] ) {
+       if ( isValidIpAddress6(lanIntfPrefix6.value) == false && lanIntfPrefix6.value.length > 0 ) {
+          statefulPrefix.value = "N/A";
+          //AlertOpen ('IPv6 Prefix "' + lanIntfPrefix6.value + '" is invalid IPv6 address.', 2);
+          hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str33)%>", lanIntfPrefix6.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return;
+       }
+       if ( lanIntfPrefix6.value.search('/') == -1 && lanIntfPrefix6.value.length > 0 ) {
+          statefulPrefix.value = "N/A";
+          //AlertOpen ('Please enter the prefix length \"/\" to IPv6 Prefix field, ex: xxxx:xxxx::/xx', 2);
+          hciAlert("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str34)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return;
+       }
+       if(lanIntfPrefix6.value.length > 0)
+          statefulPrefix.value = lanIntfPrefix6.value;
+       else
+          statefulPrefix.value = "N/A";
+
+       Ipv6IntfIDStartCreate();
+       Ipv6IntfIDEndCreate();
+    }
+}
+
+function Ipv6IntfIDStartCreate() {
+    with ( document.forms[0] ) {
+       var prefixlen;
+       if(statefulPrefix.value == "N/A")
+       {
+          prefixlen = 0;
+       }
+       else
+       {
+          var temp = statefulPrefix.value.split('/');
+
+          prefixlen = parseInt(temp[1], 10);
+       }
+
+       var colon = parseInt((128 - prefixlen) / 16, 10);
+       if(((128 - prefixlen) % 16) != 0)
+          colon++;
+
+       var baddr6 = ipv6IntfIDStart.value.split(':');
+       var addr6_s16 = new Array(8);
+       for(var i = 0; i < colon; i++)
+       {
+          if(colon > baddr6.length) {
+             if((colon - baddr6.length) > i)
+                addr6_s16[i] = parseInt('0', 16);
+             else
+                if(isValidStatefulIntfId(baddr6[i - (colon - baddr6.length)]) == true)
+                   addr6_s16[i] = parseInt(baddr6[i - (colon - baddr6.length)], 16);
+                else
+                   addr6_s16[i] = parseInt('0', 16);
+          } else if(colon < baddr6.length) {
+             if(isValidStatefulIntfId(baddr6[i + (baddr6.length - colon)]) == true)
+                addr6_s16[i] = parseInt(baddr6[i + (baddr6.length - colon)], 16);
+             else
+                addr6_s16[i] = parseInt('0', 16);
+          } else {
+             if(isValidStatefulIntfId(baddr6[i]) == true)
+                addr6_s16[i] = parseInt(baddr6[i], 16);
+             else
+                addr6_s16[i] = parseInt('0', 16);
+          }
+       }
+
+       var checkbits = 0;
+       for(var i = 0; i < 16; i++)
+       {
+          if( i < (prefixlen % 16) )
+             checkbits = (checkbits << 1) + parseInt('1', 16);
+          else
+             checkbits = checkbits << 1;
+       }
+       if(checkbits != 0)
+          addr6_s16[0] &= parseInt('ffff', 16) ^ checkbits;
+
+       for(var i = 0; i < colon; i++)
+       {
+          if(i == 0)
+             ipv6IntfIDStart.value = addr6_s16[i].toString(16);
+          else
+             ipv6IntfIDStart.value += addr6_s16[i].toString(16);
+          if((colon - 1) != i)
+             ipv6IntfIDStart.value += ':';
+       }
+    }
+}
+
+function Ipv6IntfIDEndCreate() {
+    with ( document.forms[0] ) {
+       var prefixlen;
+       if(statefulPrefix.value == "N/A")
+       {
+          prefixlen = 0;
+       }
+       else
+       {
+          var temp = statefulPrefix.value.split('/');
+
+          prefixlen = parseInt(temp[1], 10);
+       }
+
+       var colon = parseInt((128 - prefixlen) / 16, 10);
+       if(((128 - prefixlen) % 16) != 0)
+          colon++;
+
+
+       var eaddr6 = ipv6IntfIDEnd.value.split(':');
+       var addr6_s16 = new Array(8);
+       for(var i = 0; i < colon; i++)
+       {
+          if(colon > eaddr6.length) {
+             if((colon - eaddr6.length) > i)
+                addr6_s16[i] = parseInt('0', 16);
+             else
+                if(isValidStatefulIntfId(eaddr6[i - (colon - eaddr6.length)]) == true)
+                   addr6_s16[i] = parseInt(eaddr6[i - (colon - eaddr6.length)], 16);
+                else
+                   addr6_s16[i] = parseInt('0', 16);
+          } else if(colon < eaddr6.length) {
+             if(isValidStatefulIntfId(eaddr6[i + (eaddr6.length - colon)]) == true)
+                addr6_s16[i] = parseInt(eaddr6[i + (eaddr6.length - colon)], 16);
+             else
+                addr6_s16[i] = parseInt('0', 16);
+          } else {
+             if(isValidStatefulIntfId(eaddr6[i]) == true)
+                addr6_s16[i] = parseInt(eaddr6[i], 16);
+             else
+                addr6_s16[i] = parseInt('0', 16);
+          }
+       }
+
+       var checkbits = 0;
+       for(var i = 0; i < 16; i++)
+       {
+          if( i < (prefixlen % 16) )
+             checkbits = (checkbits << 1) + parseInt('1', 16);
+          else
+             checkbits = checkbits << 1;
+       }
+       if(checkbits != 0)
+          addr6_s16[0] &= parseInt('ffff', 16) ^ checkbits;
+
+       for(var i = 0; i < colon; i++)
+       {
+          if(i == 0)
+             ipv6IntfIDEnd.value = addr6_s16[i].toString(16);
+          else
+             ipv6IntfIDEnd.value += addr6_s16[i].toString(16);
+          if((colon - 1) != i)
+             ipv6IntfIDEnd.value += ':';
+       }
+    }
+}
+
+function Ipv6IntfIDStartCheck() {
+    with ( document.forms[0] ) {
+       var beginAddr6 = ipv6IntfIDStart.value.split(':');
+       var endAddr6 = ipv6IntfIDEnd.value.split(':');
+       var prefixlen;
+       if(statefulPrefix.value == "N/A")
+       {
+          prefixlen = 0;
+       }
+       else
+       {
+          var temp = statefulPrefix.value.split('/');
+
+          prefixlen = parseInt(temp[1], 10);
+       }
+
+       var colon = parseInt((128 - prefixlen) / 16, 10);
+       if(((128 - prefixlen) % 16) != 0)
+          colon++;
+
+       var checkbits = 0;
+       for(var i = 0; i < 16; i++)
+       {
+          if( i < (prefixlen % 16) )
+             checkbits = (checkbits << 1) + parseInt('1', 16);
+          else
+             checkbits = checkbits << 1;
+       }
+       checkbits = checkbits ^ parseInt('ffff', 16);
+
+       // check
+       if ( ipv6IntfIDStart.value.search('/') != -1 ) {
+          //AlertOpen ('Please remove the \"/\" on Beginning IPv6 Address field', 2);
+          hciAlert("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str35)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return false;
+       }
+       if (isValidStatefulIntfId(ipv6IntfIDStart.value) == false) {
+          //AlertOpen ('The Beginning IPv6 Address is invalid. Please enter a valid IPv6 address.', 2);
+          hciAlert("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str36)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return false;
+       }
+       if(ipv6IntfIDStart.value.search("::") != -1)
+       {
+          //AlertOpen ('The Beginning IPv6 Address does not support ZERO COMPRESSION \"::\".', 2);
+          hciAlert("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str37)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return false;
+       }
+       if(beginAddr6.length < colon)
+       {
+          //AlertOpen ('The Beginning IPv6 Address length is too little.', 2);
+          hciAlert("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str38)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return false;
+       }
+       if(beginAddr6.length > colon || parseInt(beginAddr6[0], 16) > checkbits)
+       {
+          //AlertOpen ('The Beginning IPv6 Address length is too big.', 2);
+          hciAlert("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str39)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return false;
+       }
+       for(var i = 0; i < beginAddr6.length; i++)
+       {
+          if(parseInt(beginAddr6[i], 16) > parseInt(endAddr6[i], 16)) {
+             //AlertOpen ('The Beginning IPv6 Address is not more than the Ending IPv6 Address.', 2);
+             hciAlert("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str41)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+             return false;
+          } else if(parseInt(beginAddr6[i], 16) == parseInt(endAddr6[i], 16)) {
+             continue;
+          } else {
+             break;
+          }
+       }
+       return true;
+    }
+}
+
+function Ipv6IntfIDEndCheck() {
+    with ( document.forms[0] ) {
+       var beginAddr6 = ipv6IntfIDStart.value.split(':');
+       var endAddr6 = ipv6IntfIDEnd.value.split(':');
+       var prefixlen;
+       if(statefulPrefix.value == "N/A")
+       {
+          prefixlen = 0;
+       }
+       else
+       {
+          var temp = statefulPrefix.value.split('/');
+
+          prefixlen = parseInt(temp[1], 10);
+       }
+
+       var colon = parseInt((128 - prefixlen) / 16, 10);
+       if(((128 - prefixlen) % 16) != 0)
+          colon++;
+
+       var checkbits = 0;
+       for(var i = 0; i < 16; i++)
+       {
+          if( i < (prefixlen % 16) )
+             checkbits = (checkbits << 1) + parseInt('1', 16);
+          else
+             checkbits = checkbits << 1;
+       }
+       checkbits = checkbits ^ parseInt('ffff', 16);
+
+       // check
+       if ( ipv6IntfIDEnd.value.search('/') != -1 ) {
+          //AlertOpen ('Please remove the \"/\" on Beginning IPv6 Address field', 2);
+          hciAlert("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str35)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return false;
+       }
+       if (isValidStatefulIntfId(ipv6IntfIDEnd.value) == false) {
+          //AlertOpen ('The Ending IPv6 Address is invalid. Please enter a valid IPv6 address.', 2);
+          hciAlert("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str42)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return false;
+       }
+       if(ipv6IntfIDEnd.value.search("::") != -1)
+       {
+          //AlertOpen ('The Ending IPv6 Address does not support ZERO COMPRESSION \"::\".', 2);
+          hciAlert("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str43)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return false;
+       }
+       if(endAddr6.length < colon)
+       {
+          //AlertOpen ('The Ending IPv6 Address length is too little.', 2);
+          hciAlert("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str44)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return false;
+       }
+       if(endAddr6.length > colon || parseInt(endAddr6[0], 16) > checkbits)
+       {
+          //AlertOpen ('The Ending IPv6 Address length is too big.', 2);
+          hciAlert("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str45)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return false;
+       }
+       for(var i = 0; i < beginAddr6.length; i++)
+       {
+          if(parseInt(beginAddr6[i], 16) > parseInt(endAddr6[i], 16)) {
+             //AlertOpen ('The Beginning IPv6 Address is not more than the Ending IPv6 Address.', 2);
+             hciAlert("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str41)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+             return false;
+          } else if(parseInt(beginAddr6[i], 16) == parseInt(endAddr6[i], 16)) {
+             continue;
+          } else {
+             break;
+          }
+       }
+       return true;
+    }
+}
+
+function mldClick() {
+   with ( document.forms[0] ) {
+      if (chkMldSnp.checked == true) {
+         showhide('mldMode', 1);
+         if ( mldModeSel == '1' ) {
+            mldMode[0].checked = false;
+            mldMode[1].checked = true;
+         } else {
+
+
+
+            mldMode[0].checked = true;
+            mldMode[1].checked = false;
+         }
+      } else {
+         showhide('mldMode', 0);
+      }
+   }
+}
+//ipv6 end
+
+function isDuplicateRecord(ethip)
+{
+   var staticiplease = '<%ejGetOther(staticiplease)%>';
+   //alert("staticiplease = "+ staticiplease);
+   var info = staticiplease.split('|');
+   //alert("info = " + info);
+   with ( document.forms[0] ) {
+      if (info != '') {
+         for ( i = 0; i < info.length; i++ ) {
+            var names = info[i].split('/');
+			//alert("names = "+names);
+            if (names[3] == ethip) {
+               return false;
+            }
+         }
+      }
+   }
+   return true;
+}
+
+function btnSave() {
+   with ( document.forms[0] ) {
+      var msg = "";
+      sessionKey.value = glbSessionKey;
+      if (enblDhcpSrv[0].checked == true) {
+         if (proto == 'Bridge') {
+            msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str15)%>";
+            //AlertOpen(msg, 2);
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+         }
+      }
+
+	  if (isDuplicateRecord(ethIpAddress.value) == false) {
+	  	msg = '<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str20)%>';
+        hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        return false;
+      }
+
+      if (isValidIpAddress(ethIpAddress.value) == false || isNetworkAddress(ethIpAddress.value, ethSubnetMask.value) || isBroadcastAddress(ethIpAddress.value, ethSubnetMask.value)) {
+         msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str16)%>";
+         //AlertOpen(msg, 2);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return false;
+      }
+
+      if ( isValidSubnetMask(ethSubnetMask.value) == false ) {
+         msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str17)%>";
+         //AlertOpen(msg, 2);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return false;
+      }
+
+      if (chkIgmpSnp.checked == true) {
+         enblIgmpSnp.value = 1;
+      } else {
+         enblIgmpSnp.value = 0;
+      }
+      chkIgmpSnp.disabled = true;
+	  
+	  if( supportAutoReserveLanIp == '1'){
+		  if(chkDhcpAutoReserve.checked == true){
+			enblDhcpAutoReserve.value = 1;
+		  }
+		  else{
+			enblDhcpAutoReserve.value = 0;
+		  }
+	  }
+	  else{
+		enblDhcpAutoReserve.value = 0;
+	  }
+	  
+        
+      if (igmpMode[1].checked == true) {
+         enblIgmpMode.value = 1;
+      } else {
+         enblIgmpMode.value = 0;
+      }
+      igmpMode[0].disabled = true;
+      igmpMode[1].disabled = true;
+
+      if (enblDhcpSrv[2].checked == true) {
+         dhcpEthStart.disabled = true;
+         dhcpEthEnd.disabled = true;
+         day.disabled = true;
+         hour.disabled = true;
+         minute.disabled = true;
+         dhcpLeasedTime.disabled = true;
+         dns_server_1.disabled = true;
+         dns_server_2.disabled = true;
+         lanDnsPrimary.disabled = true;
+         lanDnsSecondary.disabled = true;
+      } else if (enblDhcpSrv[1].checked == true) {
+         dhcpEthStart.disabled = true;
+         dhcpEthEnd.disabled = true;
+         day.disabled = true;
+         hour.disabled = true;
+         minute.disabled = true;
+         dhcpLeasedTime.disabled = true;
+         dns_server_1.disabled = true;
+         dns_server_2.disabled = true;
+         lanDnsPrimary.disabled = true;
+         lanDnsSecondary.disabled = true;
+         dhcpRelayServer.disabled = true;
+      } else {
+         if (buildUnnumberedMode == '0' || isUsePublic == '0') {
+            if (isValidIpAddress(dhcpEthStart.value) == false || 
+               !(isSameSubNet(ethIpAddress.value, ethSubnetMask.value, dhcpEthStart.value, ethSubnetMask.value)) ||
+               (isNetworkAddress(dhcpEthStart.value, ethSubnetMask.value)) ||
+               (isBroadcastAddress(dhcpEthStart.value, ethSubnetMask.value))) {
+               msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str18)%>";
+               hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return false;
+            }
+
+            if (dhcpEthStart.value == ethIpAddress.value) {
+               msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str19)%>";
+               hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return false;
+            }
+
+            if ( isValidIpAddress(dhcpEthEnd.value) == false ||
+               !(isSameSubNet(ethIpAddress.value, ethSubnetMask.value, dhcpEthEnd.value, ethSubnetMask.value)) ||
+               (isNetworkAddress(dhcpEthEnd.value, ethSubnetMask.value)) ||
+               (isBroadcastAddress(dhcpEthEnd.value, ethSubnetMask.value))) {
+               msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str11)%>";
+               hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return false;
+            }
+            if (dhcpEthEnd.value == ethIpAddress.value) {
+               msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str12)%>";
+               hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return false;
+            }
+
+            var startAddr = dhcpEthStart.value.split('.');
+            var endAddr = dhcpEthEnd.value.split('.');
+            var startLast = parseInt(startAddr[3]);
+            var endLast = parseInt(endAddr[3]);
+
+            if (endLast < startLast) {
+               msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str11)%>";
+               hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return false;
+            }
+         }
+
+         var tmpDay = parseInt(day.value);
+         var tmpHour = parseInt(hour.value);
+         var tmpMinute = parseInt(minute.value);
+         if (isNaN(tmpDay) || tmpDay < 0 || tmpDay > 365) {
+            msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str21)%>";
+            //AlertOpen(msg, 2);
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+         }
+         if (isNaN(tmpHour) || tmpHour < 0 || tmpHour > 23) {
+            msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str22)%>";
+            //AlertOpen(msg, 2);
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+         }
+         if (isNaN(tmpMinute) || tmpMinute < 0 || tmpMinute > 59) {
+            msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str23)%>";
+            //AlertOpen(msg, 2);
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+         }
+
+         var leasetime = ((((parseInt(day.value) * 24) + parseInt(hour.value)) * 60) + parseInt(minute.value)) * 60;
+         if (leasetime < 60) {
+            msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str24)%>";
+            //AlertOpen(msg, 2);
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+         }
+
+         if (leasetime > 31536000) {
+            msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str25)%>";
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+         }
+         dhcpLeasedTime.value = leasetime;
+
+         if (dnsType[1].checked == true) {
+            if ((dns_server_1.value == "" && dns_server_2.value == "") ||
+               (dns_server_1.value == "" && dns_server_2.value != "")) {
+               msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str3)%>";
+               //AlertOpen(msg, 2);
+               hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return false;
+            }
+
+            //if ( isValidIpAddress(dns_server_1.value) == false || isValidIpAddress(dns_server_2.value) == false ) {
+            if ( ((dns_server_1.value != "") && (isValidIpAddress(dns_server_1.value) == false)) || ((dns_server_2.value != "") && (isValidIpAddress(dns_server_2.value) == false)) ) {
+               msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str3)%>";
+               //AlertOpen(msg, 2);
+               hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return false;
+            }
+
+            if (dns_server_1.value == dns_server_2.value) {
+               msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str31)%>";
+               //AlertOpen(msg, 2);
+               hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+
+            lanDnsPrimary.value = dns_server_1.value;
+            lanDnsSecondary.value = ((dns_server_2.value != "") ? dns_server_2.value: "0.0.0.0");
+            dns_server_1.disabled = true;
+            dns_server_2.disabled = true;
+         }else if (dnsType[2].checked == true) {
+            lanDnsPrimary.value = dns1;
+            lanDnsSecondary.value = dns2;
+            dns_server_1.disabled = true;
+            dns_server_2.disabled = true;
+         }else if (dnsType[3].checked == true) {
+            lanDnsPrimary.value = "0.0.0.0";
+            lanDnsSecondary.value = "0.0.0.0";
+            dns_server_1.disabled = true;
+            dns_server_2.disabled = true;
+         } else {
+            lanDnsPrimary.value = "0.0.0.0";
+            lanDnsSecondary.value = "0.0.0.0";
+            dns_server_1.disabled = true;
+            dns_server_2.disabled = true;
+         }
+      }
+	  
+      if (!isSameSubNet(ethIpAddress.value, ethSubnetMask.value, oldEthIpAddress, oldSubnetMask) ||
+         ethIpAddress.value != oldEthIpAddress || ethSubnetMask.value != oldSubnetMask) {
+/*__ZYXEL__, Chi-Hsiang change the alert wording in set up lan ip/submask*/
+  //       comStr = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str32)%>";
+      	comStr = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str54)%>";
+         ConfirmOpen(comStr, changeLanIp, frmLoad);
+         return false;
+	  }
+/*		 
+     rejected solution:
+	 we consider two case of LAN IP change:
+		1. if client IP is in the same subnet with interface group, show warning message and redirect page
+		2. if client not in same subnet, we need wait (about 3 second) device finish job, then reload "Lan setup" page 
+
+	 Expectation:
+		While interface group LAN subnet IP is changed, there is not a warning message and re-direct page
+
+
+	  //chechk LAN ip config changed?
+      if(!isSameSubNet(ethIpAddress.value, ethSubnetMask.value, oldEthIpAddress, oldSubnetMask) ||
+         ethIpAddress.value != oldEthIpAddress || ethSubnetMask.value != oldSubnetMask)
+	  {
+	     //if client IP is in the same subnet with interface group, show warning message and redirect page
+		 //TODO: we can't get to know what submask the client used, it may be a issue.
+		if(isSameSubNet(clientIP, ethSubnetMask.value, ethIpAddress.value, ethSubnetMask.value) )
+		{   
+			comStr = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str32)%>";         
+			ConfirmOpen(comStr, changeLanIp, frmLoad);
+		} else {
+		//if client not in same subnet, we need wait device finish job, then reload "Lan setup" page 
+			setTimeout( function(){		
+			window.parent.document.activePage('network-homeNetworking', 0)},3000);
+		}
+      }
+  */
+
+  
+//IPv6 start
+      if( buildMstcIPv6 == '1' )
+      {
+         ipv6RouteLifeTime.vale = document.getElementById("ipv6RouteLifeTime").value;
+         if (enblIpv6Lan[0].checked == true)
+         {
+            if (ip6PrefixType[0].checked == true){
+               lanIntfPrefix6.value = '';
+			   if(ipv6PDWanIfSelect.selectedIndex == '-1'){
+				msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str52)%>";
+                  //AlertOpen(msg, 2);
+                  hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return false;
+			   }
+            }else if (ip6PrefixType[1].checked == true){
+               if(ipv6PDWanIfSelect.selectedIndex != '-1'){
+			   	  ipv6PDWanIfSelect.options[ipv6PDWanIfSelect.selectedIndex].value = '';
+               }
+               if(enblDhcp6s.value == "1" && enblDhcp6sStateful.value == "0")
+               {
+                  var lanIntfPrefix6Temp = lanIntfPrefix6.value.split('/');;
+                  lanIntfPrefix6.value = lanIntfPrefix6Temp[0] + '/' + "64";
+               }
+               if (isValidIpAddress6(lanIntfPrefix6.value) == false && lanIntfPrefix6.value != null) {
+                  msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str46)%>";
+                  //AlertOpen(msg, 2);
+                  hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return false;
+               }
+            }else if (ip6PrefixType[2].checked == true){
+            
+            }
+            
+            //LAN static address setting begin
+            if (isValidIpAddress6(ipv6UlaAddress.value) == false &&
+                ipv6UlaAddress.value.length != 0) {
+                  msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str47)%>";
+                  //AlertOpen(msg, 2);
+                  hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return false;
+            }
+            if ( ipv6UlaAddress.value.search('/') != -1 ) {
+                  //AlertOpen ('Please remove the \"/\", and keying LAN IPv6 prefix to \"Prefix Length\" field', 2);
+                  hciAlert('<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str51)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+            }
+            if ((ipv6UlaPrefixLength.value < 0) || (ipv6UlaPrefixLength.value > 128) || 
+                ((ipv6UlaPrefixLength.value == '') && (ipv6UlaAddress.value != ''))) {
+                  //AlertOpen ('LAN IPv6 Prefix "' + ipv6UlaPrefixLength.value + '" is invalid IPv6 Prefix.', 2);
+                  hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str48)%>", ipv6UlaPrefixLength.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+            }
+            if(ipv6UlaAddress.value != '')
+            {
+               ipv6UlaAddress.value += '/' + ipv6UlaPrefixLength.value;
+            }
+            //LAN static address setting end
+
+            //MLD snooping
+            if (chkMldSnp.checked == true) {
+               enblMldSnp.value = 1;
+            } else {
+               enblMldSnp.value = 0;
+            }
+            chkMldSnp.disabled = true;
+
+            if (mldMode[1].checked == true) {
+               enblMldMode.value = 1;
+            } else {
+               enblMldMode.value = 0;
+            }
+            mldMode[0].disabled = true;
+            mldMode[1].disabled = true;
+
+            if (enblDhcp6s.value == "1")
+            {
+               if (enblDhcp6sStateful.value == "1")
+               {
+                  if(Ipv6IntfIDStartCheck() == false)
+                     return;
+                  if(Ipv6IntfIDEndCheck() == false)
+                     return;
+               }
+            }
+         }
+      }
+//IPv6 end
+      
+      window.parent.$.openLoadingMask(1);
+      submit();
+   }
+
+   return true;
+}
+
+function preBtnSave() {
+   with ( document.forms[0] ) {
+      if ( enblDhcpSrv[2].checked == true && isValidIpAddress(dhcpRelayServer.value) == false ) {
+         msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str49)%>";
+         //AlertOpen(msg, 2);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         //alert(msg);
+         return;
+      }
+
+      var msg = "";
+      if (enblDhcpSrv[2].checked == true && natEnbl == '1') {
+         msg = "<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str50)%>";
+         //AlertOpen(msg, 1, 450, 200, btnSave);
+         //alert(msg);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+   }
+   btnSave();
+}
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+      var errMsg = "<%ejGetOther(errMsg)%>";
+      if (errMsg != '') {
+	      hciAlert(errMsg, {height: 180,type: 2, title: ''});
+      }
+      // set bridge name.
+      brName.value = '<%ejGet(brName)%>';
+      // set IP Address/Mask value.
+      ethIpAddress.value = ipAddress;
+      ethSubnetMask.value = subnetMask;
+
+      // Set DHCP value
+      disableAll();
+      if ( dhcpEnbl == '1' ) {
+         enableDhcpSrv(1);
+      } else if ( dhcpEnbl == '2' ) {
+         enableDhcpSrvRelay(1);
+      } else {
+         enblDhcpSrv[1].checked = true;
+      }
+	  
+	  if(lanDhcpGwOpt == '1'){
+		dhcpGwOpt[0].checked = true;
+		dhcpGwOpt[1].checked = false;
+	  }
+	  else{
+		dhcpGwOpt[0].checked = false;
+		dhcpGwOpt[1].checked = true;
+	  }
+	  
+	  if(dhcpAutoReserve == '1'){
+		chkDhcpAutoReserve.checked = true;
+	  }
+	  else{
+		chkDhcpAutoReserve.checked = false;
+	  }
+
+      // Set IGMP value
+      chkIgmpSnp.disabled = false;
+      igmpMode[0].disabled = false;
+      igmpMode[1].disabled = false;
+
+      if ( isEnblIgmpSnp == '1' ) {
+         chkIgmpSnp.checked = true;
+         showhide('igmpMode', 1);
+      } else {
+         chkIgmpSnp.checked = false;
+         showhide('igmpMode', 0);
+      }
+
+      if ( igmpModeSel == '1' ) {
+         igmpMode[0].checked = false;
+         igmpMode[1].checked = true;
+      } else {
+         igmpMode[0].checked = true;
+         igmpMode[1].checked = false;
+      }
+
+      // set DNS value
+      if (lanDomainNameType == "From_ISP") {
+         dnsType[3].checked = false;
+         dnsType[2].checked = true;
+         dnsType[1].checked = false;
+         dnsType[0].checked = false;
+         dns_server_1.value = dns1;
+         dns_server_2.value = dns2;
+      } else if (lanDomainNameType == "None") {
+         dnsType[3].checked = true;
+         dnsType[2].checked = false;
+         dnsType[1].checked = false;
+         dnsType[0].checked = false;
+      } else if (dns1 == '0.0.0.0' && dns2 == '0.0.0.0') {
+         dnsType[3].checked = false;
+         dnsType[2].checked = false;
+         dnsType[1].checked = false;
+         dnsType[0].checked = true;
+      } else {
+         dnsType[3].checked = false;
+         dnsType[2].checked = false;
+         dnsType[1].checked = true;
+         dnsType[0].checked = false;
+         dns_server_1.value = dns1;
+         dns_server_2.value = ((dns2 != '0.0.0.0') ? dns2 : '');
+      }
+      DNSTypeChange();
+	  if( supportAutoReserveLanIp == '1'){
+		showhide("DhcpAutoReserveOption", "1");
+	  }
+	  else{
+		showhide("DhcpAutoReserveOption", "0");
+	  }
+//IPv6 start
+      if( buildMstcIPv6 == '1' )
+      {
+		 $("#ipv6RouteLifeTime").val(ipv6RLT);
+		 showhide("Ipv6Container", "1");
+         if(ipv6Enable == '1')
+            enblIpv6Lan[0].checked = 1;
+         else
+            enblIpv6Lan[1].checked = 1;
+
+         var ulaAddressTemp = ulaAddress.split('/');
+         if (ulaAddress.search('/') != -1 ) 
+         {
+            ipv6UlaAddress.value = ulaAddressTemp[0];
+            ipv6UlaPrefixLength.value = ulaAddressTemp[1];
+         }
+         else
+         {
+            ipv6UlaAddress.value = ulaAddressTemp[0];
+         }
+         var wan6enb = wanip6enb.split(';');
+         lanIntfPrefix6.value = ipv6PdAddr;
+         var wanprefixInfo ='<%ejGetOther(ipv6AllWanNamePrefix, all)%>';
+         var wanprefix = wanprefixInfo.split(';');
+         var interfaceInfo = '<%ejGetOther(wanInterfaceInfo, route)%>';
+         var interfaces = interfaceInfo.split('|');
+         var defaultWanPrefix = '<%ejGetOther(ipv6DefaulWanPrefix, all)%>';
+         var wantmpInfo = defaultWanPrefix.split(',');
+         var optionindex =0;
+         if (wantmpInfo[1] != 'N/A')
+            ipv6PDWanIfSelect.options[optionindex] = new Option(defaultWanPrefix, 'Default');
+         else if (wantmpInfo[1] == 'N/A')
+            ipv6PDWanIfSelect.options[optionindex] = new Option('Default', 'Default');
+         optionindex ++;
+         for (var i = 0; i < interfaces.length; i++ ) {
+            var temp2 = wanprefix[i].split(',');
+            for(var j = 0; j < interfaces.length; j++) {
+               var names = interfaces[j].split('/');
+               if((temp2[1]!= 'N/A' && wan6enb[i] == '1') && temp2[0] == names[0]){
+                  ipv6PDWanIfSelect.options[optionindex] = new Option(wanprefix[i], names[1]);
+                  optionindex ++;
+               } else if ((temp2[1]== 'N/A' && wan6enb[i] == '1') && temp2[0] == names[0]){
+                  ipv6PDWanIfSelect.options[optionindex] = new Option(names[0], names[1]);
+                  optionindex ++;
+               }
+            }
+         }
+
+
+         if (ipv6PrefixByNtpEnable == 1){
+            //ULA
+            ip6PrefixType[2].checked = true;
+            showhide("IPv6PrefixDelegated", "0");
+            showhide("IPv6PrefixAddress", "0");
+         }else if (ipv6PdWanIf != ''){
+            //Prefix from wan
+            ip6PrefixType[0].checked = true;
+            showhide("IPv6PrefixDelegated", "1");
+            showhide("IPv6PrefixAddress", "0");
+            for (var i = 0; i < ipv6PDWanIfSelect.options.length; i++)
+            {
+               if (ipv6PDWanIfSelect.options[i].value == ipv6PdWanIf)
+               {
+                  ipv6PDWanIfSelect.selectedIndex = i;
+                  break;
+               }
+            }
+         }
+         else{
+            //Static
+            ip6PrefixType[1].checked = true;
+            showhide("IPv6PrefixDelegated", "0");
+            showhide("IPv6PrefixAddress", "1");
+         }
+
+         //MLD snooping
+         chkMldSnp.disabled = false;
+         mldMode[0].disabled = false;
+         mldMode[1].disabled = false;
+
+         if ( isEnblMldSnp == '1' ) {
+            chkMldSnp.checked = true;
+            showhide('mldMode', 1);
+         } else {
+            chkMldSnp.checked = false;
+            showhide('mldMode', 0);
+         }
+
+         if ( mldModeSel == '1' ) {
+            mldMode[0].checked = false;
+            mldMode[1].checked = true;
+         } else {
+            mldMode[0].checked = true;
+            mldMode[1].checked = false;
+         }
+
+         if (slaacEnbl == "1" && dhcpv6State == "0")
+            ip6LanAddrAssign.selectedIndex = 0;
+		 else if (slaacEnbl == "0" && dhcpv6State == "1")
+            ip6LanAddrAssign.selectedIndex = 1;
+		 else if (slaacEnbl == "1" && dhcpv6State == "1")
+            ip6LanAddrAssign.selectedIndex = 2;		 
+
+         sysLanFirDns6State.selectedIndex = dns6State1;
+         sysLanSecDns6State.selectedIndex = dns6State2;
+         sysLanThiDns6State.selectedIndex = dns6State3;
+
+         if(dns6State1 == "1")
+            sysLanFirDns6Addr.value = dns6Addr1;
+         if(dns6State2 == "1")
+            sysLanSecDns6Addr.value = dns6Addr2;
+         if(dns6State3 == "1")
+            sysLanThiDns6Addr.value = dns6Addr3;
+
+         if(dns6State1 == "0")
+            sysLanFirDns6Addr.value = dns6Addr1;
+         if(dns6State2 == "0")
+            sysLanSecDns6Addr.value = dns6Addr2;
+         if(dns6State3 == "0")
+            sysLanThiDns6Addr.value = dns6Addr3;
+
+         ipv6IntfIDStart.value = dhcpv6Start;
+         ipv6IntfIDEnd.value = dhcpv6End;
+         ipv6DomainName.value = ip6DomainName;
+
+         IPv6FeatureChange();
+         IPv6PrefixAssign();
+         IPv6LanAddrAssign();
+		 load_DNSv6Assign(ip6LanAddrAssign.selectedIndex);
+
+         if(radvdDNSEnbl == "1" && dnsv6State =="0")
+		    ip6DNSAssign.selectedIndex = 0;
+		 else if(radvdDNSEnbl == "0" && dnsv6State =="1")
+		    ip6DNSAssign.selectedIndex = 1;
+		 else if(radvdDNSEnbl == "1" && dnsv6State =="1")
+		    ip6DNSAssign.selectedIndex = 2;
+		 
+		 IPv6DNSAssign();
+         IPv6DnsState1Change();
+         IPv6DnsState2Change();
+         IPv6DnsState3Change();
+
+		 if(dnsQueryOption == "0")
+		    dnsServerAssign.selectedIndex = 0;
+		 else if(dnsQueryOption == "1")
+		    dnsServerAssign.selectedIndex = 1;
+		 else if(dnsQueryOption == "2")
+		    dnsServerAssign.selectedIndex = 2;
+		 else if(dnsQueryOption == "3")
+		    dnsServerAssign.selectedIndex = 3;
+		 else if(dnsQueryOption == "4")
+		    dnsServerAssign.selectedIndex = 4;
+		 DnsQueryScenarioAssign();
+		 	
+      }
+      else
+         showhide("Ipv6Container", "0");
+//IPv6 end
+   }
+}
+
+function doSubmit() {
+   document.forms[0].submit();
+}
+
+function renew_DNSv6Assign(index){
+   document.forms[0].ip6DNSAssign.options.length=0; //reset selection item
+
+   document.forms[0].ip6DNSAssign.options[0]=new Option("<%ejGetML(MLG_Network_LANSetup_Str71)%>", "0");
+   document.forms[0].ip6DNSAssign.options[1]=new Option("<%ejGetML(MLG_Network_LANSetup_Str72)%>", "1");
+   document.forms[0].ip6DNSAssign.options[2]=new Option("<%ejGetML(MLG_Network_LANSetup_Str73)%>", "2");
+   if(index==0){
+     document.forms[0].ip6DNSAssign.options[0].selected=true;
+	 document.forms[0].ip6DNSAssign.selectedIndex = 0;	
+   }
+   else if(index==1){
+     document.forms[0].ip6DNSAssign.options[0].disabled=true;
+	 document.forms[0].ip6DNSAssign.options[2].disabled=true;
+	 document.forms[0].ip6DNSAssign.options[1].selected=true;
+	 document.forms[0].ip6DNSAssign.selectedIndex = 1;
+   }
+   else{
+   	 document.forms[0].ip6DNSAssign.options[0].disabled=true;
+   	 document.forms[0].ip6DNSAssign.options[1].selected=true;
+     document.forms[0].ip6DNSAssign.selectedIndex = 1;
+   }
+   IPv6DNSAssign();
+}
+
+function load_DNSv6Assign(index){
+   document.forms[0].ip6DNSAssign.options.length=0; //reset selection item
+
+   document.forms[0].ip6DNSAssign.options[0]=new Option("<%ejGetML(MLG_Network_LANSetup_Str71)%>", "0");
+   document.forms[0].ip6DNSAssign.options[1]=new Option("<%ejGetML(MLG_Network_LANSetup_Str72)%>", "1");
+   document.forms[0].ip6DNSAssign.options[2]=new Option("<%ejGetML(MLG_Network_LANSetup_Str73)%>", "2");
+
+   if(index==1){
+     document.forms[0].ip6DNSAssign.options[0].disabled=true;
+     document.forms[0].ip6DNSAssign.options[2].disabled=true;
+   }
+   else if(index==2)
+     document.forms[0].ip6DNSAssign.options[0].disabled=true;
+}
+
+
+$(document).ready(function() {
+   frmLoad();
+});
+// done hiding -->
+</script>
+
+<form id='main_form' action="/pages/tabFW/homeNetworking-lanSetup.cgi" method="post">
+<input size="15" type="hidden" name="sessionKey" />
+<input size="15" type="hidden" name="action" value="NONE" />
+<input size="15" type="hidden" name="dhcpLeasedTime" />
+<input size="15" type="hidden" name="lanDnsPrimary" />
+<input size="15" type="hidden" name="lanDnsSecondary" />
+<input size="15" type="hidden" name="enblIgmpSnp" />
+<input size="15" type="hidden" name="enblDhcpAutoReserve" />
+<input size="15" type="hidden" name="enblIgmpMode" />
+<input size="15" type="hidden" name="lanDnsType" />
+<!--IPv6 start-->
+<input type="hidden" name="enblDhcp6s" type="radio" />
+<input type="hidden" name="enblDhcp6Relay" type="radio" />
+<input type="hidden" name="enblDhcp6sStateful" type="radio" />
+<input type="hidden" name="enblDns6Stateful" type="radio" />
+<input type="hidden" name="enblRadvd" type="radio" />
+<input type="hidden" name="enblRadvdDNS" type="radio" />
+<input type="hidden" name="enblSLAAC" type="radio" />
+<input type="hidden" name="statefulPrefix" type="radio" />
+<input size="15" type="hidden" name="enblMldSnp" />
+<input size="15" type="hidden" name="enblMldMode" />
+<input size="15" type="hidden" name="dnsQueryScenario" />
+<!--IPv6 end-->
+
+<div class="content_frame">
+   <!--Unit Explain start-->
+   <div class="explain"><div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div><div class="explain_text"><%ejGetML(MLG_Network_LANSetup_Explain)%></div>
+      <div> <b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+   </div>
+   <!--Unit Explain End-->
+   <div class="data_frame"><ul>
+      <li class="set1">
+         <div class="title"><%ejGetML(MLG_Network_InterfaceGrouping_Str3)%></div>
+         <div class="w_text">
+            <ul>
+               <li class="left_table"><%ejGetML(MLG_Network_InterfaceGrouping_Str4)%> :</li>
+               <li class="right_table">
+                  <%ejGet(groupList)%>
+               </li>
+            </ul>
+         </div>
+      </li>
+
+      <li class="space"></li>
+      <li class="set1">
+         <div class="title"><%ejGetML(MLG_Network_LANSetup_Str3)%></div>
+         <div class="w_text">
+            <ul>
+               <li class="left_table"><%ejGetML(MLG_Common_IPAddress)%> :</li>
+               <li class="right_table">
+                  <input maxlength="15" size="15" name="ethIpAddress" onChange="setDhcpAddresses()" />
+               </li>
+            </ul>
+            <ul>
+               <li class="left_table"><%ejGetML(MLG_Network_StaticRoute_Str6)%> :</li>
+               <li class="right_table">
+                  <input maxlength="15" size="15" name="ethSubnetMask" onChange='setDhcpAddresses()' />
+               </li>
+            </ul>
+         </div>
+      </li>
+
+      <li class="space"></li>
+      <li class="set1">
+         <div class="title"><%ejGetML(MLG_Network_LANSetup_Str49)%></div>
+         <div class="w_text">
+            <ul>
+               <li class="left_table"><%ejGetML(MLG_Common_Status)%> :</li>
+               <li class="right_table">
+                  <input type='checkbox' name='chkIgmpSnp' onClick='igmpClick()'> <%ejGetML(MLG_Network_LANSetup_Str51)%>
+               </li>
+            </ul>
+         </div>
+         <div id='igmpMode' class="w_text">
+            <ul>
+               <li class="left_table"><%ejGetML(MLG_Common_IGMP)%> <%ejGetML(MLG_Common_Mode)%> :</li>
+               <li class="right_table">
+                  <input type='radio' name='igmpMode'> <%ejGetML(MLG_Network_LANSetup_Str26)%>
+                  <input type='radio' name='igmpMode'> <%ejGetML(MLG_Network_LANSetup_Str23)%>
+               </li>
+            </ul>
+         </div>
+      </li>
+
+      <li class="space"></li>
+      <li class="set1">
+         <div class="title"><%ejGetML(MLG_Network_LANSetup_Str4)%></div>
+         <div class="w_text">
+            <ul>
+               <li class="left_table"><%ejGetML(MLG_Common_DHCP)%> :</li>
+               <li class="right_table">
+                  <input name="enblDhcpSrv" type="radio" onclick="typeClick()" value="1" /> <%ejGetML(MLG_Common_Enable)%>
+                  <input name="enblDhcpSrv" type="radio" onclick="typeClick()" value="0" /> <%ejGetML(MLG_Common_Disable)%>
+                  <input name="enblDhcpSrv" type="radio" onclick="typeClick()" value="2" /> <%ejGetML(MLG_Network_LANSetup_Str21)%>
+               </li>
+            </ul>
+         </div>
+      </li>
+      <li class="space"></li>
+      <li id="ipAddrBlock" class="set1">
+         <div class="title"><%ejGetML(MLG_Network_LANSetup_Str5)%></div>
+         <div class="w_text">
+         <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str19)%>  :</li>
+            <li class="right_table"><input maxlength="15" size="15" name="dhcpEthStart" /></li>
+         </ul>
+         <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str20)%>  :</li>
+            <li class="right_table">
+               <input maxlength="15" size="15" name="dhcpEthEnd" onChange="changeEthStart(this.value)" />
+            </li>
+         </ul>
+		 <ul>
+			<div id='DhcpAutoReserveOption' class="w_text">
+            <li class="left_table"><%ejGetML(MLG_Network_LANSetup_AutoReserveLANDHCPLease)%>  :</li>
+            <li class="right_table">
+                  <input type='checkbox' name='chkDhcpAutoReserve'> <%ejGetML(MLG_Common_Enable)%>
+            </li>
+			</div>
+         </ul>
+         </div>
+      </li>
+      <li class="space"></li>
+      <li id="dhcpLeaseTimeBlock" class="set1">
+         <div class="title"><%ejGetML(MLG_Network_LANSetup_Str6)%></div>
+         <div class="w_text">
+            <input name="day" type="text" maxlength="3" size="10" /><%ejGetML(MLG_Network_LANSetup_Str7)%>
+            <input name="hour" type="text" maxlength="2" size="10" /><%ejGetML(MLG_Network_LANSetup_Str8)%>
+            <input name="minute" type="text" maxlength="2" size="10" /><%ejGetML(MLG_Network_LANSetup_Str9)%>
+         </div>
+      </li>
+	  <li class="space"></li>
+      <li id="dhcpOptionsBlock" class="set1">
+         <div class="title"><%ejGetML(MLG_Network_LANSetup_Str59)%></div>
+		 <div class="w_text">
+         <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str60)%>  :</li>
+            <li class="right_table">
+				<label><input name="dhcpGwOpt" type="radio" value=1 /><%ejGetML(MLG_Common_Enable)%></label>&nbsp;&nbsp;&nbsp;
+				<label><input name="dhcpGwOpt" type="radio" value=0 /><%ejGetML(MLG_Common_Disable)%></label>
+			</li>
+         </ul>
+      </li>
+      <li class="space"></li>
+      <li id="dhcpRelayBlock" class="set1">
+         <div class="title"><%ejGetML(MLG_Network_LANSetup_Str22)%></div>
+         <div class="w_text">
+            <ul>
+               <li class="left_table"><%ejGetML(MLG_Common_IPAddress)%>  :</li>
+               <li class="right_table">
+                  <input maxlength="15" size="15" name="dhcpRelayServer" />
+                </li>
+            </ul>
+         </div>
+      </li>
+      <li class="space"></li>
+      <li id="dnsBlock" class="set1">
+         <div class="title"><%ejGetML(MLG_Network_LANSetup_Str10)%></div>
+         <div class="w_text">
+            <ul>
+               <li class="left_table"><%ejGetML(MLG_Common_DNS)%> :</li>
+               <li class="right_table">
+                  <input name="dnsType" type="radio" onclick="DNSTypeChange()" /> <%ejGetML(MLG_Network_LANSetup_Str14)%>
+                  <input name="dnsType" type="radio" onclick="DNSTypeChange()" /> <%ejGetML(MLG_Network_LANSetup_Str15)%>
+                  <input name="dnsType" type="radio" onclick="DNSTypeChange()" /> <%ejGetML(MLG_Network_LANSetup_Str57)%>
+                  <input name="dnsType" type="radio" onclick="DNSTypeChange()" /> <%ejGetML(MLG_Network_LANSetup_Str58)%></li>
+            </ul>
+            <ul>
+               <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str12)%>  :</li>
+               <li class="right_table">
+                  <input maxlength="15" size="15" name="dns_server_1" />
+               </li>
+            </ul>
+            <ul>
+               <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str13)%>  :</li>
+               <li class="right_table">
+                  <input maxlength="15" size="15" name="dns_server_2" />
+               </li>
+            </ul>
+         </div>
+      </li>
+<!--IPv6 start-->
+      <div id="Ipv6Container">
+         <li class="space"></li>
+   <!--level 1 title start-->
+         <li class="set1">
+            <div class="title"><%ejGetML(MLG_Network_LANSetup_Str48)%></div>
+         </li>
+   <!--level 1 title end-->
+         <li class="set1">
+            <div class="w_text">
+               <ul>
+                  <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str47)%>:</li>
+                  <li class="right_table">
+                     <input name="enblIpv6Lan" type="radio" onclick="IPv6FeatureChange()" value="1" /><%ejGetML(MLG_Common_Enable)%>
+                     <input name="enblIpv6Lan" type="radio" onclick="IPv6FeatureChange()" value="0" /><%ejGetML(MLG_Common_Disabled)%></li>
+               </ul>
+            </div>
+         </li>
+         <div id="Ipv6Info">
+                  <div id="Ipv6LanAddress">
+                     <li class="space"></li>
+   <!--level 1 title start-->
+                     <li class="set1">
+                        <div class="title"><%ejGetML(MLG_Network_LANSetup_Str50)%></div>
+                     </li>
+   <!--level 1 title end-->
+                     <li class="set1">
+                        <div class="w_text">
+                           <ul>
+                              <li class="left_table">
+                                 <input name="ip6PrefixType" type="radio" onclick="IPv6PrefixAssign()" value="1" /><%ejGetML(MLG_Network_LANSetup_Str24)%></li>
+                              <li class="right_table">
+                                 <select name="ipv6PDWanIfSelect" id="IPv6PrefixDelegated" onChange="IPv6PDWanIfSelectChange()" ></select></li>
+                           </ul>
+                        </div>
+                     </li>
+                     <li class="set1">
+                        <div class="w_text">
+                           <ul>
+                              <li class="left_table">
+                                 <input name="ip6PrefixType" type="radio" onclick="IPv6PrefixAssign()" value="0" /><%ejGetML(MLG_Network_LANSetup_Str15)%></li>
+                              <li class="right_table">
+                                 <input type="text" name="lanIntfPrefix6" id="IPv6PrefixAddress" size="44" maxlength="39" value="" onChange="LanIntfPrefix6Change()" /></li>
+                           </ul>
+                        </div>
+                     </li>
+                     <li class="set1">
+                        <div class="w_text">
+                           <ul>
+                              <li class="left_table">
+                                 <input name="ip6PrefixType" type="radio" onclick="IPv6PrefixAssign()" value="2" /><%ejGetML(MLG_Network_LANSetup_Str52)%>
+                              </li>
+                           </ul>
+                        </div>
+                     </li>
+                  </div>
+                  <div id="Ipv6UlaAddress">
+                     <li class="space"></li>
+   <!--level 1 title start-->
+                     <li class="set1">
+                        <div class="title"><%ejGetML(MLG_Network_LANSetup_Str43)%></div>
+                     </li>
+   <!--level 1 title end-->
+                     <li class="set1">
+                        <div class="w_text">
+                           <ul>
+                              <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str44)%> :</li>
+                              <li class="right_table">
+                                 <input type="text" name="ipv6UlaAddress" id="ipv6UlaAddress" size="44" maxlength="39" value="" />
+                              </li>
+                           </ul>
+                           <ul>
+                              <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str45)%> :</li>
+                              <li class="right_table">
+                                 <input type="text" name="ipv6UlaPrefixLength" id="ipv6UlaPrefixLength" size="1" maxlength="3" value="" />
+                              </li>
+                           </ul>
+                        </div>
+                     </li>
+                  </div>
+                  <div id="Ipv6MldSnooping">
+                     <li class="space"></li>
+   <!--level 1 title start-->
+                     <li class="set1">
+                        <div class="title"><%ejGetML(MLG_Network_LANSetup_Str46)%></div>
+                     </li>
+   <!--level 1 title end-->
+                     <li class="set1">
+                        <div class="w_text">
+                           <ul>
+                              <li class="left_table"><%ejGetML(MLG_Common_Status)%> :</li>
+                              <li class="right_table">
+                                 <input type='checkbox' name='chkMldSnp' onClick='mldClick()'> <%ejGetML(MLG_Network_LANSetup_Str28)%>
+                              </li>
+                           </ul>
+                        </div>
+                        <div id='mldMode' class="w_text">
+                           <ul>
+                              <li class="left_table"><%ejGetML(MLG_Common_MLD)%> <%ejGetML(MLG_Common_Mode)%> :</li>
+                              <li class="right_table">
+                                 <input type='radio' name='mldMode'> <%ejGetML(MLG_Network_LANSetup_Str26)%>
+                                 <input type='radio' name='mldMode'> <%ejGetML(MLG_Network_LANSetup_Str23)%>
+                              </li>
+                           </ul>
+                        </div>
+                     </li>
+                  </div>
+                  <div id="Ipv6LanAddressAssign">
+                     <li class="space"></li>
+					 <li class="set1">
+						<div class="title"><%ejGetML(MLG_Network_LANSetup_Str27)%></div>
+					 </li>
+					 <li class="set1">
+						<div class="w_text">
+							<ul>
+								<li class="left_table">
+									<select name="ip6LanAddrAssign" size="1" rpputtype="Function" onChange="IPv6LanAddrAssign(); renew_DNSv6Assign(this.selectedIndex);">
+										<option value="0"><%ejGetML(MLG_Network_LANSetup_Str61)%></option>
+										<option value="1"><%ejGetML(MLG_Network_LANSetup_Str62)%></option>
+										<option value="2" selected="selected"><%ejGetML(MLG_Network_LANSetup_Str70)%></option>
+									</select>
+								</li>
+							</ul>
+						</div>
+					</li>
+                  </div>                
+                  <div id="Ipv6DNSAssign">
+                     <li class="space"></li>
+					 <li class="set1">
+						<div class="title"><%ejGetML(MLG_Network_LANSetup_Str63)%></div>
+					 </li>
+					 <li class="set1">
+						<div class="w_text">
+							<ul>
+								<li class="left_table">
+                                    <select name="ip6DNSAssign" size="1" rpputtype="Function" onChange="IPv6DNSAssign()">                               
+									</select>
+								</li>
+
+							</ul>
+
+						</div>
+
+					</li>
+                  </div>  
+                  <div id="Ipv6Dhcpv6_disable">
+                     <li class="space"></li>
+   <!--level 1 title start-->
+                     <li class="set1">
+                        <div class="title"><%ejGetML(MLG_Network_LANSetup_Str29)%></div>
+                     </li>
+   <!--level 1 title end-->
+                     <li class="set1">
+                        <div class="w_text">
+                           <ul>
+                              <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str30)%> :</li>
+                              <li class="right_table"><%ejGetML(MLG_Network_LANSetup_Str31)%></li>
+                           </ul>
+                        </div>
+                     </li>
+                  </div>
+                  <div id="Ipv6Dhcpv6_server">
+                     <li class="space"></li>
+   <!--level 1 title start-->
+                     <li class="set1">
+                        <div class="title"><%ejGetML(MLG_Network_LANSetup_Str29)%></div>
+                     </li>
+   <!--level 1 title end-->
+                     <li class="set1">
+                        <div class="w_text">
+                           <ul>
+                              <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str30)%> :</li>
+                              <li class="right_table"><%ejGetML(MLG_Network_LANSetup_Str32)%></li>
+                           </ul>
+                        </div>
+                     </li>
+                  </div>
+                  <div id="Ipv6Dhcpv6_relay">
+                     <li class="space"></li>
+   <!--level 1 title start-->
+                     <li class="set1">
+                        <div class="title"><%ejGetML(MLG_Network_LANSetup_Str29)%></div>
+                     </li>
+   <!--level 1 title end-->
+                     <li class="set1">
+                        <div class="w_text">
+                           <ul>
+                              <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str30)%> :</li>
+                              <li class="right_table"><%ejGetML(MLG_Network_LANSetup_Str33)%></li>
+                           </ul>
+                        </div>
+                     </li>
+                  </div>
+                  <div id="Ipv6Radvd">
+                     <li class="space"></li>
+   <!--level 1 title start-->
+                     <li class="set1">
+                        <div class="title"><%ejGetML(MLG_Network_LANSetup_Str40)%></div>
+                     </li>
+   <!--level 1 title end-->
+                     <li class="set1">
+                        <div class="w_text">
+                           <ul>
+                              <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str41)%> :</li>
+                              <li class="right_table"><%ejGetML(MLG_Common_Enable)%></li>
+                           </ul>
+                        </div>
+                     </li>
+                  </div>
+                  <div id="Ipv6Dhcpv6Values">
+                     <li class="space"></li>
+   <!--level 1 title start-->
+                     <li class="set1">
+                        <div class="title"><%ejGetML(MLG_Network_LANSetup_Str36)%></div>
+                     </li>
+   <!--level 1 title end-->
+                     <li class="set1">
+                        <div class="w_text">
+                           <ul>
+                              <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str37)%>  :</li>
+                              <li class="right_table">
+                                 <input maxlength="39" size="44" name="ipv6IntfIDStart" onChange="Ipv6IntfIDStartCheck()" />
+                              </li>
+                           </ul>
+                           <ul>
+                              <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str38)%>  :</li>
+                              <li class="right_table">
+                                 <input maxlength="39" size="44" name="ipv6IntfIDEnd" onChange="Ipv6IntfIDEndCheck()" />
+                              </li>
+                           </ul>
+                           <ul>
+                              <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str39)%>  :</li>
+                              <li class="right_table">
+                                 <input maxlength="39" size="44" name="ipv6DomainName" />
+                              </li>
+                           </ul>
+                        </div>
+                     </li>
+                  </div>
+                  <div id="Ipv6DnsValues">
+                     <li class="space"></li>
+   <!--level 1 title start-->
+                     <li class="set1">
+                        <div class="title"><%ejGetML(MLG_Network_LANSetup_Str34)%></div>
+                     </li>
+   <!--level 1 title end-->
+                     <li class="set1">
+                        <div class="w_text">
+                           <ul>
+                              <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str35)%> 1 :</li>
+                              <li class="right_table">
+                                 <select name="sysLanFirDns6State" size="1" rpputtype="Function" onChange="IPv6DnsState1Change()">
+                                    <option value="0" selected="selected"><%ejGetML(MLG_Network_LANSetup_Str42)%> </option>
+                                    <option value="1"><%ejGetML(MLG_Common_UserDefined)%> </option>
+                                    <option value="2"><%ejGetML(MLG_Common_None)%> </option>
+                                 </select>
+                                 <input type="text" name="sysLanFirDns6Addr" size="44" maxlength="39" value="" />
+                              </li>
+                           </ul>
+                           <ul>
+                              <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str35)%> 2 :</li>
+                              <li class="right_table">
+                                 <select name="sysLanSecDns6State" size="1" rpputtype="Function" onChange="IPv6DnsState2Change()">
+                                    <option value="0" selected="selected"><%ejGetML(MLG_Network_LANSetup_Str42)%> </option>
+                                    <option value="1"><%ejGetML(MLG_Common_UserDefined)%> </option>
+                                    <option value="2"><%ejGetML(MLG_Common_None)%> </option>
+                                 </select>
+                                 <input type="text" name="sysLanSecDns6Addr" size="44" maxlength="39" value="" />
+                              </li>
+                           </ul>
+                           <ul>
+                              <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Str35)%> 3 :</li>
+                              <li class="right_table">
+                                 <select name="sysLanThiDns6State" size="1" rpputtype="Function" onChange="IPv6DnsState3Change()">
+                                    <option value="0" selected="selected"><%ejGetML(MLG_Network_LANSetup_Str42)%> </option>
+                                    <option value="1"><%ejGetML(MLG_Common_UserDefined)%> </option>
+                                    <option value="2"><%ejGetML(MLG_Common_None)%> </option>
+                                 </select>
+                                 <input type="text" name="sysLanThiDns6Addr" size="44" maxlength="39" value="" />
+                              </li>
+                           </ul>
+                        </div>
+                     </li>
+                  </div>
+                  <div id="DnsQuerySelection">
+                     <li class="space"></li>
+					 <li class="set1">
+						<div class="title"><%ejGetML(MLG_Network_LANSetup_Str64)%>:</div>
+					 </li>
+					 <li class="set1">
+						<div class="w_text">
+							<ul>
+								<li class="left_table">
+                                    <select name="dnsServerAssign" size="1" rpputtype="Function" onChange="DnsQueryScenarioAssign(this.selectedIndex)">
+
+										<option value="0" selected="selected"><%ejGetML(MLG_Network_LANSetup_Str65)%> </option>
+										<option value="1"><%ejGetML(MLG_Network_LANSetup_Str66)%> </option>
+										<option value="2"><%ejGetML(MLG_Network_LANSetup_Str67)%> </option>
+										<option value="3"><%ejGetML(MLG_Network_LANSetup_Str68)%> </option>
+										<option value="4"><%ejGetML(MLG_Network_LANSetup_Str69)%> </option>
+									</select>
+								</li>
+							</ul>
+						</div>
+					 </li>
+				  </div>
+                  <div id="Ipv6Lifetime">
+                     <li class="space"></li>
+   <!--level 1 title start-->
+                     <li class="set1">
+                        <div class="title"><%ejGetML(MLG_Network_LANSetup_Life_Time_Str1)%></div>
+                     </li>
+   <!--level 1 title end-->
+                     <li class="set1">
+                        <div class="w_text">
+             			   <ul>
+					          <li class="left_table"><%ejGetML(MLG_Network_LANSetup_Route_Life_Time_Str1)%>:</li>
+                              <li class="right_table"></li> 
+						         <input size="15" maxlength="40" type="text" id="ipv6RouteLifeTime" name="ipv6RouteLifeTime">
+				           </ul> 
+                        </div>
+                     </li>
+                  </div>   
+         </div>
+      </div>
+<!--IPv6 end-->
+      <li class="space"></li>
+      <li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="preBtnSave();" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+         <input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick="frmLoad();" /></div>
+      </li>
+   </ul></div>
+</div><br/><br/>
+</form>

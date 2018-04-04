@@ -1,0 +1,699 @@
+<link rel="stylesheet" type="text/css" href="css/quickstart.css"></link>
+<script language="javascript">
+var tz_name = "<%ejGet(timezone_offset)%>";
+var ltz_name = "<%ejGet(timezone)%>";
+var wanTypeInfo = "<%ejGetOther(firstWanInfo)%>";
+var syncNvram = '<%ejGetWl(wlSyncNvram)%>';
+var ssid = '<%ejGetWl(wlSsid)%>';
+var mode = '<%ejGetWl(wlAuthMode)%>';
+var wep = '<%ejGetWl(wlWep)%>';
+var keys128 = new Array( "<%ejGetWl(wl128Key1)%>", "<%ejGetWl(wl128Key2)%>","<%ejGetWl(wl128Key3)%>", "<%ejGetWl(wl128Key4)%>" );
+var keys64 = new Array( "<%ejGetWl(wl64Key1)%>", "<%ejGetWl(wl64Key2)%>","<%ejGetWl(wl64Key3)%>", "<%ejGetWl(wl64Key4)%>" );
+var autoWepKey64 = '<%ejGetWl(wlDefaultKey64)%>';
+var autoWepKey128 = '<%ejGetWl(wlDefaultKey128)%>';
+var autoWpaKey = '<%ejGetWl(wlDefaultWpaKey)%>';
+var useDefaultWepKey = '<%ejGetWl(wlUseDefaultWepKey)%>';
+var useDefaultWpaKey = '<%ejGetWl(wlUseDefaultWpaKey)%>';
+var keyIdx = '<%ejGetWl(wlKeyIndex)%>';
+var wpaPskKey = '<%ejGetWl(wlWpaPsk)%>';
+var newWepPassphraseKey = '<%ejGetWl(wlWepPassphraseKey)%>';
+var bit = '<%ejGetWl(wlKeyBit)%>';
+var enbl = '<%ejGetWl(wlEnblAll)%>';
+var ppppassword = '*****************************************************************';
+var ManualIPinfo = '0';
+var names;
+var wanType = '';
+if ( wanTypeInfo != "" ) {
+	names = wanTypeInfo.split("|");
+	wanType = names[0];
+}
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; 
+var Lan4asWanVar = "<%ejGet(Lan4asWan)%>";
+
+function Savequickshow()
+{
+   var loc="wizard-quickshow.cgi?";
+   var EnableQuickStar;
+   if ($('#quickshow').val() == '0')
+      EnableQuickStar = '1';
+   else
+      EnableQuickStar = '0';
+   loc += "EnableQuickStar="+EnableQuickStar;
+   BackgroundUrl(loc);
+
+}
+
+function writeTimeZoneList() {
+	var str='';
+	for( var i = 0; i < Size; i++ )
+		str += "<option value=" + getLocalTimeZoneName(i) + ">" + timeZones[i][0] + "</option>";
+	$('#cboTimeZone').append(str);
+}
+
+function updateManualIP(){
+	if ( wanType == "IPoE" ) {
+		if (ManualIPinfo == '1') {
+			$("#yesinfoipoe").show();
+			$("#noinfoipoe").hide();
+		} else if (ManualIPinfo == '0') {
+			$("#yesinfoipoe").hide();
+			$("#noinfoipoe").show();
+		}
+	}
+	else if ( wanType != "IPoA" ) {
+		if (ManualIPinfo == '1') {
+			$("#yesinfoppp").show();
+			$("#noinfoppp").hide();
+		} else if (ManualIPinfo == '0') {
+			$("#yesinfoppp").hide();
+			$("#noinfoppp").show();
+		}
+	}
+}
+
+function checkInternetValue () {
+	if ( wanType == "IPoE" ) {
+		if ($('input[name=IPoEManualIP]:checked').val() == '1' ) {
+			if ( isValidIpAddress($("#IPoEwanIpAddr").val()) == false ) {
+				hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str9)%>", $("#IPoEwanIpAddr").val() ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return false;
+			}
+			
+			if ( isValidSubnetMask($("#IPoEwanSubnet").val()) == false ) {
+				hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str10)%>", $("#IPoEwanSubnet").val() ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return false;
+			}
+			
+			if ( isValidIpAddress($("#IPoEwanGateway").val()) == false ) {
+				hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_StaticRoute_AlertMsg_Str11)%>", $("#IPoEwanGateway").val() ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return false;
+			}
+	
+			if ( isValidIpAddress($("#IPoEsysDNSAddr").val()) == false ) {
+				hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str3)%>", $("#IPoEsysDNSAddr").val() ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return false;
+			}
+	
+			if ($("#IPoEsysDNSAddr2").val() != '0.0.0.0' && $("#IPoEsysDNSAddr2").val() != ''){
+				if ( isValidIpAddress($("#IPoEsysDNSAddr2").val()) == false ) {
+					hciAlert(MLG_Makestring("<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str4)%>", $("#IPoEsysDNSAddr2").val() ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+					return false;
+				}
+			}
+		}
+	}
+	else if ( wanType == "IPoA" ) {
+		if ( isValidIpAddress($("#IPoAwanIpAddr").val()) == false ) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_ConnStatus_AlertMsg_Str11)%>", $("#IPoAwanIpAddr").val()), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return false;
+		}
+		
+		if ( isValidSubnetMask($("#IPoAwanSubnet").val()) == false ) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_ConnStatus_AlertMsg_Str12)%>", $("#IPoAwanSubnet").val()), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return false;
+		}
+	
+		if ( isValidIpAddress($("#IPoAsysDNSAddr").val()) == false ) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_ConnStatus_AlertMsg_Str14)%>", $("#IPoAsysDNSAddr").val()), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return false;
+		}
+	
+		if ($("#IPoAsysDNSAddr2").val() != '0.0.0.0' && $("#IPoAsysDNSAddr2").val() != ''){
+			if ( isValidIpAddress($("#IPoAsysDNSAddr2").val()) == false ) {
+				hciAlert(MLG_Makestring("<%ejGetML(MLG_ConnStatus_AlertMsg_Str14)%>", $("#IPoAsysDNSAddr2").val()), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return false;
+			}
+		}
+	}
+	else {
+		if ($('input[name=PPPManualIP]:checked').val() == '1' ) {
+			if ( isValidIpAddress($("#PPPwanIpAddr").val()) == false ) {
+				hciAlert(MLG_Makestring("<%ejGetML(MLG_ConnStatus_AlertMsg_Str11)%>", $("#PPPwanIpAddr").val()), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return false;
+			}
+	
+			if ( isValidIpAddress($("#PPPsysDNSAddr").val()) == false ) {
+				hciAlert(MLG_Makestring("<%ejGetML(MLG_ConnStatus_AlertMsg_Str14)%>", $("#PPPsysDNSAddr").val()), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				return false;
+			}
+	
+			if ($("#PPPsysDNSAddr2").val() != '0.0.0.0' && $("#PPPsysDNSAddr2").val() != ''){
+				if ( isValidIpAddress($("#PPPsysDNSAddr2").val()) == false ) {
+					hciAlert(MLG_Makestring("<%ejGetML(MLG_ConnStatus_AlertMsg_Str14)%>", $("#PPPsysDNSAddr2").val()), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
+
+function isInetExist () {
+	return (wanType == "IPoE" || wanType == "IPoA" || wanType == "PPPoA" || wanType == "PPPoE" );
+}
+
+function saveTimeZone(url)
+{
+	var objXMLHTTP = null;
+	
+	if (window.XMLHttpRequest)  {
+		objXMLHTTP=new XMLHttpRequest();
+	}// code for IE
+	else if (window.ActiveXObject)  {
+		objXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	else {
+		alert("The browser no support XMLHttp Object");
+		return;
+	}
+	if ( objXMLHTTP != null ) {
+		objXMLHTTP.open("POST","./"+url,true);
+		objXMLHTTP.onreadystatechange = function()
+		{
+			if(objXMLHTTP.readyState == 4) {
+				//saveInternetConfig();
+				saveWlConfig();
+			}
+		}
+		objXMLHTTP.send(null);
+	}
+}
+
+function saveInet(url)
+{
+	var objXMLHTTP = null;
+	
+	if (window.XMLHttpRequest)  {
+		objXMLHTTP=new XMLHttpRequest();
+	}// code for IE
+	else if (window.ActiveXObject)  {
+		objXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	else {
+		alert("The browser no support XMLHttp Object");
+		return;
+	}
+	if ( objXMLHTTP != null ) {
+		objXMLHTTP.open("POST","./"+url,true);
+		objXMLHTTP.onreadystatechange = function()
+		{
+			if(objXMLHTTP.readyState == 4) {
+				//saveWlConfig();
+				gotoResultPage();
+			}
+		}
+		objXMLHTTP.send(null);
+	}
+}
+
+function saveWl(url)
+{
+	var objXMLHTTP = null;
+	
+	if (window.XMLHttpRequest)  {
+		objXMLHTTP=new XMLHttpRequest();
+	}// code for IE
+	else if (window.ActiveXObject)  {
+		objXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	else {
+		alert("The browser no support XMLHttp Object");
+		return;
+	}
+	if ( objXMLHTTP != null ) {
+		objXMLHTTP.open("POST","./"+url,true);
+		objXMLHTTP.onreadystatechange = function()
+		{
+			if(objXMLHTTP.readyState == 4) {
+				//gotoResultPage();
+				saveInternetConfig(); 
+			}
+		}
+		objXMLHTTP.send(null);
+	}
+}
+
+function saveConfig () {
+/*	var change = 0;
+	var loc = "wizard-TimeZone.cgi";
+	var timezone = $('#cboTimeZone').val();
+	var timezone_offset = getTimeZoneName($('#cboTimeZone')[0].selectedIndex);
+	loc += "?timezone="+timezone;
+	loc += "&timezone_offset="+timezone_offset;
+
+	if ( tz_name != '' && tz_name != '(null)' ) {
+		if ( timezone_offset != tz_name ) {
+			change = 1;
+		}
+  }
+	else if ( ltz_name != '' && ltz_name != '(null)' ) {
+		if ( timezone != ltz_name ) {
+			change = 1;
+		}
+  }
+  
+	if ( change ) {
+		saveTimeZone( loc );
+	}
+	else {
+		saveInternetConfig();
+	}
+*/
+	//saveInternetConfig();
+	saveWlConfig();
+}
+
+function saveInternetConfig(){
+	var loc = "wizard-Inet.cgi?wanType="+wanType;
+	var change = 0;
+
+/* __ZyXEL__, Albert, 20170320, For ZAP customization. */
+	if((customizationFlag & 0x40000000) == 0x40000000){
+		if ( $('input[name=Lan4asWan]:checked').val() == '1' ) {
+				loc += "&Lan4asWan="+$('input[name=Lan4asWan]:checked').val();
+				change = 1;
+		}else if($('input[name=Lan4asWan]:checked').val() == '0'){
+				loc += "&Lan4asWan="+$('input[name=Lan4asWan]:checked').val();
+				change = 1;
+		}
+	}
+	if ( wanType == "IPoE" ) {
+		if ($("#IPoEwanIpAddr").val() != names[2] || $("#IPoEwanSubnet").val() != names[3] || $("#IPoEwanGateway").val() != names[4] ||
+				$("#IPoEsysDNSAddr").val() != names[5] || $("#IPoEsysDNSAddr2").val() != names[6] ||
+				$('input[name=IPoEManualIP]:checked').val() != names[1]
+				)
+		{
+			change = 1;
+			loc += "&useStaticIpAddress="+$('input[name=IPoEManualIP]:checked').val();
+			if ( $('input[name=IPoEManualIP]:checked').val() == '1' ) {
+				loc += "&wanIpAddress="+$("#IPoEwanIpAddr").val();
+				loc += "&wanSubnetMask="+$("#IPoEwanSubnet").val();
+				loc += "&wanIntfGateway="+$("#IPoEwanGateway").val();
+				loc += "&dnsPrimary="+$("#IPoEsysDNSAddr").val();
+				if ( $("#IPoEsysDNSAddr2").val() == '' ) {
+					loc += "&dnsSecondary=0.0.0.0";
+				}
+				else {
+					loc += "&dnsSecondary="+$("#IPoEsysDNSAddr2").val();
+				}
+			}
+			else {
+				loc += "&wanIpAddress=0.0.0.0";
+				loc += "&wanSubnetMask=0.0.0.0";
+				loc += "&wanIntfGateway=0.0.0.0";
+				loc += "&dnsPrimary=0.0.0.0"
+				loc += "&dnsSecondary=0.0.0.0"
+			}
+		}
+	}
+	else if ( wanType == "IPoA" ) {
+		if ($("#IPoAwanIpAddr").val() != names[2] || $("#IPoAwanSubnet").val() != names[3] || 
+				$("#IPoAsysDNSAddr").val() != names[5] || $("#IPoAsysDNSAddr2").val() != names[6]
+		) {
+			change = 1;
+			loc += "&wanIpAddress="+$("#IPoAwanIpAddr").val();
+			loc += "&wanSubnetMask="+$("#IPoAwanSubnet").val();
+			loc += "&dnsPrimary="+$("#IPoAsysDNSAddr").val();
+			if ( $("#IPoAsysDNSAddr2").val() == '' ) {
+				loc += "&dnsSecondary=0.0.0.0";
+			}
+			else {
+				loc += "&dnsSecondary="+$("#IPoAsysDNSAddr2").val();
+			}
+		}
+	}
+	else if ( wanType == "PPPoA" || wanType == "PPPoE" ) {
+		if ( $("#sysPPPUsername").val() != names[3] || $("#sysPPPPwd").val() != ppppassword ||
+			$("#PPPwanIpAddr").val() != names[2] ||
+			$("#PPPsysDNSAddr").val() != names[4] || $("#PPPsysDNSAddr2").val() != names[5] ||
+			$('input[name=PPPManualIP]:checked').val() != names[1]
+			)
+		{
+			change = 1;
+			loc += "&useStaticIpAddress="+$('input[name=PPPManualIP]:checked').val();
+			if ( $('input[name=PPPManualIP]:checked').val() == '1' ) {
+				loc += "&wanIpAddress="+$("#PPPwanIpAddr").val();
+				loc += "&dnsPrimary="+$("#PPPsysDNSAddr").val();
+				if ( $("#PPPsysDNSAddr2").val() == '' ) {
+					loc += "&dnsSecondary=0.0.0.0";
+				}
+				else {
+					loc += "&dnsSecondary="+$("#PPPsysDNSAddr2").val();
+				}
+			}
+			else {
+				loc += "&wanIpAddress=0.0.0.0";
+				loc += "&dnsPrimary=0.0.0.0";
+				loc += "&dnsSecondary=0.0.0.0";
+			}
+			loc += "&pppUserName="+encodeUrl($("#sysPPPUsername").val());
+			loc += "&pppPassword="+encodeUrl($("#sysPPPPwd").val());
+		}
+	}
+	if ( change ) {
+		saveInet( loc );
+	}
+	else {
+		//saveWlConfig();
+		gotoResultPage();
+	}
+}
+
+function saveWlConfig(){
+
+		var loc = "wizard-wlan.wl";
+		if ( enbl == $('input[name=wlEnblAll]:checked').val() ) {
+			//gotoResultPage();
+			saveInternetConfig();
+		}
+		else {
+			loc += "?wlEnblAll="+$('input[name=wlEnblAll]:checked').val();
+			saveWl( loc );
+		}
+
+}
+
+function gotoResultPage (){
+	$('.ui-dialog-buttonpane').children('Button:nth-child(2)').trigger('click');
+}
+
+$(document).ready(function() {
+	writeTimeZoneList();
+	frmLoad();
+});
+
+function frmLoad(){
+
+/* __ZyXEL__, Albert, 20170320, For ZAP customization. */
+	if((customizationFlag & 0x40000000) == 0x40000000){
+		if ( Lan4asWanVar == '1' )
+			$('input[name=Lan4asWan]:radio').get(0).checked = true;
+		else
+			$('input[name=Lan4asWan]:radio').get(1).checked = true;
+	}else{
+		$("#Lan4asWanDiv").hide(0);
+	}
+
+	if ( wanType == "IPoE" ) {
+		$("#PPP").hide(0);
+		$("#IPoA").hide(0);
+		$("#IPoEwanIpAddr").val(names[2]);
+		$("#IPoEwanSubnet").val(names[3]);
+		$("#IPoEwanGateway").val(names[4]);
+		$("#IPoEsysDNSAddr").val(names[5]);
+		$("#IPoEsysDNSAddr2").val(names[6]);
+		ManualIPinfo = names[1];
+	}
+	else if ( wanType == "IPoA" ) {
+		$("#PPP").hide(0);
+		$("#IPoE").hide(0);
+		$("#IPoAwanIpAddr").val(names[2]);
+		$("#IPoAwanSubnet").val(names[3]);
+		$("#IPoAsysDNSAddr").val(names[5]);
+		$("#IPoAsysDNSAddr2").val(names[6]);
+	}
+	else if ( wanType == "PPPoA" || wanType == "PPPoE" ) {
+		$("#wanTypePPP").html(wanType);
+		$("#IPoA").hide(0);
+		$("#IPoE").hide(0);
+		$("#PPPwanIpAddr").val(names[2]);
+                
+        if(names[3]=='(null)')
+		  $("#sysPPPUsername").val("");
+
+		else
+		  $("#sysPPPUsername").val(names[3]);
+		
+		$("#sysPPPPwd").val(ppppassword);
+		$("#PPPsysDNSAddr").val(names[4]);
+		$("#PPPsysDNSAddr2").val(names[5]);
+		ManualIPinfo = names[1];
+	}
+	else {
+		$("#StepWl").html("Step 1 of 1");
+	}
+
+	if (enbl == '1') {
+		$('input[name=wlEnblAll]:radio').get(0).checked = true;
+	} else {
+		$('input[name=wlEnblAll]:radio').get(1).checked = true;
+	}
+
+	$("#wlSsid").html(ssid);
+
+	if (mode == 'open' && wep == 'disabled') {
+		$("#wlSecurityField").hide();
+		$("#wlPasswordField").hide();
+	} else if (mode == 'open' && wep == 'enabled') {
+		$("#wlSecurity").html("<%ejGetML(MLG_Common_WEP)%>");
+		if ( useDefaultWepKey == '1' ) {
+			if ( bit == '0' ) {
+				$("#wlPassword").html(autoWepKey128);
+			}
+			else {
+				$("#wlPassword").html(autoWepKey64);
+			}
+		}
+		else if ( newWepPassphraseKey != '' ) {
+			if ( bit == '0' ) {
+				$("#wlPassword").html(keys128[keyIdx-1]);
+			}
+			else {
+				$("#wlPassword").html(keys64[keyIdx-1]);
+			}
+		}
+		else {
+			$("#wlPassword").html("******");
+		}
+	} else {
+		$("#wlSecurity").html(mode.toUpperCase());
+		if (mode == 'psk') {
+			$("#wlSecurity").html("<%ejGetML(MLG_Common_WPAPSK)%>");
+		} else if (mode == 'psk2' || mode == 'psk psk2') {
+			$("#wlSecurity").html("<%ejGetML(MLG_Common_WPA2PSK)%>");
+		} else if (mode == 'wpa') {
+			$("#wlSecurity").html("<%ejGetML(MLG_Common_WPA)%>");
+		} else if (mode == 'wpa2' || mode == 'wpa wpa2') {
+			$("#wlSecurity").html("<%ejGetML(MLG_Common_WPA2)%>");
+		}
+		if ( useDefaultWpaKey == '1' ) {
+			$("#wlPassword").html(autoWpaKey);
+		}
+		else if ( newWepPassphraseKey != '' ) {
+			$("#wlPassword").html(wpaPskKey);
+		}
+		else {
+			$("#wlPassword").html("******");
+		}
+	}
+	
+	if ( wanType == "IPoE" ) {
+		updateManualIP();
+		if ( ManualIPinfo == '1' )
+			$('input[name=IPoEManualIP]:radio').get(0).checked = true;
+		else
+			$('input[name=IPoEManualIP]:radio').get(1).checked = true;
+	
+		$("input[name='IPoEManualIP']").click(function(){
+			ManualIPinfo = $('input[name=IPoEManualIP]:checked').val();
+			updateManualIP();
+		});
+	}
+	else if ( wanType != "IPoA" ) {
+		updateManualIP();
+		if ( ManualIPinfo == '1' )
+			$('input[name=PPPManualIP]:radio').get(0).checked = true;
+		else
+			$('input[name=PPPManualIP]:radio').get(1).checked = true;
+	
+		$("input[name='PPPManualIP']").click(function(){
+			ManualIPinfo = $('input[name=PPPManualIP]:checked').val();
+			updateManualIP();
+		});
+	}
+/*
+  if ( tz_name != '' && tz_name != '(null)' ) {
+     $('#cboTimeZone')[0].selectedIndex = getTimeZoneNameIndex(tz_name);
+  }
+  else if ( ltz_name != '' && ltz_name != '(null)' ) {
+     $('#cboTimeZone')[0].selectedIndex = getLocalTimeZoneNameIndex(ltz_name);
+  }
+*/
+}
+</script>
+<div class="wrap">
+<!-- Welcome Beginning -->
+   <div id="welcome" class='state'>
+     <div class="qs_headline"><%ejGetML(MLG_ConnStatus_QuickStart_Str26)%><div class="step"><%ejGetML(MLG_ConnStatus_QuickStart_Str38)%></div></div>
+     <div class="qs_content">
+       <p><%ejGetML(MLG_ConnStatus_QuickStart_Str16)%></p>
+     </div>
+   </div>
+   <!-- Welcome Ending -->
+   <!-- Internet Setting Beginning -->
+   <div id="internetsetting" style="display:none;" class='state'>
+     <div class="qs_headline"><%ejGetML(MLG_ConnStatus_QuickStart_Str24)%><div class="step"><%ejGetML(MLG_ConnStatus_QuickStart_Str31)%></div></div>
+
+       <div class="qs_content" id="Lan4asWanDiv">
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str2)%></p>
+         <p>
+         <input name="Lan4asWan" type="radio" id="Lan4asWan0" value="1" />
+         <%ejGetML(MLG_Common_Yes)%> &nbsp;&nbsp;&nbsp;&nbsp;
+         <input name="Lan4asWan" type="radio" id="Lan4asWan1" value="0" />
+         <%ejGetML(MLG_Common_No)%></p>         
+       </div>
+     
+     <div class="qs_content" id="PPP">
+       <div>
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str25)%> <span class="blod" id="wanTypePPP"></span> <%ejGetML(MLG_ConnStatus_QuickStart_Str28)%></p>
+         <table width="100%" border="0" cellspacing="0" cellpadding="0">
+           <tr>
+             <td width="40%"><%ejGetML(MLG_ConnStatus_QuickStart_Str18)%></td>
+             <td><input type="text" name="sysPPPUsername" id="sysPPPUsername" maxlength="256" /></td>
+           </tr>
+           <tr>
+             <td><%ejGetML(MLG_ConnStatus_QuickStart_Str4)%></td>
+             <td><input type="password" name="sysPPPPwd" id="sysPPPPwd" maxlength="256" autocomplete="new-password"/></td>
+           </tr>
+         </table>
+       </div>
+       <div >
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str3)%></p>
+       </div>
+       <p>
+         <input name="PPPManualIP" type="radio" id="PPPManualIP0" value="1" />
+         <%ejGetML(MLG_Common_Yes)%> &nbsp;&nbsp;&nbsp;&nbsp;
+         <input name="PPPManualIP" type="radio" id="PPPManualIP1" value="0" />
+         <%ejGetML(MLG_Common_No)%></p>
+       <table width="100%" border="0" cellspacing="0" cellpadding="0" id="yesinfoppp">
+         <tr>
+           <td width="40%" class="indent"><%ejGetML(MLG_Common_IPAddress)%>:</td>
+           <td><input type="text" name="PPPwanIpAddr" id="PPPwanIpAddr" maxlength="15"/></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str6)%></td>
+           <td><input type="text" name="PPPsysDNSAddr" id="PPPsysDNSAddr" maxlength="15"/></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str9)%></td>
+           <td><input type="text" name="PPPsysDNSAddr2" id="PPPsysDNSAddr2" maxlength="15"/></td>
+         </tr>
+       </table>
+       <p class="indent" id="noinfoppp"><%ejGetML(MLG_ConnStatus_QuickStart_Str88)%></p>
+     </div>
+     <div class="qs_content" id="IPoE">
+       <div>
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str25)%><span class="blod"><%ejGetML(MLG_Common_IPoE)%></span>.</p>
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str3)%></p>
+       </div>
+       <p>
+         <input name="IPoEManualIP" type="radio" id="IPoEManualIP0" value="1" />
+         <%ejGetML(MLG_Common_Yes)%> &nbsp;&nbsp;&nbsp;&nbsp;
+         <input name="IPoEManualIP" type="radio" id="IPoEManualIP1" value="0" />
+         <%ejGetML(MLG_ConnStatus_QuickStart_Str37)%></p>
+       <table width="100%" border="0" cellspacing="0" cellpadding="0" id="yesinfoipoe">
+         <tr>
+           <td width="40%" class="indent"><%ejGetML(MLG_Common_IPAddress)%>:</td>
+           <td><input type="text" name="IPoEwanIpAddr" id="IPoEwanIpAddr" maxlength="15"/></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_Common_SubnetMask)%>:</td>
+           <td><input type="text" name="IPoEwanSubnet" id="IPoEwanSubnet" maxlength="15"/></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str1)%></td>
+           <td><input type="text" name="IPoEwanGateway" id="IPoEwanGateway" maxlength="15"/></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str6)%></td>
+           <td><input type="text" name="IPoEsysDNSAddr" id="IPoEsysDNSAddr" maxlength="15"/></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str9)%></td>
+           <td><input type="text" name="IPoEsysDNSAddr2" id="IPoEsysDNSAddr2" maxlength="15"/></td>
+         </tr>
+       </table>
+       <p class="indent" id="noinfoipoe"><%ejGetML(MLG_ConnStatus_QuickStart_Str15)%></p>
+     </div>
+     <div class="qs_content" id="IPoA">
+       <div>
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str25)%><span class="blod"><%ejGetML(MLG_Common_IPoA)%></span>.</p>
+       </div>
+       <table width="100%" border="0" cellspacing="0" cellpadding="0">
+         <tr>
+           <td width="40%" class="indent"><%ejGetML(MLG_Common_IPAddress)%>:</td>
+           <td><input type="text" name="IPoAwanIpAddr" id="IPoAwanIpAddr" maxlength="15"/></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_Common_SubnetMask)%>:</td>
+           <td><input type="text" name="IPoAwanSubnet" id="IPoAwanSubnet" maxlength="15"/></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str6)%></td>
+           <td><input type="text" name="IPoAsysDNSAddr" id="IPoAsysDNSAddr" maxlength="15"/></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str9)%></td>
+           <td><input type="text" name="IPoAsysDNSAddr2" id="IPoAsysDNSAddr2" maxlength="15"/></td>
+         </tr>
+       </table>
+     </div>
+   </div>
+   <!-- Internet Setting Ending -->
+   <!-- Wireless Setting Beginning -->
+   <div id="wirelesssetting" style="display:none;" class='state'>
+     <div class="qs_headline"><%ejGetML(MLG_ConnStatus_QuickStart_Str27)%><div class="step" id="StepWl"><%ejGetML(MLG_ConnStatus_QuickStart_Str36)%></div></div>
+     <div class="qs_content">
+       <p><%ejGetML(MLG_ConnStatus_QuickStart_Str14)%></p>
+       <table width="100%" border="0" cellspacing="0" cellpadding="0">
+         <tr>
+           <td width="40%"><%ejGetML(MLG_ConnStatus_QuickStart_Str21)%></td>
+           <td><input name="wlEnblAll" type="radio" id="wlEnblAll1" value="1"/>
+             <%ejGetML(MLG_Common_Enable)%>&nbsp;&nbsp;&nbsp;&nbsp;
+              <input name="wlEnblAll" type="radio" id="wlEnblAll0" value="0" />
+              <%ejGetML(MLG_Common_Disable)%></td>
+         </tr>
+         <tr>
+           <td><%ejGetML(MLG_ConnStatus_QuickStart_Str20)%></td>
+           <td id="wlSsid"></td>
+         </tr>
+         <tr id="wlSecurityField">
+           <td><%ejGetML(MLG_ConnStatus_Status_Str89)%>:</td>
+           <td id="wlSecurity"></td>
+         </tr>
+         <tr id="wlPasswordField">
+           <td><%ejGetML(MLG_Common_Password)%>:</td>
+           <td id="wlPassword"></td>
+         </tr>
+       </table>
+     </div>
+   </div>
+   <!-- Wireless Setting Ending -->
+   <!-- waiting Beginning -->
+   <div id="waiting" style="display:none;" class='state'>
+     <div class="qs_content">
+       <p style="display:block;height:110px;">&nbsp;</p>
+       <div class="waiting"></div>
+       <p style="font-weight:bold;text-align:center;"><%ejGetML(MLG_ConnStatus_QuickStart_Str8)%></p>
+     </div>
+   </div>
+   <!-- waiting Ending -->
+   <!-- result Beginning -->
+   <div id="result" class='state' style="display:none;" >
+     <div class="qs_headline"><%ejGetML(MLG_ConnStatus_QuickStart_Str7)%></div>
+     <div class="qs_content">
+     <div id="success">
+         <table width="100%" border="0" cellspacing="0" cellpadding="0">
+           <tr>
+             <td style="font-weight:bold"><%ejGetML(MLG_ConnStatus_QuickStart_Str23)%></td>
+           </tr>
+           <tr>
+             <td style="font-weight:bold"><%ejGetML(MLG_ConnStatus_QuickStart_Str5)%></td>
+           </tr>
+         </table>
+       </div>  
+       <p>&nbsp;</p>
+     </div>
+   </div>
+   <!-- result Ending -->
+</div>

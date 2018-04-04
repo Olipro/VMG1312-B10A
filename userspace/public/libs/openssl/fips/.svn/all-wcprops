@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips
+END
+fips_err.h
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/fips_err.h
+END
+fips_locl.h
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/fips_locl.h
+END
+fingerprint.sha1
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/fingerprint.sha1
+END
+fips-lib.com
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/fips-lib.com
+END
+fips.c
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/fips.c
+END
+install.com
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/install.com
+END
+fips.h
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/fips.h
+END
+fips_err_wrapper.c
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/fips_err_wrapper.c
+END
+fips_test_suite.c
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/fips_test_suite.c
+END
+fips_make_sha1
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/fips_make_sha1
+END
+fips_check_sha1
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/fips_check_sha1
+END
+openssl_fips_fingerprint
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/openssl_fips_fingerprint
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/Makefile
+END

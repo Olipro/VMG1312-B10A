@@ -1,0 +1,338 @@
+Fri Apr 07 14:12:33 CET 2006
+	* fixed the bar_update function which was too busy printing
+	  out updates. limited to 10 updates per second
+	* fixed the bar_creating function which called get_terminal_size
+	  even in background mode, causing strange errors afterwards
+
+Thu Apr 06 23:05:49 CET 2006
+	* changed SOCKET_ERROR to SOCK_ERROR because SOCKET_ERROR
+	  is somewhat defined by winsock in w32
+	* minor other changes to help compilation for win32
+
+Wed Apr 05 12:57:10 CET 2006
+	* fixing a bug in get_relative_path which returned
+	  false data for pathcombinations like "a","abc"
+
+Tue Apr 04 18:46:34 CET 2006 wput-0.6
+	* using gnutls now. adjusting includes. no need for win32
+	* parsing of mdtm forgot to decrease the month. fixed
+	* setting target_fsize to -1 to indicate unexisting files,
+	  so that wput will upload even files with 0 filesize
+	* fixing double free() of hostname if the host could not be
+	  resolved
+	* fixing reported bug in Makefile
+	* adding support for .netrc-files as suggested by a patch
+	  of Alexander Pohoyda
+	* when sending or parsing PORT/PASV commands, now using
+	  htons to convert to network byte order
+
+Thu May 26 09:30:54 CET 2005
+	* buffer-allocation in http-proxy-module forgot to count five
+	  additional bytes for the port-value which led to segfaults
+
+Sun May  1 10:00:16 CET 2005
+	* fixed a calculation for calculate_transfer_rate that caused an
+	  data-overflow for rates beyond 210 KiB/s
+	* another fix for set_resuming because the last fix made things even
+	  worse. works fine now ;)
+
+Fri Apr 29 16:53:14 CET 2005
+	* minor fix in set_resuming which mixed up some cases
+
+Wed Mar 23 10:32:41 CET 2005
+	* fix for base64-routine which forgot to set the last character to \0
+
+Sat Feb  5 20:37:09 CET 2005 wput-pre0.6
+	* making compilation for windows work (ssllib in dll, some
+	  modifications (sslib_in_use flag), strptime included, some
+	  fixes for *nix-header-files)
+
+Tue Feb  2 22:10:45 CET 2005
+	* added support for i18n (configure, gettext, setlocale etc.)
+	* messages have been prepared
+	* german translation is complete
+
+Sun Jan 30 14:00:56 CET 2005 wput-0.5.9
+	* added the --no-directories flag forcing wput not to create any
+	  remote directories.
+	* added the --basename param that allows to specify a base-path-
+	  name which is snipped off the filename when connecting them to
+	  an url
+
+Sat Jan 29 13:54:26 CET 2005
+	* set up an error-level-indication (see manpage)
+	* added additional status-information telling about the number of
+	  files failed and skipped
+	* made LIST work again
+	* directory_add_dir() needs to save a cpy of the directory name
+
+Thu Jan 27 19:23:01 CET 2005
+	* [ lots of changes. dull brain had a memory-leak and forgot them ]
+	* fixed some issues with resume-tables
+	* fixed the get_relative_path function
+	* removed several memory-allocation problems with the new ftp/socket-
+	  libary objects
+
+Sun Jan 23 11:27:30 CET 2005
+	* created an ftp-library ftplib.[ch] which contains more or less
+	  the general ftp-function from ftp.c. Those functions work on an
+	  ftp_con-object which is independent of any fsession. Each
+	  fession contains a reference to an ftp_con-object representing
+	  the current connection. The cc-object therefore is gone.
+	* do_send was cleaned up and lots of its code was moved to some
+	  seperate functions
+	* fsession_transmit moved to ftp.c with some minor modifications
+	* added a function proxy_accept which is used by
+	  ftp_complete_data-connection which does the piece of work needed
+	  to complete a data-connection after a STOR or LIST command
+
+Thu Jan 20 11:22:13 CET 2005
+	* renamed socket.[ch] to socketlib.[ch] as these reserved names
+	  caused some trouble on some systems
+	* code-cleanup, more general functions and a slightly more object-
+	  orientated design bring socketlib quit near to a standalone module
+	* all the constant-defines moved from wput.h to constants.h
+
+Wed Jan 19 09:17:02 CET 2005
+	* basic implementation of tls-encryption
+	* adjustment of configure.in and config.h.in to determine whether
+	  openssl is available
+	* config.h moved to src/
+	* ftp-ls.c is now wget's one made workable with some
+	  #define directives and some dummy-functions as proposed by
+	  Steven M. Schweda
+	* fsessions are automatically sorted into the queue
+
+Sun Jan 09 22:44:19 CET 2005
+	* parse_url now looks for the last @ char, thus usernames containing
+	  an @ will be valid as well
+
+Mon Nov 22 20:32:07 CET 2004	wput 0.5
+	* clear_path was also called when target_dname was 0 > segfault. fixed
+	* queue.c#409 removes not only strlen(file) chars, but strlen(file)-1
+	* get_msg() sets cc.r.reply to 0 after freeing it
+
+Fri Nov 19 22:42:43 CET 2004
+	* little fixes for problems causing troubles when compiling for win32
+	* fix for do_mdtm which forgot to parse the returned date
+	* do_abor() and functions using it, return ERR_RECONNECT if it fails
+	* updated the documentation (manpage,USAGE.examples: timestamping)
+
+Thu Nov 18 13:45:57 CET 2004
+	* queue.c#469 now creates a cpy of fsession->local_fname (otherwise
+	  free()ing causes undefined behaviour)...
+	* fixed the problem in bar_update() that caused the old-style
+	  interface to output 101K, 151K and so on instead of n*50K...
+	* improved the background-mode (setsid, freopen)
+
+Wed Nov 17 15:34:08 CET 2004
+	* added proxy_listen also returns the ip on which the proxy listens
+	  on, which can be different to the proxy_ip (e.g. different
+	  interfaces)
+	* added parse_passive_string() which retrieves the ip as well.
+	  the data connection is therefore established to this ip and not to
+	  the server's ip (although they are almost always the same)
+
+Sat Nov 13 11:57:04 CET 2004
+	* parse_url() confused username/password
+	* fix for some segfaults
+	* do_login() changed the empty (NULL) password to "" which led to
+	  confusion in skipd_list.
+	* minimum terminal-size is set to 45 characters. otherwise old
+	  output-format is being used...
+	* fixed parse_proxy which did not work a bit
+
+Sun Nov 7 11:11:34 CET 2004	wput-pre0.5
+	* implemented the random-wait feature
+	* fsession_compare also compares the hostname if available
+	* some minor bugfixes
+	* updated the documentation
+
+Sat Nov 6 13:35:41 CET 2004
+	* added a do_mdtm method to retrieve the modification time using the
+	  MDTM command. if it fails the old LIST method is used.
+	* do_size() now falls back to LIST if SIZE fails for some reason.
+	* do_send() is now more certain concerning error-levels
+	* added retry_wait()
+	* fsession_transmit evaluates error-levels...
+	* the skipd_list now features the hostname in case that the ip
+	  could not be resolved locally
+
+Sun Nov 3 08:35:29 CET 2004
+	* serious changes in local/remote file-input-processing/guessing (see
+	  website, USAGE.examples / wut(1))
+	* rewrite the parse_url function which is now more readable and
+	  "slightly" smaller
+	* parse_url tries to get a password from password-list if none was
+	  specified.
+	* added parse_proxy which tries to read proxy-information from
+	  env('ftp_proxy')
+	* several fixes for new memory-leaks etc
+	* members of current-connection are initialised in do_connect.
+	  those who have to be free()d are disallocated in do_quit.
+	* added a clear_path function that removes ./ and dir/.. from paths so
+	  that get_relative_dir, which has been change to work with directories 
+	  that do not start and end with a slash, will work better
+
+Sun Oct 24 10:48:14 CEST 2004
+	* unescape() now stops on \0-chars
+	* do_cwd() unescapes the url prior to cwding
+	* placed long_do_cwd() before try_do_cwd, which now only tries to
+	  CWD and to MKD if CWDing fails.
+	* long_do_cwd() unescapes each part between / and / of the url and
+	  cwds there. so an url could look like ftp//server/%2fhome/doe/
+	  and wput will do 'CWD /hopme' and 'CWD doe'.
+	* removed indexOf and replaced all references with strtok or strchr
+	* url-parsing excludes the leading slash on directory-names and
+	  unescapes the filename.
+	* added support for a password-file (<host>\t<user>\t<pass>\n)
+
+Sat Oct 23 22:23:32 CEST 2004
+	* giving up int64 support since there seems to be no
+	  platform-indepentend standart... int64-types remain there. maybe one
+	  day it will be possible
+	* all sockets will now use closesocket() to be closed. win32-sockets
+	  will additionally use shutdown(s,SD_BOTH) before being closed, for
+	  being sure the FIN-packet is issued and the ftp-server notices e.g.
+	  the data-connection to be completed.
+	* added support for rfc-compatible multiline messages (section 4.2)
+	* do_connect now receives and handles the first ftp-message
+
+Tue Oct 12 10:41:20 CEST 2004
+	* added further informative output for errors (ftp-reply-line)
+	* implementation, documentation and handling of error-levels
+	* win32 uses WSAEINTR instead of EINTR
+
+Thu Oct  7 13:22:36 CEST 2004
+	* rewrite of get_msg(), should be fool-proof now.
+	  returns a error_level and saves the reply in the current_connection struct.
+	  => need to rewrite all functions using get_msg()
+	* added read_socket_line()
+	* added current_connection struct. its members where mainly taken from
+	  global_options.
+
+Around Thu Sep 16 22:33:16 CEST 2004
+	* Reorganizing some code (structure, comments, todos)
+	* Adding some fail-aware low-level read/write-functions
+	  => Getting clear about return values => Error handling
+
+Changed Changelog-System since it sucked
+========================================================================
+04/03/09 wput-0.4.1
+.again a bugfix for usernames/passwords with @ (the previous one actually
+caused other trouble *urgs)
+.added read_for_sure() which wraps recv() by adding a timeout and a retry on
+EINTR
+.rewrite of get_msg, which should now work on super-fast and extremly slow
+connections without trouble
+04/08/07 wput-0.4c
+.minor bugfix for passwords with @
+.adopted a patch from Mitry Matyushkov fixing some troubles for
+ multiline-responses
+.minor bugfix in recursive directory search (segfault for ftp://host) 
+04/17/06 wput-0.4b
+.minor bugfix for commandline-parameters (--dont-continue, --proxy*, -u)
+04/26/04 wput-0.4a
+.minor bugfix in url-parsing routine (segfault for ftp://host:port)
+04/20/04 wput-0.4
+.allowing @ (instead of %40) in usernames/passwords (with a warning)
+.fixed ftp://user@host:port/-problem
+.another multiline-response-message-issue-fix
+.fixed some weird segfaults
+04/13/04 wput-0.4 (alpha)
+.--remove-source-files, --wait
+.played around with makefiles and autoconf
+.somehow managed it to create a deb-file
+04/12/04
+.implemented input-pipe support
+.documentation
+04/11/04
+.implemented rate-limit
+.added relative CWD support
+.added summary information
+.fix in rate-/eta-calculation module
+.added timestamping support
+.got square eyes
+04/10/04
+.insert-sort of fsessions
+.win32 fixes with '/' <-> '\\'
+.added memory-debug-support
+ => removed loads of memory-leaks and miscalculated buffers
+.fixed proxy-support (authentication (basic base64), listen (socks))
+.fixed do_abrt-handler (doesn't kill the socket anymore)
+.socket-state-fixes
+04/09/04
+.non-blocking connect fix
+.int64toa (0 case)
+.resume-table handling
+.input-file processing
+.redesign and fixes in local/remote-dir/filename handling
+.skipd-list
+.terminal width recognition
+.changed transfer-speed/ETA calculation method
+.wget-like timeprints
+04/24/01 - 04/08/04
+.complete redesign
+.multiple-url/file input (queue)
+.proxy-support (socks5, http)
+.wgetrc
+.multiline-answer-fix
+.continue/skip/upload possibilities
+.unescaping for username/password
+03/23/11 (wput-0.3.6c)
+.int64-fixes, wrote int64toa() replacing outdated itoa()
+.site-command-fix (was unusable)
+.fix in url-parsing-routine (target_dir-exception)
+03/21/11 (wput-0.3.6)
+.lots of dumb bugs (mostly memory-leaks, too small buffers...)
+ that windows "recognized" but linux did not, were fixed
+.recursive upload capabilities now also for windows
+.some output-design-corrections
+.some int64-ideas, but well... not enough to be compatible
+03/20/11
+.windows-compatibility (mostly addepted)
+.null-passwords
+.minor bugfixes (including the problem that wput won't log
+ in again if transfer breaks while uploading)
+03/18/11 (wput32-0.3.4)
+.a bit of windows-compatibility for wput-0.3.4
+ recursive upload is not implemented in wput for windows yet
+03/11/11 (wput-0.3.5, not released)
+.upgrade to wget's new design (this cool progressbar)
+ this includes also the logging output
+.better time-managment, ETA (for nonlog-mode)
+.support for > 4GB-files (in theory) (64bit ints) untestest yet
+.dynamic buffer-allocation for command-buffers, username,
+ password, paths etc
+03/22/09 (wput-0.3.4c)
+.Added configure-script
+.which should give us support for getopt also on *BSD
+.Added Wall-Option in Makefile and therefore cleaned up
+ a lot of useless / senseless code / header-relations
+03/21/09 (wput-0.3.4)
+.Fixed time-Measure-Problems
+.Add --bind-addr support
+.Lots of bugfixes
+.wput now skips files of one directory if it failed to CWD into it
+ instead of always trying to CWD
+03/20/05 (wput-0.3.3)
+.Improved URL-parsing
+.Improved Commandline Options: now also long options supported
+.CWD only if necessary on recursive uploads
+.Added Connection-Timeout-Support (auto switch to portmode default
+ if connection by PASV fails).
+.Added support for gettimeofday() for a better speed-guess.
+.Hundreds of litte bug-fixes.
+03/19/03 
+.Added simple URL-parsing, removed option-based URLs
+.Added wget-like status information
+.Added support of resuming
+.Added recursive-transfer with only one controll-connection, that
+ is rebuild every time the connection is lost
+01/06/03 wput-0.2
+.Added automatic file transfer mode detection.
+.Added ascii mode transfer
+.Added support of sitecmd execution upon login
+.Added support of user speicified remote site target file name
+.Added support of non-standard ftp port option
+.Minor bug fixes.

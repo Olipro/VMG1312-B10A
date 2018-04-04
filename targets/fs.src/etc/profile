@@ -1,0 +1,360 @@
+# /etc/profile: system-wide .profile file for the Bourne shells
+trap "" 2
+
+export PATH=/home/bin:/home/scripts:/opt/bin:/bin:/sbin:/usr/bin:/usr/local/jamvm/bin:/opt/scripts
+export LD_LIBRARY_PATH=/lib/public:/lib/private:/lib/gpl:/lib
+KERNELVER=2.6.30
+
+# _ZyXEL_, Ryan ,Mobile APP
+
+#// __ZyXEL__, Albert, 20140402, [Feature Enhancement] Add Mobile App Manager
+# echo "*******EmappsS*******"
+# /bin/EmappS &
+
+# TMOUT=0 means no busybox shell timeout.
+# if you want the busybox shell to timeout after some number of seconds of inactivity,
+# change the 0 to the number of seconds, e.g. 300.
+export TMOUT=0
+
+echo
+firsttime=`echo /var/udhcpd/udhcpd.lease*`
+if [ "$firsttime" = "/var/udhcpd/udhcpd.lease*" ]; then
+ echo "Loading drivers and kernel modules... "
+ echo
+# no-op
+# create directory in /var mounted for TMPFS
+ mknod /var/fuse c 10 229
+ chmod a+rw /var/fuse
+ mkdir -p /var/log /var/run /var/state/dhcp /var/ppp /var/udhcpd /var/zebra /var/siproxd /var/cache /var/tmp /var/samba /var/samba/share /var/samba/homes /var/samba/private /var/samba/locks
+ cp  /etc/smb.conf /var/samba/ 2>/dev/null
+
+#wtmp
+ln -s /data/wtmp /var/log/wtmp
+ 
+ echo > /var/udhcpd/udhcpd.leases
+ ifconfig lo 127.0.0.1 netmask 255.0.0.0 broadcast 127.255.255.255 up
+# /etc/modules_install /lib/modules/$KERNELVER/extra
+ test -e /lib/modules/$KERNELVER/extra/bcm_log.ko && insmod /lib/modules/$KERNELVER/extra/bcm_log.ko
+ test -e /lib/modules/$KERNELVER/extra/chipinfo.ko && insmod /lib/modules/$KERNELVER/extra/chipinfo.ko
+ test -e /lib/modules/$KERNELVER/extra/bcm_ingqos.ko && insmod /lib/modules/$KERNELVER/extra/bcm_ingqos.ko
+ test -e /lib/modules/$KERNELVER/extra/bcm_bpm.ko && insmod /lib/modules/$KERNELVER/extra/bcm_bpm.ko
+ test -e /lib/modules/$KERNELVER/extra/pktflow.ko && insmod /lib/modules/$KERNELVER/extra/pktflow.ko fcacheMaxEntries=1024
+ test -e /lib/modules/$KERNELVER/extra/pktcmf.ko && insmod /lib/modules/$KERNELVER/extra/pktcmf.ko
+ test -e /lib/modules/$KERNELVER/extra/bcmfap.ko && insmod /lib/modules/$KERNELVER/extra/bcmfap.ko
+ test -e /etc/cmf/cmfcfg && /etc/cmf/cmfcfg
+ test -e /lib/modules/$KERNELVER/extra/profdrvdd.ko && insmod /lib/modules/$KERNELVER/extra/profdrvdd.ko
+ test -e /lib/modules/$KERNELVER/extra/bcmxtmcfg.ko && insmod /lib/modules/$KERNELVER/extra/bcmxtmcfg.ko
+ test -e /lib/modules/$KERNELVER/extra/ext_bonding.ko && insmod /lib/modules/$KERNELVER/extra/ext_bonding.ko
+ test -e /lib/modules/$KERNELVER/extra/atmapi.ko && insmod /lib/modules/$KERNELVER/extra/atmapi.ko
+ test -e /lib/modules/$KERNELVER/extra/adsldd.ko && insmod /lib/modules/$KERNELVER/extra/adsldd.ko
+ test -e /lib/modules/$KERNELVER/extra/blaa_dd.ko && insmod /lib/modules/$KERNELVER/extra/blaa_dd.ko
+ test -e /lib/modules/$KERNELVER/extra/bcmprocfs.ko && insmod /lib/modules/$KERNELVER/extra/bcmprocfs.ko
+# test -e /lib/modules/$KERNELVER/kernel/net/ipv6/ipv6.ko && insmod /lib/modules/$KERNELVER/kernel/net/ipv6/ipv6.ko
+ test -e /lib/modules/$KERNELVER/kernel/net/atm/br2684.ko && insmod /lib/modules/$KERNELVER/kernel/net/atm/br2684.ko
+ test -e /lib/modules/$KERNELVER/extra/linux-kernel-bde.ko && insmod /lib/modules/$KERNELVER/extra/linux-kernel-bde.ko
+ test -e /lib/modules/$KERNELVER/extra/linux-user-bde.ko && insmod /lib/modules/$KERNELVER/extra/linux-user-bde.ko
+ # enet depends on moca depends on i2c
+ test -e /lib/modules/$KERNELVER/extra/i2c_bcm6xxx.ko && insmod /lib/modules/$KERNELVER/extra/i2c_bcm6xxx.ko
+ test -e /lib/modules/$KERNELVER/extra/bcm3450.ko && insmod /lib/modules/$KERNELVER/extra/bcm3450.ko
+ test -e /lib/modules/$KERNELVER/extra/gpon_i2c.ko && insmod /lib/modules/$KERNELVER/extra/gpon_i2c.ko
+ test -e /lib/modules/$KERNELVER/extra/laser_i2c.ko && insmod /lib/modules/$KERNELVER/extra/laser_i2c.ko
+ test -e /lib/modules/$KERNELVER/extra/bcmmoca.ko && insmod /lib/modules/$KERNELVER/extra/bcmmoca.ko
+ test -e /lib/modules/$KERNELVER/extra/bcm_enet.ko && insmod /lib/modules/$KERNELVER/extra/bcm_enet.ko
+ test -e /lib/modules/$KERNELVER/extra/bcmsw.ko && insmod /lib/modules/$KERNELVER/extra/bcmsw.ko && ifconfig bcmsw up
+ test -e /lib/modules/$KERNELVER/extra/bcm_usb.ko && insmod /lib/modules/$KERNELVER/extra/bcm_usb.ko
+ test -e /lib/modules/$KERNELVER/extra/bcmarl.ko && insmod /lib/modules/$KERNELVER/extra/bcmarl.ko
+
+#WLAN Module
+ test -e /lib/modules/$KERNELVER/extra/wl.ko && insmod /lib/modules/$KERNELVER/extra/wl.ko
+ test -e /etc/wlan/rtecdc.trx && mount -t usbfs none /proc/bus/usb && /bin/bcmdl /etc/wlan/rtecdc.trx && sleep 2 && insmod /lib/modules/$KERNELVER/extra/wl-usb.ko
+ 
+ test -e /lib/modules/$KERNELVER/extra/dect.ko && insmod /lib/modules/$KERNELVER/extra/dect.ko 
+ test -e /lib/modules/$KERNELVER/extra/dectshim.ko && insmod /lib/modules/$KERNELVER/extra/dectshim.ko 
+ test -e /lib/modules/$KERNELVER/extra/dspdd.ko && insmod /lib/modules/$KERNELVER/extra/dspdd.ko
+ test -e /lib/modules/$KERNELVER/extra/endpointdd.ko && insmod /lib/modules/$KERNELVER/extra/endpointdd.ko
+ test -e /lib/modules/$KERNELVER/extra/p8021ag.ko && insmod /lib/modules/$KERNELVER/extra/p8021ag.ko
+
+# other modules
+ test -e /lib/modules/$KERNELVER/extra/isdn.ko && insmod /lib/modules/$KERNELVER/extra/isdn.ko
+ test -e /lib/modules/$KERNELVER/kernel/drivers/isdn/capi/capi.ko && insmod /lib/modules/$KERNELVER/kernel/drivers/isdn/capi/capi.ko 
+
+ # Media Management
+ test -e /bin/mm.exe && /bin/mm.exe &
+ 
+ test -e /lib/modules/$KERNELVER/extra/bcmgpon.ko && insmod /lib/modules/$KERNELVER/extra/bcmgpon.ko
+ test -e /lib/modules/$KERNELVER/extra/bcmvlan.ko && insmod /lib/modules/$KERNELVER/extra/bcmvlan.ko
+ test -e /lib/modules/$KERNELVER/extra/pwrmngtd.ko && insmod /lib/modules/$KERNELVER/extra/pwrmngtd.ko
+ test -e /lib/modules/$KERNELVER/kernel/drivers/char/hw_random/rng-core.ko && insmod /lib/modules/$KERNELVER/kernel/drivers/char/hw_random/rng-core.ko
+ test -e /lib/modules/$KERNELVER/extra/bcmtrng.ko && insmod /lib/modules/$KERNELVER/extra/bcmtrng.ko
+
+ test -e /lib/modules/$KERNELVER/extra/laser_dev.ko && insmod /lib/modules/$KERNELVER/extra/laser_dev.ko
+
+# gponolt test tool
+ test -e /bin/gponolt && /bin/gponolt --daemon
+ 
+ #test -e /bin/mm.exe && sleep 5
+
+
+ # if engineering debug tools are being built, as indicated by presence of
+ # dumpsysinfo.sh, then save a copy of bootup messages for dumping later
+ test -e /opt/scripts/dumpsysinfo.sh && /bin/dmesg > /var/tmp/bootupmessages
+
+# BUILD_GUI_DEBUG
+ 
+ # As final step in system bootup, start smd, which will start configuration
+ # management system (CMS)
+ # __MSTC__, reduce manufacture bootup time, DelonYu
+ #smd
+fi
+#iptk daemon
+ test -e /bin/icf.exe && /bin/icf.exe &
+# __MSTC__, reduce manufacture bootup time, DelonYu start
+ ReduceTimeFlag=$(cat /proc/nvram/ReduceTimeFlag)
+ #echo "get ReduceTimeFlag : $ReduceTimeFlag"
+ if [ $ReduceTimeFlag == "00" ]; then
+  smd
+ else
+  #REPLACE_STRING_IF_SWMDK_BUILD
+  ifconfig eth0 up
+  ifconfig eth1 up
+  ifconfig eth2 up
+  ifconfig eth3 up
+  brctl addbr br0 2>/dev/null
+  brctl addif br0 eth0 2>/dev/null
+  brctl addif br0 eth1 2>/dev/null
+  brctl addif br0 eth2 2>/dev/null
+  brctl addif br0 eth3 2>/dev/null
+  ifconfig br0 192.192.192.4
+  ifconfig wl0 up
+  brctl addif br0 wl0 2>/dev/null
+  wlctl -i wl0 phytype > /var/wl0
+  wlctl -i wl0 revinfo > /var/wl0
+  wlctl -i wl0 bands > /var/wl0bands
+  wlctl -i wl0  ver > /var/wlver 
+  wlctl -i wl0 cap > /var/wl0cap
+  wlctl -i wl0 phy_watchdog 0
+  wlctl -i wl0 up
+  wlctl -i wl0 leddc 0 2>/dev/null
+  wlctl -i wl0 down
+  wlctl -i wl0 wds none
+  wlctl -i wl0 mbss 0
+  wlctl -i wl0 bss -C 0 down
+  wlctl -i wl0 bss -C 1 down
+  wlctl -i wl0 bss -C 2 down
+  wlctl -i wl0 bss -C 3 down
+  wlctl -i wl0 ssid -C 0 'M''F''G'
+  wlctl -i wl0  ap 1
+  wlctl -i wl0 infra 1
+  wlctl -i wl0 closed 0
+  wlctl -i wl0 country US
+  wlctl -i wl0  band b
+  wlctl -i wl0 regulatory 0
+  wlctl -i wl0 radar 0 2>/dev/null
+  wlctl -i wl0 spect 0 2>/dev/null
+  wlctl -i wl0 nmode -1
+  wlctl -i wl0 mimo_bw_cap 1
+  wlctl -i wl0 chanspec -c 4 -b 2 -w 40 -s -1
+  wlctl -i wl0 wpa_cap -C 0 > /var/wpa_cap0 
+  wlctl -i wl0 wpa_cap -C 0 0 2>/dev/null
+  wlctl -i wl0 wpa_cap -C 1 > /var/wpa_cap0 
+  wlctl -i wl0 wpa_cap -C 1 0 2>/dev/null
+  wlctl -i wl0 wpa_cap -C 2 > /var/wpa_cap0 
+  wlctl -i wl0 wpa_cap -C 2 0 2>/dev/null
+  wlctl -i wl0 wpa_cap -C 3 > /var/wpa_cap0 
+  wlctl -i wl0 wpa_cap -C 3 0 2>/dev/null
+  wlctl -i wl0 maxassoc 32
+  wlctl -i wl0 bss_maxassoc 32
+  wlctl -i wl0 gmode Auto
+  wlctl -i wl0 gmode_protection_override -1
+  wlctl -i wl0 gmode_protection_control 2
+  wlctl -i wl0 nmode_protection_override -1
+  wlctl -i wl0 protection_control 2
+  wlctl -i wl0 rifs_advert 0
+  wlctl -i wl0 obss_coex 0
+  wlctl -i wl0 stbc_tx -1
+  wlctl -i wl0 nreqd 0
+  wlctl -i wl0 wme 0 2>/dev/null
+  wlctl -i wl0 afterburner_override 0 2>/dev/null
+  wlctl -i wl0 ampdu 1
+  wlctl -i wl0 afterburner_override 0
+  wlctl -i wl0 wme 1 2>/dev/null
+  wlctl -i wl0 wme_noack 0 2>/dev/null
+  wlctl -i wl0 wme_apsd 1 2>/dev/null
+  wlctl -i wl0 wme_bss_disable 0
+  wlctl -i wl0 plcphdr long
+  wlctl -i wl0 rate 0
+  wlctl -i wl0 bg_rate 0 
+  wlctl -i wl0 bg_mrate 18.0 
+  wlctl -i wl0 rtsthresh 2347
+  wlctl -i wl0 fragthresh 2346
+  wlctl -i wl0 dtim 1
+  wlctl -i wl0  bi 100
+  wlctl -i wl0  bcn_rotate 1
+  wlctl -i wl0 frameburst 1
+  wlctl -i wl0 ap_isolate 0
+  wlctl -i wl0 pwr_percent 100
+  wlctl -i wl0 wmf_bss_enable 0
+  wlctl -i wl0.1 wmf_bss_enable 0
+  wlctl -i wl0.2 wmf_bss_enable 0
+  wlctl -i wl0.3 wmf_bss_enable 0
+  wlctl -i wl0 chanim_mode 1
+  wlctl -i wl0 rxchain_pwrsave_enable 0
+  wlctl -i wl0 rxchain_pwrsave_quiet_time 1800
+  wlctl -i wl0 rxchain_pwrsave_pps 10
+  wlctl -i wl0 radio_pwrsave_enable 0 2>/dev/null
+  wlctl -i wl0 radio_pwrsave_quiet_time 10
+  wlctl -i wl0 radio_pwrsave_pps 10
+  wlctl -i wl0 radio_pwrsave_level 0 2>/dev/null
+  wlctl -i wl0 mac none
+  wlctl -i wl0 macmode 0
+  wlctl -i wl0 up
+  wlctl -i wl0 rmwep -C 0 0
+  wlctl -i wl0 rmwep -C 0 1
+  wlctl -i wl0 rmwep -C 0 2
+  wlctl -i wl0 rmwep -C 0 3
+  wlctl -i wl0 rmwep -C 1 0
+  wlctl -i wl0 rmwep -C 1 1
+  wlctl -i wl0 rmwep -C 1 2
+  wlctl -i wl0 rmwep -C 1 3
+  wlctl -i wl0 rmwep -C 2 0
+  wlctl -i wl0 rmwep -C 2 1
+  wlctl -i wl0 rmwep -C 2 2
+  wlctl -i wl0 rmwep -C 2 3
+  wlctl -i wl0 rmwep -C 3 0
+  wlctl -i wl0 rmwep -C 3 1
+  wlctl -i wl0 rmwep -C 3 2
+  wlctl -i wl0 rmwep -C 3 3
+  wlctl -i wl0  wsec -C 0 0
+  wlctl -i wl0 wsec_restrict -C 0 0
+  wlctl -i wl0 wpa_auth -C 0 0
+  wlctl -i wl0  eap 0
+  wlctl -i wl0 auth -C 0 0
+  wlctl -i wl0 wdswsec 0
+  wlctl -i wl0 wdswsec_enable 0
+  wlctl -i wl0 bss -C 0 up
+  wlctl -i wl0 lazywds 0
+  wlctl -i wl0 wds 
+  wlctl -i wl0 wdstimeout 1
+  wlctl -i wl0 phy_watchdog 1
+  wlctl -i wl0 fcache 1
+  ifconfig wl1 up
+  brctl addif br0 wl1 2>/dev/null
+  wlctl -i wl1 phytype > /var/wl1
+  wlctl -i wl1 revinfo > /var/wl1
+  wlctl -i wl1 bands > /var/wl1bands
+  wlctl -i wl1  ver > /var/wlver
+  wlctl -i wl1 cap > /var/wl1cap
+  wlctl -i wl1 tp_id 1
+  wlctl -i wl1 phy_watchdog 0
+  wlctl -i wl1 up
+  wlctl -i wl1 leddc 0 2>/dev/null
+  wlctl -i wl1 down
+  wlctl -i wl1 wds none
+  wlctl -i wl1 mbss 0
+  wlctl -i wl1 bss -C 0 down
+  wlctl -i wl1 bss -C 1 down
+  wlctl -i wl1 bss -C 2 down
+  wlctl -i wl1 bss -C 3 down
+  wlctl -i wl1 ssid -C 0 'M''S''G''-''5''G''H''z'
+  wlctl -i wl1  ap 1
+  wlctl -i wl1 infra 1
+  wlctl -i wl1 closed 0
+  wlctl -i wl1 country US
+  wlctl -i wl1 band a
+  wlctl -i wl1 regulatory 0
+  wlctl -i wl1 radar 0 2>/dev/null
+  wlctl -i wl1 spect 0 2>/dev/null
+  wlctl -i wl1 nmode -1
+  wlctl -i wl1 bw_cap 5g 7
+  wlctl -i wl1 nar 0
+  wlctl -i wl1 chanspec 112/80
+  wlctl -i wl1 wpa_cap -C 0 > /var/wpa_cap1
+  wlctl -i wl1 wpa_cap -C 0 0 2>/dev/null
+  wlctl -i wl1 wpa_cap -C 1 > /var/wpa_cap1
+  wlctl -i wl1 wpa_cap -C 1 0 2>/dev/null
+  wlctl -i wl1 wpa_cap -C 2 > /var/wpa_cap1
+  wlctl -i wl1 wpa_cap -C 2 0 2>/dev/null
+  wlctl -i wl1 wpa_cap -C 3 > /var/wpa_cap1
+  wlctl -i wl1 wpa_cap -C 3 0 2>/dev/null
+  wlctl -i wl1 maxassoc 32
+  wlctl -i wl1 bss_maxassoc 32
+  wlctl -i wl1 nmode_protection_override -1
+  wlctl -i wl1 protection_control 2
+  wlctl -i wl1 rifs_advert 0
+  wlctl -i wl1 obss_coex 0
+  wlctl -i wl1 stbc_tx -1
+  wlctl -i wl1 nreqd 0
+  wlctl -i wl1 mode_reqd 0
+  wlctl -i wl1 wme 0 2>/dev/null
+  wlctl -i wl1 afterburner_override 0 2>/dev/null
+  wlctl -i wl1 ampdu 1
+  wlctl -i wl1 afterburner_override 0
+  wlctl -i wl1 wme 1 2>/dev/null
+  wlctl -i wl1 wme_noack 0 2>/dev/null
+  wlctl -i wl1 wme_apsd 1 2>/dev/null
+  wlctl -i wl1 wme_bss_disable 0
+  wlctl -i wl1 rate 0
+  wlctl -i wl1 a_rate 0
+  wlctl -i wl1 a_mrate 18.0
+  wlctl -i wl1 rtsthresh 2347
+  wlctl -i wl1 fragthresh 2346
+  wlctl -i wl1 dtim 1
+  wlctl -i wl1  bi 100
+  wlctl -i wl1  bcn_rotate 1
+  wlctl -i wl1 frameburst 1
+  wlctl -i wl1 ap_isolate 0
+  wlctl -i wl1 pwr_percent 100
+  wlctl -i wl1 wmf_bss_enable 0
+  wlctl -i wl1.1 wmf_bss_enable 0
+  wlctl -i wl1.2 wmf_bss_enable 0
+  wlctl -i wl1.3 wmf_bss_enable 0
+  wlctl -i wl1 chanim_mode 1
+  wlctl -i wl1 rxchain_pwrsave_enable 0
+  wlctl -i wl1 rxchain_pwrsave_quiet_time 1800
+  wlctl -i wl1 rxchain_pwrsave_pps 10
+  wlctl -i wl1 radio_pwrsave_enable 0 2>/dev/null
+  wlctl -i wl1 radio_pwrsave_quiet_time 10
+  wlctl -i wl1 radio_pwrsave_pps 10
+  wlctl -i wl1 radio_pwrsave_level 0 2>/dev/null
+  wlctl -i wl1 mac none
+  wlctl -i wl1 macmode 0
+  wlctl -i wl1 up
+  wlctl -i wl1 rmwep -C 0 0
+  wlctl -i wl1 rmwep -C 0 1
+  wlctl -i wl1 rmwep -C 0 2
+  wlctl -i wl1 rmwep -C 0 3
+  wlctl -i wl1 rmwep -C 1 0
+  wlctl -i wl1 rmwep -C 1 1
+  wlctl -i wl1 rmwep -C 1 2
+  wlctl -i wl1 rmwep -C 1 3
+  wlctl -i wl1 rmwep -C 2 0
+  wlctl -i wl1 rmwep -C 2 1
+  wlctl -i wl1 rmwep -C 2 2
+  wlctl -i wl1 rmwep -C 2 3
+  wlctl -i wl1 rmwep -C 3 0
+  wlctl -i wl1 rmwep -C 3 1
+  wlctl -i wl1 rmwep -C 3 2
+  wlctl -i wl1 rmwep -C 3 3
+  wlctl -i wl1  wsec -C 0 0
+  wlctl -i wl1 wsec_restrict -C 0 0
+  wlctl -i wl1 wpa_auth -C 0 0
+  wlctl -i wl1  eap 0
+  wlctl -i wl1 auth -C 0 0
+  wlctl -i wl1 wdswsec 0
+  wlctl -i wl1 wdswsec_enable 0
+  wlctl -i wl1 bss -C 0 up
+  wlctl -i wl1 lazywds 0
+  wlctl -i wl1 wds
+  wlctl -i wl1 wdstimeout 1
+  wlctl -i wl1 phy_watchdog 1
+  wlctl -i wl1 fcache 1
+  fc disable
+  mount -t devpts devpts /dev/pts
+  # generate login files
+  echo "supervisor:3Gnc.CJE1790M:0:0:Administrator:/:/bin/sh" > /var/passwd
+  echo "root::0:root,supervisor,support,user" > /var/group
+  # bring up busybox telnetd (/usr/sbin/telnetd) instead of brcm telnetd (/bin/telnetd)
+  /sbin/telnetd
+ fi
+# __MSTC__, reduce manufacture bootup time, DelonYu end
+

@@ -1,0 +1,164 @@
+<script type="text/javascript">
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+
+$(document).ready(function() {
+var errMsg = "<%ejGetOther(errMsg)%>";
+	if (errMsg != '')
+	{
+		hciAlert(errMsg, 2);
+	}
+});
+
+function addClick() {
+      var loc = 'pages/security/firewall/protocol_add.html';
+      var code = 'location=\"' + loc + '\"';
+
+      var db1 = window.parent.$.zyUiDialog({
+                 width: '75%',
+                 height: 500,
+                 title: '<%ejGetML(MLG_Security_AddService_entry)%>',
+
+                 buttons: {
+                    '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+                    '<%ejGetML(MLG_Common_Apply)%>':function(){}
+                 }
+                });
+      db1.load(loc);
+      db1.dialog('open');
+}
+function editClick(name) {
+   var loc = '/pages/tabFW/firewall-protocolPort.cgi?ServAct=edit&ServName=' + name;
+   loc += '&sessionKey=' + gblsessionKey;
+
+   var db1 = window.parent.$.zyUiDialog({
+              width: '75%',
+              height: 500,
+              title: '<%ejGetML(MLG_Common_Edit)%>',
+
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+                 '<%ejGetML(MLG_Common_Apply)%>':function(){}
+              }
+             });
+   db1.load(loc);
+   db1.dialog('open');
+}
+function removeClick(name) {
+   var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 190,
+              title: ' <%ejGetML(MLG_Common_Delete)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+                 '<%ejGetML(MLG_Common_OK)%>': function(){ db1.dialog('close'); $.openLoadingMask(1); deleteProcess(name); }
+              }
+             });
+         var link = 'pages/delete.html';
+         if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+         link='../../'+link;
+         db1.load(link);
+         db1.dialog('open');
+}
+function deleteProcess(name) {
+   var loc = '/pages/tabFW/firewall-protocolPort.cgi?ServAct=remove&ServName=' + name;
+   loc += '&sessionKey=' + gblsessionKey;
+
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+</script>
+<form>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Security_Note_Str4)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1">
+  <div class="w_table"><input name="Fw_Add" id="Fw_Add" type="button" value="<%ejGetML(MLG_Security_AddService_entry)%>" onclick="addClick();" /></div>
+</li>
+<li class="set1"> 
+<div class="w_table">
+   <table width="100%" cellpadding="0" cellspacing="0" class="table_frame" id="ServiceTable">
+			<tr >
+			<td valign="top" class="top_font"><center><%ejGetML(MLG_Security_FirewallACL_Str9)%>
+			</center></td>
+			<td valign="top" class="top_font"><center><%ejGetML(MLG_Security_FirewallProtocol_Str4)%>
+			</center></td>
+			<td valign="top" class="top_font"><center><%ejGetML(MLG_Security_FirewallProtocol_Str5)%>
+			</center></td>
+			<td width="60" class="top_font"><center>
+			  <%ejGetML(MLG_Security_FirewallProtocol_Str6)%>
+			</center></td>
+			</tr>
+<script>
+<!-- hide
+var tempStr = '<%ejGetOtherBig(sysInfo, serviceLst)%>';
+var ruleMain = tempStr.split('@');
+var newStr = '';
+
+entryNum = '<%ejGet(ServiceEntryNum)%>';
+
+if (parseInt(entryNum) >= 32){
+	$("#Fw_Add").attr("disabled",true);
+}
+
+for (i=0; i<ruleMain.length; i++)
+{//aa|ICMP/N/A|TCP/11/11-22|UDP/Any/Any|Other/2
+	if (ruleMain[i] == '' || ruleMain[i] == undefined)
+		break;
+	var ruleSub = ruleMain[i].split('|'); 
+	//ICMP/N/A| TCP/11/11-22| UDP/Any/Any| Other/2
+	var cmdStr = '';
+	newStr += '<tr align=\"center\">\n';
+	newStr += '<td class="table_font textOverflow">'+ ruleSub[0] +'</td>\n';
+	newStr += '<td class="table_font textOverflow">'+ ruleSub[1] +'</td>\n';
+	
+	for(j=2; j<ruleSub.length; j++)
+	{
+		var ruleSub2 = ruleSub[j].split('/'); 
+		//ICMP/N/A| TCP/11/11-22| UDP/Any/Any| Other/2
+		if (ruleSub2[0] != '' && ruleSub2[0] != undefined)
+		{
+			if (ruleSub2[0] == 'ICMP')
+				cmdStr += '<tr><td>'+ruleSub2[0] + '</td></tr>';
+			else if (ruleSub2[0] == 'ICMPv6')
+				cmdStr += '<tr><td>'+ruleSub2[0]+ ': ' +ruleSub2[1]+'</td></tr>';
+			else if (ruleSub2[0] == 'Other')
+				cmdStr += '<tr><td>'+ruleSub2[0]+ ': ' +ruleSub2[1]+'</td></tr>';
+			else
+				cmdStr += '<tr><td>'+ruleSub2[0]+ ': ' +ruleSub2[1]+'->'+ruleSub2[2]+'</td></tr>';	
+		}	
+	}
+	newStr += '<td class="table_font"><table>'+cmdStr+'</table></td>\n';
+	newStr += "<td class='table_font'><div class='i_modify'><ul>";
+   newStr += "<li><a href='#' class='edit' id='editBtn' title='Edit' onclick=\"editClick('"+ruleSub[0]+"')\"></a></li>";
+   newStr += "<li><a href='#' class='delete' title='Delete' id='deleteBtn' onclick=\"removeClick('"+ruleSub[0]+"')\"></a></li>";
+	newStr += '</ul></div></td></tr>\n';
+}
+$('#ServiceTable').append(newStr);
+
+$(function()
+{
+	$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );  
+});
+
+// done hiding -->
+</script>
+              </table>
+</div><!--Table define end-->
+</li>
+<li class="space"></li>
+<!--level 1 end-->
+<!--Note define start-->
+<li class="space"> </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Security_FirewallProtocol_Str7)%>:</span></div>
+<div class="note_text"><%ejGetML(MLG_Security_FirewallProtocol_Str8)%></div></li>
+<!--Note define end-->
+<li class="space"> </li>
+</ul></div>
+<!--Set area end-->
+</div></form>

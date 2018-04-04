@@ -1,0 +1,11 @@
+ {
+ 'defaultPage':"connectionStatus",
+ "connectionStatus": {
+        "title": "<%ejGetML(MLG_Menu_Tab_ConnStatus)%>",
+        "switchCls": {
+            "off": "mConnectionStatus_off",
+            "on": "mConnectionStatus_on"
+        },
+        "url": "pages/connectionStatus/naviView_partialLoad.html"
+<%ejGetOtherBig(currentmenu)%>
+}

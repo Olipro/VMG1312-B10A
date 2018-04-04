@@ -1,0 +1,51 @@
+Linux-like machines (using unaligned data structures)
+===================
+  wput 0.6: run
+    1) ./configure; make
+    2) make install
+   *3) make uninstall
+ 
+  TLS support is optional and by default enabled, if gnutls-openssl
+  is found. To disable TLS, run:
+    ./configure --without-ssl
+
+  If you want to compile Wput with memory-debugging-support, run
+    ./configure --enable-memdbg
+    make clean
+    make
+    
+  You can reduce the size of the Wput executable by removing the
+  debug-information using:
+    ./configure --disable-g-switch
+    make clean
+    make
+    
+Fedora Core
+===========
+  Someone told me, it is necessary to edit the Makefile and change
+  the first line to
+    prefix	= /usr/share
+
+Windows
+=======
+  Use either the precompiled exe or use the MSVC6-project
+  in src/msvcpp, to compile your own. In this case you will
+  have to copy src/msvcpp/config.h.ms to src/config.h
+  Wput will compile with ssl-support enabled, but will require
+  ssleay32.dll and libeay32.dll to be able to use these features.
+  You might consider copying the exe to %WINDIR% for easy
+  command-line access from all locations.
+  
+SCO
+===
+  If you are using SCO (i know from someone using SCO-openserver)
+  you have to do some extrawork:
+  I don't know why, but make does not compile getopt/getopt.c and
+  getopt/getopt1.c so this has to be done by hand:
+    cd src/getopt
+    gcc -c getopt.c
+    gcc -c getopt1.c
+  There might also be a problem with the isspace function that
+  might be predefined on your system, so it should work if you
+  delete these lines if your compiler complains.
+

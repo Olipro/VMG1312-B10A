@@ -1,0 +1,429 @@
+<script language="javascript">
+<!-- hide
+var glbSessionKey = '<%ejGetOther(sessionKey)%>';
+var sHostname = '<%ejGet(fileSharingHostname)%>';
+var where ="";
+
+function doAddShare(){
+	var capacity = '<%ejGet(logicalVolumeCapacity)%>';
+	if (capacity == 0)
+		return;
+	var db1 = window.parent.$.zyUiDialog({
+        width: 650,
+        height:300,
+        title: '<%ejGetML(MLG_Network_USBService_Str18)%>',
+        buttons: {
+                 '<%ejGetML(MLG_Common_Back)%>': function(){ db1.dialog('close');  },
+                 '<%ejGetML(MLG_Common_Apply)%>':function(){
+                 }
+        }
+    });
+	var link = 'pages/network/usbService/fileSharing_add.html';
+    db1.load(link);
+    db1.dialog('open');
+}
+
+function doAddUser(){
+    var db1 = window.parent.$.zyUiDialog({
+        width: 500,
+        height:325,
+        title: '<%ejGetML(MLG_Network_USBService_Str15)%>',
+        buttons: {
+                 '<%ejGetML(MLG_Common_Back)%>': function(){ db1.dialog('close');  },
+                 '<%ejGetML(MLG_Common_Apply)%>':function(){}
+        }
+    });
+	var link = 'pages/network/usbService/fileuser_add.html';
+    db1.load(link);
+    db1.dialog('open');
+}
+
+function collectionInactiveDirs() {
+    var f = document.forms[0];
+    var text = "";
+	var first = true;
+	var res = "";
+    for (i = 0; i < f.BrowseShareDir.length; i++) {
+		if (!f.BrowseShareDir[i].checked) {
+			if (first == true) {
+				text = f.BrowseShareDir[i].value;
+				first = false;
+				continue;
+			}
+			text = text + "," + f.BrowseShareDir[i].value;
+		}
+    }
+	res = decodeURI(text);
+    f.inactiveDirs.value = res;
+}
+
+function collectionInactiveUsers() {
+    var f = document.forms[0];
+    var text = "";
+	var first = true;	
+    for (i = 0; i < f.BrowseUser.length; i++) {
+		if (!f.BrowseUser[i].checked) {
+			if (first == true) {
+				text = f.BrowseUser[i].value;
+				first = false;
+				continue;
+			}
+			text = text + "," + f.BrowseUser[i].value;
+		}
+    }
+	f.storage.value = where;
+    f.inactiveUsers.value = text;
+}
+
+function btnSave() {
+var tempHostname;
+
+	with ( document.forms[0] ) {
+	
+	sessionKey.value = glbSessionKey;
+	if(fileSharing_Enable[0].checked) {
+		enblFileSharing.value=1;
+	}
+	else {
+		enblFileSharing.value=0;
+	}
+
+	tempHostname=aHostName.value;	
+	fileSharingHostname.value=tempHostname;
+	
+	collectionInactiveDirs();
+	collectionInactiveUsers();
+
+	action.value = "save";	
+	$.openLoadingMask(1);
+	submit();
+
+   }
+}
+
+function frmLoad()
+{
+	var errMsg = "<%ejGetOther(errMsg)%>";
+    if (errMsg != '') {
+      hciAlert(errMsg, {height: 180,type: 2, title: ''});
+    }
+   var enblFile = '<%ejGet(enblFileSharing)%>';
+   with ( document.forms[0] ) {
+   		aHostName.value=sHostname;
+        if (enblFile == 1) {
+            fileSharing_Enable[0].checked = true;
+			document.getElementById("space1").style.display = "block";
+			document.getElementById("block1").style.display = "block";
+        }
+        else {
+            fileSharing_Enable[1].checked = true;
+			document.getElementById("space1").style.display = "none";
+			document.getElementById("block1").style.display = "none";
+        }
+    }
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+function doEditDir(path, guestok, comment) {
+	var str = path.split('/');
+	var text1 = str[2];
+	var text2 = str[3];
+	if (path == "/mnt/usb1_1"){
+		text2="usb";   
+	}
+	var loc = 'usbService-filesharing.cmd?action=viewcfg&storage='+text1+'&dirName='+text2+'&pathName='+path+'&guestok='+guestok+'&comment='+comment+'&sessionKey='+glbSessionKey;
+    var res = encodeURI(loc);
+	var db1 = window.parent.$.zyUiDialog({
+        width: 650,
+        height:300,
+        title: '<%ejGetML(MLG_Common_Modify)%> Share Directory',
+        buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close');  },
+                 '<%ejGetML(MLG_Common_Apply)%>':function(){}
+        }
+    });
+	
+    db1.load(res);
+    db1.dialog('open');
+}
+
+function deleteDirProcess(name, path) {
+	var str = name.split('/');
+	var text1 = str[2];
+	var text2 = path;
+	with ( document.forms[0] ) {
+		sessionKey.value = glbSessionKey;
+		storage.value = text1;
+		dirName.value = text2;
+		action.value = "removeDir";
+
+		$.openLoadingMask(1);
+		document.forms[0].submit();
+	}
+}
+
+function doDeleteDir(name, path) {
+   var db1 = window.parent.$.zyUiDialog({
+               width: 450,
+               height: 200,
+               title: '<%ejGetML(MLG_Common_Delete)%> Share Directory',
+               buttons: {
+                  '<%ejGetML(MLG_Common_No)%>': function(){ db1.dialog('close'); },
+                  '<%ejGetML(MLG_Common_Yes)%>': function(){ db1.dialog('close'); deleteDirProcess(name, path); }
+               }
+   });
+
+   db1.load('/pages/delete.html');
+   db1.dialog('open');
+}
+
+function doEditUser(name) {
+	var loc = 'usbService-filesharing.cmd?action=view&userAccount='+name+'&sessionKey='+glbSessionKey;
+	var db1 = window.parent.$.zyUiDialog({
+        width: 500,
+        height:325,
+        title: '<%ejGetML(MLG_Common_Edit)%> <%ejGetML(MLG_Common_User)%>',
+        buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close');  },
+                 '<%ejGetML(MLG_Common_Apply)%>':function(){}
+        }
+    });
+	
+    db1.load(loc);
+    db1.dialog('open');
+}
+
+function deleteUserProcess(index) {
+   with ( document.forms[0] ) {
+      sessionKey.value = glbSessionKey;
+	  userIndex.value = index;
+	  action.value = "removeUser";
+
+      $.openLoadingMask(1);
+      document.forms[0].submit();
+   }
+}
+
+function doDeleteUser(index) {
+   var db1 = window.parent.$.zyUiDialog({
+               width: 450,
+               height: 200,
+               title: '<%ejGetML(MLG_Common_Delete)%> <%ejGetML(MLG_Common_User)%> <%ejGetML(MLG_System__Log_Str22)%>',
+               buttons: {
+                  '<%ejGetML(MLG_Common_No)%>': function(){ db1.dialog('close'); },
+                  '<%ejGetML(MLG_Common_Yes)%>': function(){ db1.dialog('close'); deleteUserProcess(index); }
+               }
+   });
+
+   db1.load('/pages/delete.html');
+   db1.dialog('open');
+}
+// done hiding -->
+</script>
+<form action="/pages/tabFW/usbService-filesharing.cmd" method="post">
+<input name="enblFileSharing" type="HIDDEN" id="enblFileSharing" value=""; />
+<input name="storage" type="HIDDEN" id="storage" value=""; />
+<input name="dirName" type="HIDDEN" id="dirName" value=""; />
+<input name="pathName" type="HIDDEN" id="pathName" value=""; />
+<input name="inactiveDirs" type="HIDDEN"  id="inactiveDirs" value=""; />
+<input name="userIndex" type="HIDDEN"  id="userIndex" value=""; />
+<input name="userAccount" type="HIDDEN"  id="userAccount" value=""; />
+<input name="inactiveUsers" type="HIDDEN"  id="inactiveUsers" value=""; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""; />
+<input name="action" type="HIDDEN" id="action" value=""; />
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Network_USBService_Str1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1">
+    <div class="title"><%ejGetML(MLG_Common_Information)%></div>
+    <div class="w_table">
+        <table width="50%" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame" id="infoTable">
+            <tr align="center">
+                <td class="top_font textOverflow" width="50%"><%ejGetML(MLG_Network_USBService_Str20)%></td>
+                <td class="top_font textOverflow" width="25%"><%ejGetML(MLG_Network_USBService_Str11)%></td>
+                <td class="top_font textOverflow" width="25%"><%ejGetML(MLG_Network_USBService_Str12)%></td>
+            </tr>
+            <tr align="center">
+                <td class="table_font" width="50%" id="logicalVolumeName"><%ejGet(logicalVolumeName)%></td>
+                <td class="table_font" width="25%" id="logicalVolumeCapacity"><%ejGet(logicalVolumeCapacity)%></td>
+                <td class="table_font" width="25%" id="logicalVolumeUsedSpace"><%ejGet(logicalVolumeUsedSpace)%></td>
+            </tr>
+            <tr align="center">
+                <td class="table_font" width="50%" id="logicalVolumeName2"><%ejGet(logicalVolumeName2)%></td>
+                <td class="table_font" width="25%" id="logicalVolumeCapacity2"><%ejGet(logicalVolumeCapacity2)%></td>
+                <td class="table_font" width="25%" id="logicalVolumeUsedSpace2"><%ejGet(logicalVolumeUsedSpace2)%></td>
+            </tr>
+        </table>
+   </div>
+</li>
+<li class="space"> </li>
+<li class="set1">
+   <div class="title"><%ejGetML(MLG_Network_USBService_Str13)%></div>
+   <div class="w_text">
+    <ul>
+      <li class="left_table"><%ejGetML(MLG_Network_USBService_Str2)%> </li>
+      <li class="right_table">
+        <input name="fileSharing_Enable" type="radio" value="0" />
+        <%ejGetML(MLG_Common_Enable)%>
+        <input name="fileSharing_Enable" type="radio" value="1" />
+        <%ejGetML(MLG_Common_Disable)%>
+      </li>
+    </ul>
+    <ul>
+      <li class="left_table"><%ejGetML(MLG_Network_halfBridge_Str9)%>:</li>
+      <li class="right_table"><input type="text" name='aHostName'><input type="hidden" name="fileSharingHostname" id="fileSharingHostname" value=""></li>
+    </ul>
+    </div>
+</li>
+<li class="space" id="space1" style="display:none"> </li>
+<li class="set1" id="block1" style="display:none">
+    <div class="title"><%ejGetML(MLG_Network_USBService_Str17)%></div>
+    <div class="w_table"><input type="button" value="Add New Share" id="addnewshareBtn" onClick="doAddShare()" /></div>
+    <div class="w_table">
+        <table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame" id="sharedirlistTable">
+            <tr align="center">
+                <td class="top_font" width="10%"><%ejGetML(MLG_Common_Active)%></td>
+                <td class="top_font" width="10%"><%ejGetML(MLG_Common_Status)%></td>
+                <td class="top_font textOverflow" width="20%"><%ejGetML(MLG_Common_Name)%></td>
+                <td class="top_font textOverflow" width="25%"><%ejGetML(MLG_Common_Path)%></td>
+                <td class="top_font textOverflow" width="25%"><%ejGetML(MLG_Common_Description)%></td>
+                <td class="top_font" width="10%" style="border-right:0px;"><%ejGetML(MLG_Common_Modify)%></td>
+            </tr>
+            <tr align="center" style="display:none;">
+                <td class="table_font"><input type="checkbox" checked="checked" name="BrowseShareDir" value="%s" style="display:none;" /></td>
+                <td class="top_font" width="10%" style="display:none;"></td>
+                <td class="top_font textOverflow" width="20%" style="display:none;"></td>
+                <td class="top_font textOverflow" width="25%" style="display:none;"></td>
+                <td class="top_font textOverflow" width="25%" style="display:none;"></td>
+                <td class="top_font" width="10%" style="border-right:0px;" style="display:none;"></td>
+            </tr>
+<script language="javascript">
+<!-- hide
+{
+	var i = 0;
+	var browseShareDir = '<%ejGetOtherBig(browseShareDir)%>';
+	var info = browseShareDir.split('|');
+	var str = '';
+	var count = 0;
+	var res;
+	if (info != '') {
+		for (i = 0; i < info.length; i++) {
+			count++;
+			var tmp = info[i].split(':');
+			str += ' <tr align=\'center\'>';
+		    res = encodeURI(tmp[0]);
+			if (tmp[1] == "yes") {
+				str += ' <td class="table_font"><input type="checkbox" checked="checked" name="BrowseShareDir" value=' + res + ' /></td>';
+				if (tmp[2] == "yes") {
+					str += ' <td class="table_font"><img src="../../../images/i_share_enable.gif" /></td>';
+				}
+				else {
+					str += ' <td class="table_font"><img src="../../../images/i_security_share_enable.gif" /></td>';
+				}
+			}
+			else {
+				str += ' <td class="table_font"><input type="checkbox" name="BrowseShareDir" value=' + res + ' /></td>';
+				str += ' <td class="table_font"><img src="../../../images/i_share_disable.gif" /></td>';
+			}
+			str += ' <td class="table_font textOverflow">' + tmp[0] + '</td>';
+			str += ' <td class="table_font textOverflow">' + tmp[3] + '</td>';
+			str += ' <td class="table_font textOverflow">' + tmp[4] + '</td>';
+			str += ' <td class="table_font"><div class="i_modify"><ul>';
+			str += ' <li><a href="#" class="edit" id="editBtn" title="<%ejGetML(MLG_Common_Edit)%>" onClick="doEditDir(\''+ tmp[3]+'\',\''+tmp[2]+'\',\''+tmp[4]+'\')" /></a></li>';
+			str += ' <li><a href="#" class="delete" id="deleteBtn" title="<%ejGetML(MLG_Common_Delete)%>" onClick="doDeleteDir(\''+ tmp[3] + '\',\''+ tmp[0] + '\')" /></a></li>';
+			str += ' </ul></div></td>';
+			str += ' </tr>';
+		}
+	}
+	$('#sharedirlistTable').append(str);
+	$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );
+
+	var x = tmp[3].split('/');
+	var y = x[2];
+	where = y;
+//alert(where);
+}
+// done hiding -->
+</script>
+        </table>
+   </div>
+</li>
+<li class="space" id="space2"> </li>
+<li class="set1" id="block2">
+    <div class="title"><%ejGetML(MLG_Network_USBService_Str14)%></div>
+    <div class="w_table"><input type="button" value="<%ejGetML(MLG_Network_USBService_Str15)%>" id="addnewuserBtn" onClick="doAddUser()" /></div>
+    <div class="w_table">
+        <table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame" id="accountManagementTable">
+            <tr align="center">
+                <td class="top_font" width="10%"><%ejGetML(MLG_Common_Active)%></td>
+                <td class="top_font" width="10%"><%ejGetML(MLG_Common_Status)%></td>
+                <td class="top_font textOverflow" width="70%"><%ejGetML(MLG_Common_User_Name)%></td>
+                <td class="top_font" width="10%" style="border-right:0px;"><%ejGetML(MLG_Common_Modify)%></td>
+            </tr>
+            <tr align="center" style="display:none;">
+                <td class="table_font"><input type="checkbox" checked="checked" name="BrowseUser" value="%s" style="display:none;" /></td>
+                <td class="table_font" width="10%" style="display:none;"></td>
+                <td class="table_font textOverflow" width="70%" style="display:none;"></td>
+                <td class="table_font" width="10%" style="border-right:0px;" style="display:none;"></td>
+            </tr>
+<script language="javascript">
+<!-- hide
+{
+	var i = 0;
+	var browseUser = '<%ejGetOtherBig(browseUser)%>';
+	var info = browseUser.split('|');
+	var str = '';
+	var count = 0;
+	
+	if (info != '') {
+		for (i = 0; i < info.length; i++) {
+			count++;
+			var tmp = info[i].split('/');
+			str += ' <tr align=\'center\' >';
+			if (tmp[0] == "enable") {
+				str += ' <td class="table_font"><input type="checkbox" checked="checked" name="BrowseUser" value=' + tmp[1]+ ' /></td>';
+				str += ' <td class="table_font"><img src="../../../images/i_user_active.gif" /></td>';
+			}
+			else {
+				str += ' <td class="table_font"><input type="checkbox" name="BrowseUser" value=' + tmp[1] + ' /></td>';
+				str += ' <td class="table_font"><img src="../../../images/i_user_inactive.gif" /></td>';
+			}
+			str += ' <td class="table_font">' + tmp[1] + '</td>';
+			str += ' <td class="table_font"><div class="i_modify"><ul>';
+			str += ' <li><a href="#" class="edit" id="editBtn" title="<%ejGetML(MLG_Common_Edit)%>" onClick="doEditUser(\''+tmp[1]+'\')" /></a></li>';
+			str += ' <li><a href="#" class="delete" id="deleteBtn" title="<%ejGetML(MLG_Common_Delete)%>" onClick="doDeleteUser(\''+count+'\')" /></a></li>';
+			str += ' </ul></div></td>';
+			str += ' </tr>';
+		}
+	}
+	
+	$('#accountManagementTable').append(str);
+}
+// done hiding -->
+</script>
+        </table>
+    </div>
+</li>
+<li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe">
+<div class="button_position">
+<input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="btnSave();"/>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick="frmLoad();"/>
+</div>
+</li>
+<!--Button define end-->
+</ul>
+</div>
+</div>
+<br/><br/>
+</form>
+

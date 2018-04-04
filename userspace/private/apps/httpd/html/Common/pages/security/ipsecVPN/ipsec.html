@@ -1,0 +1,162 @@
+<script language='javascript'>
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+var ipSecList = "<%ejGetOther(ipsecLst)%>";
+var maxIpsecNumber = "<%ejGetOther(maxIpsec)%>";
+var ipsecNum = ipSecList.split('@');
+
+function addClick() {
+	if ( (ipsecNum.length - 1) > maxIpsecNumber){
+		hciAlert('<%ejGetML(MLG_Security_IPSecVPNSetting_AlertMsg_Str1)%>');
+		return;
+	}
+	else{
+   	  var ipsec = window.parent.$.zyUiDialog({
+                 width: '75%',
+                 height: 450,
+                 title: '<%ejGetML(MLG_Security_IPSecVPNSetting_Str51)%>',
+
+                 buttons: {
+                    '<%ejGetML(MLG_Common_Cancel)%>': function(){ ipsec.dialog('close'); },
+                    '<%ejGetML(MLG_Common_OK)%>':function(){}
+                 }
+                });
+      ipsec.load("/pages/security/ipsecVPN/ipSecConfig.html");
+      ipsec.dialog('open');
+	}
+}
+
+function editClick(edit_name) {
+   var lst = edit_name.toString() + ",";
+   var loc = 'ipsecVPN-ipsec.cmd?action=viewcfg&editname=' + lst;
+   loc += '&sessionKey='+glbSessionKey;
+   var ipsec = window.parent.$.zyUiDialog({
+              width: '75%',
+              height: 450,
+              title: '<%ejGetML(MLG_Security_IPSecVPNSetting_Str52)%>',
+
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ ipsec.dialog('close'); },
+                 '<%ejGetML(MLG_Common_OK)%>':function(){}
+              }
+   });
+
+   ipsec.load(loc);
+   ipsec.dialog('open');
+}
+
+function removeClick(rml) {
+
+   var ipsec = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 190,
+              title: '<%ejGetML(MLG_Common_Delete)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ ipsec.dialog('close'); },
+                 '<%ejGetML(MLG_Common_OK)%>': function(){ ipsec.dialog('close'); rmlClick(rml); }
+              }
+             });
+   ipsec.load('/pages/delete.html');
+   ipsec.dialog('open');
+}
+
+function rmlClick(rmlconn)
+{
+	with ( document.forms[0] ) {
+		action.value="remove";
+		rmLst.value=rmlconn;
+		sessionKey.value = glbSessionKey;
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+</script>
+
+<div class="content_frame" >
+
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Security_IPSecVPNSetting_Str1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->	
+
+<!--Set area start-->
+<form action="/pages/tabFW/ipsecVPN-ipsec.cmd" method="post">
+<input type=hidden name="action" id="action" value="">
+<input type=hidden name="rmLst" id="rmLst" value="">
+<input type=hidden name="sessionKey" id="sessionKey" value="">
+<div class="data_frame"><ul>
+<!--level 1 start-->
+<li class="set1">
+<!--Button define start-->
+<div class="button_other">
+	<span class="none_right"><input type='button' onClick='addClick()' value='<%ejGetML(MLG_Security_IPSecVPNSetting_Str2)%>'> </span>
+</div>
+</li>
+<li class="set1">
+<!--Button define end-->
+<div class="w_table">
+  <!--Table define start--><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="ipsecRulesTable">
+                <tr align="center">
+                  <td valign="top" class="top_font">#</td>
+                  <td class="top_font"><%ejGetML(MLG_Common_Status)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Security_IPSecVPNSetting_Str3)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Security_IPSecVPNSetting_Str4)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Security_IPSecVPNSetting_Str5)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Security_IPSecVPNSetting_Str6)%></td>
+                  <td width="60" class="top_font" style="border-right:0px;"><%ejGetML(MLG_Common_Modify)%></td>
+                </tr>
+ <script>
+<!-- hide
+var strA = ipSecList.split('@');
+var newStr = '';
+
+var errMsg = "<%ejGetOther(errMsg)%>";
+if (errMsg != '') {
+       hciAlert(errMsg, {height: 180,type: 2, title: ''});
+}
+
+for (i=1; i<strA.length; i++)
+{
+        if (strA[i] == '' || strA[i] == undefined)
+                break;
+        var strB = strA[i].split('|');
+
+   newStr += '<tr>\n';
+   newStr += '<td align=\'center\' class="table_font">'+i+'</td>\n';
+   newStr += '<td align=\'center\' class="table_font">'+strB[0]+'</td>\n';
+   newStr += '<td align=\'center\' class="table_font">'+strB[1]+'</td>\n'; 
+   newStr += '<td align=\'center\' class="table_font">'+strB[2]+'</td>\n';
+   newStr += '<td align=\'center\' class="table_font">'+strB[3]+'</td>\n'; 
+   newStr += '<td align=\'center\' class="table_font">'+strB[4]+'</td>\n';
+   newStr += "<td class='table_font'><div class='i_modify'><ul><li><a href='#' class='edit' id='editBtn' title='<%ejGetML(MLG_Common_Edit)%>' onclick=\"editClick('"+strB[1]+"')\"></a></li><li><a href='#' class='delete' id='deleteBtn' title='<%ejGetML(MLG_Common_Delete)%>' onclick=\"removeClick('"+strB[1]+"')\"></a></li></ul></div></td>\n";
+   newStr += '</tr>\n';
+}
+$('#ipsecRulesTable').append(newStr);
+$(function()
+{
+    $('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );
+    $('.textOverflow').ellipsis(true);
+});
+// done hiding -->
+
+</script>
+  </table>
+</div>
+<!--Table define end-->
+</li>
+<!--level 1 end-->
+
+
+<li class="space"> </li>
+
+
+
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Common_Note)%>:</span></div>
+<div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_Security_IPSecVPNSetting_Str7)%></div></li>
+</ul></div>
+
+</form> 
+<!--Set area end-->		
+</div>

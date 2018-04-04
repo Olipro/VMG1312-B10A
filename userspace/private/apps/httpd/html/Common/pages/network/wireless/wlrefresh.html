@@ -1,0 +1,33 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+            <script language="javascript">
+<!-- hide
+var wltempPage = '<%ejGetWirelessRefresh()%>';
+var wltargetPage = '<%ejGetWirelessPage()%>';
+var wlRefresh = '<%ejGetWl(wlRefresh)%>';
+var wlRefreshTime = <%ejGet(wlRefreshTime)%>;
+
+// shared function to refresh a page
+function refreshPage(page) {
+      var code = 'location="' + page + '"'; 
+      window.defaultStatus = '';        
+      eval(code); 
+}
+// shared wrapper function to refresh a page
+function autoRefresh(val, refresh, page) {
+   
+   if ( val == '1' ) {       
+        setTimeout('refreshPage("'+ refresh + '")' ,wlRefreshTime);                                 
+        window.defaultStatus = '<%ejGetML(MLG_WLAN_Refresh_Str1)%>';       
+   } else {
+        refreshPage(page);
+   	window.defaultStatus = '';
+   }
+}
+autoRefresh(wlRefresh, wltempPage, wltargetPage);
+</script>
+</head>
+<body>
+</body>
+</html>

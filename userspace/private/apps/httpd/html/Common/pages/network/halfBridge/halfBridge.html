@@ -1,0 +1,80 @@
+<div class="content_frame">
+  <!--Unit Explain start-->
+  <div class="explain">
+    <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+    <div class="explain_text"><%ejGetML(MLG_Network_halfBridge_Str1)%></div>
+    <div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+  </div>
+  <!--Unit Explain End-->
+  <div class="data_frame">
+    <ul>
+      <li class="set1">
+        <div class="title"><%ejGetML(MLG_Network_halfBridge_Str2)%></div>
+        <div class="w_text">
+		<ul>
+            <li>
+              <input type="checkbox" name="sysDHCPServer" value="DHCPServer" checked> <%ejGetML(MLG_Network_halfBridge_Str3)%></li>
+          </ul>
+		  <ul>
+            <li><%ejGetML(MLG_Network_halfBridge_Str4)%></li>
+          </ul>
+		  </div>
+		  </li>
+		  <li class="set2">
+		    <div class="w_text">
+          <ul>
+           <li>
+               <input type="radio" name="wan_DynIP" value="DynamicIP" />
+					  <%ejGetML(MLG_Network_halfBridge_Str5)%></li>
+          </ul>
+		  <ul>
+           <li>
+               <input type="radio" name="wan_DynIP" value="DynamicIP2" />
+					  <%ejGetML(MLG_Network_halfBridge_Str6)%>
+					  <input type="text" name="sysPoolStartingAddr" value="00:00:00:00:00:00:00" size="20" maxlength="20" disabled="disabled" ></li>
+          </ul>
+		  <ul>
+           <li>
+               <input type="radio" name="wan_DynIP" value="DynamicIP3" checked/>
+					  <%ejGetML(MLG_Network_halfBridge_Str7)%></li>
+          </ul>
+		  </div>
+      </li>
+      <li class="space"></li>
+      <li class="set1">
+        <div class="title"><%ejGetML(MLG_Network_halfBridge_Str8)%></div>
+        <div class="w_table">
+<table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame" id="UpdatePolicyTable">
+                <tr align="center" valign="top">
+                  <td width="5%" class="top_font">#</td>
+                  <td class="top_font"><%ejGetML(MLG_Common_Status)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Network_halfBridge_Str9%></td>
+                  <td class="top_font"><%ejGetML(MLG_Common_IPAddress)%></td>
+                  <td class="top_font textOverflow"><%ejGetML(MLG_Common_MACAddress)%></td>
+                  <td  class="top_font"><%ejGetML(MLG_Network_halfBridge_Str1)%></td>
+                </tr>
+                <tr align="center">
+                  <td class="table_font">1</td>
+                  <td class="table_font"><img src="../../images/i_active_off.gif" width="18" height="18" /></td>
+                  <td class="table_font">twpc1996</td>
+                  <td class="table_font">192.168.1.65</td>
+                  <td class="table_font">00:1d:92:de:11:23</td>
+                  <td class="table_font"><span class="tabcolor2">
+                    <input type="radio" name="DHCP_ClientReserve1" value="DHCPServer" checked="checked" />
+                  </span></td>
+                </tr>
+              </table>
+</div>
+      </li>
+	  <li class="space"> </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Network_Note)%>:</span></div><div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_Network_halfBridge_Str10)%></div></li>
+<!--Note define end-->
+	  <li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="submit" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="reset" /></div></li>
+<!--Button define end-->
+    </ul>
+  </div>
+</div>
+<br/><br/>

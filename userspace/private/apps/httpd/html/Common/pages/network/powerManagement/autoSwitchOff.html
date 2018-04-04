@@ -1,0 +1,537 @@
+<script language='javascript'>
+	
+var enbl = '<%ejGetWl(wlEnbl)%>'; 
+var Dslenbl = "<%ejGetOther(pmDslEn, all)%>";
+var Ethwanenbl = "<%ejGetOther(pmEthWanEn, all)%>";
+var Lan1enbl = "<%ejGetOther(pmLanPort1En, all)%>";
+var Lan2enbl = "<%ejGetOther(pmLanPort2En, all)%>";
+var Lan3enbl = "<%ejGetOther(pmLanPort3En, all)%>";
+var Lan4enbl = "<%ejGetOther(pmLanPort4En, all)%>";
+var Ledenbl = "<%ejGetOther(pmLedEn, all)%>";
+
+var WlOriginalEnbl = "<%ejGetOther(wlOrigiinal_Enable)%>"; 
+var DslOriginalEnbl = "<%ejGetOther(dslOrigiinal_Enable)%>";
+var EthwanOriginalEnbl = "<%ejGetOther(ethwanOrigiinal_Enable)%>";
+var Lan1OriginalEnbl = "<%ejGetOther(lan1Origiinal_Enable)%>";
+var Lan2OriginalEnbl = "<%ejGetOther(lan2Origiinal_Enable)%>";
+var Lan3OriginalEnbl = "<%ejGetOther(lan3Origiinal_Enable)%>";
+var Lan4OriginalEnbl = "<%ejGetOther(lan4Origiinal_Enable)%>";
+var LedOriginalEnbl = "<%ejGetOther(ledOrigiinal_Enable)%>";
+
+var WlschedulEnbl = "<%ejGetOther(wlschedule_Enable)%>"; 
+var DslschedulEnbl = "<%ejGetOther(dslschedule_Enable)%>";
+var EthwanschedulEnbl = "<%ejGetOther(ethwanschedule_Enable)%>";
+var Lan1schedulEnbl = "<%ejGetOther(lan1schedule_Enable)%>";
+var Lan2schedulEnbl = "<%ejGetOther(lan2schedule_Enable)%>";
+var Lan3schedulEnbl = "<%ejGetOther(lan3schedule_Enable)%>";
+var Lan4schedulEnbl = "<%ejGetOther(lan4schedule_Enable)%>";
+var LedschedulEnbl = "<%ejGetOther(ledschedule_Enable)%>";
+
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+var schList = "<%ejGetOther(getSchList)%>";
+var wlschList = "<%ejGetOther(getWlSchList)%>";
+var lan1schList = "<%ejGetOther(getLan1SchList)%>";
+var entryNum = '<%ejGet(ruleEntryNum)%>';
+var errMsg = '<%ejGetOther(errMsg)%>';
+var NtpEnbl = '<%ejGet(ntp_enabled)%>';
+
+
+function btnApply()
+{
+	 with ( document.forms[0] ) 
+	{
+		sessionKey.value = gblsessionKey;
+		action.value="active";
+
+    var strA = schList.split('@');
+	var cntWl=0,cntDsl=0,cntEthwan=0,cntLan1=0,cntLan2=0,cntLan3=0,cntLan4=0,cntLed=0;
+    
+	if(strA.length <= 3)
+	{
+      if(wlSched.checked == true)
+	  	 cntWl++;
+	  if(dslSched.checked == true)
+	  	 cntDsl++;
+	  if(ethwanSched.checked == true)
+	  	 cntEthwan++;
+	  if(lan1Sched.checked == true)
+	  	 cntLan1++;
+	  if(lan2Sched.checked == true)
+	  	 cntLan2++;
+	  if(lan3Sched.checked == true)
+	  	 cntLan3++;
+	  if(lan4Sched.checked == true)
+	  	 cntLan4++;
+	  if(ledSched.checked == true)
+	  	 cntLed++;	  
+	}
+    else {
+	  cntWl=0,cntDsl=0,cntEthwan=0,cntLan1=0,cntLan2=0,cntLan3=0,cntLan4=0,cntLed=0;
+    for (i=1; i<strA.length; i++)
+    {
+	  if (strA[i] == '' || strA[i] == undefined)
+		 break;
+	  if(wlSched[i-1].checked == true)
+	  	 cntWl++;
+	  if(dslSched[i-1].checked == true)
+	  	 cntDsl++;
+	  if(ethwanSched[i-1].checked == true)
+	  	 cntEthwan++;
+	  if(lan1Sched[i-1].checked == true)
+	  	 cntLan1++;
+	  if(lan2Sched[i-1].checked == true)
+	  	 cntLan2++;
+	  if(lan3Sched[i-1].checked == true)
+	  	 cntLan3++;
+	  if(lan4Sched[i-1].checked == true)
+	  	 cntLan4++;
+	  if(ledSched[i-1].checked == true)
+	  	 cntLed++;	  
+    }
+    }
+	
+	if(cntWl != 0)
+   		 enableWlan.value=1;
+    else
+   	   enableWlan.value=0;
+
+	if(cntDsl != 0)
+   	   enableDsl.value=1;
+    else
+   	   enableDsl.value=0;	
+
+	if(cntEthwan != 0)
+   	   enableEthwan.value=1;
+    else
+   	   enableEthwan.value=0;	
+
+	if(cntLan1 != 0)
+   	   enableLan1.value=1;
+    else
+   	   enableLan1.value=0;
+	
+	if(cntLan2 != 0)
+   	   enableLan2.value=1;
+    else
+   	   enableLan2.value=0;
+
+	if(cntLan3 != 0)
+   	   enableLan3.value=1;
+    else
+   	   enableLan3.value=0;	
+
+	if(cntLan4 != 0)
+   	   enableLan4.value=1;
+    else
+   	   enableLan4.value=0;	
+
+	if(cntLed != 0)
+   	   enableLed.value=1;
+    else
+   	   enableLed.value=0;	
+
+	originalWlanStatus.value=enbl;
+	originalDslStatus.value=Dslenbl;
+	originalEthwanStatus.value=Ethwanenbl;
+	originalLan1Status.value=Lan1enbl;
+	originalLan2Status.value=Lan2enbl;
+	originalLan3Status.value=Lan3enbl;
+	originalLan4Status.value=Lan4enbl;
+	originalLedStatus.value=Ledenbl;
+	
+/*   	   
+   if( ( WlschedulEnbl == 0)&&(cntWl != 0)){
+        originalWlanStatus.value=enbl;
+        //hciAlert( originalWlanStatus.value, {height: 180,type: 2, title: ''});
+   }
+   else
+        originalWlanStatus.value=WlOriginalEnbl;
+
+   if( ( DslschedulEnbl == 0)&&(cntDsl != 0)){
+        originalDslStatus.value=Dslenbl;
+   }
+   else
+        originalDslStatus.value=DslOriginalEnbl; 
+
+   if( ( EthwanschedulEnbl == 0)&&(cntEthwan != 0)){
+        originalEthwanStatus.value=Ethwanenbl;
+   }
+   else
+        originalEthwanStatus.value=EthwanOriginalEnbl;   
+
+   if( ( Lan1schedulEnbl == 0)&&(cntLan1 != 0)){
+        originalLan1Status.value=Lan1enbl;
+   }
+   else
+        originalLan1Status.value=Lan1OriginalEnbl;
+
+   if( ( Lan2schedulEnbl == 0)&&(cntLan2 != 0)){
+        originalLan2Status.value=Lan2enbl;
+   }
+   else
+        originalLan2Status.value=Lan2OriginalEnbl;
+
+   if( ( Lan3schedulEnbl == 0)&&(cntLan3 != 0)){
+        originalLan3Status.value=Lan3enbl;
+   }
+   else
+        originalLan3Status.value=Lan3OriginalEnbl;   
+
+   if( ( Lan4schedulEnbl == 0)&&(cntLan4 != 0)){
+        originalLan4Status.value=Lan4enbl;
+   }
+   else
+        originalLan4Status.value=Lan4OriginalEnbl;  
+
+   if( ( LedschedulEnbl == 0)&&(cntLed != 0)){
+        originalLedStatus.value=Ledenbl;
+   }
+   else
+        originalLedStatus.value=LedOriginalEnbl;   
+*/
+
+   var strA = schList.split('@');
+   var strSend = "";
+   var strTemp="";
+   
+   if(strA.length <= 3)
+   { 
+     var strB = strA[1].split('|');
+	 strTemp = strSend.concat(strB[0]);
+	 strSend = strTemp.concat("|");
+
+	 if(wlSched.checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+
+	 if(dslSched.checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+
+     if(ethwanSched.checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+	 
+	 if(lan1Sched.checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+
+	 if(lan2Sched.checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+
+	 if(lan3Sched.checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+
+	 if(lan4Sched.checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+
+	 if(ledSched.checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+	 
+	 strTemp = strSend.concat("@");
+	 strSend = strTemp;
+	 
+   }
+
+   else {
+     strSend = "";
+     strTemp="";
+   for (i=1; i<strA.length; i++)
+   {
+	 if (strA[i] == '' || strA[i] == undefined)
+		break;
+	 var strB = strA[i].split('|');
+	 strTemp = strSend.concat(strB[0]);
+	 strSend = strTemp.concat("|");
+
+     if(wlSched[i-1].checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+
+	 if(dslSched[i-1].checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+
+     if(ethwanSched[i-1].checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+	 
+	 if(lan1Sched[i-1].checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+
+	 if(lan2Sched[i-1].checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+
+	 if(lan3Sched[i-1].checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+
+	 if(lan4Sched[i-1].checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+
+	 if(ledSched[i-1].checked == true)
+	 	 strTemp = strSend.concat("1|");
+	 else
+	 	 strTemp = strSend.concat("0|");
+	 strSend = strTemp;
+	 
+	 strTemp = strSend.concat("@");
+	 strSend = strTemp;
+   }
+  }
+  //alert('TEST !!' + strSend);
+  setAutoSchedule.value = strSend;
+  
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+function frmLoad() {
+
+ //hciAlert( enbl, {height: 180,type: 2, title: ''});
+   with ( document.forms[0] ) {
+
+
+   }
+}
+
+$(document).ready(function() {
+   frmLoad();
+   if (NtpEnbl!='1')
+   {
+      hciAlert("<%ejGetML(MLG_Network_AutoSwitch_AlertMsg_Str1)%>",1);
+   }
+   if (errMsg != '')
+   {
+      hciAlert(errMsg, 2);
+   }
+});
+
+</script>
+
+<form method="POST" action="/pages/tabFW/powerManagement-autoscheduler.cmd" target="mainFrame">
+<input type="hidden" name="action" id="action">
+<input type="hidden" name="setAutoSchedule" id="setAutoSchedule">
+<input type="hidden" name="enableWlan" id="enableWlan">
+<input type="hidden" name="enableDsl" id="enableDsl">
+<input type="hidden" name="enableEthwan" id="enableEthwan">
+<input type="hidden" name="enableLan1" id="enableLan1">
+<input type="hidden" name="enableLan2" id="enableLan2">
+<input type="hidden" name="enableLan3" id="enableLan3">
+<input type="hidden" name="enableLan4" id="enableLan4">
+<input type="hidden" name="enableLed" id="enableLed">
+<input type="hidden" name="originalWlanStatus" id="originalWlanStatus">
+<input type="hidden" name="originalDslStatus" id="originalDslStatus">
+<input type="hidden" name="originalEthwanStatus" id="originalEthwanStatus">
+<input type="hidden" name="originalLan1Status" id="originalLan1Status">
+<input type="hidden" name="originalLan2Status" id="originalLan2Status">
+<input type="hidden" name="originalLan3Status" id="originalLan3Status">
+<input type="hidden" name="originalLan4Status" id="originalLan4Status">
+<input type="hidden" name="originalLedStatus" id="originalLedStatus">
+<input type="hidden" name="sessionKey" id="sessionKey">
+<input type="hidden" name="rmLst" id="rmLst">
+	
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Network_AutoSwitch_Str1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+	    <div class="w_text"><a href='#' onClick= "$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('security-schedulerRule');"><%ejGetML(MLG_Network_AutoSwitch_Str2)%></a></div>
+
+        <li class="set1">
+        <li class="space"></li>
+              <div class="w_table">
+                 <table id="schedulerRulesTable" width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame">
+                        <tr valign="top" align="center">
+                          <td width="5%" class="top_font "> # </td>
+                          <td width="15%" class="top_font "><%ejGetML(MLG_Security_Scheduler_Str3)%></td>
+                          <td width="20%" class="top_font "><%ejGetML(MLG_Common_Day)%></td>
+                          <td width="10%" class="top_font "><%ejGetML(MLG_Common_Time)%></td>
+                          <!--td class="top_font">Description</td>
+                          <td class="top_font ">Modify</td-->
+                          <td class="top_font "><%ejGetML(MLG_Network_AutoSwitch_wireless_str1)%> <%ejGetML(MLG_Network_AutoSwitch_wireless_str2)%></td>
+                          <td class="top_font "><%ejGetML(MLG_Menu_Tab_DSL)%> <%ejGetML(MLG_Common_WAN)%></td>
+                          <td class="top_font "><%ejGetML(MLG_Network_AutoSwitch_Str6)%></td>   
+                          <td class="top_font "><%ejGetML(MLG_Common_LAN)%> 1</td>
+                          <td class="top_font "><%ejGetML(MLG_Common_LAN)%> 2</td>
+                          <td class="top_font "><%ejGetML(MLG_Common_LAN)%> 3</td>
+                          <td class="top_font "><%ejGetML(MLG_Common_LAN)%> 4</td>
+                          <td class="top_font "><%ejGetML(MLG_Network_AutoSwitch_Str7)%></td>
+                        </tr>
+                        
+<script>
+<!-- hide
+var strA = schList.split('@');
+var newStr = '';
+
+for (i=1; i<strA.length; i++)
+{
+	if (strA[i] == '' || strA[i] == undefined)
+		break;
+	var strB = strA[i].split('|');
+   
+   newStr += '<tr align="center">\n';
+   newStr += '<td align=\'center\' class="table_font">'+i+'</td>\n';
+   newStr += '<td align=\'center\' class="table_font">'+getPartialString(strB[0],25)+'</td>\n';
+   newStr += "<td class=\"table_font\"><div class=\"weekBox\"><ul>";
+   if (strB[2]!=''){
+      if ((strB[2].indexOf("Sun"))!= -1)
+         newStr += "<li title=\"Sunday\">S</li>";
+      else
+         newStr += "<li title=\"Sunday\" class='off'>S</li>";
+         
+      if ((strB[2].indexOf("Mon"))!= -1)
+         newStr += "<li title=\"Monday\">M</li>";
+      else
+         newStr += "<li title=\"Monday\" class='off'>M</li>";
+         
+      if ((strB[2].indexOf("Tue"))!= -1)
+         newStr += "<li title=\"Tuesday\">T</li>";
+      else
+         newStr += "<li title=\"Tuesday\" class='off'>T</li>";
+     
+      if ((strB[2].indexOf("Wed"))!= -1)
+         newStr += "<li title=\"Wednesday\">W</li>";
+      else
+         newStr += "<li title=\"Wednesday\" class='off'>W</li>";
+         
+      if ((strB[2].indexOf("Thu"))!= -1)
+         newStr += "<li title=\"Thursday\">T</li>";
+      else
+         newStr += "<li title=\"Thursday\" class='off'>T</li>";
+         
+      if ((strB[2].indexOf("Fri"))!= -1)
+         newStr += "<li title=\"Friday\">F</li>";
+      else
+         newStr += "<li title=\"Friday\" class='off'>F</li>";
+         
+      if ((strB[2].indexOf("Sat"))!= -1)
+         newStr += "<li title=\"Saturday\">S</li>";
+      else
+         newStr += "<li title=\"Saturday\" class='off'>S</li>";
+         
+   }else{
+      newStr += "<li title=\"Sunday\" class='off'>S</li>";
+      newStr += "<li title=\"Monday\" class='off'>M</li>";
+      newStr += "<li title=\"Tuesday\" class='off'>T</li>";
+      newStr += "<li title=\"Wednesday\" class='off'>W</li>";
+      newStr += "<li title=\"Thursday\" class='off'>T</li>";
+      newStr += "<li title=\"Friday\" class='off'>F</li>";
+      newStr += "<li title=\"Saturday\" class='off'>S</li>";
+   }
+   newStr += "</ul></div></td>";	
+   newStr += '<td align=\'center\' class="table_font">'+strB[3]+' - '+strB[4]+'</td>\n'; //time	
+   //newStr += '<td align=\'center\' class="table_font">'+getPartialString(strB[1],20)+'</td>\n';
+   //newStr += "<td class='table_font'><div class='i_modify'><ul><li><a href='#' class='edit' id='editBtn' title='Edit' onclick=\"editClick('"+strB[0]+"')\"></a></li><li><a href='#' class='delete' id='deleteBtn' title='Delete' onclick=\"removeClick('"+strB[0]+"')\"></a></li></ul></div></td>\n";
+   if(strB[5] == '1')
+     newStr += '<td class="table_font "><input type="checkbox" value="0" name="wlSched" checked /></td>';
+   else
+   	 newStr += '<td class="table_font "><input type="checkbox" value="0" name="wlSched" /></td>';
+   if(strB[6] == '1')
+     newStr += '<td class="table_font "><input type="checkbox" value="0" name="dslSched" checked /></td>';
+   else
+   	 newStr += '<td class="table_font "><input type="checkbox" value="0" name="dslSched" /></td>';
+   if(strB[7] == '1')
+     newStr += '<td class="table_font "><input type="checkbox" value="0" name="ethwanSched" checked /></td>';
+   else
+     newStr += '<td class="table_font "><input type="checkbox" value="0" name="ethwanSched" /></td>';
+   if(strB[8] == '1')
+     newStr += '<td class="table_font "><input type="checkbox" value="0" name="lan1Sched" checked /></td>';
+   else
+   	 newStr += '<td class="table_font "><input type="checkbox" value="0" name="lan1Sched" /></td>';
+   if(strB[9] == '1')
+     newStr += '<td class="table_font "><input type="checkbox" value="0" name="lan2Sched" checked /></td>';
+   else
+   	 newStr += '<td class="table_font "><input type="checkbox" value="0" name="lan2Sched" /></td>';
+   if(strB[10] == '1')
+     newStr += '<td class="table_font "><input type="checkbox" value="0" name="lan3Sched" checked /></td>';
+   else
+   	 newStr += '<td class="table_font "><input type="checkbox" value="0" name="lan3Sched" /></td>';
+   if(strB[11] == '1')
+     newStr += '<td class="table_font "><input type="checkbox" value="0" name="lan4Sched" checked /></td>';
+   else
+   	 newStr += '<td class="table_font "><input type="checkbox" value="0" name="lan4Sched" /></td>';
+   if(strB[12] == '1')
+     newStr += '<td class="table_font "><input type="checkbox" value="0" name="ledSched" checked /></td>';
+   else
+   	 newStr += '<td class="table_font "><input type="checkbox" value="0" name="ledSched" /></td>';
+   newStr += '</tr>\n';
+}
+$('#schedulerRulesTable').append(newStr);
+$(function()
+{
+    $('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );  
+    $('.textOverflow').ellipsis(true);
+});
+// done hiding -->
+</script>
+          </table>
+          </div>
+         </li>
+
+
+  <li class="noteframe">
+     <li class="space"></li>
+               <div class="w_text">
+                  <span class="i_note"><%ejGetML(MLG_Common_Notes)%>:</span>
+               </div>
+               <div class="note_text">
+<!-- /* __ZyXEL__, Albert, 20151104, Power management auto switch services can not be actived manually   
+			   1. <%ejGetML(MLG_Network_AutoSwitch_Str3)%><br>
+-->				   
+               1. <%ejGetML(MLG_Network_AutoSwitch_Str4)%><br>
+               </div>
+            </li>
+           <li class="space"> </li>
+		<li class="buttonframe">
+			<div class="button_position">
+			<input name="button" type="button" onclick='btnApply()' value="<%ejGetML(MLG_Common_Apply)%>"/>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+			<input name="Cancel" type="button" onclick='frmLoad()' value="<%ejGetML(MLG_Common_Cancel)%>" />
+		 </div>
+  </li>
+</ul></div>
+<!--Set area end-->
+</div>
+
+<br/><br/>
+</form>

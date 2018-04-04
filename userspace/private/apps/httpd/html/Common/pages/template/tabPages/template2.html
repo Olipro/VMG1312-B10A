@@ -1,0 +1,154 @@
+<script type="text/javascript" src="../../js/jquery.text-overflow.js"></script>
+<script type="text/javascript">
+$(function(){
+$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );    
+$('.textOverflow').ellipsis(true); 
+});
+$(function(){
+    $('#editBtn').click(function(){
+    
+        var db1 = window.parent.$.zyUiDialog({
+            width: 770,
+            height: 430,
+            title: 'Edit sample'
+        });
+		var link = 'pages/template/tabPages/edit.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+    
+    $('#deleteBtn').click(function(){
+    
+        var db1 = window.parent.$.zyUiDialog({
+            width: 450,
+            height: 190,
+            title: 'Delete sample',
+            buttons: {
+                '<%ejGetML(MLG_Common_OK)%>': function(){ db1.dialog('close')}
+            }
+			
+        });
+		var link = 'pages/delete.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+	 $('#addnewshareBtn').click(function(){
+    
+       var db1 = window.parent.$.zyUiDialog({
+            width: 770,
+            height: 305,
+            title: 'Add new share sample'
+        });
+		var link = 'pages/template/tabPages/add.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+});
+ </script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">Wireless Network Name (also known as SSID) is used to identify the wireless network. The Security Mode and Password are 
+for guarding the safety of the transferring data within the wireless network.</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<li class="set1">
+<div class="title"> Wide Area Network (WAN) Service Setup</div>
+<div class="w_text">Choose Add, or Remove to configure a WAN service over a selected interface.</div>
+<div class="w_table"> <input type="button" name="sysAddUserBtn" value="Add new share" id='addnewshareBtn'/> </div>
+<div class="w_table">
+  <!--Table define start-->
+<table width="100%" cellpadding="0" cellspacing="0"  class="table_frame" id="testTable">
+                <tr align="center" valign="top">
+                  <td width="5%" class="top_font textOverflow">#</td>
+                  <td class="top_font textOverflow"><%ejGetML(MLG_ConnStatus_Status_Str20)%></td>
+                  <td class="top_font textOverflow"><%ejGetML(MLG_Common_Description)%></td>
+                  <td class="top_font textOverflow"><%ejGetML(MLG_Common_Type)%></td>
+                  <td class="top_font textOverflow"><%ejGetML(MLG_ConnStatus_Status_Str22)%></td>
+                  <td class="top_font textOverflow">Vlan8021p</td>
+                  <td  class="top_font textOverflow">VlanMuxId</td>
+                  <td  class="top_font textOverflow">ConnId</td>
+                  <td  class="top_font textOverflow"><%ejGetML(MLG_Common_IGMP)%></td>
+                  <td  class="top_font textOverflow"><%ejGetML(MLG_WAN_Broadband_Str13)%></td>
+                  <td  class="top_font textOverflow"><%ejGetML(MLG_ConnStatus_Status_Str91)%></td>
+                  <td width="60"  class="top_font textOverflow" style="border-right:0px;"><%ejGetML(MLG_Common_Modify)%></td>
+                </tr>
+                <tr align="center">
+                  <td class="table_font textOverflow">1</td>
+                  <td class="table_font textOverflow">ptm0_1</td>
+                  <td class="table_font textOverflow">ipoe_0_0_1_1</td>
+                  <td class="table_font textOverflow"><%ejGetML(MLG_Common_PTM)%>/<%ejGetML(MLG_Common_IPoE)%></td>
+                  <td class="table_font textOverflow"><%ejGetML(MLG_Common_NA)%></td>
+                  <td class="table_font textOverflow"><%ejGetML(MLG_Common_NA)%></td>
+                  <td class="table_font textOverflow"><%ejGetML(MLG_Common_NA)%></td>
+                  <td class="table_font textOverflow">1</td>
+                  <td class="table_font textOverflow"><%ejGetML(MLG_Common_Disabled)%></td>
+                  <td class="table_font textOverflow"><%ejGetML(MLG_Common_Enabled)%></td>
+                  <td class="table_font textOverflow"><%ejGetML(MLG_Common_Enabled)%></td>
+                  <td class="table_font textOverflow"><div class="i_modify"><ul><li><a href="#" class="edit" id='editBtn' title="<%ejGetML(MLG_Common_Edit)%>"></a></li><li ><a href="#"  id='deleteBtn' class="delete" title="<%ejGetML(MLG_Common_Delete)%>"></a></li></ul></div></td>
+                  </tr>
+              </table>
+</div></li>
+<li class="space"></li>
+<li class="set1"><div class="title"> ISDN Phone </div></li>
+<li class="set2">
+<div class="w_text">
+<table width="100%" border="0" cellpadding="0" cellspacing="2" >
+                <tr>
+                  <td width="45%" class="title2" >Available Services </td>
+                  <td width="10%" rowspan="4"  align="center" class="blod" >Or</td>
+                  <td  width="45%" class="title2" >Manually configure the MSN of ISDN phone</td>
+                </tr>
+                <tr>
+                  <td >For those ISDN phones without MSN number configured, use this setting as default outgoing SIP account.</td>
+                  <td >You can also configure one of the following number as the MSN of your ISDN phone. The ISDN phone will chose this SIP account when making an outgoing call.</td>
+                </tr>
+                <tr >
+                  <td >&nbsp;</td>
+                  <td >&nbsp;</td>
+                </tr>
+                <tr >
+                  <td valign="top" ><span class="table_font textOverflow">
+                    <select name="sipSelect">
+                      <option>SIP-1 (1234568)</option>
+                      <option>SIP-2 (1234568)</option>
+                    </select>
+                  </span></td>
+                  <td valign="top" ><ul>
+                    <div class="w_text3">
+                      <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="testTable">
+                                          <tr align="center" >
+                                            <td class="top_font textOverflow"><%ejGetML(MLG_ConnStatus_QuickStart_Str65)%></td>
+                                          </tr>
+                                          <tr align="center" >
+                                            <td  class="table_font textOverflow">SIP-1 (1234568)</td>
+                                          </tr>
+                                          <tr align="center" >
+                                            <td  class="table_font textOverflow">SIP-2 (1234568)</td>
+                                          </tr>
+                                      </table>
+                    </div>
+                  </ul>
+                  </td>
+                </tr>
+              </table></div></li>
+<!--Please add this tag--><li class="space"> </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Common_Note)%>Note:</span></div><div class="note_text">&nbsp;&nbsp;Router: In this mode, the device is supported to connect to internet via ADSL/Cable Modem. PCs in LAN ports share the same IP to ISP through WAN Port. Access Point: In this mode, all Ethernet ports are bridged together. The device allows the wireless-equipped computer can communicate with a wired network. </div></li>
+<li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="Add Button" type="submit" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;<input name="sysSubmit" value="Apply" type="submit" />&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="Cancel" value="Cancel" type="reset" /></div></li>
+<!--Button define end-->
+</ul></div>
+<!--Set area end-->
+</div>
+<br/><br/>

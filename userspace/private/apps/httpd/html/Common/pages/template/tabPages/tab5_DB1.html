@@ -1,0 +1,36 @@
+
+<script type="text/javascript">
+$(function(){
+
+     function CreateDB(){
+         var db = window.parent.$.zyUiDialog({
+                        width: 450,
+                        height: 100,
+                        title: 'close ?',
+                        buttons: {
+                            '<%ejGetML(MLG_Common_OK)%>': function(){
+                                $('#testBtn').trigger('dialogclose');
+                                db.dialog('close');
+                            },
+                            '<%ejGetML(MLG_Common_Cancel)%>': function(){
+                                db.dialog('close');
+                            }
+                        }
+                    });
+        
+            
+       
+       return db;
+     }
+    
+     $('#testBtn').click(function(){
+        var db1 = CreateDB();
+        db1.load('pages/template/tabPages/tab5_DB2.html');
+        db1.dialog('open');
+    });
+    
+    });
+</script>
+
+
+<button id='testBtn'> confirm </button>

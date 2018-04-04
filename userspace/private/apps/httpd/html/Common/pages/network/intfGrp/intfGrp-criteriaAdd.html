@@ -1,0 +1,291 @@
+<script language='JavaScript'>
+<!-- hide
+
+function hideAllType() {
+      showhide("enableLLT", 0);
+      showhide("enableEN", 0);
+      showhide("enableLL", 0);
+      showhide("enableOther", 0);
+}
+
+function typeChange() {
+      var type = $('#duidType').val();
+      hideAllType();
+      disableSrcMac();
+      disableOption60();
+      disableOption125();
+	  disablVlanGroup();
+	  $("#IAID").attr("disabled",false);
+	  $("#duidType").attr("disabled",false);	  
+
+      switch(type) {
+         case 'none': 
+            hideAllType();
+            break;
+         case 'llt':
+            showhide("enableLLT", 1);
+            break;
+         case 'en':
+            showhide("enableEN", 1);
+            break;
+         case 'll':
+            showhide("enableLL", 1);
+            break;
+         case 'other':
+            showhide("enableOther", 1);
+            break;
+      }
+}
+
+function disableSrcMac() {
+	  $("#srcmacaddr").attr("disabled",true);
+	  $("#srcmacaddr").attr("value",'');	  
+}
+
+function disableOption60() {
+	  $("#VID").attr("disabled",true);
+	  $("#VID").attr("value",'');	  
+	  $("#wildcardEnbl").attr("disabled",true);
+}
+
+function disableOption61() {
+	  $("#IAID").attr("disabled",true);
+	  $("#IAID").attr("value",'');		  
+	  $("#duidType").attr("value",'none');	  
+	  $("#duidType").attr("disabled",true);
+      hideAllType();	  
+}
+	
+function disableOption125() {
+	  $("#ENNUM").attr("disabled",true);
+	  $("#ENNUM").attr("value",'');	
+	  $("#MOUI").attr("disabled",true);
+	  $("#MOUI").attr("value",'');	
+	  $("#PCLASS").attr("disabled",true);
+	  $("#PCLASS").attr("value",'');	
+	  $("#MNAME").attr("disabled",true);
+	  $("#MNAME").attr("value",'');		  
+	  $("#SNUMBER").attr("disabled",true);
+	  $("#SNUMBER").attr("value",'');	  
+}
+
+function disablVlanGroup() {
+	  $("#vlanGroup").attr("value",'none');	  
+	  $("#vlanGroup").attr("disabled",true);
+}
+
+function showVlanGroup()
+{
+	var vlanGroupName = '<%ejGetOther(vlanGroupName)%>'; // the format is |VlanGroupName1|VlanGroupName2|...
+	var str = "";
+	var str2 = vlanGroupName.split('|'); //change format to  |VlanGroupName1|VlanGroupName2|, =>  ,VlanGroupName1,VlanGroupName2,...
+	var max = str2.length;
+	
+	for(var count = 0; count < max; count++){
+		if(str2[count] == "")
+			continue;
+		
+		$("#vlanGroup").append($("<option></option>").attr("value", str2[count]).text(str2[count]));
+	} 
+}
+
+function srcmacClick() {
+      disableSrcMac();
+      disableOption60();
+      disableOption61();
+      disableOption125();
+	  disablVlanGroup();
+
+      if ( $("input[name='srcmacoptions']").get(0).checked == true ) {
+		$("#srcmacaddr").attr("disabled",false);		 
+      } else if( $("input[name='srcmacoptions']").get(1).checked == true) {
+		 $("#VID").attr("disabled",false);			 
+		 $("#wildcardEnbl").attr("disabled",false);			 
+      } else if( $("input[name='srcmacoptions']").get(2).checked == true) {
+		 $("#IAID").attr("disabled",false);	
+		 $("#duidType").attr("disabled",false);			 
+      } else if( $("input[name='srcmacoptions']").get(3).checked == true) {
+		 $("#ENNUM").attr("disabled",false);	
+		 $("#MOUI").attr("disabled",false);	
+		 $("#PCLASS").attr("disabled",false);	
+		 $("#MNAME").attr("disabled",false);
+		 $("#SNUMBER").attr("disabled",false);				 
+      } else if($("input[name='srcmacoptions']").get(4).checked == true) {
+		 $("#vlanGroup").attr("disabled",false);	
+	  }
+}
+
+function frmLoad() {
+   disableSrcMac();
+   disableOption60();
+   disableOption61();
+   disableOption125();
+   hideAllType();
+   showVlanGroup();
+}
+
+// done hiding -->
+</script>
+
+<div class="popup_frame" >
+<!--Set area start-->
+<div class="data_frame"><ul>
+<!--level 1 title start--><li class="title"><%ejGetML(MLG_Network_InterfaceGrouping_Str7)%></li><!--level 1 title end-->
+<!--level 1 start-->
+	<li class="set1">
+		<div class="w_text" id='dhcpOptions_1'>
+			<ul> 
+				<li class="left_table"><input type="radio" id="srcmacoptions" name="srcmacoptions" onClick='srcmacClick()' selected><%ejGetML(MLG_Network_InterfaceGrouping_Str24)%>:</li>
+				<li class="right_table"><input type="text" size="22" id="srcmacaddr" name="srcmacaddr"></li>
+			</ul>
+		</div>
+	</li>
+	<li class="set1">
+		<div class="w_text" id='dhcpOptions_1'>
+			<ul> 
+				<li class="left_table"><input type="radio" id="srcmacoptions" name="srcmacoptions" onClick='srcmacClick()'><%ejGetML(MLG_Network_InterfaceGrouping_Str25)%></li>
+				<li class="right_table"><input type="text" size="22" id="VID" name="VID" maxlength="32"></li>
+			</ul>
+		</div>
+	</li>
+	<li class="set2">
+		<div class="w_text" id='dhcpOptions_1'>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id='wildcardEnbl'  name='wildcardEnbl'><%ejGetML(MLG_Network_InterfaceGrouping_Str26)%></li>
+			</ul>
+		</div>
+	</li>	
+	<li class="set1">
+		<div class="w_text" id='dhcpOptions_1'>
+			<ul> 
+				<li class="left_table"><input type="radio" id="srcmacoptions" name="srcmacoptions" onClick='srcmacClick()'><%ejGetML(MLG_Network_InterfaceGrouping_Str27)%></li>
+			</ul>
+		</div>
+	</li>
+	<li class="set2">
+		<div class="w_text" id='dhcpOptions_1'>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str28)%>: </li>
+				<li class="right_table"><input type="text" size="22" id="IAID" name="IAID"> &nbsp; </li>
+			</ul>
+		</div>
+		<div class="w_text" id='dhcpOptions_1'>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str29)%>:</li>
+				<li class="right_table">
+					<select size="1" id="duidType" name="duidType" onChange='typeChange()'>
+			               <option value="none" selected>&nbsp;
+			               <option value="llt"><%ejGetML(MLG_Network_InterfaceGrouping_Str30)%>
+			               <option value="en"><%ejGetML(MLG_Network_InterfaceGrouping_Str31)%>
+			               <option value="ll"><%ejGetML(MLG_Network_InterfaceGrouping_Str32)%>
+			               <option value="other"><%ejGetML(MLG_Network_InterfaceGrouping_Str33)%></option>
+			            </select>
+			        </li>
+			</ul>
+		</div>
+		<div class="w_text" id='enableLLT'>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str34)%>:</li>
+				<li class="right_table"><input type="text" size="22" id="lltHwType" name="lltHwType"> &nbsp; </li>
+			</ul>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str35)%>:</li>
+				<li class="right_table"><input type="text" size="22" id="time" name="time"> &nbsp; </li>
+			</ul>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str36)%>: </li>
+				<li class="right_table"><input type="text" size="22" id="lltAddr" name="lltAddr"> &nbsp; </li>
+			</ul>
+		</div>
+		<div class="w_text" id='enableEN'>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str37)%>:</li>
+				<li class="right_table"><input type="text" size="22" id="enterpriseNumber" name="enterpriseNumber"> &nbsp; </li>
+			</ul>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str38)%>:</li>
+				<li class="right_table"><input type="text" size="22" id="enIdentifier" name="enIdentifier" maxlength="32"> &nbsp; </li>
+			</ul>
+		</div>
+		<div class="w_text" id='enableLL'>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str34)%>:</li>
+				<li class="right_table"><input type="text" size="22" id="llHwType" name="llHwType"> &nbsp; </li>
+			</ul>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str36)%>:</li>
+				<li class="right_table"><input type="text" size="22" id="llAddr" name="llAddr"> &nbsp; </li>
+			</ul>
+		</div>
+		<div class="w_text" id='enableOther'>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str41)%>:</li>
+				<li class="right_table"><input type="text" size="22" id="DUID" name="DUID" maxlength="32"> &nbsp; </li>
+			</ul>
+		</div>
+	</li>
+	<li class="set1">
+		<div class="w_text" id='dhcpOptions_2'>
+			<ul> 
+				<li class="left_table"><input type="radio" id="srcmacoptions" name="srcmacoptions" onClick='srcmacClick()'><%ejGetML(MLG_Network_InterfaceGrouping_Str46)%></li>
+			</ul>
+		</div>
+	</li>
+	<li class="set2">
+		<div class="w_text" id='dhcpOptions_2'>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str37)%>: </li>
+				<li class="right_table"><input type="text" size="22" id="ENNUM" name="ENNUM"> &nbsp; </li>
+			</ul>
+		</div>
+		<div class="w_text" id='dhcpOptions_2'>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str39)%>: </li>
+				<li class="right_table"><input type="text" size="22" id="MOUI" name="MOUI" maxlength="32"> &nbsp; </li>
+			</ul>
+		</div>
+		<div class="w_text" id='dhcpOptions_2'>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str40)%>: </li>
+				<li class="right_table"><input type="text" size="22" id="PCLASS" name="PCLASS" maxlength="32"> &nbsp; </li>
+			</ul>
+		</div>
+		<div class="w_text" id='dhcpOptions_2'>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str42)%>: </li>
+				<li class="right_table"><input type="text" size="22" id="MNAME" name="MNAME" maxlength="32"> &nbsp; </li>
+			</ul>
+		</div>
+		<div class="w_text" id='dhcpOptions_2'>
+			<ul> 
+				<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str43)%>: </li>
+				<li class="right_table"><input type="text" size="22" id="SNUMBER" name="SNUMBER" maxlength="32"> &nbsp; </li>
+			</ul>
+		</div>
+
+	</li>
+	<li class="set1">
+		<div class="w_text" id='vlan_group'>
+			<ul>  
+				<li class="left_table"><input type="radio" id="srcmacoptions" name="srcmacoptions" onClick='srcmacClick()'><%ejGetML(MLG_Menu_Tab_VlanGroup)%>:</li>
+				<li class="right_table">
+					<select size="1" id="vlanGroup" name="vlanGroup">
+						<option value="none" selected>&nbsp;
+			        </select>
+			    </li>
+			</ul>
+		</div>
+	</li>
+	
+<!--level 1 end-->
+</ul></div>
+<!--Set area end-->
+</div>
+
+<script language='JavaScript'>
+<!--
+$(document).ready(function() {
+	frmLoad();
+});
+//-->
+</script>

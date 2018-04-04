@@ -1,0 +1,205 @@
+<script type="text/javascript">
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+var errMsg = "<%ejGetOther(errMsg)%>";
+$(function(){
+    $('#addnewshareBtn').click(function(){
+    
+       var db1 = window.parent.$.zyUiDialog({
+            width: 500,
+            height:300,
+            title: '<%ejGetML(MLG_Network_VlanGroup_Str1)%>',
+	    buttons: {
+                '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+                '<%ejGetML(MLG_Common_Apply)%>': function(){}
+            }
+        });
+		var link = '/pages/network/vlangroup/vlangroup_add.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+});
+
+function removeClick(rml) {
+   var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 190,
+              title: '<%ejGetML(MLG_Network_VlanGroup_Str3)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_No)%>': function(){ db1.dialog('close'); },              	
+                 '<%ejGetML(MLG_Common_Yes)%>': function(){ db1.dialog('close'); $.openLoadingMask(1); deleteProcess(rml);}
+              }
+             });
+	   db1.load('/pages/delete.html');
+	   db1.dialog('open');
+}
+
+function deleteProcess(rml)
+{
+	document.forms[0].lst.value = rml;
+	document.forms[0].action.value = 'remove';	
+	document.forms[0].sessionKey.value = gblsessionKey;	
+	document.forms[0].submit();
+}
+
+function editClick(rml) {
+    var loc = 'vlangroup-vlangroup.cmd?lst='+rml+'&action=view&sessionKey='+gblsessionKey;
+    var db1 = window.parent.$.zyUiDialog({
+          width: 500,
+          height: 300,
+         title: '<%ejGetML(MLG_Network_VlanGroup_Str4)%>',
+         buttons: {
+             '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+             '<%ejGetML(MLG_Common_Apply)%>': function(){}
+         }
+   });
+     db1.load(loc);
+     db1.dialog('open');
+
+}
+
+function enblProcess(rml)
+{
+	document.forms[0].lst.value = rml;
+	document.forms[0].action.value = 'enbl';	
+	document.forms[0].sessionKey.value = gblsessionKey;
+	$.openLoadingMask(1);
+	document.forms[0].submit();
+}
+
+var lanPair = '<%ejGetOther(lanPortPair)%>'; // the format is LAN1/eth0|LAN2/eth1|LAN3/eth5|...
+var lanList = lanPair.split("|");
+
+function getLanPortName(lan){
+	var na = "";
+	for(var count = 0; count < lanList.length; count++){
+		if(lanList[count] == "")
+			continue;
+		
+		var l = lanList[count].split('/'); //change format to LAN0/eth0 => [LAN0, eth0]
+
+		if(l[1] == lan){
+			na = l[0];
+			break;
+		}
+	} 
+	return na;
+}
+
+
+$(document).ready(function() {
+	if (errMsg != '')
+	{
+		hciAlert(errMsg, {height: 180, type: 2, title: ''});
+	}
+});
+
+ </script>
+ <form action="/pages/tabFW/vlangroup-vlangroup.cmd" method="post">
+<input name="lst" type="HIDDEN" id="lst" value=""; />
+<input name="action" type="HIDDEN" id="action" value="add"; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""/>
+ <div class="content_frame"><div class="explain"> <div> <b class="r1"></b><b class="r2"></b> <b class="r3"></b><b class="r4"></b> <b class="r4"></b></div>
+ <!--
+<div class="explain_text">The purpose of Static Route is to save time and bandwidth usage when LAN devices within an Intranet are transferring files or packets, especially when there are more than two Internet connections available in your home or office.</div>
+-->
+<div class="explain_text"><%ejGetML(MLG_Network_VlanGroup_Explain)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b> <b class="r1"></b></div></div>
+
+         <div class="data_frame"><ul>
+            <li class="set1">
+               <div class="w_table">
+                  <input type="button" name="sysAddUserBtn" value='<%ejGetML(MLG_Network_VlanGroup_Str1)%>' id="addnewshareBtn" />
+               </div>
+            </li>
+            <li class="set1">
+              <div class="w_table">
+  <!--Table define start-->
+   <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="vlangrpTable">
+                <tbody id='grpEntry'><tr align="center">
+                  <td width="5%"class="top_font">#</td>
+<!--hide status field
+                  <td class="top_font" width="10%">Status</td>
+-->
+                  <td class="top_font"><%ejGetML(MLG_Network_InterfaceGrouping_Str4)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Common_VLANID)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Network_StaticRoute_Str8)%></td>
+                  <td width="60" class="top_font" style="border-right:0px;"><%ejGetML(MLG_Common_Modify)%></td>
+                </tr>
+</tbody>
+<script language='JavaScript'>
+<!-- Hide
+var str ='<%ejGetOtherBig(getVlanGrpEntry)%>';
+var groupList = null;
+var finalStr = '';
+//entryNum = str2.length;
+var entryNum = '<%ejGet(entryNum)%>';
+var intftemp = "";
+var count = 1;
+
+if (parseInt(entryNum) >= 12){
+	$("#addBtn").attr("disabled",true);
+}
+
+if(str != "")
+	groupList = eval(str);
+//[{"grp":"aaa","vid":"20","intf":"eth0,eth1,eth2","tag":"eth0,eth1"},{"grp":"bbb","vid":"30","intf":"eth0,eth3","tag":"eth0"}] 
+for (i=0; i<groupList.length; i++)
+{
+	intftemp = groupList[i].intf.split(",");
+	
+	finalStr += "<tr align='center'>";
+	finalStr += "<td  class=\"table_font\">"+count+"</td>";
+	count++;
+/*  //hide status field
+	if (entry[1] == '1') //status
+		finalStr += "<td class=\"table_font\"><ul><li><img src=\"../../images/i_active_on.gif\" width=\"18\" height=\"18\" href=\"#\" title=\"On\" id='activeoffBtn' onClick = enblProcess('"+entry[0]+"|"+entry[2]+"') ></li></ul></div></td>";
+	else
+		finalStr += "<td class=\"table_font\"><ul><li><img src=\"../../images/i_active_off.gif\" width=\"18\" height=\"18\" href=\"#\" title=\"Off\" id='activeonBtn' onClick = enblProcess('"+entry[0]+"|"+entry[2]+"') ></li></ul></div></td>";
+*/
+	finalStr += "<td  class=\"table_font textOverflow\">" + groupList[i].grp + "</td>"; //group name
+	finalStr += "<td  class=\"table_font textOverflow\">" + groupList[i].vid + "</td>"; //vlan id
+	var intfstr = "";
+	for(var num = 0; num < intftemp.length; num++){		
+		var na = getLanPortName(intftemp[num]);
+		if(na != ""){
+			if(intfstr.length > 0)
+				intfstr += ",";
+			intfstr += na;
+			if(groupList[i].tag.indexOf(intftemp[num]) >= 0)
+				intfstr += "T";
+			else
+				intfstr += "U";
+		}				
+	}	
+	finalStr += "<td  class=\"table_font textOverflow\">" + intfstr + "</td>"; //interface
+	finalStr += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" class=\"edit\" title=\"Edit\" onClick = editClick('"+groupList[i].grp+"')></a></li><li><a href=\"#\" class=\"delete\" title=\"Delete\" onClick = removeClick('"+groupList[i].grp+"|"+groupList[i].vid+"') ></a></li></ul></div></td>";
+	finalStr += "</tr>";
+	
+$(function(){
+$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );  
+$('.textOverflow').ellipsis(true);
+});
+
+}
+
+$('#grpEntry').append(finalStr);
+//done -->
+</script>
+<!--				
+                <tr align="center">
+                  <td class="table_font">1</td>
+                  <td class="table_font"><img src="../../images/i_active_off.gif" width="18" height="18" /></td>
+                  <td class="table_font">--</td>
+                  <td class="table_font">--</td>
+                  <td class="table_font">--</td>
+                  <td class="table_font">--</td>
+                  <td class="table_font"><div class="i_modify"><ul><li><a href="#" class="edit" id='editBtn' title="Edit"></a></li><li ><a href="#"  id='deleteBtn' class="delete" title="Delete"></a></li></ul></div></td>
+                  </tr>
+-->                
+              </table>
+</div>
+ </li>
+</ul>
+</div><br/><br/>

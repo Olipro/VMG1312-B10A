@@ -1,0 +1,198 @@
+<script language="javascript">
+<!-- hide
+var errMsg = "<%ejGetOther(errMsg)%>";
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+var enbls = new Array('<%ejGetWl(wlEnbl_wl0v0)%>','<%ejGetWl(wlEnbl_wl0v1)%>','<%ejGetWl(wlEnbl_wl0v2)%>','<%ejGetWl(wlEnbl_wl0v3)%>');
+var wlanmodes = '<%ejGetOther(wlanScenario, 0, 0)%>';
+
+
+function editClick(Idx) {
+    var db1 = window.parent.$.zyUiDialog({
+        width: 850,
+        height: 550,
+        title: '<%ejGetML(MLG_WLAN_AdditionalWLANs_Str7)%>',
+        buttons: {
+                '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+                '<%ejGetML(MLG_Common_OK)%>': function(){}
+            }	
+    });
+    var link = '/pages/tabFW/wireless-moreap_edit_load.wl?wlSsidIdx=' + Idx;
+    if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+    link='../../'+link;
+    db1.load(link);
+    db1.dialog('open');
+}
+
+function getMode(mode, wep)
+{
+   var security = '';
+   switch (mode) {
+   case 'open': 
+      if (wep == 'enabled')
+         security = "WEP";
+      else
+         security = "<%ejGetML(MLG_WLAN_BasicWirelessSetup_Str62)%>";
+      break;
+   case 'wpa':
+      security = "<%ejGetML(MLG_WLAN_WPA)%>";
+      break;
+   case 'wpa2':
+      security = "<%ejGetML(MLG_WLAN_WPA2)%>";
+      break;
+   case 'wpa wpa2':
+      security = "Mixed WPA2/WPA";
+      break;
+   case 'psk':
+      security = "<%ejGetML(MLG_WLAN_WPAPSK)%>";
+      break;
+   case 'psk2':
+      security = "<%ejGetML(MLG_WLAN_WPA2PSK)%>";
+      break;
+   case 'psk psk2':
+      security = "Mixed WPA2-PSK/WPA-PSK";
+      break;
+   }
+
+   return security;
+}
+
+function getScenario(idx)
+{
+   var strA = wlanmodes.split('@');
+   var strB = strA[idx];
+   return  strB;
+   
+}
+function toggleClick(Idx, state) {
+   with(document.wlQuickToggle){
+   	  sessionKey.value = glbSessionKey;
+      wlSsidIdx.value = Idx;
+      wlEnbl.value = state ^ 1;
+
+      submit();
+      $.openLoadingMask(1);
+   }
+}
+
+function frmLoad()
+{ 
+	with(document.forms[0]){
+		if(errMsg != ""){
+		  hciAlert(errMsg, {height: 180, type: 2, title: ''});
+          return;
+		}
+		return;
+	}
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+// done hiding -->
+ </script>
+   <form>
+      <div class="content_frame">
+<!--Unit Explain start-->
+         <div class="explain"> <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b> <b class="r4"></b> </div>
+            <div class="explain_text"><%ejGetML(MLG_WLAN_AdditionalWLANs_Str1)%></div><div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b> </div> </div>
+<!--Unit Explain End-->
+         <div class="data_frame"><ul>
+            <li class="set1">
+			<div class="w_table">
+ <table width="100%" cellpadding="0" cellspacing="0" class="table_frame" id="moreApTable">
+                <tr align="center">
+                  <td width="5%"class="top_font">#</td>
+                  <td class="top_font"><%ejGetML(MLG_WLAN_AdditionalWLANs_Str3)%></td>
+                  <td class="top_font"><%ejGetML(MLG_WLAN_AdditionalWLANs_Str4)%></td>
+                  <td class="top_font"><%ejGetML(MLG_WLAN_AdditionalWLANs_Str5)%></td>
+				  <td class="top_font"><%ejGetML(MLG_WLAN_AdditionalWLANs_GuestWLAN)%></td>
+                  <td width="60" class="top_font" style="border-right:0px;"><%ejGetML(MLG_Network_StaticRoute_Str9)%></td>
+                  </tr>
+
+<script language="javascript">
+<!-- hide
+   var str = '';
+   
+   str += "<tr align=\"center\" >";
+   str += "<td class=\"table_font\">1</td>";
+   
+   if (enbls[1] == '1')
+      str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"toggleClick(1, 1)\" class=\"active_on\" title=\"<%ejGetML(MLG_Common_On)%>\" ></a></li></ul></div></td>";
+   else
+      str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"toggleClick(1, 0)\" class=\"active_off\" title=\"<%ejGetML(MLG_Common_Off)%>\" ></a></li></ul></div></td>";
+
+   str += "<td class=\"table_font textOverflow\"><%ejGetWl(wlSsid_wl0v1)%></td>";
+   str += "<td class=\"table_font\">";
+   str += getMode('<%ejGetWl(wlAuthMode_wl0v1)%>', '<%ejGetWl(wlWep_wl0v1)%>');
+   str += "</td>";
+   str += "<td class=\"table_font\">";
+   str +=getScenario(1);
+   str += "</td>";
+   str += "<td class=\"table_font\">";
+   str += "<div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editClick('1')\" class=\"edit\" title=\"<%ejGetML(MLG_Common_Edit)%>\" id='editBtn'></a></li></ul></div>";
+   str += "</td>";
+   str += "</tr>";
+
+   str += "<tr align=\"center\" >";
+   str += "<td class=\"table_font\">2</td>";
+   
+   if (enbls[2] == '1')
+      str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"toggleClick(2, 1)\" class=\"active_on\" title=\"<%ejGetML(MLG_Common_On)%>\" ></a></li></ul></div></td>";
+   else
+      str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"toggleClick(2, 0)\" class=\"active_off\" title=\"<%ejGetML(MLG_Common_Off)%>\" ></a></li></ul></div></td>";
+
+   str += "<td class=\"table_font textOverflow\"><%ejGetWl(wlSsid_wl0v2)%></td>";
+   str += "<td class=\"table_font\">";
+   str += getMode('<%ejGetWl(wlAuthMode_wl0v2)%>', '<%ejGetWl(wlWep_wl0v2)%>');
+   str += "</td>";
+   str += "<td class=\"table_font\">";
+   str +=getScenario(2);
+   str += "</td>";
+   str += "<td class=\"table_font\">";
+   str += "<div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editClick('2')\" class=\"edit\" title=\"<%ejGetML(MLG_Common_Edit)%>\" id='editBtn'></a></li></ul></div>";
+   str += "</td>";
+   str += "</tr>";
+
+   str += "<tr align=\"center\" >";
+   str += "<td class=\"table_font\">3</td>";
+   
+   if (enbls[3] == '1')
+      str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"toggleClick(3, 1)\" class=\"active_on\" title=\"<%ejGetML(MLG_Common_On)%>\" ></a></li></ul></div></td>";
+   else
+      str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"toggleClick(3, 0)\" class=\"active_off\" title=\"<%ejGetML(MLG_Common_Off)%>\" ></a></li></ul></div></td>";
+
+   str += "<td class=\"table_font\"><%ejGetWl(wlSsid_wl0v3)%></td>";
+   str += "<td class=\"table_font\">";
+   str += getMode('<%ejGetWl(wlAuthMode_wl0v3)%>', '<%ejGetWl(wlWep_wl0v3)%>');
+   str += "</td>";
+   str += "<td class=\"table_font\">";
+   str +=getScenario(3);
+   str += "</td>";
+   str += "<td class=\"table_font\">";
+   str += "<div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editClick('3')\" class=\"edit\" title=\"<%ejGetML(MLG_Common_Edit)%>\" id='editBtn'></a></li></ul></div>";
+   str += "</td>";
+   str += "</tr>";
+
+$('#moreApTable').append(str);
+// done hiding -->
+</script>
+
+              </table>
+</div> 
+            </li>
+            <li class="space"></li>
+            <li class="buttonframe">
+               <div class="button_position">
+                  <br />
+               </div>
+            </li>
+         </ul></div>
+      </div><br/><br/>
+</form>
+<form name="wlQuickToggle" method="post" action="/pages/tabFW/wireless-moreap_edit.wl">
+    <input type="hidden" name="sessionKey" />
+    <input type="hidden" name="wlSyncNvram" value="1" />  
+    <input type="hidden" name="wlSsidIdx"/>
+    <input type="hidden" name="wlEnbl"/>  
+</form>

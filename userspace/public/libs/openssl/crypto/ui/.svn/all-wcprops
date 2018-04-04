@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ui
+END
+ui_compat.c
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ui/ui_compat.c
+END
+ui_openssl.c
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ui/ui_openssl.c
+END
+ui.h
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ui/ui.h
+END
+ui_lib.c
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ui/ui_lib.c
+END
+ui_compat.h
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ui/ui_compat.h
+END
+ui_err.c
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ui/ui_err.c
+END
+ui_util.c
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ui/ui_util.c
+END
+ui_locl.h
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ui/ui_locl.h
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ui/Makefile
+END

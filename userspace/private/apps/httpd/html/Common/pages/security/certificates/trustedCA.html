@@ -1,0 +1,208 @@
+<script language='javascript'>
+<!-- hide
+var gblsessionKey='<%ejGetOther(sessionKey)%>';
+var certCount;
+
+var errMsg='<%ejGetOther(errMsg)%>';
+if(errMsg!=''){
+	hciAlert(errMsg, {height: 180,type: 2, title: ''});
+}
+
+
+function importClick() {
+	var msg; 
+	if(certCount>='4'){
+		msg = '<%ejGetML(MLG_Security_Certificates_Str6)%>';
+		hciAlert(msg, {height: 180,type: 2, title: ''});
+		return;	
+	}
+
+	var link ='/pages/security/certificates/trustedCA_add.html';
+
+	var db1 = window.parent.$.zyUiDialog({
+            width: 600,
+            height: 310,
+            title: '<%ejGetML(MLG_Security_Certificates_Str3)%>',
+
+            buttons: {
+               '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close');  },
+               '<%ejGetML(MLG_Common_OK)%>':function(){}
+            }
+           });
+
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        	link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+}
+
+    	$('#importCertificateBtn').click(importClick);
+
+
+function viewClick(name) 
+{
+	//var loc ='/pages/security/certificates/certificates-View.cgi?certViewName='+encodeUrl(name)+'&certViewType=certDetail&certViewCerType=ca';
+	var loc ='/pages/tabFW/certificates-View.cgi?certViewName='+encodeUrl(name)+'&certViewType=certDetail&certViewCerType=ca';
+  	loc += '&sessionKey=' + gblsessionKey;
+
+  	var db1 = window.parent.$.zyUiDialog({
+            width: 650,
+            height: 370,
+            title: '<%ejGetML(MLG_Security_Certificates_Str33)%>',
+
+            buttons: {
+               '<%ejGetML(MLG_Common_Back)%>': function(){ db1.dialog('close');  }
+            }
+       });
+
+  	db1.load(loc);
+  	db1.dialog('open');  	
+}
+
+function removeClick(certname, refCount) {
+   var rem = true;
+   if (refCount > 0) {
+        if (!confirm('<%ejGetML(MLG_Security_Certificate_AlertMsg_Str19)%>')) {
+            rem = false;
+        }
+   }
+   if (rem) {
+      var cert = window.parent.$.zyUiDialog({
+         width: 450,
+         height: 190,
+         title: '<%ejGetML(MLG_Common_Delete)%>',
+         buttons: {
+            '<%ejGetML(MLG_Common_Cancel)%>': function(){ cert.dialog('close'); },
+            '<%ejGetML(MLG_Common_OK)%>': function(){ cert.dialog('close'); $.openLoadingMask(1); rmlClick(certname); }
+         }
+      });
+      cert.load('/pages/delete.html');
+      cert.dialog('open');   
+   }
+}
+
+function rmlClick(certname)
+{
+	with ( document.CAform ) {
+		sessionKey.value = gblsessionKey;
+		certLocalAction.value = "remove";
+		certViewName.value = certname;
+		submit();
+	}
+}
+
+
+
+/*
+$(function(){
+    $('#viewBtn').click(function(){
+        var db1 = window.parent.$.zyUiDialog({
+            width: 650,
+            height: 370,
+            title: '<%ejGetML(MLG_Security_Certificates_Str33)%>'
+        });
+		var link = 'pages/security/certificates/trustedCA_view.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+    $('#importCertificateBtn').click(function(){
+    
+       var db1 = window.parent.$.zyUiDialog({
+            width: 600,
+            height: 310,
+            title: '<%ejGetML(MLG_Security_ParentalControl_Str4)%>'
+        });
+		var link = 'pages/security/certificates/trustedCA_add.html.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+    $('#deleteBtn').click(function(){
+    
+        var db1 = window.parent.$.zyUiDialog({
+            width: 450,
+            height: 190,
+            title: 'Delete',
+            buttons: {
+                '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close')},
+                '<%ejGetML(MLG_Common_OK)%>': function(){}
+            }
+			
+        });
+		var link = 'pages/delete.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+});
+*/
+
+$(function()
+{
+	$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );  
+	$('.textOverflow').ellipsis(true); //...
+});
+
+// done hiding -->
+ </script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">
+<%ejGetML(MLG_Security_Certificates_Str30)%> <%ejGetML(MLG_Security_Certificates_Str6)%> 
+</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->	
+<form name="CAform" id="CAform" method="post" action="/pages/tabFW/certificates-CA.cgi">
+<input type="hidden" name="sessionKey" id="sessionKey">	
+<input type="hidden" name="certLocalAction" id="certLocalAction">	
+<input type="hidden" name="certViewName" id="certViewName">	
+<div class="data_frame"><ul>
+<li class="set1"> 
+<div class="w_table"><input type='button' value='<%ejGetML(MLG_Security_Certificates_Str3)%>' id='importCertificateBtn'></div>		
+<div class="w_table">
+  <!--Table define start-->
+<table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame" id="trustedCATable">
+                <tr align="center" valign="top">
+                  <td width="5%" class="top_font ">#</td>
+                  <td class="top_font "><%ejGetML(MLG_Security_FirewallACL_Str9)%></td>
+                  <td class="top_font "><%ejGetML(MLG_Security_Certificates_Str5)%></td>
+                  <td class="top_font " width="20%"><%ejGetML(MLG_Common_Type)%></td>
+                  <td width="10%"  class="top_font " style="border-right:0px;"><%ejGetML(MLG_Security_FirewallProtocol_Str6)%></td>
+                </tr>
+<%ejGetOther(certCAList)%>
+<script language="javascript">
+certCount=<%ejGet(certCount)%>;
+</script>
+<!--
+                  <td class="table_font ">1</td>
+                  <td class="table_font "></td>
+                  <td class="table_font "></td>
+                  <td class="table_font "></td>
+                  <td class="table_font "></td>
+                  <td class="table_font "><div class="i_modify">
+                    <ul>
+                      <li><a href="#" class="edit" id='viewBtn' title="<%ejGetML(MLG_Common_Edit)%>"></a></li>
+                      <li ><a href="#"  id='deleteBtn' class="delete" title="<%ejGetML(MLG_Common_Delete)%>"></a></li>
+                    </ul>
+                  </div></td>
+-->
+              </table>
+</div>
+</li>
+<li class="space"> </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Security_FirewallProtocol_Str7)%>:</span></div><div class="note_text">
+	&nbsp;&nbsp;<%ejGetML(MLG_Security_Certificates_Str6)%>
+	</div></li>
+<li class="space"> </li>
+</ul>
+</div>	
+</form>
+<!--Set area end-->		
+</div>

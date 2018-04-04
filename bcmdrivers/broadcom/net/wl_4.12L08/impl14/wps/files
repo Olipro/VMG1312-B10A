@@ -1,0 +1,44 @@
+LIBWPS_FILES = buffobj.c
+LIBWPS_FILES += reg_proto_msg.c
+LIBWPS_FILES += reg_proto_utils.c
+LIBWPS_FILES += slist.c
+LIBWPS_FILES += state_machine.c
+LIBWPS_FILES += tlv.c
+LIBWPS_FILES += tutrace.c
+LIBWPS_FILES += wps_sslist.c
+
+WPS_MONITOR_FILES = wps_aplockdown.c 
+WPS_MONITOR_FILES += wps_eap.c 
+WPS_MONITOR_FILES += wps_hal.c
+WPS_MONITOR_FILES += wps_led.c
+WPS_MONITOR_FILES += wps_linux_main.c
+WPS_MONITOR_FILES += wps_linux_osl.c
+WPS_MONITOR_FILES += wps_monitor.c
+WPS_MONITOR_FILES += wps_eap.c
+WPS_MONITOR_FILES += wps_ie.c
+WPS_MONITOR_FILES += wps_pb.c
+WPS_MONITOR_FILES += wps_ui.c
+WPS_MONITOR_FILES += wps_libupnp.c
+WPS_MONITOR_FILES += wps_wl.c
+
+WPS_AP_FILES = ap_api.c
+WPS_AP_FILES += ap_eap_sm.c
+WPS_AP_FILES += ap_upnp_sm.c
+WPS_AP_FILES += reg_sm.c
+WPS_AP_FILES += wps_ap.c
+WPS_AP_FILES += wps_ap_linux.c
+WPS_AP_FILES += ap_ssr.c
+WPS_AP_FILES += wps_utils.c
+
+WPS_ENR_FILES = dev_config.c
+WPS_ENR_FILES += enr_api.c
+WPS_ENR_FILES += enr_reg_sm.c
+WPS_ENR_FILES += sta_eap_sm.c
+#WPS_ENR_FILES += wps_enr_core.c
+WPS_ENR_FILES += wps_enr_linux.c
+WPS_ENR_FILES += wps_sta_wl.c
+
+WPS_WFA_FILES = soap_x_wfawlanconfig.c
+WPS_WFA_FILES += WFADevice.c
+WPS_WFA_FILES += WFADevice_table.c
+WPS_WFA_FILES += xml_x_wfawlanconfig.c

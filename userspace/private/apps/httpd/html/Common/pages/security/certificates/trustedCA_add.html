@@ -1,0 +1,84 @@
+<script src="../../../js/jquery.tooltip.min.js" type="text/javascript"></script>
+<script src="../../../js/jquery.watermarkinput.js" type="text/javascript"></script>
+<script language="javascript">
+<!-- hide
+
+var certCategory='<%ejGet(certCategory)%>';
+var gblsessionKey = mainFrame.gblsessionKey;
+
+    $('#BackupBtn').click(function(){
+       $.openLoadingMask(2);
+    })
+    
+function frmLoad()
+{
+	with ( document.importForm ) {
+		action = '/pages/tabFW/certificates-Import.cgi';
+	}
+}
+
+function applyClick() 
+{     
+	with ( document.importForm ) 
+	{
+		if (certImportFileName.value == ''){
+			hciAlert('<%ejGetML(MLG_Security_Certificates_Str46)%>', {height: 180,type: 2, title: ''});
+			return;
+		}
+		if (enableCADot1x.checked == true)
+       		enableCACert8021x.value = "1";
+    		else
+       		enableCACert8021x.value = "0";
+		sessionKey.value = gblsessionKey;
+		certLocalAction.value = "import";
+		submit();
+	}
+
+	('.ui-dialog-titlebar-close').trigger('click');
+	$.openLoadingMask(1);
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){applyClick();});
+    
+$(document).ready(function() {
+	frmLoad();
+});
+
+// done hiding -->
+
+</script>
+
+<div class="popup_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Security_Certificates_Str23)%><br />
+<%ejGetML(MLG_Security_Certificates_BinaryX509)%><br /><%ejGetML(MLG_Security_Certificates_Str24)%>  <br /><%ejGetML(MLG_Security_Certificates_Str25)%>  <br />
+<%ejGetML(MLG_Security_Certificates_Str26)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<form name="importForm" id="importForm" ENCTYPE='multipart/form-data' method="post" target="mainFrame">
+<input type="hidden" name="sessionKey" id="sessionKey">
+<input type="hidden" name="certLocalAction" id="certLocalAction">
+<input type="hidden" name="enableCACert8021x" id="enableCACert8021x">
+<!--Set area start-->
+<div class="data_frame2"><ul>
+<li class="set1">
+  <div class="w_text"><%ejGetML(MLG_Security_Certificates_Str28)%> :<span class="one_right">
+  <input type='file' name='certImportFileName' size='20'>
+</span></div></li>
+<li id="hidden8021x" class="set1"> <div class="w_text">
+  <ul>
+    <li class="all_table">
+		<input type='checkbox' name='enableCADot1x'>&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Security_Certificates_Str31)%>
+    </li>
+  </ul>
+</div>
+</li>
+</ul></div>
+<!--Set area end-->
+</div>
+<br/><br/>
+</form>

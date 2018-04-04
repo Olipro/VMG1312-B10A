@@ -1,0 +1,121 @@
+<script language="javascript">
+<!-- hide
+var syncNvram = '<%ejGetWl(wlSyncNvram)%>';
+var enbl = '<%ejGetWl(wlEnbl_wl0v0)%>';
+var wme = '<%ejGetWl(wlWme)%>';
+var wmeapsd= '<%ejGetWl(wlWmeApsd)%>';
+var nmode = '<%ejGetWl(wlNmode)%>'; 
+var band = '<%ejGetWl(wlBand)%>'; 
+//ZyXEL, Ryan
+var title_str1 = "2.4GHz  "+ $($(".title")[0]).html();
+var title_str2 = "5GHz  "+ $($(".title")[0]).html();
+
+function wmeChange() {
+   with ( document.forms[0] ) {
+      if (wlWme[1].checked == true) {
+         wlWmeApsd[0].disabled = true;
+         wlWmeApsd[1].disabled = true;
+         wlWmeApsd[1].checked = true;
+      } else {
+         wlWmeApsd[0].disabled = false;
+         wlWmeApsd[1].disabled = false;
+      }
+   }
+}
+
+function frmLoad() {
+
+if (band==2){
+	$(".title").html(title_str1);  //2.4G
+
+}else{
+	$(".title").html(title_str2);  //5G
+}
+
+   with ( document.forms[0] ) {
+      if (wme == '1')
+         wlWme[0].checked = true;
+      else
+         wlWme[1].checked = true;
+
+      if (wmeapsd == '1')
+         wlWmeApsd[0].checked = true;
+      else
+         wlWmeApsd[1].checked = true;
+
+      wmeChange();
+      if (nmode == 'auto') {
+         wlWme[0].disabled = true;
+         wlWme[1].disabled = true;
+      }
+   }
+}
+
+function btnApply() {
+   with ( document.forms[0] ) {
+      sessionKey.value = '<%ejGetOther(sessionKey)%>';
+      if (wlWme[0].checked == true) {
+         wlDisableWme_wl0v0.value = '0';
+         wlDisableWme_wl0v1.value = '0';
+         wlDisableWme_wl0v2.value = '0';
+         wlDisableWme_wl0v3.value = '0';
+      } else {
+         wlDisableWme_wl0v0.value = '1';
+         wlDisableWme_wl0v1.value = '1';
+         wlDisableWme_wl0v2.value = '1';
+         wlDisableWme_wl0v3.value = '1';
+      }
+   }
+
+   return true;
+}
+
+function doSubmit() {
+   if (btnApply()) {
+      document.forms[0].submit();
+      $.openLoadingMask(1);
+   }
+}
+
+$(document).ready(function() {
+   frmLoad();
+});
+// done hiding -->
+</script>
+ <form action="/pages/tabFW/wireless-wmm.wl" method="post" onSubmit="return btnApply();">
+      <div class="content_frame"><div class="explain"><div> <b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div> 
+      <div class="explain_text"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str68)%></div>
+      <div> <b class="r4"></b> <b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+         </div>
+         <div class="data_frame"><ul>
+           <li class="title"><%ejGetML(MLG_WLAN_WMM_Str6)%></li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_WMM_Str4)%> :</li>
+                     <li class="right_table">
+                        <input name="wlWme" type="radio" value="1" onClick="wmeChange();" /> <%ejGetML(MLG_Common_Enable)%>
+                           &nbsp;&nbsp;
+                        <input name="wlWme" type="radio" value="0" onClick="wmeChange();" /> <%ejGetML(MLG_Common_Disabled)%></li>
+						 <li class="left_table"><%ejGetML(MLG_WLAN_WMM_Str5)%> :</li>
+                     <li class="right_table">
+                        <input name="wlWmeApsd" type="radio" value="1" /> <%ejGetML(MLG_Common_Enable)%>
+                           &nbsp;&nbsp;
+                        <input name="wlWmeApsd" type="radio" value="0" /> <%ejGetML(MLG_Common_Disabled)%></li>
+                  </ul>
+              </div>
+            </li>
+            <input size="15" type="hidden" name="sessionKey" />
+            <input size="15" type="hidden" name="wlDisableWme_wl0v0" />
+            <input size="15" type="hidden" name="wlDisableWme_wl0v1" />
+            <input size="15" type="hidden" name="wlDisableWme_wl0v2" />
+            <input size="15" type="hidden" name="wlDisableWme_wl0v3" />
+            <li class="space"></li>
+            <li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="doSubmit();" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+    <input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();' />
+               </div>
+            </li>
+         </ul>
+         </div>
+      </div>
+ </form><br/><br/>

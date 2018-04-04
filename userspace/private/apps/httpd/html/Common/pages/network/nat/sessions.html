@@ -1,0 +1,66 @@
+<script language="JavaScript">
+
+var defIpAddr='0.0.0.0';
+
+function frmLoad() {
+	if('<%ejGetOther(enblNatSession)%>' != 0){
+		document.forms[0].session.value ='<%ejGetOther(enblNatSession)%>';
+	}
+	else {
+		document.forms[0].session.value ='';
+	}
+}
+
+function btnSession(){
+	with ( document.forms[0] ) {
+		var SNum = parseInt(session.value);
+
+		if (isNaN(SNum) == true && session.value == ""){
+			hciAlert ('<%ejGetML(MLG_NAT_Sessions_AlertMsg_Str1)%>', {height: 180, type: 2, title: ''});
+			return false;
+		}else if (SNum < 128 || SNum > 15000 ) {
+			hciAlert ('<%ejGetML(MLG_NAT_Sessions_AlertMsg_Str1)%>', {height: 180, type: 2, title: ''});
+			return false;
+		}
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+</script>
+</head>
+<div class="content_frame" >
+<body>
+<form action="/pages/tabFW/nat-natSession.cmd" method="post" onSubmit="return false;">
+<!--Unit Explain start-->
+<div class="explain"><div><b class="r1"></b><b class="r2"></b> <b class="r3"></b> <b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_NAT_Sessions_Str7)%></div><div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1"> 
+<div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_NAT_Sessions_Str8)%> : </li>
+    <li class="right_table">
+      <input type="text" name="session" size="7" maxlength="5">
+    </li>
+  </ul>
+</div>
+</li>
+<li class="space"> </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_NAT_Note)%>:</span></div><div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_NAT_Sessions_Str4)%>.
+ <br>&nbsp;&nbsp;<%ejGetML(MLG_NAT_Sessions_Str5)%>. </div></li>
+<li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe"><div class="button_position"><input onclick="btnSession()" name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();'/></div></li>
+<!--Button define end-->
+</ul></div>
+</div>
+<br/><br/>
+</form>
+</body>
+</html>

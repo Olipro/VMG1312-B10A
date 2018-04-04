@@ -1,0 +1,982 @@
+<script language="javascript">
+<!-- hide
+var groupListBak = '';
+var avlListBak = '<%ejGetOther(bridgeInterfaceInfo, friendly)%>';
+var groupList =  '';
+var avlList = '<%ejGetOther(bridgeInterfaceInfo, friendly)%>';
+var filtercriteria_count;
+var criteriaTableStr = '';
+var wanifc = '<%ejGet(pmapWanIfName)%>';
+var wanInterfaces = wanifc.split('|');
+var customer = '<%ejGetOther(customer)%>';
+
+function test()
+{
+	alert('[groupList]'+groupList);
+	alert('[avlList]'+avlList);
+/*
+	alert('[criteriaTableStr]'+criteriaTableStr);	
+	alert('[pmapVID]'+pmapVID.value);	
+	alert('[pmapVSI]'+pmapVSI.value);
+	alert('[pmapClntID]'+pmapClntID.value);
+	alert('[pmapMAC]'+pmapMAC.value);
+     alert('[pmapWildcardEnbl]'+pmapWildcardEnbl.value);
+*/
+}
+
+function addCriteria()
+{
+	var i = 0;
+	var filtercriteria = criteriaTableStr;
+	var info = filtercriteria.split(',');
+	var newStr = '';
+	var num = document.getElementById("venderIdTbl").rows.length;
+
+	if (document.getElementById("venderIdTbl").rows.length > 32)
+		hciAlert("<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str1)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+
+	if (info != '') {
+
+			 newStr += "<tr align='center'>";
+
+			 newStr += "<td class='table_font' width='5%'>" + (info.length-1) + "</td>";
+
+			 if (info[info.length-2].indexOf('@') != -1)
+			 {
+			 	 var tempInfo = info[info.length-2].split('@');
+				 newStr += "<td class='table_font' width='35%'>" + tempInfo[0] + "</td>";
+				 newStr += "<td class='table_font' width='35%'>" + tempInfo[1]+ "</td>";
+			 }
+			 else
+			 {
+				 newStr += "<td class='table_font' width='35%'>" + info[info.length-2] + "</td>";
+				 newStr += "<td class='table_font' width='35%'><%ejGetML(MLG_Common_NA)%></td>";
+			 }
+			 newStr += "<td class='table_font'><div class='i_modify'><ul><li><a href='#' class='delete' id='deleteBtn' title='<%ejGetML(MLG_Common_Delete)%>' onclick=\"removeCriteria('"+info[info.length-2]+"')\"></a></li></ul></div></td>\n";
+			 newStr += "</tr>";
+		 	 $('#venderIdTbl').append(newStr)
+	
+	}
+}
+
+function removeCriteria(str)
+{
+    var avlLan_num = 0;
+    var i = 0;
+    var vender_num = 0;
+  with ( document.forms[0] ) {
+	var tempStr = criteriaTableStr.split(',');	
+	var num = 0;
+	var tempStr2 = '';
+	for (i=0; i< tempStr.length; i++)
+	{
+
+		if (tempStr[i] != '' && tempStr[i] != undefined)
+		{
+				if (tempStr[i] == str){
+					num = i+1;
+
+					if (str.indexOf('op60') != -1){//pmapVID				
+						//hciAlert(str.toString().substring(5), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+						pmapVID.value = pmapVID.value.toString().replace(str.toString().slice(5, -2),"");
+						pmapVID.value = pmapVID.value.toString().replace(",,","");									
+					}else if (str.indexOf('op61') != -1){//pmapClntID
+						//hciAlert(str.toString().substring(5), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+						pmapClntID.value = pmapClntID.value.toString().replace(str.toString().substring(5),"");
+						pmapClntID.value = pmapClntID.value.toString().replace(",,","");						
+					}else if (str.indexOf('op125') != -1){//pmapVSI
+						//hciAlert(str.toString().substring(6), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+						pmapVSI.value = pmapVSI.value.toString().replace(str.toString().substring(6),"");
+						pmapVSI.value = pmapVSI.value.toString().replace(",,","");
+					}else if (str.indexOf('vlantag') != -1){ 
+						pmapVLAN.value = pmapVLAN.value.toString().replace(str.toString().substring(10),"");
+						pmapVLAN.value = pmapVLAN.value.toString().replace(",,","");
+					}else{//pmapMAC
+						pmapMAC.value = pmapMAC.value.toString().replace(str.toString().substring(4),"");
+						pmapMAC.value = pmapMAC.value.toString().replace(",,","");								
+					}
+					continue;
+				}
+				tempStr2 += tempStr[i]+',';
+		}
+	}
+  }	
+	criteriaTableStr = tempStr2;
+	document.getElementById("venderIdTbl").deleteRow(num);
+    vender_num = document.getElementById("venderIdTbl").rows.length;
+	if(vender_num == "1")
+	{
+	   document.getElementById('MoveToAvlBtn').disabled=false;
+	   document.getElementById('MoveToGroupBtn').disabled=false;
+	   avlLan_num = document.getElementById("avlLanTbl").rows.length;
+	   for (i=1; i<avlLan_num; i++)
+	   {
+	      document.getElementById('avl_'+i).disabled = false;
+	   }
+	}	
+}
+
+function checkCriteria() {
+  with ( document.forms[0] ) {
+   var srcmacopts = document.getElementsByName('srcmacoptions');
+
+   if ( srcmacopts[0].checked == true ) {
+      var srcmacaddr = document.getElementById('srcmacaddr');
+      if (srcmacaddr.value == "") {
+         msg = '<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str2)%>';
+         hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         srcmacopts[0].checked = false;
+         disableSrcMac();
+         return 1;
+      }
+
+      if (customer == "ISKON")  //ZyXEL,Adam,support wildcard src mac for iskon
+      {
+	  if (isWildcardMacAddress(srcmacaddr.value) == false) {
+		hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str3)%>", srcmacaddr.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return 1;
+         }
+      }
+      else
+      {
+	  if (isValidMacAddress(srcmacaddr.value) == false) {
+		hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str3)%>", srcmacaddr.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+          return 1;
+         }
+      }
+	  if (pmapMAC.value == '')
+		pmapMAC.value = srcmacaddr.value;	
+	  else
+		pmapMAC.value += ',' + srcmacaddr.value;
+	
+	  if (criteriaTableStr == '')
+		criteriaTableStr = 'mac:' + srcmacaddr.value + ',';
+	  else
+		criteriaTableStr += 'mac:' + srcmacaddr.value + ',';
+   }
+   else if ( srcmacopts[1].checked == true ) {
+      var VID = document.getElementById('VID');
+      var wildcardEnbl = document.getElementById('wildcardEnbl');
+
+      if (VID.value == "") {
+         msg = '<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str4)%>';
+         hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         srcmacopts[1].checked = false;
+         disableOption60();
+         return 1;
+      }
+
+
+      if (pmapVID.value == '')
+         pmapVID.value = VID.value;	
+      else
+         pmapVID.value += ',' + VID.value;
+
+      if (pmapWildcardEnbl.value == '')
+         pmapWildcardEnbl.value = (wildcardEnbl.checked?'1':'0');	
+      else
+         pmapWildcardEnbl.value += ',' + (wildcardEnbl.checked?'1':'0');
+      
+      if (criteriaTableStr == '')
+         criteriaTableStr = 'op60:' + VID.value + '@' + (wildcardEnbl.checked?'Y':'N') + ',';
+      else
+         criteriaTableStr += 'op60:' + VID.value + '@' + (wildcardEnbl.checked?'Y':'N') + ',';      			  
+
+   }
+   else if ( srcmacopts[2].checked == true ) {
+      var IAID = document.getElementById('IAID');
+      var duidType = document.getElementById('duidType');
+      var str = duidType.options[duidType.selectedIndex].value;
+
+      //var str = getSelect(duidType);
+      var duidValue;
+      if (IAID.value == "" || str == "none") {
+         msg = '<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str5)%>';
+         hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         srcmacopts[2].checked = false;
+         disableOption61();
+         return 1;
+      }
+
+      var iaidValue = parseInt(IAID.value);
+      if (isNaN(iaidValue) == true || iaidValue < 0 || iaidValue > 0x7fffffff) {
+         hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str6)%>", IAID.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return 1;
+      }
+
+      var loc = IAID.value;
+      loc += '|' + str;
+      switch(str) {
+         case 'llt':
+            var lltHwType = document.getElementById('lltHwType');
+            var lltAddr = document.getElementById('lltAddr');
+            var time = document.getElementById('time');
+
+            if (lltHwType.value == "" || time.value == "" || lltAddr.value == "") {
+               msg = '<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str7)%>';
+               hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               srcipoptions[2].checked = false;
+               disableOption61();
+               return 1;
+            }
+            if (isValidMacAddress(lltAddr.value) == false) {
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str8)%>", lltAddr.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return 1;
+            }
+            value = parseInt(time.value);
+            if (isNaN(value) == true || value < 0 || value > 4294967295) {
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str9)%>", time.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return 1;
+            }
+            var value = parseInt(lltHwType.value);
+            if (isNaN(value) == true || value < 0 || value > 65535) {
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str10)%>", lltHwType.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return 1;
+            }
+            loc += '|' + lltHwType.value;
+            loc += '|' + time.value;
+            duidValue = lltAddr.value;
+            loc += '|' + duidValue.toLowerCase();
+            break;
+         case 'en':
+            var enterpriseNumber = document.getElementById('enterpriseNumber');
+            var enIdentifier = document.getElementById('enIdentifier');
+
+            if (enterpriseNumber.value == "" || enIdentifier.value == "") {
+               msg = '<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str11)%>';
+               hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               srcipoptions[2].checked = false;
+               disableOption61();
+               return 1;
+            }
+            var value = parseInt(enterpriseNumber.value);
+            if (isNaN(value) == true || value < 0 || value > 65535) {
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str12)%>", enterpriseNumber.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return 1;
+            }
+            loc += '|' + enterpriseNumber.value;
+            loc += '|' + enIdentifier.value;
+            break;
+         case 'll':
+            var llHwType = document.getElementById('llHwType');
+            var llAddr = document.getElementById('llAddr');
+
+            if (llHwType.value == "" || llAddr.value == "") {
+               msg = '<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str13)%>';
+               hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               srcipoptions[2].checked = false;
+               disableOption61();
+               return 1;
+            }
+            if (isValidMacAddress(llAddr.value) == false) {
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str14)%>", llAddr.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return 1;
+            }
+            var value = parseInt(llHwType.value);
+            if (isNaN(value) == true || value < 0 || value > 65535) {
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str15)%>", llHwType.value),{height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return 1;
+            }
+            loc += '|' + llHwType.value;
+            duidValue = llAddr.value;
+            loc += '|' + duidValue.toLowerCase();
+            break;
+         case 'other':
+            var DUID = document.getElementById('DUID');
+
+            if (DUID.value == "") {
+               msg = '<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str16)%>';
+               hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               srcipoptions[2].checked = false;
+               disableOption61();
+               return 1;
+            }
+            loc += '|' + DUID.value;
+            break;
+         }
+		 if (pmapClntID.value == '')
+			pmapClntID.value = loc;	
+		 else
+			pmapClntID.value += ',' + loc;
+		
+		 if (criteriaTableStr == '')
+			criteriaTableStr = 'op61:' + loc + ',';
+		 else
+			criteriaTableStr += 'op61:' + loc + ',';      		
+		  
+      }
+      else if ( srcmacopts[3].checked == true ) {
+         var ENNUM = document.getElementById('ENNUM');
+         var MOUI = document.getElementById('MOUI');
+         var PCLASS = document.getElementById('PCLASS');
+         var MNAME = document.getElementById('MNAME');
+         var SNUMBER = document.getElementById('SNUMBER');
+
+         if ( ENNUM == "" || MOUI.value == "" || PCLASS.value == "" || MNAME.value == "" || SNUMBER.value =="") {
+            msg = '<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str17)%>';
+            hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            srcmacopts[3].checked = false;
+            disableOption125();
+            return 1;
+         }
+
+         var value = parseInt(ENNUM.value);
+         if (isNaN(value) == true || value < 0 || value > 65535) {
+            hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str18)%>", ENNUM.value), {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return 1;
+         }
+         var loc = ENNUM.value;
+         loc += '|' + MOUI.value;
+         loc += '|' + PCLASS.value;
+         loc += '|' + MNAME.value;
+         loc += '|' + SNUMBER.value;
+
+		 if (pmapVSI.value == '')
+			pmapVSI.value = loc;	
+		 else
+			pmapVSI.value += ',' + loc;
+		
+		 if (criteriaTableStr == '')
+			criteriaTableStr = 'op125:' + loc + ',';
+		 else
+			criteriaTableStr += 'op125:' + loc + ',';		  		 		 
+      }
+	  else if ( srcmacopts[4].checked == true ) { 
+		var vlanGroup = document.getElementById('vlanGroup');
+			if ( vlanGroup.value == "") {
+				msg = 'No Vlan Group is selected.';
+				hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				srcmacopts[4].checked = false;
+				//disablVlanGroup();
+				return 1;
+			}
+
+			var loc = vlanGroup.value;
+
+			if (pmapVLAN.value == '')
+				pmapVLAN.value = loc;	
+			 else
+				pmapVLAN.value += ',' + loc;
+			 
+			if (criteriaTableStr == '')
+				criteriaTableStr = 'vlangroup:' + loc + ',';
+			 else
+				criteriaTableStr += 'vlangroup:' + loc + ',';	
+	  }
+      else {
+         msg = '<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str19)%>'
+         hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return 1;
+      }
+	  addCriteria();
+	  return 0;
+
+   }
+}
+
+function addClick() {
+   var avlLan_num = 0;
+   var i = 0;
+   var loc = 'pages/network/intfGrp/intfGrp-criteriaAdd.html';          
+
+   var db1 = window.parent.$.zyUiDialog({
+               width: '75%',
+               height: 500,
+               title: '<%ejGetML(MLG_Network_InterfaceGrouping_Str23)%>',
+
+               buttons: {
+                  '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+                  '<%ejGetML(MLG_Common_Apply)%>': function(e){
+				  if (checkCriteria() == false)
+				  {
+				        document.getElementById('MoveToAvlBtn').disabled=true;
+						document.getElementById('MoveToGroupBtn').disabled=true;
+				  		avlLan_num = document.getElementById("avlLanTbl").rows.length;
+						for (i=1; i<avlLan_num; i++)
+						{
+	   						document.getElementById('avl_'+i).disabled = true;
+						}
+						db1.dialog('close')
+				  }
+
+				  	;}             
+               }
+              });
+    db1.load(loc);
+    db1.dialog('open');
+}
+
+
+function cancelBtn()
+{
+	groupList = groupListBak;
+	avlList = avlListBak;
+
+	for (i=1; i<document.getElementById("avlLanTbl").rows.length;)
+	{
+		document.getElementById("avlLanTbl").deleteRow(i);
+	}	
+
+	for (i=1; i<document.getElementById("groupLanTbl").rows.length;)
+	{
+		document.getElementById("groupLanTbl").deleteRow(i);
+	}	
+
+	writeGroupTable();
+	writeAvlTable();
+	
+}
+
+function addRow(id, devName, tbl)
+{
+	var str = '';
+	var tempdev;
+	str += '<tr align="center">';
+	if (tbl.indexOf('groupLanTbl') != -1)
+		str += '<td class="table_font"><input type="checkbox" name="group_'+id+'" id="group_'+id+'" /></td>';
+	else
+		str += '<td class="table_font"><input type="checkbox" name="avl_'+id+'" id="avl_'+id+'" /></td>';
+
+	tempdev = devName.split(',');
+
+	str += "  <td class='table_font'>"+tempdev[1]+"</td>\n"
+	str += '</tr>';   
+
+	$('#'+tbl).append(str)
+}
+
+function updateGroupTable()
+{
+   var info = groupList.split('|');
+   var str = '';
+   if (info != '')
+   	  document.getElementById('addnewshareBtn').disabled=true;
+   else
+   	  document.getElementById('addnewshareBtn').disabled=false;
+}
+
+function btnMoveToAvl()
+{
+	var tempStr = groupList.split('|');
+	var tempStr2 = '';
+
+	for (j=0; j<tempStr.length; j++)
+	{
+		if (tempStr[j].indexOf('usb') != -1)
+			continue; // skip usb ifc
+		if (tempStr[j] != '' && tempStr[j] != undefined)
+		{
+			if (document.getElementById('group_'+(j+1)).checked == true){
+				 //alert(j);
+				 var i = document.getElementById("avlLanTbl").rows.length;
+				 addRow(i, tempStr[j], 'avlLanTbl');
+				 avlList += tempStr[j]+'|'
+				 continue;
+			}
+			tempStr2 += tempStr[j]+'|';
+		}
+	}
+
+	for (i=1; i<document.getElementById("groupLanTbl").rows.length;)
+	{
+		document.getElementById("groupLanTbl").deleteRow(i);
+	}
+
+	groupList = tempStr2;	
+	writeGroupTable();
+}
+
+function btnMoveToGroup()
+{
+	var tempStr = avlList.split('|');
+	var tempStr2 = '';
+	for (j=0; j<tempStr.length; j++)
+	{
+		if (tempStr[j].indexOf('usb') != -1)
+			continue; // skip usb ifc
+		if (tempStr[j] != '' && tempStr[j] != undefined)
+		{
+			if (document.getElementById('avl_'+(j+1)).checked == true){
+				 var i = document.getElementById("groupLanTbl").rows.length;
+				 addRow(i, tempStr[j], 'groupLanTbl');
+				 groupList += tempStr[j]+'|';
+				 continue;
+			}
+			tempStr2 += tempStr[j]+'|';
+		}
+	}
+
+	for (i=1; i<document.getElementById("avlLanTbl").rows.length;)
+	{
+		document.getElementById("avlLanTbl").deleteRow(i);
+	}
+
+	avlList = tempStr2;
+	writeAvlTable();
+	updateGroupTable();
+}
+
+function writeGroupTable()
+{
+   var info = groupList.split('|');
+   var str = '';
+
+   if (info != '') {
+      for ( i = 0; i < info.length; i++ ) {
+		 if (info[i] == undefined || info[i] == '')
+			continue;	  
+         if (info[i].indexOf('usb') != -1)
+            continue; // skip usb ifc
+		 addRow(i+1, info[i], 'groupLanTbl');
+	  }
+   }
+   else
+      document.getElementById('addnewshareBtn').disabled=false;
+}
+
+function writeAvlTable()
+{
+   var info = avlList.split('|');
+   var str = '';
+   if (info != '') {
+      for ( i = 0; i < info.length; i++ ) {
+		 if (info[i] == undefined || info[i] == '')
+			continue;
+         if (info[i].indexOf('usb') != -1)
+            continue; // skip usb ifc
+		 addRow(i+1, info[i], 'avlLanTbl');
+	 }
+   }
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var OkBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+OkBtn.click(function(){ btnApply(); });
+
+function btnApply() {
+   with ( document.forms[0] ) {
+      var i = 0;
+
+      if (groupName.value == '') {
+		hciAlert('<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str20)%>', {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		return;
+       }else if (!isValidName(groupName.value)){
+		hciAlert('<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str21)%>', {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		return;
+      }
+
+      var intfTmp = groupList.split('|');
+      var newGroup = '';
+      for (i=0; i<intfTmp.length; i++)
+      {
+	      if (intfTmp[i] == '')
+	         continue;
+	      var newGroupTmp = intfTmp[i].split(',');
+	      newGroup += newGroupTmp[0]+'|';
+      }
+      
+      choiceBox.value = newGroup;
+
+      var wanIfc = '';
+	  
+      if(ptmInterfaces.length != 0) {
+    	 for (i = 1; i <= ptmInterfaces.length; i++ ) {
+    		if (ptmInterfaces[i-1] != '') {
+    			if(ptmWanIf[i].checked) {
+    				wanIfc += ptmWanIf[i].value + '|';
+    			}
+    		}
+    	 }
+      }
+	  
+      if(atmInterfaces.length != 0) {
+    	 for (i = 1; i <= atmInterfaces.length; i++ ) {
+    		if (atmInterfaces[i-1] != '') {
+    			if(atmWanIf[i].checked) {
+    				wanIfc += atmWanIf[i].value + '|';
+    			}
+    		}
+    	 }
+      }
+	  
+      if(ethInterfaces.length != 0) {
+    	 for (i = 1; i <= ethInterfaces.length; i++ ) {
+    		if (ethInterfaces[i-1] != '') {
+    			if(ethWanIf[i].checked) {
+    				wanIfc += ethWanIf[i].value + '|';
+    			}
+    		}
+    	 }
+      }
+
+//cathy add start 20130530 for "it need to select a WAN interface while add a interface group."
+      if (wanIfc == '' ){
+		hciAlert('<%ejGetML(MLG_Network_InterfaceGrouping_AlertMsg_Str23)%>', {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		return;
+      }
+//cathy add end 20130530
+
+      wanIfName.value = wanIfc;
+	  
+   }
+   document.forms[0].sessionKey.value = mainFrame.gblsessionKey;
+   document.forms[0].submit();
+   $('.ui-dialog-titlebar-close').trigger('click');
+   $.openLoadingMask(1);
+}
+
+
+$(document).ready(function() {
+	var supportAtm = '<%ejGetOther(sysInfo, buildAtm)%>';
+	var supportPtm =  '<%ejGetOther(sysInfo, buildPtm)%>';
+	var supportEthWan = '<%ejGetOther(sysInfo, buildEthWan)%>';
+	if (supportAtm == 0){
+      		showhide("atmWan", 0);
+	}
+
+	if (supportPtm == 0){
+      		showhide("ptmWan", 0);
+	}
+
+	if (supportEthWan == 0){
+      		showhide("ethWan", 0);
+	}
+		
+});
+
+// done hiding -->
+</script>
+<form name="choiceForm" action="/pages/tabFW/intfGrp-portmap.cmd" method="post" target="mainFrame">
+	<input type="hidden" name="action" id="action" value="add">
+	<input type="hidden" name="sessionKey" id="sessionKey" value="">
+	<input type="hidden" name="choiceBox" id="choiceBox" value="">
+	<input type="hidden" name="wanIfName" id="wanIfName" value="">
+	<input type="hidden" name="pmapMAC" id="pmapMAC" value="">
+	<input type="hidden" name="pmapClntID" id="pmapClntID" value="">
+	<input type="hidden" name="pmapVSI" id="pmapVSI" value="">		
+	<input type="hidden" name="pmapVID" id="pmapVID" value="">
+	<input type="hidden" name="pmapVLAN" id="pmapVLAN" value="">
+	<input type="hidden" name="pmapWildcardEnbl" id="pmapWildcardEnbl" value="">
+	<input type="hidden" name="ZyGUI" id="ZyGUI" value="1">
+	<div class="popup_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">
+	<table>
+		<tr VALIGN ='top'><td>1.&nbsp;</td><td><%ejGetML(MLG_Network_InterfaceGrouping_Str9_1)%></td></tr>
+		<tr VALIGN ='top'><td>2.&nbsp;</td><td><%ejGetML(MLG_Network_InterfaceGrouping_Str9_2)%></td></tr>
+		<tr VALIGN ='top'><td>3.&nbsp;</td><td><%ejGetML(MLG_Network_InterfaceGrouping_Str9_3)%></td></tr>
+	</table>
+</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->	
+	<div class="data_frame"><ul>
+		<!--level 1 start-->
+	<li class="set1">
+			<div class="w_text">
+			  <ul>
+				<li class="left_table"><%ejGetML(MLG_Network_InterfaceGrouping_Str4)%> :</li>
+				<li class="right_table">
+				  <input type="text" name="groupName" id='groupName' size="32" maxlength="32">
+				</li>
+			  </ul>
+			</div>		
+			<div class="w_text">
+			  <ul>
+				<li class="left_table"><%ejGetML(MLG_Network_InterfaceGrouping_Str10)%> :</li>
+			  </ul>
+			</div>
+	</li>
+	<li class="set2">
+	<div id='ptmWan'>
+			<div class="w_text">
+			  <ul>
+				<li class="left_table"><%ejGetML(MLG_Network_InterfaceGrouping_Str11)%> -&nbsp;</li>
+				<li class="right_table">
+					<span id="ptmType"></span>
+					<script language="javascript">
+					<!-- hide
+					{
+					   var i = 0;
+					   var j = 0;
+					   var ptminterfaceInfo = '<%ejGetOther(wanInterfaceInfo, allPtmEoA)%>';
+					   var ptmInterfaces = ptminterfaceInfo.split('|');
+					   var found = 0;
+					   var newStr = "";
+
+					   newStr = "  <input type='radio' name='ptmWanIf' checked value=''> <%ejGetML(MLG_Common_None)%>";
+					   for ( i = 0; i < ptmInterfaces.length; i++ ) {
+					      if (ptmInterfaces[i] != '') {
+							  var ptmNames = ptmInterfaces[i].split('/');
+							  
+							  found = 0;
+							  for ( j = 0; j < wanInterfaces.length; j++ ) {
+								if (wanInterfaces[j] != '') {
+									if(ptmNames[1] == wanInterfaces[j]) {
+										found = 1;
+										break;
+									}
+								}
+							  }
+
+							  if(found == 0) {
+								newStr += "  <input type='radio' name='ptmWanIf' value='" + ptmNames[1] + "'>";
+							  } else {
+								newStr += "  <input type='radio' name='ptmWanIf' checked value='" + ptmNames[1] + "'>";
+							  }
+							  newStr += ptmInterfaces[i];
+						  }
+					   }
+ 		   		 	   $('#ptmType').append(newStr)
+
+					}
+					// done hiding -->
+					                                       </script>
+
+				</li>
+			  </ul>
+			</div>
+			</div>
+			<div id='atmWan'>			
+			<div class="w_text">
+			  <ul>
+				<li class="left_table"><%ejGetML(MLG_Network_InterfaceGrouping_Str12)%> -&nbsp;</li>
+				<li class="right_table">
+					<span id="atmType"></span>
+					<script language="javascript">
+					<!-- hide
+					{
+					   var i = 0;
+					   var j = 0;
+					   var atminterfaceInfo = '<%ejGetOther(wanInterfaceInfo, allAtmEoA)%>';
+					   var atmInterfaces = atminterfaceInfo.split('|');
+					   var found = 0;
+					   var newStr = "";
+
+					   newStr = "  <input type='radio' name='atmWanIf' checked value=''> <%ejGetML(MLG_Common_None)%>";
+					   for ( i = 0; i < atmInterfaces.length; i++ ) {
+					      if (atmInterfaces[i] != '') {
+							  var atmNames = atmInterfaces[i].split('/');
+							  
+							  found = 0;
+							  for ( j = 0; j < wanInterfaces.length; j++ ) {
+								if (wanInterfaces[j] != '') {
+									if(atmNames[1] == wanInterfaces[j]) {
+										found = 1;
+										break;
+									}
+								}
+							  }
+
+							  if(found == 0) {
+								newStr += "  <input type='radio' name='atmWanIf' value='" + atmNames[1] + "'>";
+							  } else {
+								newStr += "  <input type='radio' name='atmWanIf' checked value='" + atmNames[1] + "'>";
+							  }
+							  newStr += atmInterfaces[i];
+						  }
+					   }
+ 		   		 	   $('#atmType').append(newStr)
+
+					}
+					// done hiding -->
+					                                       </script>
+
+				</li>
+			  </ul>
+			</div>
+			</div>
+			<div id='ethWan'>		
+			<div class="w_text">
+			  <ul>
+				<li class="left_table"><%ejGetML(MLG_Network_InterfaceGrouping_Str13)%> -&nbsp;</li>
+				<li class="right_table">
+					<span id="ethType"></span>
+					<script language="javascript">
+					<!-- hide
+					{
+					   var i = 0;
+					   var j = 0;
+					   var ethinterfaceInfo = '<%ejGetOther(wanInterfaceInfo, allEthEoA)%>';
+					   var ethInterfaces = ethinterfaceInfo.split('|');
+					   var found = 0;
+					   var newStr = "";
+
+					   newStr = "  <input type='radio' name='ethWanIf' checked value=''> <%ejGetML(MLG_Common_None)%>";
+					   for ( i = 0; i < ethInterfaces.length; i++ ) {
+					      if (ethInterfaces[i] != '') {
+							  var ethNames = ethInterfaces[i].split('/');
+							  
+							  found = 0;
+							  for ( j = 0; j < wanInterfaces.length; j++ ) {
+								if (wanInterfaces[j] != '') {
+									if(ethNames[1] == wanInterfaces[j]) {
+										found = 1;
+										break;
+									}
+								}
+							  }
+
+							  if(found == 0) {
+								newStr += "  <input type='radio' name='ethWanIf' value='" + ethNames[1] + "'>";
+							  } else {
+								newStr += "  <input type='radio' name='ethWanIf' checked value='" + ethNames[1] + "'>";
+							  }
+							  newStr += ethInterfaces[i];
+						  }
+					   }
+ 		   		 	   $('#ethType').append(newStr)
+
+					}
+					// done hiding -->
+					                                       </script>
+
+				</li>
+			  </ul>
+			</div>
+			</div>
+	</li>
+<li class="space"> </li>
+<li class="set1">
+   <div class="w_text">
+      <table width="98%" border="0" cellpadding="0" cellspacing="2" >
+         <tr>
+            <td width="45%" valign="top" >
+               <ul>
+                  <div class="w_text3">
+                     <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id='groupLanTbl'>
+                        <tr align="center" >
+                        <td width="10%" class="top_font">#</td>
+                        <td class="top_font"><%ejGetML(MLG_Network_InterfaceGrouping_Str14)%></td>
+                        </tr>
+                     </table>
+                  </div>
+               </ul>
+            </td>
+            <td width="10%" align="center" class="blod" >
+   				<input type='button' id="MoveToAvlBtn" style="background:url(images/i_right_bn.gif) no-repeat; width:32px; height:27px;border:none; display:block; cursor:pointer;" onClick='btnMoveToAvl()'>
+   				<input type='button' id="MoveToGroupBtn" style="background:url(images/i_left_bn.gif) no-repeat; width:32px; height:27px;border:none; display:block; cursor:pointer;" onClick='btnMoveToGroup()'>
+   <!--				<input type='button' style="background:url(images/i_add.gif) no-repeat; width:32px; height:27px;border:none; display:block; cursor:pointer;" onClick='test()'>-->
+            </td>
+
+            <td width="45%" valign="top" >
+               <ul>
+                  <div class="w_text3">
+                     <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id='avlLanTbl'>
+                        <tr align="center" >
+                           <td width="10%" class="top_font">#</td>
+                           <td class="top_font"><%ejGetML(MLG_Network_InterfaceGrouping_Str15)%></td>
+                        </tr>
+		<script language="javascript">
+		<!-- hide
+		{
+		   var i = 0;
+		   var dispName = '';
+		   var interfaceInfo = '<%ejGetOther(bridgeInterfaceInfo, friendly)%>';
+		   interfaceInfo = interfaceInfo.substring(0, interfaceInfo.length-1)
+		   var interfacesTmp = interfaceInfo.split('|');
+		   //interfacesTmp.sort();
+
+		   //backup real interface name
+
+		   
+		   var tempStr='';
+		   for ( i = 0; i <interfacesTmp.length; i++ ) {
+				if (interfacesTmp[i] == '')
+					continue;
+				if (interfacesTmp[i].indexOf('usb') != -1)
+					continue; // skip usb ifc
+		   		var interface = interfacesTmp[i].split(',');
+
+				
+				tempStr += "<tr align='center'>\n";
+				tempStr += "  <td class='table_font'><input type='checkbox' name=avl_"+(i+1)+" id=avl_"+(i+1)+"></td>\n";
+			
+				tempStr += "  <td class='table_font'>"+interface[1]+"</td>\n"
+				tempStr += "</tr>\n";		  
+		   }				   
+	       $('#avlLanTbl').append(tempStr)
+		}
+		// done hiding -->
+		                         </script>
+                     </table>
+                  </div>
+               </ul>
+            </td>
+         </tr>
+      </table>
+   </div>
+</li>
+																	
+<li class="space"> </li>
+<li class="set1">
+   <div class="w_text">
+      <table>
+         <tr>
+            <td><%ejGetML(MLG_Network_InterfaceGrouping_Str16)%></td>
+         </tr>
+         <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id='venderIdTbl'>
+            <tr>
+               <td class='top_font' width='5%'><div align='center'>#</div></td>
+               <td class='top_font' width='25%'><div align='center'><%ejGetML(MLG_Network_InterfaceGrouping_Str17)%></div></td>
+               <td class='top_font' width='25%'><div align='center'><%ejGetML(MLG_Network_InterfaceGrouping_Str18)%></div></td>
+               <td class='top_font' width='10%'><div align='center'><%ejGetML(MLG_Network_InterfaceGrouping_Str19)%></div></td>
+            </tr>
+            <script language="javascript">
+<!-- hide
+{
+	var i = 0;
+	var filtercriteria = criteriaTableStr;
+	var info = filtercriteria.split(',');
+	var newStr = '';
+	var op60Info = '';
+	filtercriteria_count = 0;
+
+	if (info != '') {
+		for ( i = 0; i < info.length; i++ ) {
+			 newStr += "<tr align='center'>";
+
+			 newStr += "<td class='table_font' width='5%'>" + (i + 1) + "</td>";
+			 if (info[i].indexOf('@') != -1)
+			 { //op60
+				op60Info = info[i].split('@');
+				newStr += "<td class='table_font' width='35%'>" + op60Info[0] + "</td>";
+				newStr += "<td class='table_font' width='35%'>" + op60Info[1] + "</td>";
+			 }
+			 else
+			 {
+				 newStr += "<td class='table_font' width='35%'>" + info[i] + "</td>";
+				 newStr += "<td class='table_font' width='35%'><%ejGetML(MLG_Common_NA)%></td>";
+			 }
+			 newStr += "<td class='table_font'><div class='i_modify'><ul><li><a href='#' class='delete' id='deleteBtn' title='Delete' onclick=\"removeCriteria('"+info[i]+"')\"></a></li></ul></div></td>\n";
+			 newStr += "</tr>";
+
+		 	 $('#venderIdTbl').append(newStr)
+			 filtercriteria_count ++;
+		}
+	}
+}
+// done hiding -->
+            </script>
+         </table>
+      </table>
+      <div class="button_other">
+         <input type='button' id="addnewshareBtn" onclick="addClick();"  value='<%ejGetML(MLG_Common_Add)%>'>
+      </div>
+   </div>			               
+<!--Note define start-->
+   <li class="space"> </li>
+   <li class="noteframe">
+      <div class="w_text">
+         <span class="i_note"><%ejGetML(MLG_Network_Note)%>:</span>
+      </div>
+      <div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_Network_InterfaceGrouping_Str21)%></div>
+   </li>
+<!--Note define end-->
+
+</li>
+<li class="space"></li>
+		</ul></div>
+	</div>
+</form>

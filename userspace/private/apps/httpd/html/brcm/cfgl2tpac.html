@@ -1,0 +1,65 @@
+<html>
+  <head>
+    <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+    <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+
+function btnNext() {
+  var loc = 'pppoe.cgi?cfgL2tpAc=1&ntwkPrtcl=0';
+
+  with( document.forms[0] ) {
+      if ( (tunnelName.value.length == 0) || (tunnelName.value.length > 64) ) {
+        alert('Tunnel Name is invalid [1-64].');
+        return;
+      }
+      loc += '&tunnelName='+tunnelName.value;
+  	
+      if (!isValidIpAddress(lnsIpAddress.value)) {
+        alert('LNS Ip Adress "' + lnsIpAddress.value + '" is invalid.');		  
+        return;
+      }
+      loc += '&lnsIpAddress='+lnsIpAddress.value;
+  }
+  loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+  var code = 'location="' + loc + '"';
+  eval(code);
+}
+
+
+function frmLoad() {
+  with (document.forms[0]) {
+  }
+}
+
+// done hiding -->
+    </script>
+  </head>
+  <body onLoad='frmLoad()'>
+    <blockquote>
+      <form>
+        <b>Add a L2TP Client Side PPP Connection (PPPoL2TP WAN Service)</b><br><br>
+        <br><br>
+        <br><br>
+        <div id="l2tpAc">
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width='150'>Tunnel Name</td>
+              <td><input type='text' name='tunnelName'></td>
+            </tr>
+            <tr>
+              <td width='150'>L2TP Server Ip Address</td>
+              <td><input type='text' name='lnsIpAddress'></td>
+            </tr>
+          </table>
+        </div>
+        <br><br>
+        <center>
+        <input type="button" value="Next" onClick='btnNext()'>
+        </center>
+      </form>
+    </blockquote>
+  </body>
+</html>

@@ -1,0 +1,120 @@
+<script type="text/javascript">
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+var errMsg = '<%ejGetOther(errMsg)%>';
+var act = '<%ejGetOther(sysInfo, dosEnbl)%>';
+var denyPing = '<%ejGetOther(sysInfo, denyPing)%>';
+var enbl_Fw = '<%ejGet(enblFw)%>';
+var customer = '<%ejGetOther(customer)%>';
+var curUserName = '<%ejGet(curUserName)%>';
+
+function btnApply()
+{
+   document.forms[0].sessionKey.value = glbSessionKey;
+   $.openLoadingMask(1);
+   document.forms[0].submit();
+}
+
+function frmLoad()
+{
+   if(enbl_Fw != '1')
+   {
+      $("input[name='enblDos']").attr("disabled",true);
+      $("input[name='pingProtect']").attr("disabled",true);
+      $("input[name='sysSubmit']").attr("disabled",true);
+      $("input[name='Cancel']").attr("disabled",true);
+      return;
+   }
+
+	if (act == 1)
+		$("input[name='enblDos']").get(0).checked = true;
+	else 
+		$("input[name='enblDos']").get(1).checked = true;
+	
+	if (denyPing == 1)
+		$("input[name='pingProtect']").get(0).checked = true;
+	else
+		$("input[name='pingProtect']").get(1).checked = true;
+
+	// __ZyXEL__, Tresia, Iskon customization
+ 	if (customer == "ISKON")
+	{
+		if ( (curUserName != "admin") && (curUserName != "supervisor") )
+		{
+			$('#DenyPingDiv').css('display','none');
+			$('#DoSnote').css('display','none');
+		}
+		else
+		{
+			$('#DenyPingDiv').css('display','inline');
+			$('#DoSnote').css('display','inline');
+		}
+	} else {
+		$('#DenyPingDiv').css('display','none');
+		$('#DoSnote').css('display','inline');
+	}
+}
+
+$(document).ready(function() {
+   frmLoad();
+   if (errMsg != '')
+   {
+      hciAlert(errMsg, 2);
+   }
+});
+
+</script>
+<form action="/pages/tabFW/firewall-accessControl.cmd" method="post">
+<input type=hidden name="action" id="action" value="dosCfg">
+<input type=hidden name="sessionKey" id="sessionKey">
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Security_Firewalltext)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame">
+<ul>
+<li class="set1">
+<div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_Dos_Note4)%>   :</li>
+    <li class="right_table">
+      <input name="enblDos" type="radio" value="enable" />
+      <%ejGetML(MLG_Security_FirewallACL_Str4)%>
+      <input name="enblDos" type="radio" value="disable" />
+      <%ejGetML(MLG_Security_FirewallACL_Str5)%> (<%ejGetML(MLG_Maintenance_LogsSetting_Str52)%>)</li>
+  </ul>
+</div>
+</li>
+<li class="set1">
+<div class="w_text" id="DenyPingDiv">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_Dos_Note5)%> :</li>
+    <li class="right_table">
+      <input name="pingProtect" type="radio" value="enable" />
+      <%ejGetML(MLG_Security_FirewallACL_Str4)%>
+      <input name="pingProtect" type="radio" value="disable" />
+      <%ejGetML(MLG_Security_FirewallACL_Str5)%> </li>
+  </ul>
+</div>
+</li>
+<li class="buttonframe"><div class="button_position">
+<input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick='btnApply()' />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();'/>
+</div></li>
+<li class="space"></li>
+<div id="DoSnote">
+<!--Note define start-->
+<!--
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Security_FirewallProtocol_Str7)%>:</span></div>
+<div class="note_text"><%ejGetML(MLG_Security_Dos_Note3)%></div></li>
+-->
+<!--Note define end-->
+</div>
+</ul>
+</div>
+</div>
+<br /><br />
+</form>

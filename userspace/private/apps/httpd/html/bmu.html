@@ -1,0 +1,73 @@
+<html>
+<head>
+<meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+<link rel=stylesheet href='stylemain.css' type='text/css'>
+<link rel=stylesheet href='colors.css' type='text/css'>
+
+<script language="javascript" src="util.js"></script>
+<script language="javascript">
+<!-- hide
+
+function frmLoad() {
+
+   var loc;
+
+
+   if (loc) {
+      var code = 'location="' + loc + '"';
+      eval(code);
+   } else {
+      with ( document.forms[0] ) {
+         var pwrmngt = '';
+         pwrmngt = '<%ejGetOther(bmu)%>';
+      }
+   }
+}
+
+// done hiding -->
+</script>
+</head>
+
+<body onLoad='frmLoad()'>
+      <blockquote>
+         <form>
+            <b>Batteries</b><br>
+            <br>
+            This page shows the status of the Battery Management Unit, which takes care of recharging batteries connected to this system. 
+            <br>
+            <br>
+
+            <table border=0 cellspacing=1 cellpadding=1 >
+              <tr><td>Version:</td><td><%ejGet(bmuVersion)%></td></tr>
+              <tr><td>Build Date:</td><td><%ejGet(bmuBuildDateTime)%></td></tr>
+              <tr><td>Power Source:</td><td><%ejGet(bmuPowerSource)%></td></tr>
+              <tr><td>State:</td><td><%ejGet(bmuState)%></td></tr>
+              <tr><td>Number of Connected Batteries:&nbsp;&nbsp;&nbsp;</td><td><%ejGet(bmuNumberOfPresentBatteries)%></td></tr>
+              <tr><td>Input Voltage:</td><td><%ejGet(bmuInputVoltage)%>&nbsp;Volts</td></tr>
+              <tr><td>Temperature:</td><td><%ejGet(bmuTemperature)%>&nbsp;Celcius</td></tr>
+              <tr><td>Estimated Time Remaining:</td><td><%ejGet(bmuEstimatedMinutesRemaining)%>&nbsp;Minutes</td></tr>
+              <tr><td>Number of Seconds on Battery:</td><td><%ejGet(bmuUpsSecondsOnBattery)%>&nbsp;Seconds</td></tr>
+            </table>
+            <br>
+
+			<table>
+			  <tr><td><b>Measurement</b></td><td><b>Battery A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td><b>Battery B</b></td></tr>
+			  <tr><td>Status</td><td><%ejGet(bmuStatusBatteryA)%></td><td><%ejGet(bmuStatusBatteryB)%></td></tr>
+			  <tr><td>Capacity</td><td><%ejGet(bmuCapacityBatteryA)%>&nbsp;mAH</td><td><%ejGet(bmuCapacityBatteryB)%>&nbsp;mAH</td></tr>
+			  <tr><td>Measured Voltage</td><td><%ejGet(bmuMeasuredVoltageBatteryA)%>&nbsp;Volts</td><td><%ejGet(bmuMeasuredVoltageBatteryB)%>&nbsp;Volts</td></tr>
+			  <tr><td>Estimated Time Remaining&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td><%ejGet(bmuEstimatedTimeRemainingBatteryA)%>&nbsp;Minutes</td><td><%ejGet(bmuEstimatedTimeRemainingBatteryB)%>&nbsp;Minutes</td></tr>
+			</table>
+
+            <br>
+            <center>
+               <p align="center">
+                  <input type=button value="refresh" onClick="window.location.reload()">
+            </center>
+         </form>
+      </blockquote>
+
+
+</body>
+</html>
+
+

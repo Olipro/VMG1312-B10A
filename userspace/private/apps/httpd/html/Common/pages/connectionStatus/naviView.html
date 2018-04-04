@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+<link href="../../css/brick.css" rel="stylesheet" type="text/css" />
+  <script src="../../js/jquery-1.3.2.min.js" type="text/javascript"></script>
+  <script src="../../js/common.js" type="text/javascript" ></script>  
+  <script src="../../js/jquery.tools.min_tab.js" type="text/javascript"></script>
+  <script src="../../js/jquery.getParams.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  setPageIndex('connectionStatus');
+  var naviApi;
+  var naviViewPath = "naviView.json"
+  var naviViewObj = {
+      api: null,
+      content: null,
+      contentArry: []
+  };
+  $(function(){
+      var tabIndex = -1;
+      var doLoadFlag = 0;
+	  var $title= $('.title');
+      function loadData(){
+          var allPath = naviViewPath;
+          var $tabContainer = $('.tabs');
+          var $title = $('.unit_title');
+          var indexCounter = 0;
+          var defaultIndex = 0;
+          var $panelContainer = $('.panes');
+          $panelContainer.hide();
+          $.ajaxSettings.async = false;
+          $.getJSON(naviViewPath, function(data){
+              naviViewObj.content = data;
+              $.each(data, function(i, item){
+              
+                  var menuItemA = $('<a class><span>' + item.title + '</span></a>');
+                  
+                  menuItemA.attr('id', 't_' + i);
+                  menuItemA.attr('href', '#');
+
+                  var tabItemLi = $('<li></li>');
+                  /*  tabItemLi.attr('url', item.url);
+                   tabItemLi.attr('tabId', i);
+                   tabItemLi.attr('tabIndex', indexCounter);*/
+                  naviViewObj.contentArry.push(item);
+                  
+                  //set default
+                  if (item.defaultPage != undefined) {
+                      defaultIndex = indexCounter;
+                  }
+                  indexCounter++;
+                  tabItemLi.append(menuItemA);
+                  $tabContainer.append(tabItemLi);
+                  
+                    var wpanel = $('<div class="pane" style="display:block;width:95%;"></div>');
+                    $panelContainer.append(wpanel);
+                    
+                    wpanel.load(item.url);
+              });
+          });
+          $.ajaxSettings.async = true;
+          doTab(defaultIndex);
+		  $panelContainer.show();
+          
+          if ($panelContainer.children('.pane').length == 2) {
+              $('.arrowbtnL').css('top', '35%');
+          }
+      }
+      
+      var urlIndex = -1;
+      if ($.getURLParam("index") != null) {
+          urlIndex = $.getURLParam("index");
+      }
+    
+      //do tab
+      loadData();
+ 
+      function doInit(api){
+	     naviViewObj.api = api;
+	     replaceSysVar();
+	  }
+	  
+      function doTab(dIndex){
+          if (urlIndex != -1) 
+              dIndex = parseInt(urlIndex);
+            
+          naviApi = $("ul.tabs").tabs("div.panes > div", {
+              initialIndex: dIndex,
+              api: true,
+              onClick: function(d, index){
+			  
+                  if (index == dIndex && doLoadFlag ==0) {
+						  doLoadFlag = 1;
+						  doInit(this);
+                    }
+                
+                  if (naviViewObj.contentArry[index + 1] != undefined) 
+                      $('#naviRText').html(naviViewObj.contentArry[index + 1].title)
+                  
+                  if (naviViewObj.contentArry[index - 1] != undefined) 
+                      $('#naviLText').html(naviViewObj.contentArry[index - 1].title)
+                  
+				  $title.html(naviViewObj.contentArry[index].title);
+				  
+                  $('#naviPrev').removeClass('disable');
+                  $('#naviNext').removeClass('disable');
+                  
+                  if (index + 1 == this.getTabs().length) 
+                      $('#naviNext').addClass('disable');
+                  
+                  if (index == 0) {
+                      $('#naviPrev').addClass('disable');
+                  }
+              },
+              onBeforeClick: function(){
+              }
+          });     
+        
+      }
+
+      $('#naviPrev').click(function(){
+          naviApi.prev();
+      });
+      
+      $('#naviNext').click(function(){
+          naviApi.next();
+      });
+      
+      function fitDownMsg(){
+          $('#downMsg').css({
+              top: $(window).height() - $('#downMsg').height() - 20 + $(window).scrollTop()
+          });
+      }
+      
+      $(window).scroll(fitDownMsg).resize(fitDownMsg);     
+  });
+  
+  function connection(flag){
+      if (flag) {
+          $('.disconnect').hide();
+          $('.connect').show();
+          $('#downMsg').fadeOut(0);
+      }
+      else {
+          $('.disconnect').show();
+          $('.connect').hide();
+          $('#downMsg').fadeIn(0);
+      }
+  }
+  
+  function MM_goToURL(){ //v3.0
+      var i, args = MM_goToURL.arguments;
+      document.MM_returnValue = false;
+      for (i = 0; i < (args.length - 1); i += 2) 
+          eval(args[i] + ".location='" + args[i + 1] + "'");
+  }
+
+    </script>
+  
+</head>
+<body >
+<div class="title indexTitlePosition" ></div>
+<div class="refreshFrame">
+<div class="arrowbtnR"  id="naviPrev"><a></a> <span class="arrowbnText" id='naviLText'><%ejGetML(MLG_ConnStatus_NetworkMap_Str1)%></span></div>
+<div class="arrowbtnL"  id="naviNext"><a></a> <span class="arrowbnText" id='naviRText'><%ejGetML(MLG_ConnStatus_Status_Str21)%></span></div>
+<div class="modesetting" id="modesetting_map" >
+    <ul>
+        <li style="margin-left:10px;">
+            <select name="Sys_RefreshList" size="1" onchange="resetInterval()">
+                <option value="00000000" selected="selected"><%ejGetML(MLG_Common_None)%> </option>
+                <option value="00000001">5 <%ejGetML(MLG_Common_Seconds)%> </option>
+                <option value="00000002">10 <%ejGetML(MLG_Common_Seconds)%> </option>
+                <option value="00000003">15 <%ejGetML(MLG_Common_Seconds)%> </option>
+                <option value="00000004">20 <%ejGetML(MLG_Common_Seconds)%> </option>
+                <option value="00000005">25 <%ejGetML(MLG_Common_Seconds)%> </option>
+                <option value="00000006">30 <%ejGetML(MLG_Common_Seconds)%> </option>
+            </select>
+        </li>
+        <li class="blod"> <%ejGetML(MLG_ConnStatus_NetworkMap_Str11)%>:</li>
+    </ul>
+</div>
+</div>
+
+
+<div class='unit_title'></div>
+<div>
+<ul class="tabs" style='display:none;'></ul>
+
+<!-- tab "panes" -->
+<div class="panes">
+
+</div>
+
+</div>
+
+<!--Error Message Start-->
+<div class="downmessage" id="downMsg" style="display:none;" ><ul><li class="downleft"></li>
+<li class="downcenter" style="position:relative;">
+  <div style=" position:absolute;width:100%; z-index:800; top:15px; left:10px;"><span class="blod"><%ejGetML(MLG_ConnStatus_Navi_Str1)%></span><br /><br />
+<span><%ejGetML(MLG_ConnStatus_Navi_Str2)%><br /></span>
+</div></li></ul><div class="button_position" style=" position:absolute; top:65px; right:-5px;"><input name="New Message" type="button" onclick="MM_goToURL('parent','../troubleshooting1.html');return document.MM_returnValue" 
+ value="Diagnose" />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;</div></div>
+<!--Error Message End-->
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+<script language="javascript">
+<!-- hide
+var wdsMacIdx = '<%ejGetWl(wdsIdx)%>';
+var wdsMacS = '<%ejGetWl(wdsMacSelect)%>';
+
+function isDuplicateRecord(mac)
+{
+   var list = '<%ejGetWl(wdsMacList)%>';
+   var info = list.split(',');
+
+   for ( i = 0; i < info.length; i++ ) {
+      if (info[i] != '' && (wdsMacIdx != (i+1)) ) {
+         if (info[i] == mac) {
+            return false;
+         }
+      }
+   }
+}
+
+function btnSave() {
+   with ( document.forms[0] ) {
+      var msg = "";
+      wl_wdsAddr.value = str1.value + ":" + str2.value + ":" + str3.value + ":" + str4.value + ":" + str5.value + ":" +str6.value;
+      
+      if(wl_wdsAddr.value.length != 0) {
+	     if(wl_wdsAddr.value.length != 17){
+            msg = MLG_Makestring("<%ejGetML(MLG_WLAN_MACAuthentication_AlertMsg_Str4)%>", wl_wdsAddr.value );
+			hciAlert(msg, {height: 180, type: 2, title: ''});
+            return false;
+         }else if (isValidMacAddress(wl_wdsAddr.value) == false) {
+            msg = MLG_Makestring("<%ejGetML(MLG_WLAN_MACAuthentication_AlertMsg_Str4)%>", wl_wdsAddr.value );
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return false;
+         } else if (isDuplicateRecord(wl_wdsAddr.value.toUpperCase()) == false) {
+            msg = '<%ejGetML(MLG_WLAN_WDS_AlertMsg_Str3)%>';
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return false;
+         } else if((parseInt(str1.value, 16) % 2) == 1 ){
+            msg = MLG_Makestring("<%ejGetML(MLG_WLAN_WDS_AlertMsg_Str4)%>", wl_wdsAddr.value);
+            hciAlert(msg, {height: 180, type: 2, title: ''});
+            return false;
+         }
+      }
+
+      str1.disabled = "true";
+      str2.disabled = "true";
+      str3.disabled = "true";
+      str4.disabled = "true";
+      str5.disabled = "true";
+      str6.disabled = "true";
+	  
+      sessionKey.value = mainFrame.glbSessionKey;
+      wdsIdx.value = wdsMacIdx;
+      wl_wdsAddr.disabled = true;
+      wlWdsAddr.value = wl_wdsAddr.value.toUpperCase();
+   }
+
+   return true;
+}
+
+function doSubmit() {
+   if (btnSave()) {
+      document.forms[0].submit();
+      $('.ui-dialog-titlebar-close').trigger('click');
+      $.openLoadingMask(1);
+   }
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var OkBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+OkBtn.click(function(){ doSubmit(); });
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+      wl_wdsAddr.value = wdsMacS;
+      if(wdsMacS.length >= 17){
+         var ele = wdsMacS.split(':');
+         str1.value = ele[0];
+         str2.value = ele[1];
+         str3.value = ele[2];
+         str4.value = ele[3];
+         str5.value = ele[4];
+         str6.value = ele[5];
+      }
+   }
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+// done hiding -->
+</script>
+   <form action="/pages/tabFW/wireless-wds_edit.wl" method="post" target="mainFrame">
+      <input size="15" type="hidden" name="sessionKey" />
+      <input size="15" type="hidden" name="wdsIdx" />
+      <input size="15" type="hidden" name="wlWdsAddr" />  
+      <div class="popup_frame" >
+         <div class="data_frame"><ul>
+            <li class="title"><%ejGetML(MLG_WLAN_WDS_Str14)%></li>
+            <li class="set1">
+               <div class="w_text"><%ejGetML(MLG_WLAN_WDS_Str15)%>  :</div>
+               <div class="w_text">
+                  <input name="str1" type="text" size="2" maxlength="2" onFocus="nextfield = 'str2'; prevfield = 'str1';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)" /> :<input name="str2" type="text" size="2" maxlength="2" onFocus="nextfield  = 'str3';prevfield = 'str1';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)"/> :<input name="str3" type="text" size="2" maxlength="2" onFocus="nextfield  = 'str4';prevfield = 'str2';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)"/> :<input name="str4" type="text" size="2" maxlength="2" onFocus="nextfield  = 'str5';prevfield = 'str3';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)"/> :<input name="str5" type="text" size="2" maxlength="2" onFocus="nextfield  = 'str6';prevfield = 'str4';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)"/> :<input name="str6" type="text" size="2" maxlength="2" onFocus="nextfield = 'str6';prevfield = 'str5';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)"/>
+               </div>
+            </li>
+            <input name="wl_wdsAddr" size="17" maxlength="17" type="hidden" onKeyPress="return disableEnterKey(event)"/>
+         </ul></div>
+      </div>
+   </form>
+<script language="JavaScript">
+with ( document.forms[0] ) {
+   str1.focus();
+}
+</script>   
+

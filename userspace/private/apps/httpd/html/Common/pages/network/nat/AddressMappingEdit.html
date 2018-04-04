@@ -1,0 +1,193 @@
+<script language="javascript">
+var amLocalIPStart = '<%ejGet(amLocalIPStart)%>';
+var amLocalIPEnd = '<%ejGet(amLocalIPEnd)%>';
+var amGlobalIPStart = '<%ejGet(amGlobalIPStart)%>';
+var amGlobalIPEnd = '<%ejGet(amGlobalIPEnd)%>'; 
+var amType = '<%ejGet(amType)%>';
+var amSet = '<%ejGet(amSet)%>';
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+mainFrame.glbSessionKey = glbSessionKey;
+function chkNATtype()
+{
+	with ( document.forms[0] ) {
+		switch(type.value)
+		{	case '0'://One-to-One
+				localIPEnd.disabled = true;
+				globalIPEnd.disabled = true;
+				break;
+			case '1'://Many-to-One
+				localIPEnd.disabled = false;
+				globalIPEnd.disabled = true;
+				break;
+			case '2'://Many-to-Many
+				localIPEnd.disabled = false;
+				globalIPEnd.disabled = false;
+				break;
+		}
+	}
+}
+
+function btnSave() {
+   with ( document.forms[0] ) {
+	if (isValidIpAddress(localIPStart.value) == false){
+	       msg = '<%ejGetML(MLG_NAT_Address_Mapping_AlertMsg_Str1)%>';
+	       hciAlert(msg, {height: 180, type: 2, title: ''});
+       	return;
+	}
+	if (isValidIpAddress(globalIPStart.value) == false){
+	       msg = '<%ejGetML(MLG_NAT_Address_Mapping_AlertMsg_Str2)%>';
+	       hciAlert(msg, {height: 180, type: 2, title: ''});
+       	return;
+	}
+	if (type.value != 0 && isValidIpAddress(localIPEnd.value) == false){
+	       msg = '<%ejGetML(MLG_NAT_Address_Mapping_AlertMsg_Str5)%>';
+	       hciAlert(msg, {height: 180, type: 2, title: ''});
+       	return;
+	}
+	if (type.value == 2 &&  isValidIpAddress(globalIPEnd.value) == false){
+	       msg = '<%ejGetML(MLG_NAT_Address_Mapping_AlertMsg_Str2)%>';
+	       hciAlert(msg, {height: 180, type: 2, title: ''});
+       	return;
+	}
+
+	if (type.value == 0)
+	{
+		localIPEnd.value = "";
+		globalIPEnd.value = "";
+	}
+	else if (type.value == 1)
+	{
+		globalIPEnd.value = "";
+	}
+
+	if (type.value != 0){
+		if (!isSameSubNet(localIPStart.value, "255.255.255.0", localIPEnd.value, "255.255.255.0"))
+		{
+		       msg = '<%ejGetML(MLG_NAT_Address_Mapping_AlertMsg_Str3)%>';
+		       hciAlert(msg, {height: 180, type: 2, title: ''});
+	       	return;
+		}
+	}
+	if (type.value == 2){
+		if (!isSameSubNet(globalIPStart.value, "255.255.255.0", globalIPEnd.value, "255.255.255.0"))
+		{
+		       msg = '<%ejGetML(MLG_NAT_Address_Mapping_AlertMsg_Str4)%>';
+		       hciAlert(msg, {height: 180, type: 2, title: ''});
+	       	return;
+		}
+	}
+		
+    sessionKey.value = glbSessionKey;
+    submit();
+	   
+	$('.ui-dialog-titlebar-close').trigger('click');
+	$.openLoadingMask(1);
+		
+		return;
+  }
+}
+
+function frmLoad() {
+	with ( document.forms[0] ) {
+		localIPStart.value = amLocalIPStart;
+		localIPEnd.value = amLocalIPEnd;
+		globalIPStart.value = amGlobalIPStart;
+		globalIPEnd.value = amGlobalIPEnd;
+		type.selectedIndex = amType;
+		mappingSet.value = amSet;
+		chkNATtype();
+	}
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnSave(); });
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+</script>
+<!-- WaterMark Begin -->
+<!-- WaterMark End -->
+<form action="/pages/tabFW/nat-addressmapping.cmd" method="post" target="mainFrame">
+<input type=hidden name="sessionKey" id="sessionKey" value="">
+   <input type=hidden name="action" id="action" value="edit">
+	<div class="popup_frame" >
+		<div class="data_frame"><ul>
+<!--level 1 start-->
+			<li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMPFilter_Str12)%> :</li>
+                     <li class="right_table">
+                        <select name="type" size="1" onChange="chkNATtype()">
+							<option value='0'><%ejGetML(MLG_NAT_Address_Mapping_Str6)%></option>
+							<option value='1'><%ejGetML(MLG_NAT_Address_Mapping_Str7)%></option>
+							<option value='2'><%ejGetML(MLG_NAT_Address_Mapping_Str8)%></option>
+						</select>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_Address_Mapping_Str2)%> :</li>
+                     <li class="right_table">
+                        <input type="text" name="localIPStart" size="15" maxlength="15" />
+                     </li>
+                  </ul>
+               </div>
+            </li>	
+			<li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_Address_Mapping_Str3)%> :</li>
+                     <li class="right_table">
+                        <input type="text" name="localIPEnd" size="15" maxlength="15" />
+                     </li>
+                  </ul>
+               </div>
+            </li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_Address_Mapping_Str4)%> :</li>
+                     <li class="right_table">
+                        <input type="text" name="globalIPStart" size="15" maxlength="15" />
+                     </li>
+                  </ul>
+               </div>
+            </li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_Address_Mapping_Str5)%> :</li>
+                     <li class="right_table">
+                        <input type="text" name="globalIPEnd" size="15" maxlength="15" />
+                     </li>
+                  </ul>
+               </div>
+            </li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Common_Set)%> :</li>
+                     <li class="right_table">
+                        <select NAME="mappingSet">
+							<option value='1'>1</option>
+							<option value='2'>2</option>
+							<option value='3'>3</option>
+							<option value='4'>4</option>
+							<option value='5'>5</option>
+						</select>	
+                     </li>
+                  </ul>
+               </div>
+            </li>
+          
+<li class="space"></li>
+         </ul></div>
+      </div>
+   </form>

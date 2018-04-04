@@ -1,0 +1,39 @@
+ <script type="text/javascript">
+  var $resSuccess = $('#success');
+  var $resfail = $('#fail');
+  
+  wizardObj.dbObj.bind('wizardInit', function(){
+    wizardObj.api.onClick(function(){
+        if ($('#resultView').parents('.pane').css('display') != 'none') 
+            doResultViewInit();
+    });
+  });
+
+function doResultViewInit(){
+    if(wizardResult==undefined)
+    return;
+    if (wizardResult) {
+        $resfail.hide();
+         wizardObj.ctrlBtns.back.hide();
+    }
+    else {
+        $resSuccess.hide();
+    }
+}
+
+</script>
+  <!-- result Beginning -->
+   <div id="resultView" class='state' >
+     <div class="qs_content">
+       <div id="success">
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str60)%></p>
+       </div>
+       <div id="fail">
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str61)%></p>
+         <p class="fail"><%ejGetML(MLG_ConnStatus_QuickStart_Str58)%></p>
+         <p class="fail"><%ejGetML(MLG_ConnStatus_QuickStart_Str59)%></p>
+       </div>
+       <p>&nbsp;</p>
+     </div>
+   </div>
+   <!-- result Ending -->

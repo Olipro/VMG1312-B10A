@@ -1,0 +1,66 @@
+<script type="text/javascript">
+$(function(){
+       $('input[value="Configuration"]').click(function(){
+
+        var db1 = window.parent.$.zyUiDialog({
+            width: 750,
+            height:372,
+            title: 'Configuration'
+        });
+        var link = 'pages/maintenance/disagnostic/selfDiagnostic_config.html';
+        db1.load(link);
+        db1.dialog('open');
+       });
+});
+    </script>
+<form>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">Self-Diagnostic shows the testing results of selected test cases. Click Configuration button when the changes of any diagnostic settings are needed.</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<div class="w_table">
+<input type='button' value='Refresh' >
+<input type='button' value='Configuration' >
+<input type='button' value='Download Log File' >
+<input type='button' value='Clear Log File'>
+</div>
+<li class="space"> </li>
+<li class="set2">
+<div class="title2"><span class="i_title2">Test Complete Time:</span></div>
+<!--Table define start-->
+<div class="w_table">
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame">
+    <tr>
+        <td><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+                <td><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td><table id="listTable" width="100%" cellpadding="0" cellspacing="0" style='table-layout:fixed;'>
+                            <tr align="center">
+                                <td width="5%" class="top_font">#</td>
+                                <td width="15%" class="top_font">Test Case</td>
+                                <td width="80%" class="top_font" style="border-right:0px;"><%ejGetML(MLG_System_SystemLog_Str20)%></td>               
+                            </tr> 
+                            <tr align="center">
+                              <td class="table_font">1</td>
+                              <td class="table_font">ptm0_1</td>
+                              <td class="table_font">ipoe_0_0_1_1</td>
+                           </tr>                   
+                        </table></td>
+                    </tr>
+                </table></td>
+            </tr>
+        </table></td>
+    </tr>
+</table>
+</div></li>
+<!--Table define end-->
+</ul></div>
+<!--Set area end-->
+</div>
+<br/><br/>

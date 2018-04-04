@@ -1,0 +1,21 @@
+/*@import url("reset.css");*/
+.clearfloat {clear:both;height:0;font-size:1px;line-height:0px;}
+.wrap {width:100%;}
+.wrap .tiersleft {float:left;width:42%;}
+.wrap .tiersright {float:right;width:55%;}
+.wrap .content {margin:5px 10px;border:0;}
+.wrap .content td {padding:6px 0 2px 0;text-indent:6px;}
+.wrap .content td input {padding:0;}
+.item {position:relative;padding-left:15px;padding-bottom:6px;}
+.item .tools {position:absolute;right:25px;top:4px;color:#3672ab;}
+.item .tools a {color:#3672ab;text-decoration:none;font-weight:normal;font-size:10px;text-decoration:underline;}
+.item .tools a:hover { text-decoration:none;}
+.treepanel {margin-left:10px;margin-right:20px;}
+.treepanel .inner {border-left:1px solid #a5a5a5;border-right:1px solid #a5a5a5;padding:0 10px;height:300px;overflow:auto;position:relative;}
+.treepanel .inner h1 {text-indent:10px;margin-bottom:4px;}
+.config {margin-bottom:5px;}
+.wizard {margin-bottom:10px;border-bottom:2px dotted #ccc;padding-bottom:5px;}
+.r1 {height:1px; font-size:1px; overflow:hidden; display:block; background:#a5a5a5; margin:0 5px;}
+.r2 {height:1px; font-size:1px; overflow:hidden; display:block; border-right:2px solid #a5a5a5; border-left:2px solid #a5a5a5; margin:0 3px;background-color:#fff;}
+.r3 {height:1px; font-size:1px; overflow:hidden; display:block; border-right:1px solid #a5a5a5; border-left:1px solid #a5a5a5; margin:0 2px;background-color:#fff;}
+.r4 {height:2px; font-size:1px; overflow:hidden; display:block; border-right:1px solid #a5a5a5; border-left:1px solid #a5a5a5; margin:0 1px;background-color:#fff;}

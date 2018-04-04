@@ -1,0 +1,201 @@
+<script type="text/javascript">
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+var errMsg = "<%ejGetOther(errMsg)%>";
+$(function(){
+    $('#editBtn').click(function(){
+        var db1 = window.parent.$.zyUiDialog({
+            width: 500,
+            height: 270,
+            title: '<%ejGetML(MLG_Network_DnsRoute_Edit)%>'
+        });
+		var link = 'pages/network/routing/dnsRt_add.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+    $('#addBtn').click(function(){
+    
+       var db1 = window.parent.$.zyUiDialog({
+            width: 500,
+            height:270,
+            title: '<%ejGetML(MLG_Network_DnsRoute_Add)%>',
+	    buttons: {
+                '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+                '<%ejGetML(MLG_Common_OK)%>': function(){}
+            }	
+        });
+		var link = 'pages/network/routing/dnsRt_add.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+	
+    $('#deleteBtn').click(function(){
+    
+        var db1 = window.parent.$.zyUiDialog({
+            width: 450,
+            height: 190,
+            title: '<%ejGetML(MLG_Common_Delete)%>',
+            buttons: {
+               '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close')},
+               '<%ejGetML(MLG_Common_OK)%>': function(){}
+            }
+        });
+		var link = 'pages/delete.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+});
+
+function btnAdd()
+{
+       var db1 = window.parent.$.zyUiDialog({
+             width: '75%',
+             height: 340,
+            title: '<%ejGetML(MLG_Network_DnsRoute_Add)%>',
+            buttons: {
+                '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+                '<%ejGetML(MLG_Common_Apply)%>': function(){}
+            }
+	  });
+        db1.load('/pages/network/routing/dnsRt_add.html');
+        db1.dialog('open');
+}
+
+function removeClick(rml) {
+   var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 190,
+              title: '<%ejGetML(MLG_Network_DnsRoute_Remove)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_No)%>': function(){ db1.dialog('close'); },              	
+                 '<%ejGetML(MLG_Common_Yes)%>': function(){ db1.dialog('close'); $.openLoadingMask(1); deleteProcess(rml);}
+              }
+             });
+	   db1.load('/pages/delete.html');
+	   db1.dialog('open');
+}
+
+function deleteProcess(rml)
+{
+	document.forms[0].lst.value = rml;
+	document.forms[0].action.value = 'remove';	
+	document.forms[0].sessionKey.value = gblsessionKey;	
+	document.forms[0].submit();
+}
+
+function editClick(rml) {
+    var loc = 'routing-dnsRoute.cmd?lst='+rml+'&action=view&sessionKey='+gblsessionKey;
+    var db1 = window.parent.$.zyUiDialog({
+          width: '75%',
+          height: 350,
+         title: '<%ejGetML(MLG_Network_DnsRoute_EditEntry)%>',
+         buttons: {
+             '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+             '<%ejGetML(MLG_Common_Apply)%>': function(){}
+         }
+   });
+     db1.load(loc);
+     db1.dialog('open');
+
+}
+
+function enblProcess(rml)
+{
+	document.forms[0].lst.value = rml;
+	document.forms[0].action.value = 'enbl';	
+	document.forms[0].sessionKey.value = gblsessionKey;
+	$.openLoadingMask(1);
+	document.forms[0].submit();
+}
+
+$(document).ready(function() {
+	if (errMsg != '')
+	{
+		hciAlert(errMsg, {height: 180, type: 2, title: ''});
+	}
+});
+
+ </script>
+ <form action="/pages/tabFW/routing-dnsRoute.cmd" method="post">
+<input name="lst" type="HIDDEN" id="lst" value=""; />
+<input name="action" type="HIDDEN" id="action" value="add"; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""/>
+ <div class="content_frame"><div class="explain"> <div> <b class="r1"></b><b class="r2"></b> <b class="r3"></b><b class="r4"></b> <b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Network_DnsRoute_Intro)%></div><div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b> <b class="r1"></b></div></div>
+         <div class="data_frame"><ul>
+            <li class="set1">
+               <div class="w_table">
+                  <input type="button" name="addBtn" value="<%ejGetML(MLG_Network_DnsRoute_Add)%>" id="addBtn" />
+               </div>
+            </li>
+            <li class="set1">
+              <div class="w_table">
+  <!--Table define start-->
+   <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="staticTable">
+                <tbody id='rtEntry'><tr align="center">
+                  <td width="5%"class="top_font">#</td>                  
+				  <td class="top_font"><%ejGetML(MLG_Network_DnsRoute_DomainName)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Network_DnsRoute_Interface)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Network_DnsRoute_Subnetmask)%></td>
+                  <td width="60" class="top_font" style="border-right:0px;"><%ejGetML(MLG_Common_Modify)%></td>
+                </tr>
+</tbody>
+<script language='JavaScript'>
+<!-- Hide
+var str ='<%ejGetOtherBig(getDnsRtEntry)%>';
+var str2 = str.split('|');
+var finalStr = '';
+var entryNum = '<%ejGet(entryNum)%>';
+
+if (parseInt(entryNum) >= 20){
+	$("#addBtn").attr("disabled",true);
+}
+
+for (i=1; i<str2.length; i++)
+{
+	var entry = str2[i].split('/');	
+	if (entry[1] == undefined)
+		break;
+	finalStr += "<tr align='center'>";
+	finalStr += "<td  class=\"table_font\">"+i+"</td>";
+	finalStr += "<td  class=\"table_font textOverflow\">" + entry[0] + "</td>"; //domain name
+	finalStr += "<td  class=\"table_font textOverflow\">" + entry[1] + "</td>"; //wanName
+	finalStr += "<td  class=\"table_font textOverflow\">" + entry[2] + "</td>"; //subnet mask
+	finalStr += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" class=\"edit\" title=\"<%ejGetML(MLG_Common_Edit)%>\" id='editBtn' onClick = editClick('"+entry[0]+"')></a></li><li><a href=\"#\" class=\"delete\" title=\"Delete\" id='deleteBtn' onClick = removeClick('"+entry[0]+"') ></a></li></ul></div></td>";
+	finalStr += "</tr>";
+	
+$(function(){
+$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );  
+$('.textOverflow').ellipsis(true);
+});
+
+}
+
+$('#rtEntry').append(finalStr);
+//done -->
+</script>
+<!--				
+                <tr align="center">
+                  <td class="table_font">1</td>
+                  <td class="table_font"><img src="../../images/i_active_off.gif" width="18" height="18" /></td>
+                  <td class="table_font">--</td>
+                  <td class="table_font">--</td>
+                  <td class="table_font">--</td>
+                  <td class="table_font">--</td>
+                  <td class="table_font"><div class="i_modify"><ul><li><a href="#" class="edit" id='editBtn' title="<%ejGetML(MLG_Common_Edit)%>"></a></li><li ><a href="#"  id='deleteBtn' class="delete" title="<%ejGetML(MLG_Common_Delete)%>"></a></li></ul></div></td>
+                  </tr>
+-->                
+              </table>
+</div>
+ </li>
+ <li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Network_Note)%>:</span></div>
+<div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_Network_DnsRoute_Note)%>
+</div>
+</li>
+</ul>
+</div><br/><br/>

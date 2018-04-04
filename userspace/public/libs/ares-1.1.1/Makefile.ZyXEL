@@ -1,0 +1,61 @@
+#/******************************************************************************/
+#/*
+#* Copyright (C) ZyXEL Communications, Corp.
+#* All Rights Reserved.
+#*
+#* ZyXEL Confidential; Need to Know only.
+#* Protected as an unpublished work.
+#*
+#* The computer program listings, specifications and documentation
+#* herein are the property of ZyXEL Communications, Corp. and
+#* shall not be reproduced, copied, disclosed, or used in whole or
+#* in part for any reason without the prior express written permission of
+#* ZyXEL Communications, Corp.
+#*/
+#/******************************************************************************/
+include $(PRJ_BASE)/Make.config 
+
+APP_SRC_DIR := $(shell pwd)
+APP_OBJ_DIR := $(ZLD_APPS_BUILD_DIR)/$(shell basename `pwd`)
+
+#/************************* Start your Makefile *******************************/
+ifeq ($(SUPPORT_EXTFS), yes)
+INSTALL_PATH=$(ZLD_EXTFS_INSTALL_DIR)
+else
+INSTALL_PATH=$(ZLD_ROOTFS_INSTALL_DIR)
+endif
+
+APP_LIB_DIR=$(ZLD_APPS_BUILD_DIR)/ZyIMS/core/voiceApp/build/lib/linux/
+#APP_LIB_DIR=$(ZLD_APPS_BUILD_DIR)/ZyIMS/src/voiceApp/core
+
+export PATH=${GNUTOOL_OLD}:${TOOL_CHAIN_PATH}
+
+
+export CC=${CROSS_COMPILE}gcc
+export AR=${CROSS_COMPILE}ar
+export RANLIB=${CROSS_COMPILE}ranlib
+
+all: _dependency _clone _configure _cross  
+
+_configure:
+	if  [ ! -f $(APP_OBJ_DIR)/Makefile ] ; then \
+		cd $(APP_OBJ_DIR) && $(APP_OBJ_DIR)/configure --host=mips-linux ; \
+	fi
+	
+_cross: 
+	$(MAKE) -C $(APP_OBJ_DIR)
+	cp -avf $(APP_OBJ_DIR)/libares.a $(APP_LIB_DIR)
+
+install:
+	$(MAKE) install -C $(APP_OBJ_DIR)
+
+clean distclean:
+	$(MAKE) distclean -C $(APP_OBJ_DIR)
+	rm -rf $(APP_OBJ_DIR)/build/*
+	rm -rf $(APP_LIB_DIR)/libares.a
+	
+.PHONY: all _cross clean distclean command
+.NOTPARALLEL: all install
+#/* vi:set sw=4 ts=4: */#
+#/************************* End your Makefile *******************************/
+include $(PRJ_BASE)/Make.misc

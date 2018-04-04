@@ -1,0 +1,175 @@
+<script language="javascript">
+<!-- hide
+mainFrame.glbSessionKey = "<%ejGetOther(sessionKey)%>";
+
+var i = 0;
+var info = '<%ejGet(dhcpHostEntryInfo)%>';
+var staticleasePrv = '<%ejGetOther(privilegeByUser, homeNetworking)%>';
+var ip6LanPrefix = '<%ejGetOther(ipv6LanPrefix)%>';
+var slaacEnbl = '<%ejGetOther(enblSLAAC, all)%>';
+var dhcpv6State = '<%ejGet(enblDhcp6sStateful)%>';
+var enblLanIPv6 = '<%ejGetOther(enblIpv6Lan, all)%>';
+var existInStaticDHCP = 0;
+var brname;
+
+function frmLoad () {
+   var str = '';   
+
+   var agt = navigator.userAgent.toLowerCase();
+   if (info != '') {
+      var names = info.split('/');
+      str += '<tr>';
+      str += '  <td><center><img src="../../images/network/i_' + names[2] + '.gif" style="display:block; margin-top:4px;"/></center></td>';
+      str += '  <td><span class="blod">' + names[0] + '</span>';
+      str += '    <table width="100%" border="0" cellspacing="0" cellpadding="0">';
+
+      if (names[2] == 'pc') {
+         if (navigator.appName != "Microsoft Internet Explorer") {
+            str += '      <tr><td width="45%"><%ejGetML(MLG_Common_IPAddress)%>:</td> <td class="infoblue"><a href="#" onClick="hciAlert(\'Support share folder only when using Microsoft Internet Explorer.\', {height: 180,type: 2, title: \'Error\'})">' + names[1] + '</a></td></tr>';
+         } else {
+            str += '      <tr><td width="45%"><%ejGetML(MLG_Common_IPAddress)%>:</td> <td class="infoblue"><a href="file://' + names[1] + '/" target="_blank">' + names[1] + '</a></td></tr>';
+         }
+      } else {
+         str += '      <tr><td width="45%"><%ejGetML(MLG_Common_IPAddress)%>:</td> <td class="infoblue">' + names[1] + '</td></tr>';
+      }
+
+   if (staticleasePrv == '1') {
+      str += "<tr>";
+      str += "<td>&nbsp;</td>";
+      str += "<td>";
+      str += "<input name=\"set_static\" id=\"set_static\" type=\"checkbox\" /> <%ejGetML(MLG_ConnStatus_NetworkMap_Str32)%> <a href=\"#\" onClick= \"$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('network-homeNetworking', 1);\"><%ejGetML(MLG_Menu_Tab_StaticDHCP)%></a>";
+      str += "<br><span id=\"staticDHCPmsg\" style=\"display:none;\">(This IP has been occupied by other device.)</span>";
+      str += "</td>";
+      str += "</tr>";
+   }
+
+	  if(enblLanIPv6 != '0'){
+         str += '      <tr><td width="45%"><%ejGetML(MLG_ConnStatus_Status_Str81)%>: </td> <td class="infoblue">' + names[8] + '</td></tr>';
+		 if(ip6LanPrefix != '' && slaacEnbl != 0){
+		 	str += '      <tr><td width="45%"><%ejGetML(MLG_Common_IPv6Address)%> (SLAAC): </td> <td class="infoblue">' + names[9] + '</td></tr>';
+		 }
+		 else {
+		 	str += '      <tr><td width="45%"><%ejGetML(MLG_Common_IPv6Address)%> (SLAAC): </td> <td class="infoblue">::</td></tr>';
+		 }
+		 if(dhcpv6State != 0){
+		 	str += '      <tr><td width="45%"><%ejGetML(MLG_Common_IPv6Address)%> (DHCP): </td> <td class="infoblue">' + names[10] + '</td></tr>';
+		 }
+		 else {
+		 	str += '      <tr><td width="45%"><%ejGetML(MLG_Common_IPv6Address)%> (DHCP): </td> <td class="infoblue">::</td></tr>';
+		 }
+	  }
+
+      str += '      <tr><td><%ejGetML(MLG_Common_MACAddress)%>: </td> <td class="infoblue">' + names[3] + '</td></tr>';
+      str += '      <tr><td><%ejGetML(MLG_ConnStatus_NetworkMap_Str5)%>: </td> <td class="infoblue">' + names[4] + '</td></tr>';
+
+      if (names[4] == 'DHCP') {
+         str += '      <tr><td><%ejGetML(MLG_ConnStatus_NetworkMap_Str21)%>: </td> <td class="infoblue">' + (parseInt)(names[7]/3600)+' hours:'+(parseInt)(names[7]%3600/60)+' minutes:'+(parseInt)(names[7]%3600%60)+' seconds'+ '</td></tr>';
+      }
+
+	//Mark, add more wirless information
+	if(names[5] == "802.11")
+      str += '      <tr><td><%ejGetML(MLG_ConnStatus_NetworkMap_Str8)%>: </td> <td class="infoblue">' + names[12] + '</td></tr>';
+	else
+      str += '      <tr><td><%ejGetML(MLG_ConnStatus_NetworkMap_Str8)%>: </td> <td class="infoblue">' + names[5] + '</td></tr>';
+
+      if (names[6] != '-1') {
+         str += '      <tr><td><%ejGetML(MLG_ConnStatus_NetworkMap_Str8_1)%>: </td> <td class="infoblue">' + names[6] + ' Mbps</td></tr>';
+      }
+	//Mark, add more wirless information
+	if(names[5] == "802.11"){
+		str += '      <tr><td><%ejGetML(MLG_ConnStatus_NetworkMap_Str8_2)%>: </td> <td class="infoblue">' + names[11] + '</td></tr>';  //SSID
+		str += '      <tr><td><%ejGetML(MLG_ConnStatus_NetworkMap_Str8_3)%>: </td> <td class="infoblue">' + names[13] + '%</td></tr>';  //LINK QUALITY
+	}
+      str += "    </table></td>";
+      str += "</tr>";
+
+      if (staticleasePrv == '1') {
+         $("#static_ip").val(names[1]);
+         $("#macAddr").val(names[3]);
+      }
+   }
+	
+   $('#info').append(str);
+
+   if (staticleasePrv == '1') {
+      var staticiplease = '<%ejGetOther(staticiplease)%>';
+      var staticinfo = staticiplease.split('|');
+      if (staticinfo != '') {
+         for ( i = 0; i < staticinfo.length; i++ ) {
+            var names = staticinfo[i].split('/');            
+            if ( names[2].toUpperCase() == $("#macAddr").val().toUpperCase() ) 
+            {
+               if ( names[3] != $("#static_ip").val() ) {
+                  $("#set_static").attr("checked",false);
+                  $("#action").val("mapedit");
+                  existInStaticDHCP = 0;
+               }
+               else 
+               {
+                  $("#set_static").attr("checked",true);
+                  $("#action").val("mapadd");
+                  existInStaticDHCP = 1;
+				  brname = names[0];                 
+                  break;
+               }
+            }
+				else if ( names[3] == $("#static_ip").val() )
+            {
+               $("#set_static").attr("checked",false);
+               $("#set_static").attr("disabled",true);
+               $("#staticDHCPmsg").show();
+               existInStaticDHCP = 0;
+               break;
+            }
+         }
+      }
+   }
+}
+
+function btnSave() {
+	with ( document.forms[0] ) {
+		if (staticleasePrv == '1') {
+			macAddr.value = macAddr.value.toUpperCase();
+			sessionKey.value = mainFrame.glbSessionKey;			
+			if (info != '') {
+				if ( existInStaticDHCP == 1 && !$("#set_static").attr("checked") ) { //remove                
+					brName.value=brname;
+					action.value="mapremove";					
+				}
+				else if ( existInStaticDHCP == 0 && $("#set_static").attr("checked") ) { //remove
+				}
+				else {					
+					return;
+				}
+				submit();
+				$('.ui-dialog-titlebar-close').trigger('click');
+				parent.$.openLoadingMask(1);
+			}
+		}
+		return;
+	}
+}
+
+var db = $('.deleteframe').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(1)');
+ApplyBtn.click(function(){ btnSave(); });
+
+$(document).ready(function() {
+	frmLoad();
+});
+// done hiding -->
+</script>
+
+<form action="/pages/connectionStatus/connectionStatus-staticDHCP.cmd" method="post" target="mainFrame">
+  <input type="hidden" name="action" id="action" value="mapadd">
+  <input type="hidden" name="enable" id="enable" value="1">
+  <input type="hidden" name="macAddr" id="macAddr">
+  <input type="hidden" name="sessionKey" id="sessionKey" value="">
+  <input type="hidden" name="static_ip" id="static_ip">
+  <input type="hidden" name="brName" id="brName" value="">
+
+  <div class="deleteframe" >
+  <table width="100%" height="35px" border="0" cellspacing="0" cellpadding="0" id="info">
+</table>
+</div>
+</form>

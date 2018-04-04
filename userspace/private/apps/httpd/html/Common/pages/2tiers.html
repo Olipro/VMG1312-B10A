@@ -1,0 +1,160 @@
+<style>
+    .qs_headline {
+        font-weight: bold;
+        font-size: 16px;
+        margin: 10px 0 10px 5px;
+        border-bottom: 2px dotted #ccc;
+        padding-bottom: 10px;
+        color: #1c6d9d;
+        position: relative;
+    }
+</style>
+<LINK rel="stylesheet" type="text/css" href="css/2tierCSS.css"></Link>
+
+<LINK rel="stylesheet" type="text/css" href="css/jquery.zyCheckTree.css"></Link>
+<script type="text/javascript" src="js/jquery.zyCheckTree.js"></script>
+<script type="text/javascript">
+$(function(){
+    var CheckTree = $('#CheckTree').zyCheckTree({
+		loseControlOptions: ['0']
+    });
+    
+    var CheckWz = $('#CheckWz').zyCheckTree({
+        parseJson:'pages/wizard/wizard.json',
+        root: 'Quick Start',
+        parseFn: function(i, item){ return item.status=='step';}
+    });
+    CheckWz.selectAll();
+	var adminCheckArray = new Array("0", "1", "2_2", "2_3", "3_1", "4", "5");
+	var userCheckArray = new Array("0", "1", "2", "3_2", "3_3", "3_5", "4", "5");
+
+    function updateCheckTreeBySelector(){
+       // var accountType = $("#account").children('input:radio:checked').val();
+        var accountType = $("#account").find('option:selected').val();
+
+        if (accountType == 'Admin') {
+            $("#status").show();
+			$(".tiersright").show();
+			$("#username").val('Admin');
+			$("#pwd").val('admin');
+			CheckTree.setCheckedItems(adminCheckArray);
+        } else if (accountType == 'User') {
+            $("#status").show();
+			$(".tiersright").show();
+			$("#username").val('User');
+			$("#pwd").val('user');
+			CheckTree.setCheckedItems(userCheckArray);
+        } else {
+			$("#status").hide();
+			$(".tiersright").hide();
+			$("#username").val('Supervisor');
+			$("#pwd").val('supervisor');
+		}
+    }
+    
+    updateCheckTreeBySelector();
+    
+	$("#account").change(function(){
+  		updateCheckTreeBySelector();
+	});
+	
+	//collapse all
+	$('#collapseBtn').click(function(){
+		CheckTree.collapseAll();
+		CheckWz.collapseAll();
+	});
+	
+	//expand all
+	$('#expandBtn').click(function(){
+		CheckTree.expandAll();
+		CheckWz.expandAll();
+	});
+	
+	$('#exitBtn').click(function() {
+	 window.location='../index.html';
+    });
+});
+
+</script>
+<div class="wrap" >
+<div class="space"></div>
+    <div style='margin-left:24px;'>
+       <span> <%ejGetML(MLG_ConnStatus_Status_Str56)%> <%ejGetML(MLG_Common_Type)%></span>:&nbsp&nbsp
+       <!--input name="account" type="radio" id="radio_1" value="Supervisor" checked="checked" /> <span><%ejGetML(MLG_Common_Supervisor)%></span>  
+       <input name="account" type="radio" id="radio_2" value="Admin"/> <span><%ejGetML(MLG_Common_Admin)%></span> 
+       <input name="account" type="radio" id="radio_3" value="User"/>   <span><%ejGetML(MLG_Common_User)%></span-->
+       <select name="select" id="account">
+            <option value="Supervisor"><%ejGetML(MLG_Common_Supervisor)%></option>
+            <option value="Admin" selected="selected"><%ejGetML(MLG_Common_Admin)%></option>
+            <option value="User"><%ejGetML(MLG_Common_User)%></option>
+      </select> 
+    </div> 
+
+       <div class='qs_headline'></div>
+  <div class="tiersleft" >
+    <div class="content" style="margin-top:0px; ">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr id="status">
+          <td class="item"><%ejGetML(MLG_Common_Status)%>:</td>
+          <td><input name="radio" type="radio" id="radio" value="radio" checked="checked" />
+            <%ejGetML(MLG_Common_Enable)%> &nbsp;&nbsp;
+            <input type="radio" name="radio" id="radio2" value="radio" />
+            <%ejGetML(MLG_Common_Disable)%></td>
+        </tr>
+        <tr>
+          <td class="item"><%ejGetML(MLG_Common_User_Name)%>:</td>
+          <td><span class="value">
+            <input name="textfield" type="text" id="username" value="admin" />
+          </span></td>
+        </tr>
+        <tr>
+          <td class="item"><%ejGetML(MLG_Common_Password)%>:</td>
+          <td><span class="value">
+            <input name="textfield2" type="text" id="pwd" value="1234" />
+          </span></td>
+        </tr>
+      </table></div>
+  </div>
+  <div class="tiersright">
+    <div class="item" style="margin-top:10px;"><%ejGetML(MLG_Common_PrivilegeSetting)%>:
+      <div class="tools"><a href="#" id="expandBtn"><%ejGetML(MLG_Common_Expand_All)%></a> | <a href="#" id="collapseBtn"><%ejGetML(MLG_Common_Collapse_All)%></a></div>
+    </div>
+    <div class="treepanel">
+      <div class="r1"></div><div class="r2"></div><div class="r3"></div><div class="r4"></div>
+      <div class="inner">
+        <div class="wizard"><h1><%ejGetML(MLG_Common_Wizard)%></h1>
+          <div id="CheckWz">
+            <!--ul class="tree">
+              <li>
+                <div id="node_0" class="checkbox checked"></div>
+                <label>Quick Start</label>
+				 <ul class='tree'>
+                         <li>
+                             <div id='node_0_1' class='checkbox checked'></div>
+                             <label>Internet Connection</label>
+                         </li>
+                         <li>
+                             <div id='node_0_2' class='checkbox checked'></div>
+                             <label>Wireless Setting</label>
+                         </li>
+						  <li>
+                             <div id='node_0_3' class='checkbox checked'></div>
+                             <label>VoIP</label>
+                         </li>
+                 </ul>
+				
+              </li>
+			  
+			  
+            </ul-->
+          </div>
+        </div>
+        <div class="config"><h1><%ejGetML(MLG_Common_Configuration)%></h1>
+          <div id='CheckTree'></div>
+        </div>
+      </div>
+      <div class="r4"></div><div class="r3"></div><div class="r2"></div><div class="r1"></div>
+    </div>
+  </div>
+  <div class="clearfloat"></div>
+</div>

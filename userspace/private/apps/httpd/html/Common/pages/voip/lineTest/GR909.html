@@ -1,0 +1,82 @@
+<script language="javascript">
+<!-- hide
+function StartButtonClick() {
+		with ( document.forms[0] ) {
+			var loc;
+			loc = 'voicelinetest.cmd?';
+
+			loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+			loc += '&PhoneNum=' + PhoneNum.value;
+			loc += '&Selected_Item=' + Selected_Item.value;
+		   var code = 'location="' + loc + '"';
+		   $.openLoadingMask(1);
+		   eval(code);	
+		}
+}	
+		
+function frmLoad() {
+	 with ( document.forms[0] ) {
+	}
+}		
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+ //done hiding -->
+</script>
+<form id="form1" name="form1" method="post" action="/pages/tabFW/voicesipcfg.cmd">
+<div class="content_frame">
+<!--Unit Explain start-->
+<div class="explain"> <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b> </div>
+<div class="explain_text">Line Test</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame">
+	<ul>
+		<div class="w_text">
+			<ul>
+				<li class="left_table">Phone :</li>
+				<li class="right_table">
+               <select name="PhoneNum" size="1">
+                  <option value="0">Phone 1</option>
+                  <option value="1">Phone 2</option>
+               </select>
+				</li>
+			</ul>
+			<ul>
+				<li class="left_table">Test Item :</li>
+				<li class="right_table">
+               <select name="Selected_Item" size="1">
+                  <option value="1">Line Voltage Test</option>
+                  <option value="2">Receiver-Off-Hook Test</option>
+                  <option value="3">Ringers Equivalence Number Test</option>
+                  <option value="4">Resistive Faults Test</option>
+               </select>
+				</li>
+			</ul>
+		</div>
+		<li class="space"> </li>
+		<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note">Note:</span></div><div class="note_text">Caution: This page shows GR-909 line test result information. </div></li>
+		<!--button frame STAR-->			
+				<li class="left_table">
+   				<div> 
+   					<input type='button' value='Start Test' ID="StartButton" onClick="StartButtonClick()">
+   				</div>
+				</li>
+				<li class="right_table">
+   				<div>
+   				   <table>
+                  Test Result :
+               	<td>
+               	<TEXTAREA NAME="Line_test_result" ROWS="7" COLS="49" READONLY><%ejGetFile(getlinetest, 0, 0)%></TEXTAREA>
+                  </td>
+                </table>
+               <div>
+            </li>
+		<!--button frame END-->	
+	</ul>
+</div>
+</div>
+</form>

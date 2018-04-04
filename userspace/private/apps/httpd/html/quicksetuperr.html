@@ -1,0 +1,48 @@
+<html>
+<head>
+<meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+<link rel=stylesheet href='stylemain.css' type='text/css'>
+<link rel=stylesheet href='colors.css' type='text/css'>
+<script language="javascript">
+<!-- hide
+
+function btnBack() {
+   var loc = 'vpivci.html';
+
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+// done hiding -->
+</script>
+</head>
+
+<body>
+<blockquote>
+<b>Quick Setup Configuration Error</b><br><br>
+<script language="javascript">
+<!-- hide
+var outOfPvc = '<%ejGetOther(memInfo, isOutOfVcc)%>';
+var msg = '';
+if ( outOfPvc == '1' ) {
+   msg = 'The Quick Setup cannot add the new configuration.<br><br>';
+   msg += 'All of available PVCs are already in use.';
+   document.writeln(msg);
+} else {
+   msg = 'The Quick Setup cannot add the new configuration ';
+   msg += 'since memory of the Broadband Router will be over its limitation.';
+   document.writeln(msg);
+   msg = '<br><br>\n';
+   msg += 'Click on "Back" button to try another configuration.\n';
+   msg += '<br><br><br>';
+   document.writeln(msg);
+   msg = '<center>\n';
+   msg += '<input type="button" onClick="btnBack()" value="Back">\n';
+   msg += '</center>';
+   document.writeln(msg);
+}
+// done hiding -->
+</script>
+</blockquote>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<script language="javascript">
+
+var temp = '<%ejGetOther(tempNatIndex)%>';
+var oriWanIf = '';
+
+function frmLoad() {
+	var TriggerPort = '<%ejGetOther(trigport)%>';
+	var info = TriggerPort.split('|');
+	var names = info[temp].split('/');
+	with ( document.forms[0] ) {
+		appName.value = names[1];
+		setSelect(dstWanIf, names[2]);
+		oriWanIf = names[2];
+		tStart.value = names[3];
+		tEnd.value = names[4];
+		tProto.value = names[5];
+		oStart.value = names[6];
+		oEnd.value = names[7];
+		oProto.value = names[8];
+		appName.disabled=true;
+		
+		if (names[0] == 1)
+			enable.checked = true;
+		else
+			enable.checked = false;
+	}
+}
+
+function clickEPS()
+{
+	if( document.forms[0].oStart.value == ""){
+		document.forms[0].oStart.value = document.forms[0].tStart.value;     
+	}
+}
+
+function changeIPS () {
+	keyPressed = true;
+}
+
+function clickEPE()
+{
+	if( (document.forms[0].oStart.value != "") && 
+		(document.forms[0].oStart.value == document.forms[0].tStart.value)){
+		document.forms[0].oEnd.value = document.forms[0].tEnd.value;     
+	}else if ( document.forms[0].oStart.value == "" ) {
+		document.forms[0].oEnd.value = document.forms[0].oStart.value;
+	}
+	else {
+		document.forms[0].oEnd.value = document.forms[0].tEnd.value - document.forms[0].tStart.value + (document.forms[0].oStart.value-0);
+	}
+	return;	
+}
+
+function clickIPS()
+{
+	if( keyPressed ) {
+		document.forms[0].oEnd.value = document.forms[0].tEnd.value - document.forms[0].tStart.value + (document.forms[0].oStart.value-0);
+	}
+	keyPressed = false;
+	return;	
+}
+
+function btnSave() {
+	with ( document.forms[0] ) {
+		var tStartVaule = tStart.value;
+		var tEndValue = tEnd.value;
+		var oStartValue = oStart.value;
+		var oEndValue = oEnd.value;
+		var tprotoValue = tProto.value;
+		var oprotoValue = oProto.value  
+		
+		if (enable.checked == true)
+			enableRule.value="TRUE";
+		else
+			enableRule.value="FALSE";
+		
+		if (isValidPort(tStartVaule) == false ) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str21)%>", tStartVaule   ), {height: 180, type: 2, title: ''});		
+			return;
+		}
+		if (isValidPort(tEndValue) == false ) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str22)%>", tEndValue ), {height: 180, type: 2, title: ''});
+			return;
+		}
+
+		tS = parseInt(tStartVaule);
+		tE = parseInt(tEndValue);
+		if (tS > tE) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str3)%>", tS, tE ), {height: 180, type: 2, title: ''});
+			return;
+		}
+		
+		if (isValidPort(oStartValue) == false ) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str24)%>", oStartValue ), {height: 180, type: 2, title: ''});
+			return;
+		}
+		if (isValidPort(oEndValue) == false ) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str25)%>", oEndValue ), {height: 180, type: 2, title: ''});
+			return;
+		}
+		
+		oS = parseInt(oStartValue);
+		oE = parseInt(oEndValue);
+		if (oS > oE) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str6)%>", oS, oE ), {height: 180, type: 2, title: ''});
+			return;
+		}
+		
+		if (tS==30005 || tE==30005 || oS==30005 || oE==30005){
+			if(parseInt(tprotoValue) !=2 || parseInt(oprotoValue) !=2){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str27)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+		
+		if ((tS<21 && tE>21) || (oS<21 && oE>21) || tS==21 || tE==21 || oS==21 || oE==21){
+			if(parseInt(tprotoValue) !=2 || parseInt(oprotoValue) !=2){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str8)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+
+		if ((tS<22 && tE>22) || (oS<22 && oE>22) || tS==22 || tE==22 || oS==22 || oE==22){
+			if(parseInt(tprotoValue) !=2 || parseInt(oprotoValue) !=2){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str43)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+
+		if ((tS<23 && tE>23) || (oS<23 && oE>23) || tS==23 || tE==23 || oS==23 || oE==23){
+			if(parseInt(tprotoValue) !=2 || parseInt(oprotoValue) !=2){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str44)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+
+		if ((tS<443 && tE>443) || (oS<443 && oE>443) || tS==443 || tE==443 || oS==443 || oE==443){
+			if(parseInt(tprotoValue) !=2 || parseInt(oprotoValue) !=2){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str45)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+		
+		if ((tS<80 && tE>80) || (oS<80 && oE>80) || tS==80 || tE==80 || oS==80 || oE==80){
+			if(parseInt(tprotoValue) !=2 || parseInt(oprotoValue) !=2){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str29)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+		
+		if ((tS<1720 && tE>1720) || (oS<1720 && oE>1720) || tS==1720 || tE==1720 || oS==1720 || oE==1720){
+			if(parseInt(tprotoValue) !=2 || parseInt(oprotoValue) !=2){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str10)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+		
+		if ((tS<1723 && tE>1723) || (oS<1723 && oE>1723) || tS==1723 || tE==1723 || oS==1723 || oE==1723){
+			if(parseInt(tprotoValue) !=2 || parseInt(oprotoValue) !=2){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str31)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+		
+		if ((tS<6667 && tE>6667) || (oS<6667 && oE>6667) || tS==6667 || tE==6667 || oS==6667 || oE==6667){
+			if(parseInt(tprotoValue) !=2 || parseInt(oprotoValue) !=2){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str12)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+		
+		if ((tS<69 && tE>69) || (oS<69 && oE>69) || tS==69 || tE==69 || oS==69 || oE==69){
+			if(parseInt(tprotoValue) !=1 || parseInt(oprotoValue) !=1){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str33)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+		
+		if ((tS<161 && tE>161) || (oS<161 && oE>161) || tS==161 || tE==161 || oS==161 || oE==161){
+			if(parseInt(tprotoValue) !=1 || parseInt(oprotoValue) !=1){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str14)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+		
+		if ((tS<162 && tE>162) || (oS<162 && oE>162) || tS==162 || tE==162 || oS==162 || oE==162){
+			if(parseInt(tprotoValue) !=1 || parseInt(oprotoValue) !=1){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str35)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+		
+		if ((tS<517 && tE>517) || (oS<517 && oE>517) || tS==517 || tE==517 || oS==517 || oE==517){
+			if(parseInt(tprotoValue) !=1 || parseInt(oprotoValue) !=1){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str16)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+		
+		if ((tS<518 && tE>518) || (oS<518 && oE>518) || tS==518 || tE==518 || oS==518 || oE==518){
+			if(parseInt(tprotoValue) !=1 || parseInt(oprotoValue) !=1){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str37)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+		
+		if ((tS<5060 && tE>5060) || (oS<5060 && oE>5060) || tS==5060 || tE==5060 || oS==5060 || oE==5060){
+			if(parseInt(tprotoValue) !=1 || parseInt(oprotoValue) !=1){ 
+				hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str18)%>", {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+		
+		if ( appName.value.indexOf('|') != -1 || appName.value.indexOf('/') != -1 || appName.value.indexOf(',') != -1 || appName.value.indexOf('\'') != -1  || appName.value.indexOf('\"') != -1 ) {
+			hciAlert("<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str19)%>", {height: 180, type: 2, title: ''});
+			return;
+		}
+
+		index.value = temp;
+		appName.disabled=false;
+		
+		sessionKey.value = mainFrame.glbSessionKey;
+		submit();
+		$('.ui-dialog-titlebar-close').trigger('click');
+		$.openLoadingMask(1);
+		return;     
+	}
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnSave(); });
+
+$(document).ready(function() {
+	frmLoad();
+});
+</script>
+   <form action="/pages/tabFW/nat-portTriggering.cmd" method="post" target="mainFrame">
+      <input type="hidden" name="action" id="action" value="modify">
+      <input type="hidden" name="enableRule" id="enableRule" value="TRUE">
+      <input type="hidden" name="index" id="index" value="0">
+      <input type="hidden" name="sessionKey" id="sessionKey" value="">
+ <div class="popup_frame" >
+<div class="data_frame2"><ul>
+            <li class="set1">
+               <div class="w_text">
+                  <input type="checkbox" name="enable" /> <%ejGetML(MLG_Common_Active)%>
+               </div>
+            </li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMPFilter_Str17)%> :</li>
+                     <li class="right_table">
+                        <input name="appName" id="appName" size="20" maxlength="20" type="text" />
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_PortTriggering_Str4)%> :</li>
+                     <li class="right_table">
+                        <select name='dstWanIf'></select>
+<script language="javascript">
+<!-- hide
+{
+   var i = 0;
+   var interfaceInfo = '<%ejGetOther(wanInterfaceInfo, route)%>';
+   var interfaces = interfaceInfo.split('|');
+ 
+   for ( i = 0; i < interfaces.length; i++ ) {
+      var names = interfaces[i].split('/');
+      document.forms[0].dstWanIf[i] = new Option(names[0], names[1]);
+
+      if(oriWanIf == names[1])
+        document.forms[0].dstWanIf[i].selected = true;
+
+   }
+}
+// done hiding -->
+</script>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_PortTriggering_Str5)%> :</li>
+                     <li class="right_table">
+                        <input name="tStart" id="tStart" size="12" maxlength="12" type="text" onblur="clickEPS()"/>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_PortTriggering_Str6)%> :</li>
+                     <li class="right_table">
+                        <input name="tEnd" id="tEnd" size="12" maxlength="12" type="text" onblur="clickEPE()"/>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_PortTriggering_Str24)%> :</li>
+                     <li class="right_table">
+                        <select name="tProto" size="1" tabindex="1">
+                              <option value="1" selected><%ejGetML(MLG_Common_TCP)%></option>
+                              <option value="2"><%ejGetML(MLG_Common_UDP)%></option>
+                              <option value="3"><%ejGetML(MLG_NAT_PortForwarding_Str22)%></option>
+                        </select>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_PortTriggering_Str8)%> :</li>
+                     <li class="right_table">
+                        <input name="oStart" id="oStart" size="12" maxlength="12" type="text" onChange="changeIPS()" onblur="clickIPS()"/>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_PortTriggering_Str9)%> :</li>
+                     <li class="right_table">
+                        <input name="oEnd" id="oEnd" size="12" maxlength="12" type="text" />
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_PortTriggering_Str23)%> :</li>
+                     <li class="right_table">
+                        <select name="oProto" size="1" tabindex="1">
+                              <option value="1" selected><%ejGetML(MLG_Common_TCP)%></option>
+                              <option value="2"><%ejGetML(MLG_Common_UDP)%></option>
+                              <option value="3"><%ejGetML(MLG_NAT_PortForwarding_Str22)%></option>
+                        </select>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+         </ul></div>
+      </div>    
+   </form>

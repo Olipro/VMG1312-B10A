@@ -1,0 +1,283 @@
+<script type="text/javascript" src="../../js/jquery.text-overflow.js"></script>
+<script language="javascript">
+<!-- hide
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+var portForwarding = '<%ejGetOtherBig(portMap, portfd)%>';
+var errMsg = "<%ejGetOther(errMsg)%>";
+var enableAddressMapping  = '<%ejGetOther(sysInfo, enblAddressMapping)%>';
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; 
+
+function frmLoad () {
+	var i = 0;
+	
+	var info = portForwarding.split('|');
+	var str = '';
+	var str1 = '';
+
+	str1 += "<tr align=\"center\" valign=\"top\">";
+	str1 += "<td width=\"25\" class=\"top_font \">#</td>";
+	str1 += "<td class=\"top_font\" width=\"45\"><%ejGetML(MLG_Common_Status)%></td>";
+	str1 += "<td title=\"<%ejGetML(MLG_NAT_PortForwarding_Str3)%>\" class=\"top_font\"><%ejGetML(MLG_NAT_PortForwarding_Str3)%></td>";
+	str1 += "<td title=\"<%ejGetML(MLG_NAT_PortTriggering_Str4)%>\" class=\"top_font textOverflow\"><%ejGetML(MLG_NAT_PortTriggering_Str4)%></td>";
+	if (enableAddressMapping == '1' )
+	{
+		str1 += "<td title=\"<%ejGetML(MLG_NAT_PortForwarding_Str21)%>\" class=\"top_font\"><%ejGetML(MLG_NAT_PortForwarding_Str21)%></td>";
+	}
+	str1 += "<td title=\"<%ejGetML(MLG_NAT_PortForwarding_Str8)%>\" class=\"top_font\"><%ejGetML(MLG_NAT_PortForwarding_Str8)%></td>";
+	str1 += "<td title=\"<%ejGetML(MLG_NAT_PortTriggering_Str5)%>\" class=\"top_font\"><%ejGetML(MLG_NAT_PortTriggering_Str5)%></td>";
+	str1 += "<td title=\"<%ejGetML(MLG_NAT_Applications_Str145)%>\" class=\"top_font\"><%ejGetML(MLG_NAT_Applications_Str145)%></td>";
+	str1 += "<td title=\"<%ejGetML(MLG_NAT_PortForwarding_Str23)%>\" class=\"top_font\"><%ejGetML(MLG_NAT_PortForwarding_Str23)%></td>";
+	str1 += "<td title=\"<%ejGetML(MLG_NAT_PortForwarding_Str24)%>\" class=\"top_font\"><%ejGetML(MLG_NAT_PortForwarding_Str24)%></td>";
+	str1 += "<td title=\"<%ejGetML(MLG_NAT_Applications_Str143)%>\" class=\"top_font\"><%ejGetML(MLG_NAT_Applications_Str143)%></td>";
+	str1 += "<td width=\"60\" class=\"top_font\" style=\"border-right:0px;\"><%ejGetML(MLG_Network_StaticRoute_Str9)%></td>";
+	str1 += "</tr>";
+	$('#pfheader').html(str1);
+
+	if (info != '') {
+		for ( i = 0; i < info.length; i++ ) {
+			if (info[i] == '')
+				break;
+			var names = info[i].split('/');
+			str += "<tr align=\"center\">";
+			str += "<td class=\"table_font\">" + (i + 1) + "</td>";
+			if (names[0] == "1")
+				str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onclick=\"enblProcess('"+i+ "')\" class=\"active_on\" title=\"On\" id='activeoffBtn'></a></li></ul></div></td>";
+			else
+				str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onclick=\"enblProcess('"+i+ "')\" class=\"active_off\" title=\"Off\" id='activeonBtn'></a></li></ul></div></td>";
+			str += "<td class=\"table_font textOverflow\">"+names[1]+"</td>";
+			if (enableAddressMapping == '1' )
+			{
+				str += "<td class=\"table_font textOverflow\">"+names[10]+"</td>";
+				str += "<td class=\"table_font textOverflow\">"+names[8]+"</td>";
+			}
+			else
+				str += "<td class=\"table_font textOverflow\" >"+names[9]+"</td>";
+			str += "<td class=\"table_font textOverflow\">"+names[5]+"</td>";
+			str += "<td class=\"table_font\">"+names[3]+"</td>";
+			str += "<td class=\"table_font\">"+names[4]+"</td>";
+			str += "<td class=\"table_font\">"+names[6]+"</td>";
+			str += "<td class=\"table_font\">"+names[7]+"</td>";
+			if (enableAddressMapping == '1' )
+			{
+				if (names[9] == "1")
+					str += "<td class=\"table_font\"><%ejGetML(MLG_Common_TCP)%></td>";
+				else if (names[9] == "2")
+					str += "<td class=\"table_font\"><%ejGetML(MLG_Common_UDP)%></td>";
+				else if (names[9] == "3")
+					str += "<td class=\"table_font\"><%ejGetML(MLG_NAT_PortForwarding_Str22)%></td>";
+			}
+			else
+			{
+				if (names[8] == "1")
+					str += "<td class=\"table_font\"><%ejGetML(MLG_Common_TCP)%></td>";
+				else if (names[8] == "2")
+					str += "<td class=\"table_font\"><%ejGetML(MLG_Common_UDP)%></td>";
+				else if (names[8] == "3")
+					str += "<td class=\"table_font\"><%ejGetML(MLG_NAT_PortForwarding_Str22)%></td>";
+			}
+			str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editClick('" +i+ "')\" class=\"edit\" title=\"<%ejGetML(MLG_Common_Edit)%> .\" id='editBtn'></a></li><li><a href=\"#\" onclick=\"removeClick('"+i+ "')\" class=\"delete\" title=\"<%ejGetML(MLG_Common_Delete)%> .\" id='deleteBtn'></a></li></ul></div></td>";
+			str += "</tr>";
+		}
+	}
+	
+	$('#portForwardingTable').append(str);
+
+//ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+     if((customizationFlag & 0x00080000)){
+ 	     $('#portfwrd_txt').hide();
+     }
+			 
+	if(errMsg != ""){
+		hciAlert (errMsg, {height: 180, type: 2, title: ''});
+		return;
+	}
+
+}
+
+function addClick() {
+  
+	var db1 = window.parent.$.zyUiDialog({
+							width: 550,
+							height: 450,
+							title: '<%ejGetML(MLG_NAT_PortTriggering_Str16)%>',
+							
+							buttons: {
+							'<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+							'<%ejGetML(MLG_Common_OK)%>':function(){}
+							}
+						});
+		var link = 'pages/network/nat/portForwarding_add.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+}
+
+function editClick(index) {
+	var info = portForwarding.split('|');
+	var names = info[index].split('/');
+	var loc = '/pages/tabFW/nat-portForwarding.cmd?action=view&dstWanIf=' + names[2] + '&eStart=' +names[3] + '&eEnd=' +names[4];
+	if (enableAddressMapping == '1' )
+	{
+		if (names[9] == "1")
+			loc += '&proto=TCP';
+		else if (names[9] == "2")
+			loc += '&proto=UDP';
+		else if (names[9] == "3")
+			loc += '&proto=TCP/UDP';
+	}
+	else
+	{
+		if (names[8] == "1")
+			loc += '&proto=TCP';
+		else if (names[8] == "2")
+			loc += '&proto=UDP';
+		else if (names[8] == "3")
+			loc += '&proto=TCP/UDP';
+	}
+	loc += '&sessionKey=' + glbSessionKey;
+
+	var db1 = window.parent.$.zyUiDialog({
+							width: 550,
+							height: 450,
+							title: '<%ejGetML(MLG_NAT_PortForwarding_Str14)%> .',
+							
+							buttons: {
+								'<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+								'<%ejGetML(MLG_Common_OK)%>':function(){}
+							}
+						});
+	db1.load(loc);
+	db1.dialog('open');
+}
+
+function removeClick(index) {
+   var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 190,
+              title: '<%ejGetML(MLG_Common_Delete)%> .',
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+                 '<%ejGetML(MLG_Common_OK)%>': function(){ db1.dialog('close'); deleteProcess(index); }
+              }
+             });
+		var link = 'pages/delete.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+}
+
+function deleteProcess(index) {
+	with ( document.forms[0] ) {		
+		var info = portForwarding.split('|');
+		var names = info[index].split('/');
+		var ifc;   
+		
+		ifc = names[2];		
+		sessionKey.value = glbSessionKey;
+		srvName.value = names[1];
+		eStart.value = names[3];
+		eEnd.value = names[4];
+		iStart.value = names[6];
+		iEnd.value = names[7];
+		srvAddr.value = names[5];
+		if (enableAddressMapping == '1' )		
+		{	
+			proto.value = names[9];	  	   
+			wanIp.value = names[8];
+		}
+		else
+		{
+			proto.value = names[8];
+		}
+		dstWanIf.value = ifc;
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+function enblProcess(index) {
+	with ( document.forms[0] ) {		
+		var info = portForwarding.split('|');
+		var names = info[index].split('/');
+		var ifc;   
+		
+		ifc = names[2];		
+		sessionKey.value = glbSessionKey;
+		srvName.value = names[1];
+		eStart.value = names[3];
+		eEnd.value = names[4];
+		iStart.value = names[6];
+		iEnd.value = names[7];
+		srvAddr.value = names[5];
+		if (enableAddressMapping == '1' )		
+		{
+			proto.value = names[9];	  	   
+			wanIp.value = names[8];
+		}
+		else
+		{
+			proto.value = names[8];
+		}
+		dstWanIf.value = ifc;
+		action.value="enbl";
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+$(document).ready(function() {
+	frmLoad();
+$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );    
+$('.textOverflow').ellipsis(true); 
+//$('.table_font').tooltip(); 
+});
+// done hiding -->
+</script>
+   <form action="/pages/tabFW/nat-portForwarding.cmd" method="post">
+   <input type=hidden name="sessionKey" id="sessionKey" value="">
+   <input type=hidden name="action" id="action" value="remove">
+   <input type=hidden name="srvName" id="srvName" value="">
+   <input type=hidden name="eStart" id="eStart" value="">
+   <input type=hidden name="eEnd" id="eEnd" value="">
+   <input type=hidden name="iStart" id="iStart" value="">
+   <input type=hidden name="iEnd" id="iEnd" value="">
+   <input type=hidden name="srvAddr" id="srvAddr" value="">
+   <input type=hidden name="wanIp" id="wanIp" value="">
+   <input type=hidden name="dstWanIf" id="dstWanIf" value="">
+   <input type=hidden name="proto" id="proto" value="">
+   </form>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+  <div><b class="r1"></b><b class="r2"></b> <b class="r3"></b> <b class="r4"></b><b class="r4"></b></div>
+  <div class="explain_text"><%ejGetML(MLG_NAT_PortForwarding_Str1)%></div>
+  <div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+</div>
+<!--Unit Explain End-->
+<div class="data_frame">
+  <ul>
+    <li class="set1">
+      <div class="w_table">
+        <input name="button" type="button" id='addnewshareBtn' value=<%ejGetML(MLG_NAT_PortTriggering_Str16)%> onclick="addClick();" >
+      </div>
+    </li>
+    <li class="set1">
+      <div class="w_table">
+ <table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;"class="table_frame" id="portForwardingTable">
+                      <tbody id="pfheader"></tbody>
+                    </table>
+      </div>
+    </li>
+    <li class="space"> </li>
+    <!--Note define start-->
+    <li class="noteframe">
+      <div class="w_text"><span class="i_note"><%ejGetML(MLG_Network_Note)%>:</span></div>
+      <div class="note_text" id ="portfwrd_txt">&nbsp;&nbsp;<%ejGetML(MLG_NAT_PortForwarding_Str19)%> .</div>
+    </li>
+    <li class="space"> </li>
+  </ul>
+</div>
+</div>
+<br/><br/>

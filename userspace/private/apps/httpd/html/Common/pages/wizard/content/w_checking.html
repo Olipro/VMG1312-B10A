@@ -1,0 +1,119 @@
+﻿
+<script type="text/javascript">
+    //prepare
+    wizardObj.dbObj.bind('wizardInit', function(){
+        wizardObj.api.onClick(function(){ 
+            if ($('#checkingView').parents('.pane').css('display') != 'none') 
+                doCheckingInit();
+        });
+    });
+
+    //flags for recording whether passed the checking.
+    var passPhysicalFlag = false;
+    var passInternetFlag = false; 
+  
+    //when display this step, will do below function.
+    function doCheckingInit(){
+ 
+        var nextBtn = wizardObj.ctrlBtns.next;
+        var backBtn = wizardObj.ctrlBtns.back;
+        var retryBtn = wizardObj.ctrlBtns.retry;
+        var all = wizardObj.ctrlBtns.all;
+ 
+        var $physicalChk = $('#physicalChk');
+        var $internetChk = $('#internetChk');
+    
+        function updateStatus(status, type)
+        {
+            var target;
+            if (type == 'Physical') 
+                target = $physicalChk;
+            else 
+                if (type == 'Internet') 
+                    target = $internetChk;
+                      
+            switch(status)
+            {
+                case 'Waiting':
+                target.removeClass('error');
+                target.addClass('waiting'); 
+                all.attr('disabled', 'disabled');
+                break;
+                
+                case 'Error':
+                 target.removeClass('waiting');
+                 target.addClass('error'); 
+                 
+                 nextBtn.hide();
+                 backBtn.hide();
+                 retryBtn.show();
+                 
+                 all.removeAttr('disabled');
+                break;
+                
+                case 'Pass':     
+                 target.removeClass('waiting');
+                 target.addClass('pass'); 
+                if (type == 'Physical') {
+                    passPhysicalFlag= true;
+                    doInternetChecking();
+                }
+                else 
+                    if (type == 'Internet') {
+                       passInternetFlag = true;
+                       wizardObj.next();
+                    }
+                break;
+            }
+        }
+     
+        function doPhysicalChecking(){
+            if (passPhysicalFlag) {
+                updateStatus('Pass', 'Physical');
+                return;
+            }
+            updateStatus('Waiting', 'Physical');
+            //for demo, you should do it by ajax
+            var pass = true;
+            setTimeout(function(){
+                pass ?  updateStatus('Pass', 'Physical') : updateStatus('Error', 'Physical');
+            }, 1000);
+        }
+    
+        function doInternetChecking(){
+            if (passInternetFlag) {
+                updateStatus('Pass', 'Internet');
+                return;
+            }
+            updateStatus('Waiting', 'Internet');
+            //for demo, you should do it by ajax
+            var pass = false;
+            setTimeout(function(){
+                pass ? updateStatus('Pass', 'Internet') : updateStatus('Error', 'Internet');
+            }, 1000);
+        }
+       
+        doPhysicalChecking();
+        
+        //for demo
+        $('#testBtn').unbind('click').click(function(){
+            wizardObj.next();
+        })
+    }
+</script>
+<div id='checkingView'>
+    <div id='physicalChk'>
+        <span class='statusMark'><span style="visibility:hidden;"><%ejGetML(MLG_ConnStatus_QuickStart_Str43)%></span></span>
+        <span><%ejGetML(MLG_ConnStatus_QuickStart_Str41)%></span>
+        <h2 class='errorDesc'><%ejGetML(MLG_ConnStatus_QuickStart_Str39)%></h2>
+    </div>
+    <div id='internetChk'> 
+        <span class='statusMark'><span style="visibility:hidden;"><%ejGetML(MLG_ConnStatus_QuickStart_Str43)%></span></span>  
+        <span><%ejGetML(MLG_ConnStatus_QuickStart_Str40)%></span>
+        <h2 class='errorDesc'><%ejGetML(MLG_ConnStatus_QuickStart_Str42)%></h2>
+    </div>
+    <br>
+    <button id='testBtn'>
+	<%ejGetML(MLG_ConnStatus_QuickStart_Str44)%>
+    </button>
+</div>

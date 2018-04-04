@@ -1,0 +1,159 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+
+<script language="javascript">
+<!-- hide
+var buildGpon = '<%ejGetOther(sysInfo, buildGponWan)%>';
+
+function applyClick(intfEnable) {
+    // lst format: monitor_interface|direction(1[out],0[in])|
+    // mirror_interface|status(1[enabled],0[disabled]),
+    with ( document.forms[0] ) {
+    var lst = '';
+    var loc = 'engdebug.cmd?action=apply';
+
+    if (intfEnable.length > 0) {
+        for (i = 0; i < intfEnable.length; i++) {
+
+            if (buildGpon == '1') {
+                var mask;
+                mask = parseInt(gemMask0.value, 16);
+                if (mask == NaN) {
+                    alert("Invalid IN GemPortMask");
+                    return;
+                }
+                mask = parseInt(gemMask1.value, 16);
+                if (mask == NaN) {
+                    alert("Invalid OUT GemPortMask");
+                    return;
+                }
+                if (i == 0)   
+                    lst = lst + gemMask0.value + '|';
+                else    
+                    lst = lst + gemMask1.value + '|';
+            }
+
+
+            lst = lst + intfEnable[i].value + '|' + mirrorIntf[i].value + '|';
+            if ( intfEnable[i].checked == true )
+                lst = lst + '1,';
+            else
+                lst = lst + '0,';
+        }
+    }
+
+    loc += '&mirrorLst=' + lst;
+    loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+    var code = 'location="' + loc + '"';
+    eval(code);
+    }
+}
+// done hiding -->
+</script>
+</head>
+<body>
+    <blockquote>
+        <form>
+<script language="javascript">
+<!-- hide
+if (buildGpon == '0')
+{
+   var i = 0;
+   var j = 0;
+   var monIntfInfo = '<%ejGetOther(wanInterfaceInfo, portMirror)%>';
+   var monIntfs = monIntfInfo.split('|');
+   var brIntfInfo = '<%ejGetOther(bridgeInterfaceInfo, all)%>';
+   var brIntfs = brIntfInfo.split('|');
+   
+   document.write("     <b>Port Mirroring Setup</b><br><br>");
+   document.write("        <table border='1' cellpadding='6' cellspacing='0'>");
+   document.write("        <tr align='center'>");
+   document.write("            <td class='hd'>Monitor Interface</td>");
+   document.write("            <td class='hd'>Direction</td>");
+   document.write("            <td class='hd'>Mirror Interface</td>");
+   document.write("            <td class='hd'>Enable</td>");
+   document.write("        </tr>");
+   // Entry format: monitor_interface|direction(1[out],0[in])|
+   // mirror_interface|status(1[enabled],0[disabled])
+   for ( i = 0; i < monIntfs.length; i++ ) {
+      var monEntry = monIntfs[i].split('/');
+      document.write("<tr align='center'> ");
+      document.write("<td> " + monEntry[0] + "</td> ");
+      document.write("<td> " + monEntry[1] + "</td> ");
+
+      document.write("<td> <select name='mirrorIntf'> ");
+      for ( j = 0; j < brIntfs.length; j++ ) {
+        if ( monEntry[2] == brIntfs[j] )
+          document.write("<option value='" + brIntfs[j] + "' selected> " + brIntfs[j] + "</option>");
+        else
+          document.write("<option value='" + brIntfs[j] + "'> " + brIntfs[j] + "</option>");
+      }
+      document.write("</select></td> ");
+      if ( monEntry[3] == 1 )
+        document.write("<td align='center'><input type='checkbox' name='intfEnable' value='" + monEntry[0] + "|" + monEntry[1] + "' checked> </td> ");
+      else
+        document.write("<td align='center'><input type='checkbox' name='intfEnable' value='" + monEntry[0] + "|" + monEntry[1] + "'> </td> ");
+      document.write("</tr> ");
+   }
+}
+else
+{
+   var i = 0;
+   var j = 0;
+   var monIntfInfo = '<%ejGetOther(wanInterfaceInfo, gponPortMirror)%>';
+   var monIntfs = monIntfInfo.split('|');
+   var brIntfInfo = '<%ejGetOther(bridgeInterfaceInfo, all)%>';
+   var brIntfs = brIntfInfo.split('|');
+
+   document.write("     <b>Port Mirroring Setup</b><br>");
+   document.write("     1. When enable port mirror, hardware path be disabled.<br>");
+   document.write("     2. When enable port mirror, flow cache(software acceleration) be disabled.<br>");
+   document.write("     3. Run command 'gpondbg flows' to find gem port index mapping to gem port id.<br>");
+   document.write("     4. When disable port mirror, need to reboot ont to make hardware patch to work again.<br><br>");
+   document.write("        <table border='1' cellpadding='6' cellspacing='0'>");
+   document.write("        <tr align='center'>");
+   document.write("            <td class='hd'>GEM Port Mask</td>");
+   document.write("            <td class='hd'>Direction</td>");
+   document.write("            <td class='hd'>Mirror Interface</td>");
+   document.write("            <td class='hd'>Enable</td>");
+   document.write("        </tr>");
+   // Entry format: monitor_interface|direction(1[out],0[in])|
+   // mirror_interface|status(1[enabled],0[disabled])
+   for ( i = 0; i < monIntfs.length; i++ ) {
+      var monEntry = monIntfs[i].split('/');
+      document.write("<tr align='center'> ");
+      document.write("<td><input type='text' name='gemMask" + i + "' value='" + monEntry[0] + "' size='8' maxlength='8'></td>");
+      document.write("<td> " + monEntry[1] + "</td> ");
+
+      document.write("<td> <select name='mirrorIntf'> ");
+      for ( j = 0; j < brIntfs.length-1; j++ ) {
+        if ( monEntry[2] == brIntfs[j] )
+          document.write("<option value='" + brIntfs[j] + "' selected> " + brIntfs[j] + "</option>");
+        else
+          document.write("<option value='" + brIntfs[j] + "'> " + brIntfs[j] + "</option>");
+      }
+      document.write("</select></td> ");
+      if ( monEntry[3] == 1 )
+        document.write("<td align='center'><input type='checkbox' name='intfEnable' value='" + monEntry[0] + "|" + monEntry[1] + "' checked> </td> ");
+      else
+        document.write("<td align='center'><input type='checkbox' name='intfEnable' value='" + monEntry[0] + "|" + monEntry[1] + "'> </td> ");
+      document.write("</tr> ");
+   }
+
+}
+// done hiding -->
+</script>
+        </table>
+        <br>
+        <center>
+        <input type='button' onClick='applyClick(this.form.intfEnable)' value='Apply/Save'>
+        </center>
+        </form>
+    </blockquote>
+</body>
+</html>
+

@@ -1,0 +1,89 @@
+<script language="javascript">
+<!-- hide
+var certn = '<%ejGet(certViewName)%>';
+var certstart = '-----<%ejGetML(MLG_Security_Certificates_Str51)%>-----';
+var certinsert = '\n<%ejGetML(MLG_Security_Certificates_Str52)%>\n';
+var certend = '-----<%ejGetML(MLG_Security_Certificates_Str53)%>-----';
+var gblsessionKey='<%ejGetOther(sessionKey)%>';
+
+//for popout window
+mainFrame.gblsessionKey=gblsessionKey;
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ applyClick(); });
+
+//*****************//
+
+function frmLoad() {
+	with ( document.loadForm ) {
+		certViewName.value = certn;
+		certViewContent.value = certstart + certinsert + certend + '\n';
+	}
+	$('.ui-dialog-titlebar-close').hide();
+}
+
+function applyClick() {
+	var msg;
+	with ( document.loadForm ) {
+		if ( certViewContent.value == '' ) {
+			msg = '<%ejGetML(MLG_Security_Certificate_AlertMsg_Str7)%>';
+			hciAlert(msg, {height: 180,type: 2, title: ''});
+			return;
+		}
+		sessionKey.value = gblsessionKey;
+		certLocalAction.value = "load";
+		submit();
+	}
+
+	$('.ui-dialog-titlebar-close').trigger('click');
+	$.openLoadingMask(1);
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+// done hiding -->
+</script>
+
+
+<div class="popup_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">
+<%ejGetML(MLG_Security_Certificates_Str18)%>.
+</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+
+<form name="loadForm" id="loadForm" method="post" action="/pages/tabFW/certificates-LocalLoadSigned.cgi" target="mainFrame">
+<input type="hidden" name="sessionKey" id="sessionKey">	
+<input type="hidden" name="certLocalAction" id="certLocalAction">	
+
+<div class="data_frame"><ul>
+
+<!--level 1 start--><li class="set1"> <div class="w_table">
+<!--Table define start-->
+  <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame">
+    <tr align="center">
+      <td width="15%" valign="top" class="table_font2"><%ejGetML(MLG_Security_Certificates_Str8)%>:</td>
+      <td width="85%" class="table_font" align="left">
+      &nbsp;&nbsp;&nbsp;<input type='text' name='certViewName' id='certViewName' disabled size='20' maxlength="63">
+      </td>
+    </tr>
+
+    <tr align="center">
+      <td width="15%" valign="top" class="table_font2"><%ejGetML(MLG_Security_ServiceControl_Str9)%></td>
+      <td width="85%" class="table_font" align="left">
+      &nbsp;&nbsp;&nbsp;<TEXTAREA name='certViewContent' id='certViewContent' rows='20' style="width:95%"></TEXTAREA>
+      </td>
+    </tr>
+  </table>
+</div>
+<!--Table define end-->
+</li>
+<!--level 1 end-->
+</ul></div>
+</form>
+<!--Set area end-->
+</div>

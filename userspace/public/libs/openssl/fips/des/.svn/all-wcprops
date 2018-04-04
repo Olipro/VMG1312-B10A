@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/des
+END
+fingerprint.sha1
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/des/fingerprint.sha1
+END
+fips_des_enc.c
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/des/fips_des_enc.c
+END
+fips_desmovs.c
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/des/fips_desmovs.c
+END
+fips_set_key.c
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/des/fips_set_key.c
+END
+fips_des_selftest.c
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/des/fips_des_selftest.c
+END
+fips_des_locl.h
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/des/fips_des_locl.h
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/fips/des/Makefile
+END

@@ -1,0 +1,222 @@
+<script language="javascript">
+<!-- hide
+var db = $('.popup_frame').parents('.dialogContener'); 
+var OkBtn = db.getBtnByIndex('2');
+OkBtn.click(function(){ btnSave(); });
+function btnSave()
+{
+   with ( document.forms[0] ) {
+	  if (!(/^[0-9]{1,4}$/.test(vlanid.value))) {
+		 hciAlert('<%ejGetML(MLG_Network_VlanGroup_Str7)%>', {height: 180, type: 2, title: ''});
+         return false;
+      }
+	  if (vlanid.value > 4096 || vlanid.value < 1) {
+		 hciAlert('<%ejGetML(MLG_Network_VlanGroup_Str8)%>', {height: 180, type: 2, title: ''});
+         return false;
+      }
+	  
+   	  sessionKey.value = mainFrame.gblsessionKey;
+  		action.value_="add";
+
+		var lanportarr = $("input[name=lanport[]]");
+		//var str1 = $("input[name=tagport[]]");
+		intflist.value = "";
+		taglist.value = "";
+		var len = lanportarr.length;
+		var count = 0;
+
+		for(; count < len; count++){
+			if(lanportarr[count].checked && !lanportarr[count].disabled){ 
+				intflist.value+=lanportarr[count].value;
+				intflist.value+=",";
+				var tagChkbox = $(lanportarr[count]).parents("li.right_table").find("input[name=tagport[]]");
+				if(tagChkbox.length > 0 && tagChkbox[0].checked){
+					taglist.value+=lanportarr[count].value;
+					taglist.value+=",";
+				}
+			}
+		}
+ 
+		/*len = str1.length;
+		for(; count < len; count++){
+			if(str1[count].checked){ 
+				taglist+=str1[count].value;
+				taglist+=",";
+			}
+		}*/
+	
+
+		if(intflist.value.length > 0)
+			intflist.value = intflist.value.substring(0, intflist.value.length-1); //remove the last char ','
+		else{
+			hciAlert('<%ejGetML(MLG_Network_VlanGroup_Str9)%>', {height: 180, type: 2, title: ''});
+			return false;
+		}
+
+		if(taglist.value.length > 0)
+			taglist.value = taglist.value.substring(0, taglist.value.length-1); //remove the last char ','
+  } 
+   document.forms[0].submit();
+   $('.ui-dialog-titlebar-close').trigger('click');
+   $.openLoadingMask(1);
+   return;     
+   
+}
+var vlanGrpEntry = '<%ejGetOther(getVlanGrpEntry)%>';
+var vlanGrpName = "<%ejGet(lst)%>";
+
+function markSelectedPort(vid){
+	with ( document.forms[0] ) {
+		var vlanGrpList = "";
+
+		if(vlanGrpEntry != "") //[{"grp":"aaa","vid":"20","intf":"eth0,eth1,eth2","tag":"eth0,eth1"},{...}] 
+			vlanGrpList = eval(vlanGrpEntry);
+
+		var lanportarr = $("input[name=lanport[]]");
+		var len = lanportarr.length;
+		
+		var count = 0;
+		var num;
+		var found = false;
+
+		for(var i=0;i<lanportarr.length;i++){
+			$(lanportarr[i]).attr("disabled",false);
+			if(lanportarr[i].checked)
+				$(lanportarr[i]).parents("li.right_table").find("input[name=tagport[]]").attr("disabled", false);
+			else
+				$(lanportarr[i]).parents("li.right_table").find("input[name=tagport[]]").attr("disabled", true);
+		}
+		
+		for(num = 0; num < vlanGrpList.length; num++){
+			if(vlanGrpList[num].grp == vlanGrpName) continue;
+			if(vlanGrpList[num].vid == vid){
+				for(count = 0 ; count < len; count++){ //loop for searching checkbox
+					if(vlanGrpList[num].intf.indexOf(lanportarr[count].value) >= 0){
+						$(lanportarr[count]).attr("disabled", true);
+						$(lanportarr[count]).parents("li.right_table").find("input[name=tagport[]]").attr("disabled", true);
+					}
+				}
+				
+			}
+		}
+
+	}
+
+	
+}
+
+function showLanPort(lanPair)
+{
+	var vlanGrpList = "";
+	
+	var num;
+	// the format of lanPair is LAN0/eth0|LAN1/eth1|... 
+	var str = "";
+	var str2 = lanPair.split('|'); //change format to LAN0/eth0|LAN1/eth1| => [LAN0/eth0, LAN1/eth1]
+	var str3 = "";
+	var max = str2.length;
+
+	if(vlanGrpEntry != "") //[{"grp":"aaa","vid":"20","intf":"eth0,eth1,eth2","tag":"eth0,eth1"},{...}] 
+		vlanGrpList = eval(vlanGrpEntry);
+
+	for(num = 0; num < vlanGrpList.length; num++){
+		if(vlanGrpList[num].grp == vlanGrpName)
+			break;
+	}
+	$("#grpname_input").val(vlanGrpList[num].grp);
+	$("#grpname").html(vlanGrpList[num].grp);
+	$("#vlanid").val(vlanGrpList[num].vid);
+	
+	vlanGrpList[num].intfArray = vlanGrpList[num].intf.split(",");
+	vlanGrpList[num].tagArray = vlanGrpList[num].tag.split(",");
+	
+	for(var count = 0; count < max; count++){
+		if(str2[count] == "")
+			continue;
+
+		var include = "";
+		var txtag = "";
+		var disable = "";
+		
+		str3 = str2[count].split('/'); //change format to LAN0/eth0 => [LAN0, eth0]
+
+		if(vlanGrpList[num].intfArray.indexOf(str3[1])>=0)
+			include = "checked=\"checked\"";
+		else{
+			include = "";
+			disable = "disabled=\"disabled\"";
+		}
+
+		if(vlanGrpList[num].tagArray.indexOf(str3[1])>=0)
+			txtag = "checked=\"checked\"";
+		else
+			txtag = "";
+		
+		str+="<ul>"+
+			"<li class=\"left_table\">"+str3[0]+" :</li>"+
+			"<li class=\"right_table\">"+
+	              "<label><input type='checkbox' name=\"lanport[]\" value=\""+str3[1]+"\" "+include+" onchange=\"InterfaceChange(this)\" />Include</label>"+
+	              "<label style=\"margin-left:30px\"><input type='checkbox' name=\"tagport[]\" "+txtag+" "+disable+" />Tx tagging</label>"+
+	            "</li>"+
+	          "</ul>";
+	} 
+
+	$("#lanPortNum").html(str);
+	
+	markSelectedPort(vlanGrpList[num].vid);
+}
+
+function InterfaceChange(chkbox)
+{
+	if(chkbox.checked){
+		$(chkbox).parents("li.right_table").find("input[name=tagport[]]").attr("disabled", false);
+	}
+	else{
+		$(chkbox).parents("li.right_table").find("input[name=tagport[]]").attr("disabled", true);
+	}
+}
+
+$(document).ready(function() {
+		var lanPair = '<%ejGetOther(lanPortPair)%>'; // the format is LAN1/eth0|LAN2/eth1|LAN3/eth5|...
+		
+		showLanPort(lanPair);
+		
+		//InterfaceChange();
+});
+// done hiding -->
+</script>
+<form action="/pages/tabFW/vlangroup-vlangroup.cmd" method="post" target="mainFrame">
+<input name="action" type="HIDDEN" id="action" value="edit"; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""/>
+<input name="intflist" type="HIDDEN" id="intflist" value=""; />
+<input name="taglist" type="HIDDEN" id="taglist" value=""; />
+
+<div class="popup_frame" >
+  <div class="data_frame2">
+    <ul>
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_VlanGroup_Str5)%> :</li>
+            <li class="right_table">
+              <div id="grpname"></div>
+              <input name="groupname" id="grpname_input" type="hidden" value="" maxlength="32" />
+            </li>
+          </ul>
+          <ul>
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Common_VLANID)%> :</li>
+            <li class="right_table">
+              <input name="vlanid" id="vlanid" type="text" maxlength="4" onchange="markSelectedPort(this.value)" />
+            </li>
+          </ul>
+          <div id="lanPortNum">
+  		 </div>
+        </div>
+      </li>
+      <li class="space">  </li>
+    </ul>
+  </div>
+</div>
+</form>
+

@@ -1,0 +1,513 @@
+<script language="JavaScript">
+var gblsessionKey = '<%ejGetOther(sessionKey)%>';
+//var interfaceInfo = '<%ejGetOther(tr69cInterfaceList)%>';
+//var interfaces = interfaceInfo.split('|');
+//var interfacesLength = interfaces.length - 2;
+//var boundIfList = '<%ejGet(tr69cBoundIfList)%>';
+//var boundInterfaces = boundIfList.split('|');
+//var boundIfName = '<%ejGet(tr69cBoundIfName)%>';
+var maxintf = 1;
+var pptpValue;
+var objPPTPInfoXMLHTTP = null;
+var LocalIP;               // pptpLocalIP
+var RemoteIP;              // pptpRemoteIP
+var Status;
+var pptpv;
+
+function updatepptpInfo (req)
+{
+	var pptpStatus;
+	var pptpstatusInfo=req.responseText;
+	if ( pptpstatusInfo != "" && pptpstatusInfo != null ) {
+		pptpstatusInfos = pptpstatusInfo.split('@@');
+		var i = 0;
+		pptpv = pptpstatusInfos[i++];
+		Status = pptpstatusInfos[i++];
+		LocalIP = pptpstatusInfos[i++];
+		RemoteIP = pptpstatusInfos[i++];
+	if ( Status == 3) {
+		document.getElementById("pptp_disconnected").style.display="none";
+		document.getElementById("pptp_connected").style.display="block";
+	} 
+	else {
+		document.getElementById("pptp_disconnected").style.display="block";
+		document.getElementById("pptp_connected").style.display="none";
+	}
+	    $("input[name='pptpLocalIP']").val(LocalIP);
+	    $("input[name='pptpRemoteIP']").val(RemoteIP);
+	}
+	checkInterval();
+}
+	
+function RefreshPptp()
+{
+	pptpv = '<%ejGetOther(pptpList)%>';
+	if (window.XMLHttpRequest) {
+		objPPTPInfoXMLHTTP=new XMLHttpRequest();
+	}// code for IE
+	else if (window.ActiveXObject) {
+		objPPTPInfoXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	else {
+		alert("<%ejGetML(MLG_Common_XMLHttp)%>");
+		return;
+	     }
+	if ( objPPTPInfoXMLHTTP != null ) {
+		objPPTPInfoXMLHTTP.open("POST","/pages/security/pptpVPN/updatepptp.html",true);
+		objPPTPInfoXMLHTTP.onreadystatechange = function() 
+		{
+			if(objPPTPInfoXMLHTTP.readyState == 4)
+				updatepptpInfo(objPPTPInfoXMLHTTP);
+		}
+		objPPTPInfoXMLHTTP.send(null);
+	}
+}
+
+function ClickPPTPAll()
+{
+	var i;
+    var selectintf = '';
+	if ( document.getElementById("PPTP_All").checked == true ) {
+		for ( i = 1 ; i < maxintf ; i++ ) {
+    		selectintf = "PPTP_val" + i;			
+			document.getElementById(selectintf.toString()).disabled = true;
+		}
+	} else {
+		for ( i = 1 ; i < maxintf ; i++ ) {
+			selectintf = "PPTP_val" + i;			
+			document.getElementById(selectintf.toString()).disabled = false;
+		}
+	}
+}
+
+function hideMultiIf()
+{
+	/*
+	if(interfacesLength < 2) { // ignore Any_WAN interface
+	} else if(interfacesLength == 2) { // ignore Any_WAN interface
+		document.forms[0].multiIf.disabled = true;
+	} else {
+		for (i = 1; i < interfacesLength; i++) {    // skip Any_WAN interface
+			document.forms[0].multiIf[i-1].disabled = true;
+		}
+	}
+	*/
+}
+
+function showMultiIf(){
+	/*
+	if(interfacesLength < 2) {	// ignore Any_WAN interface
+	} else if(interfacesLength == 2) {	// ignore Any_WAN interface
+		document.forms[0].multiIf.disabled = false;
+	} else {
+		for (i = 1; i < interfacesLength; i++) {	// skip Any_WAN interface
+			document.forms[0].multiIf[i-1].disabled = false;
+		}
+	}
+	*/
+}
+
+function frmLoad()
+{
+	var inBoundIfList = 0;
+	var i = 0, j = 0;
+	var enablePPTP = '<%ejGet(pptpEnable)%>'; 
+    //Show error message
+    //ZyXEL, for cross-site scripting check, Albert
+    var errMsg = "<%ejGetOther(errMsg)%>";
+    if (errMsg != '') {
+      hciAlert(errMsg, {height: 180,type: 2, title: ''});
+    }
+
+	if ( enablePPTP == '1' ) {
+		document.forms[0].PPTP_Enable.checked = true;
+	} else {
+		document.forms[0].PPTP_Enable.checked = false;
+	}
+
+	/*
+	$('.selectWANIf').empty();
+	$('.selectWANIf').append("<input type='hidden' name='tr69cBoundIfList' value='' size='1' maxlength='256'>");
+	for ( i = 1; i < interfacesLength; i++ ) {    // skip Any_WAN interface
+		inBoundIfList = 0;
+		for(j = 0; j < boundInterfaces.length; j++)
+		{
+			if( interfaces[i] == boundInterfaces[j] ) {
+				inBoundIfList = 1;
+			}
+		}
+		if(inBoundIfList == 1) {
+			$('.selectWANIf').append(" <input type='radio' name='multiIf' checked value='" + interfaces[i] + "'>" + interfaces[i] );
+		} else {
+			$('.selectWANIf').append(" <input type='radio' name='multiIf' value='" + interfaces[i] + "'>" + interfaces[i] );
+		}
+	}
+	*/
+	checkInterval();
+}
+
+function checkSecurity()
+{
+	var sec = '';
+	if ( document.getElementById("PPTP_MPPE").checked == true ) {
+		sec = '1' + sec;
+	} else {
+		sec = '0' + sec;
+	}
+	if ( document.getElementById("PPTP_No_Stateless").checked == true ) {
+		sec = '1' + sec;
+	} else {
+		sec = '0' + sec;
+	}
+	if ( document.getElementById("PPTP_No_MPPE40").checked == true ) {
+		sec = '1' + sec;
+	} else {
+		sec = '0' + sec;
+	}
+	if ( document.getElementById("PPTP_No_EAP").checked == true ) {
+		sec = '1' + sec;
+	} else {
+		sec = '0' + sec;
+	}
+	if ( document.getElementById("PPTP_No_MPPE128").checked == true ) {
+		sec = '1' + sec;
+	} else {
+		sec = '0' + sec;
+	}
+
+	return sec;
+}
+
+function reloadSecurity()
+{
+	var sec = document.getElementById("pptpSecurity").value.split("");
+	for ( i = 0 ; i < sec.length ; i++ ) {
+		if ( sec[i] == '1' ) {
+			if ( i == 0 ) {
+				document.getElementById("PPTP_MPPE").checked = true;
+			} else if ( i == 1 ) {
+				document.getElementById("PPTP_No_Stateless").checked = true;
+			} else if ( i == 2 ) {
+				document.getElementById("PPTP_No_MPPE40").checked = true;
+			} else if ( i == 3 ) {
+				document.getElementById("PPTP_No_EAP").checked = true;
+			} else {
+				document.getElementById("PPTP_No_MPPE128").checked = true;
+			}
+		}
+	}
+}
+
+function checkLanInterface()
+{
+	var i;
+	var lanIf = '';
+    var selectintf = '';
+	if ( document.getElementById("PPTP_All").checked == true ) {
+		lanIf = '0';
+	} else {
+		for ( i = 1 ; i < maxintf ; i++ ) {
+			selectintf = "PPTP_val" + i;
+			if ( document.getElementById(selectintf.toString()).checked == true ) {
+				lanIf = '1' + lanIf;
+			} else {
+				lanIf = '0' + lanIf;
+			}
+		}
+	}     
+	return lanIf;
+}
+
+function reloadLanInterface()
+{
+	var i;
+	var all = 1;
+	var interfaceInfoV = document.getElementById("pptpLanInf").value;
+	var iface = interfaceInfoV.split('');
+
+	for ( i = 0 ; i < iface.length ; i++ ) {
+		if ( iface[i] == '1' ) {
+			document.getElementById("PPTP_All").checked = false;
+			all = 0;
+			break;
+		}
+	}
+
+	if ( all == 1 ) {
+		document.getElementById("PPTP_All").checked = true;
+	}
+}
+
+function reloadConnection()
+{
+	var connect = document.getElementById("pptpStatus").value;
+	if ( connect == '3') {
+		document.getElementById("pptp_disconnected").style.display="none";
+	}
+	else {
+		document.getElementById("pptp_connected").style.display="none";
+	}
+}
+
+function reconnect(action)
+{
+	btnApply();
+}
+
+function btnApply() {
+	document.getElementById("pptp_disconnected").style.display="block";
+	document.getElementById("pptp_connected").style.display="none";
+	with ( document.forms[0] ) {
+		if ( PPTP_Enable.checked == true ) {
+			pptpEnable.value = 1;
+		} else {
+			pptpEnable.value = 0;
+		}
+		pptpLanInf.value = checkLanInterface();
+		pptpSecurity.value = checkSecurity();
+		sessionKey.value = gblsessionKey;
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+function checkInterval() {
+	pptpValue = setTimeout('RefreshPptp()', 2000);
+}
+
+function btnCancel() {
+	frmLoad();
+}
+
+$(document).ready(function() {
+	frmLoad();	
+	reloadLanInterface();
+	reloadSecurity();
+	reloadConnection();
+	ClickPPTPAll();
+});
+
+</script>
+<!--FORM METHOD="POST" ACTION="/pages/tabFW/sec-pptpcfg.cmd" name="PPTP_form"-->
+<form action="/pages/tabFW/pptpVPN-cfg.cgi" method="post">
+<input type="hidden" name="sessionKey" id="sessionKey" value="">
+<input type="hidden" name="pptpEnable" id="pptpEnable" value="<%ejGet(pptpEnable)%>" >
+<input type="hidden" name="pptpWanInf" id="pptpWanInf" value="">
+<input type="hidden" name="pptpLanInf" id="pptpLanInf" value="<%ejGet(pptpLanInf)%>">
+<input type="hidden" name="pptpSecurity" id="pptpSecurity" value="<%ejGet(pptpSecurity)%>">
+<input type="hidden" name="pptpStatus" id="pptpStatus" value="<%ejGet(pptpStatus)%>" >
+<!--input type="hidden" name="pptpRemoteIP" id="pptpRemoteIP" value="<%ejGet(pptpRemoteIP)%>"-->
+<!--input type="hidden" name="pptpLocalIP" id="pptpLocalIP" value="<%ejGet(pptpLocalIP)%>"-->
+<div class="content_frame">
+	<div class="explain"> 
+		<div> <b class="r1"></b><b class="r2"></b> <b class="r3"></b><b class="r4"></b> <b class="r4"></b></div>
+		<div class="explain_text"><%ejGetML(MLG_Security_PPTP_Explain_Str)%></span></div>
+		<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b> <b class="r1"></b></div>
+	</div>
+	<div class="data_frame">
+		<ul>
+			<li class="set1">
+				<div class="title"><span id='Server_Text'></span></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table">
+						<input type="checkbox" id="PPTP_Enable" name="PPTP_Enable" value="1" onClick="ClickPPTPEnable()" >
+							<span id='PPTP_Enable_string'><%ejGetML(MLG_Security_PPTP_Enable_Str)%></span>
+						</li>
+						<li class="right_table"></li>
+					</ul>
+					<ul>
+						<li class="left_table"><span id='PPTP_Name_string'><%ejGetML(MLG_Common_Name)%></span></li>
+						<li class="right_table">
+							<input type="text" id="pptpName" name="pptpName" size="15" maxlength="32" value='<%ejGet(pptpName)%>'>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><span id="PPTP_Server_IP_string"><%ejGetML(MLG_Security_PPTP_Server_Str)%></span></li>
+						<li class="right_table">
+							<input type="text" id="pptpServer" name="pptpServer" size="15" maxlength="64" value='<%ejGet(pptpServer)%>'>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><span id='PPTP_Account_string'><%ejGetML(MLG_Security_PPTP_Account_Str)%></span></li>
+						<li class="right_table">
+							<input type="text" id="pptpUsername" name="pptpUsername" size="15" maxlength="32" value="<%ejGet(pptpUsername)%>"> 
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><span id='PPTP_Pwd_string'><%ejGetML(MLG_Security_PPTP_Password_Str)%></span></li>
+						<li class="right_table">
+							<input type="password" autocomplete="new-password" id="pptpPassword" name="pptpPassword" size="15" maxlength="15" value='<%ejGet(pptpPassword)%>'> 
+						</li>
+					</ul>
+					<!-- WAN interface start -->
+					<div id="multi_wan" style="display:none">
+					<!--li class="set1"> <div class="w_text"-->
+						<ul>
+							<li class="left_table">Bound Interface Name:</li>
+							<li class="right_table">
+								<input name='wanIf' type='radio' onClick='hideMultiIf()'><%ejGetML(MLG_Maintenance_TR069_Str14)%>
+								<input name='wanIf' type='radio' onClick='showMultiIf()'><%ejGetML(MLG_Maintenance_TR069_Str15)%>
+								<input type='hidden' name='tr69cBoundIfName' value='' size="1" maxlength="256">
+							</li>
+							<li class="selectWANIf">
+							</li>
+						</ul>
+					<!--/div></li-->
+					</div>
+					<!-- WAN interface End -->
+
+					<ul>
+						<li class="left_table">
+							<span id='PPTP_PR_string'><%ejGetML(MLG_Security_PPTP_Policy_Route_Str)%></span>
+						</li>
+						<li class="right_table" id="PPTP_LAN_INF">
+							<input type="CHECKBOX" name="PPTP_All" id="PPTP_All" value='1' onclick="ClickPPTPAll()"> <span id="PPTP_All_string"><%ejGetML(MLG_Security_PPTP_Interfaces_Str)%></span>
+						<br>
+						<tr>
+						<script language="javascript">
+						<!-- hide
+						{
+							//alert("OK?");
+							var i = 0;
+							var dispName = '';
+							var interfaceInfo = '<%ejGetOther(bridgeInterfaceInfo, friendly)%>';
+							interfaceInfo = interfaceInfo.substring(0, interfaceInfo.length-1);
+							var interfacesTmp = interfaceInfo.split('|');
+
+							var interfaceInfoV = document.getElementById("pptpLanInf").value;
+							var iface = interfaceInfoV.split('');
+
+							var tempStr='';
+							var max = interfacesTmp.length;
+							for ( i = 0; i < max ; i++ ) {
+								if (interfacesTmp[i] == '')
+									continue;
+								if (interfacesTmp[i].indexOf('usb') != -1)
+									continue;
+								var interface = interfacesTmp[i].split(',');
+
+								if ( iface[max-i-1] == 1 ) {
+									tempStr += " <input type='checkbox' name='PPTP_val"+(i+1)+"' id='PPTP_val"+(i+1)+"' value='"+interface[0]+"' checked >\n";
+								} else {
+									tempStr += " <input type='checkbox' name='PPTP_val"+(i+1)+"' id='PPTP_val"+(i+1)+"' value='"+interface[0]+"'>\n";
+								}
+                                maxintf++;
+								tempStr += "<span id='PPTP_val"+(i+1)+"_str'>"+interface[1]+"</span>\n";
+								if ( i === 3 ) tempStr += "</tr><br><tr>";
+								if ( i === 7 ) tempStr += "</tr><br><tr>";
+							}
+							$('#PPTP_LAN_INF').append(tempStr);
+							ClickPPTPAll();
+						}
+						// done hiding -->
+						</script>
+						</tr>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<li class="space"></li>
+			<li class="set1">
+				<div class="title"><span id='Encryption_Text'><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str53)%></span></div>
+				<div class="w_text">
+					<ul>
+						<tr> 
+							<td width="38%"> 
+								<input type="checkbox" id="PPTP_MPPE" name="PPTP_MPPE" value='1' > 
+								<span id='PPTP_MPPE_string'><%ejGetML(MLG_Security_PPTP_MPPE_Str)%></span> 
+							</td>
+							<td>
+								<input type="checkbox" id="PPTP_No_Stateless" name="PPTP_No_Stateless" value=''> 
+								<span id='PPTP_No_Stateless_string'><%ejGetML(MLG_Security_PPTP_Refuse_Str1)%></span> 
+							</td>
+						</tr>
+						<tr> 
+							<td width="38%"> 
+								<input type="checkbox" id="PPTP_No_MPPE40" name="PPTP_No_MPPE40" value='2'>
+								<span id='PPTP_No_MPPE40_string'><%ejGetML(MLG_Security_PPTP_Refuse_Str2)%></span> 
+							</td>
+							<td>
+								<input type="checkbox" id="PPTP_No_EAP" name="PPTP_No_EAP" value=''> 
+								<span id='PPTP_No_EAP_string'><%ejGetML(MLG_Security_PPTP_Refuse_Str3)%></span> 
+							</td>
+						</tr>
+						<tr> 
+							<td width="38%"> 
+								<input type="checkbox" id="PPTP_No_MPPE128" name="PPTP_No_MPPE128" value='4'>
+								<span id='PPTP_No_MPPE128__string'><%ejGetML(MLG_Security_PPTP_Refuse_Str4)%></span>
+							</td>
+							<td>&nbsp; 
+							</td>
+						</tr>
+					</ul>
+				</div>
+			</li>
+			<li class="space"></li>
+			<li class="set1">
+				<div class="title"><span id='Status_string'><%ejGetML(MLG_Common_Status)%></span></div>
+				<div class="w_text" id='pptp_status' >
+
+				<ul id='pptp_disconnected'>
+					<li class="left_table">
+						<span id='PPTP_Status_Disconnected'><%ejGetML(MLG_Security_PPTP_Status_Dis_Str)%></span>
+						<input type="button" name="disconnected" MaxLength="32" value="<%ejGetML(MLG_Common_Connect)%>" onClick="checkInterval(1)">
+					</li>
+					<li class="right_table"></li>
+				</ul>
+				<!--ul id='pptp_connecting'>
+					<li class="left_table">
+						<span id='PPTP_Status_Connecting'><%ejGetML(MLG_Security_PPTP_Connecting_Str)%></span>:
+						<input type="button" name="connecting" MaxLength="32" value="disconnect" onClick="reconnect(2)">
+					</li>
+					<li class="right_table"></li>
+				</ul-->
+				<ul id='pptp_connected'>
+					<li class="left_table">
+						<span id='PPTP_Status_connect'><%ejGetML(MLG_Security_IPSecVPNSetting_Str49)%></span>:
+						<!--input type="button" name="connected" MaxLength="32" value="<%ejGetML(MLG_Common_Disconnect)%>" onClick="reconnect(3)"-->
+					</li>
+					<li class="right_table"></li>
+				</ul>
+				<ul>
+					<li class="left_table">
+						<span name='pptpLocalIP' id='pptpLocalIP'><%ejGetML(MLG_WAN_Broadband_Str43)%></span>: 
+						<input type="text" id="pptpLocalIP" name="pptpLocalIP" disabled>
+					</li>
+					<li class="right_table"></li>
+				</ul>
+				<ul>
+					<li class="left_table">
+						<span name='pptpRemoteIP' id='pptpRemoteIP'><%ejGetML(MLG_Security_PPTP_Peer_Str)%></span>:
+						<input type="text" id="pptpRemoteIP" name="pptpRemoteIP" disabled>
+					</li>
+					<li class="right_table"></li>
+				</ul>
+				
+				</div>
+			</li>
+			<li class="space"></li>
+			<li class="noteframe"> <div class="w_text"><span class="i_note" id="PPTPNote_ID"><%ejGetML(MLG_Security_PPTP_Note_Str1)%></span></div><div class="note_text">
+				&nbsp;&nbsp;<span id='PPTPNote_ID_1'><%ejGetML(MLG_Security_PPTP_Note_Str2)%></span>&nbsp;
+				</a></div>
+			</li>
+		</ul>
+		<ul>
+			<li style="display:none">
+				<span id='Cancel_Text'></span>
+				<span id='Advanced_Text'></span>
+				<span id='LAN_Sub_Alert'></span>	
+	            <span id='LAN_IP_Alert'></span>	
+				<span id='IP_Format_Error'></span>
+				<span id='SubnetMask_Invalid_Error'></span>
+			</li>
+		</ul>
+			<li class="buttonframe">
+				<div class="button_position">
+					<input id='Apply_ID' type="button" name="Submit" value="<%ejGetML(MLG_Common_Apply)%>" onClick="btnApply()">
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<input id='Cancel_ID' type="reset" name="Reset" value="<%ejGetML(MLG_Common_Cancel)%>" onClick='btnCancel()'> 
+				</div>
+			</li>
+	</div>
+</div>
+</form>

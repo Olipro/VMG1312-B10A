@@ -1,0 +1,1571 @@
+<script type="text/javascript">
+
+<!-- hide
+
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+
+var lineCountArray = new Array(); 
+
+var maxSp = '<%ejGetVoice(maxSp)%>';           // MaxProfileCount
+var maxLines = '<%ejGetVoice(maxLines)%>';     // MaxLineCount
+var currentSp = '<%ejGetVoice(numSp)%>';       // current Profile count
+var currentAcnt = '<%ejGetVoice(numLines)%>';  // current sip accounts
+var tmplc = '<%ejGetVoice(linesPerVP)%>';      // number of lines per profile
+var tmpvpn = '<%ejGetVoice(VPName)%>';
+var tmpst = '<%ejGetVoice(transport)%>';
+var mailServerList = '<%ejGetOther(mailServerList)%>'
+var suppCodecList = '<%ejGetVoice(suppCodecList)%>';
+
+var voiceRunning = '<%ejGetVoice(voiceInUse)%>';
+
+var customer = '<%ejGetOther(customer)%>';  //here to know customer
+
+// __ZyXEL__, Albert, 20140210, Add Customization Flag to control SIP compression type
+var customizationFlag = '<%ejGetOther(customizationFlag)%>';
+
+/* Get all the per-line items from provisioning (through the C code).
+** The provisioning will provide javascript variables
+** with initialized values if the values are available. */
+
+var maxPrefCodecs = 3;
+var tmpphonenum = '<%ejGetVoice(extension)%>';
+
+for (var i = 0; i < currentSp; i++) {
+	eval( "var vpn" + i + " \= \"\" " );                  // vpName
+	eval( "var st" + i + " \= \"\" " );                   // transport
+	eval( "var lc" + i + " \= \"\" " );                   // line count per profile
+	eval(tmplc);
+	eval("lineCountArray[" + i + "] = lc" + i);
+   
+	for (var m = 0; m < lineCountArray[i]; m++) {
+		eval( "var ex" + i + "_" + m + " \= \"\" ");      // phone number
+	}
+}
+
+if ( tmpvpn.search("ejGetVoice") < 0 ){
+	eval(tmpvpn);
+}
+if ( tmpst.search("ejGetVoice") < 0 ){
+	eval(tmpst);
+}
+if ( tmpphonenum.search("ejGetVoice") < 0 ) {
+   eval( tmpphonenum );
+}
+
+/* Lein default setting*/
+
+var defle  = 0;                                  // Enable SIP Account
+var defphonenum = 'changeme';                    // SIP Account Number
+var defan = 'changeme';                          // User Name
+var defpw = 'changeme';                          // Password
+var defphoneselect = 3;                          // Apply To Phone
+var defurltype = 'URL_Sip';                      // URI Type
+var defcl  = "G.711ALaw,G.726_32,G.711MuLaw";    // Codec List
+var defcle  = "G.711ALaw,G.711MuLaw,G.729a,G.722,G.726_24,G.726_32,X_5067F0_T38,X_5067F0_NTE";
+var defegain = 0;                                // Speaking Volume Control
+var defingain = 0;                               // Listening Volume Control
+if(customer == "NZ"){
+    defingain = -5;
+}
+var defechocancel = 1;                           // Enable G.168 (Echo Cancellation)
+var defvadenable = 0;                            // Enable VAD (Voice Active Detector)
+if (customer == "Superonline"){
+	var defcnenable = 0;                         // Enable Comfort Noise
+}
+var defanc  = 0;                                 // Send Caller ID
+var deftrans = 0;                                // Enable Call Transfer
+var defcallwait = 1;                             // Enable Call Waiting
+var defcwrej = 20;                               // Call Waiting Reject Timer
+var deffwdall = 0;                               // Enable Unconditional Forward 
+var deffwdbusy = 0;                              // Enable Busy Forward 
+var deffwdnoans = 0;                             // Enable No Answer Forward 
+var deffwdNum = '';                              // Unconditional Forward Number
+var deffwdBusyNum = '';                          // Busy Forward Number
+var deffwdNoAnsNum = '';                         // No Answer Forward Number
+var deffwdringcount = 20;                        // No Answer Time
+var defdnd = 0;                                  // Enable Do Not Disturb
+var defacb = 0;									 // Enable Anonymous Call Block
+var defccbs = 0;                                 // Enable Call Completion on Busy Subscriber (CCBS)
+var defmw  = 0;                                  // MWI (Message Waiting Indication)
+var defmwt = 3600;                               // MWI Expiration Time
+var defwl = 0;                                   // Warm Line
+var defhl = 0;                                   // Hot Line
+var defwlnum = '';                               // Warm Line number
+var defhlnum = '';                               // Hot Line number
+var defwltm = 5;                                 // Warm Line Timer (sec)
+var defmce = 0;                                  // Enable Missed Call Email Notification 
+var defmcesa = 'None';                           // Mail Server
+var defmceto = 'changeme';                       // Send Notification to Email 
+var defmceti = 'MissedCallNotification';         // Missed Call Email Title 
+var defem = 0;                                   // Early Media 
+var defemi = 66;                                 // Early Media Index
+var defmoh = 0;                                  // Music On Hold 
+var defmohi = 66;                                // Music On Hold Index
+
+/***********************/
+
+var recoverCodec1 = 0;
+var recoverCodec2 = 0;
+var recoverCodec3 = 0;
+
+function loadPreprocess()
+{
+	recoverCodec1 = document.getElementById("codecSelect1").value;
+	recoverCodec2 = document.getElementById("codecSelect2").value;
+	recoverCodec3 = document.getElementById("codecSelect3").value;
+	disableItem(1,"unconditionalEnable","busyEnable","busyNumber","noAnswerEnable","noAnswerNumber","noAnswerCount");
+}
+
+function printSPSelectList(){
+	var addNewIdx ; 
+	var i = 0;
+
+	$('#vpSelect').empty();
+
+	for (i = 0; i < currentSp; i++) {
+		addNewIdx = i + 1;
+		vpname = eval('vpn'+i) ;
+		if (i == 0){
+			$('#vpSelect').append('<option value='+i+' selected>'+vpname+'</option>'); 	
+		}else{
+			$('#vpSelect').append('<option value='+i+' >'+vpname+'</option>'); 
+		}
+	}
+}
+
+
+function checkVadEnable(){
+	if (customer == "Superonline"){
+		with (document.forms[0]){	
+			if(vad_Enable.checked){
+				cn_Enable.disabled = false;	
+			}
+			else{
+				cn_Enable.disabled = true;	
+			}	
+		}
+	}
+}
+
+function checkMWIEnable(){
+	with (document.forms[0]){	
+		if(mwiEnable.checked){
+			mwiExpireTime.disabled = false;	
+		}
+		else{
+			mwiExpireTime.disabled = true;	
+		}	
+	}
+}
+
+function checkWarmHotEnable(){
+    var sp = document.forms[0].vpSelect.value;  
+	var j =  document.getElementById("sipSelect").value;
+	with (document.forms[0]){	
+		if(j < eval("lc" + sp )){
+			if(warmHotEnable.checked){
+				warmLineSelect[0].disabled = false;	
+				warmLineSelect[1].disabled = false;    	
+				warmHotNumber.disabled = false;
+				if(eval("wl"+ sp +"_"+j)==0 && eval("hl"+ sp +"_"+j)==0){
+					warmLineSelect[0].checked = true;	
+				}
+			
+				if(warmLineSelect[0].checked){
+					warmExpireTime.disabled = false;
+				}
+			}
+			else{
+				warmLineSelect[0].disabled = true;	
+				warmLineSelect[1].disabled = true;    	
+				warmHotNumber.disabled = true;
+				warmExpireTime.disabled = true;			
+			}
+		}else{
+			if(warmHotEnable.checked){
+				warmLineSelect[0].disabled = false;	
+				warmLineSelect[1].disabled = false;    	
+				warmHotNumber.disabled = false;
+				if(defwl==0 && defhl==0){
+					warmLineSelect[0].checked = true;	
+				}
+			
+				if(warmLineSelect[0].checked){
+					warmExpireTime.disabled = false;
+				}
+			}
+			else{
+				warmLineSelect[0].disabled = true;	
+				warmLineSelect[1].disabled = true;    	
+				warmHotNumber.disabled = true;
+				warmExpireTime.disabled = true;			
+			}		
+		}
+	}
+	
+}
+
+function checkWarmHotSelect(){
+
+    var sp = document.forms[0].vpSelect.value;  
+	var j =  document.getElementById("sipSelect").value;
+	with (document.forms[0]){	
+		if(warmLineSelect[0].checked){
+			warmExpireTime.disabled = false;	
+		}
+		else{
+			warmExpireTime.disabled = true;	
+		}	
+	}
+}
+
+function checkmissedCallEmailEnable(){
+	with (document.forms[0]){	
+		if(missedCallEmailEnable.checked){
+			mailServerSelect.disabled = false;	
+			missed_CallEmailTo.disabled = false;
+			missed_CallEmailTitle.disabled = false;
+		}
+		else{
+			mailServerSelect.disabled = true;	
+			missed_CallEmailTo.disabled = true;
+			missed_CallEmailTitle.disabled = true;
+		}	
+	}
+}
+
+function checkEarlyMediaEnable(){
+	with (document.forms[0]){	
+		if(early_Media.checked){
+			early_MediaIndex.disabled = false;	
+		}
+		else{
+			early_MediaIndex.disabled = true;	
+		}	
+	}
+}
+
+function checkMusicOnHoldEnable(){
+	with (document.forms[0]){	
+		if(music_OnHold.checked){
+			music_OnHoldIndex.disabled = false;	
+		}
+		else{
+			music_OnHoldIndex.disabled = true;	
+		}	
+	}
+}
+
+function enableButtons(){
+   var vpSelect = document.forms[0].vpSelect.value;
+   var sipSelect = document.getElementById("sipSelect").value;
+
+   var buttonStart = document.getElementById("StartButton");
+   var buttonDefault = document.getElementById("DefaultButton");
+    var DeleteDefault = document.getElementById("DeleteButton");
+    buttonStart.disabled = false;
+    buttonDefault.disabled = false;
+	if(sipSelect < eval("lc" + vpSelect)){
+		DeleteDefault.disabled = false;
+	}else{
+		DeleteDefault.disabled = true;		
+	}
+/*
+   if ( voiceRunning == 1 ) {
+      buttonStart.disabled = true;
+      buttonDefault.disabled = false;
+   } else {
+      buttonStart.disabled = false;
+      buttonDefault.disabled = false;
+   }
+ */  
+}
+
+function printMailServerListBox()
+{
+    var i = 0;	
+   	var ServerList = '<%ejGetOther(mailServerList)%>';
+    var mailServer = ServerList.split('|');	
+    var str = '';
+
+    for (i=0; i<mailServer.length; i++)
+    {
+      if(mailServer[i]!=""){
+        var names = mailServer[i].split('/');
+        str += "  <option value='" + names[0] + "'>" + names[0] + "</option>";
+      }
+    }
+
+    $('#mailServerSelect').append(str);
+}
+
+function frmLoad () {
+
+	var vp_Select = document.forms[0].vpSelect.value;
+	//var sip_Select = document.forms[0].sipSelect.value;
+	
+	if (customer != "Superonline"){
+		$("#configCN").hide();
+	}else{
+		$("#configCN").show();
+	}
+	with ( document.forms[0] ) {
+
+		// SIP Account Selection
+		//sipSelect.options[0] = new Option("ADD_NEW", eval("lc" + vp_Select));
+		document.getElementById("sipSelect").innerHTML = "ADD_NEW";
+		document.getElementById("sipSelect").value = eval("lc" + vp_Select);
+	
+		// Enable SIP Account
+		if ( defle == 1){
+			sipAccountEnable.checked = true;
+		} else {
+			sipAccountEnable.checked = false;
+		}
+
+		// SIP Account Number
+		sipAccountNumber.value = defphonenum;
+		authUserName.value = defan;
+		authPassword.value = defpw;
+
+		// Apply To Phone
+		if(defphoneselect & (1<<0) ){
+			phoneSelect1.checked = true;     	
+		}
+		else{
+			phoneSelect1.checked = false;
+		}
+		if(defphoneselect & (1<<1) ){
+			phoneSelect2.checked = true;     	
+		}
+		else{
+			phoneSelect2.checked = false;
+		}
+		
+		// URI Type
+		if(eval("st"+ vp_Select)!= "TLS"){
+			urlTypeSelect.options[0] = new Option("SIP","URL_Sip");
+			urlTypeSelect.options[1] = new Option("TEL","URL_Tel");
+			urlTypeSelect.length = 2;		
+			for(i=0;i<urlTypeSelect.length;i++){
+				if(urlTypeSelect.options[i].value == defurltype){
+					urlTypeSelect.options[i].selected = true;
+				}
+			}
+		}else{
+			urlTypeSelect.options[0] = new Option("SIPS","URL_Sips");	
+			urlTypeSelect.length = 1;	
+			urlTypeSelect.options[0].selected = true;		
+		}
+		
+		// Codec List
+		var tokLocCodeList = defcle.split(',');
+		for(var i=1;i<=3;i++){		
+			var codecSelect = eval("codecSelect" + i);
+			var count=0;
+			for(j = 0; j < tokLocCodeList.length; j++){
+				if(tokLocCodeList[j] == "G.711ALaw"){
+					codecSelect.options[count++] = new Option("G.711a", tokLocCodeList[j]);
+				}		
+				else if(tokLocCodeList[j] == "G.711MuLaw"){
+					codecSelect.options[count++] = new Option("G.711u", tokLocCodeList[j]);
+				}
+				else if(tokLocCodeList[j] == "G.726_24"){
+					codecSelect.options[count++] = new Option("G.726-24", tokLocCodeList[j]);
+				}
+				else if(tokLocCodeList[j] == "G.726_32"){
+					codecSelect.options[count++] = new Option("G.726-32", tokLocCodeList[j]);
+				}
+				else if(tokLocCodeList[j] == "G.729a"){
+					if(customizationFlag & 0x00000800){  //customerized codec
+						codecSelect.options[count++] = new Option("G.729", tokLocCodeList[j]);
+					}
+				}
+				else if((tokLocCodeList[j] == "X_5067F0_T38") || (tokLocCodeList[j] == "X_5067F0_NTE")){
+					//do nothing
+				}
+				else{
+					codecSelect.options[count++] = new Option(tokLocCodeList[j],tokLocCodeList[j]);
+				}		
+			}
+			codecSelect.options[count] = new Option("None");
+			codecSelect.length = count+1;
+		}
+
+		// Codec List
+		var codecListId = defcl;	  
+		var k=0;
+		var temp = defcl.split(',');
+		for (var j = 0; j < maxPrefCodecs; j++)
+		{
+			k = j + 1;
+			if ( j < temp.length )
+			{
+				eval("codecSelect" + k + ".value = \"None\"" );       	
+				for(var t=0;t<eval("codecSelect" + k + ".length"); t++){
+					if(eval("codecSelect" + k + ".options["+t+"].value") == temp[j]){
+						eval("codecSelect" + k + ".options["+t+"].selected = true");
+					}
+				}
+			}else{
+				eval("codecSelect" + k + ".value = \"None\" " );
+				break;
+			}
+		}
+
+		if(document.getElementById("codecSelect2").value != "None")
+		{
+			document.getElementById("codecSelect3").disabled = false;
+		}else{
+			document.getElementById("codecSelect3").disabled = true;
+		}
+
+		// Speaking Volume Control
+		for(i=0;i<speakingVolume.length;i++){
+			if(speakingVolume.options[i].value == defegain){
+				speakingVolume.options[i].selected = true;
+			}
+		}
+		
+		// Listening Volume Control
+		for(i=0;i<listeningVolume.length;i++){
+			if(listeningVolume.options[i].value == defingain){
+				listeningVolume.options[i].selected = true;
+			}
+		}
+		
+		// Enable G.168 (Echo Cancellation)
+		if ( defechocancel == 1  ){
+			g168Enable.checked = true;
+		} else {
+			g168Enable.checked = false;
+		}
+		
+		// Enable VAD (Voice Active Detector)
+		if ( defvadenable == 1  ){
+			vad_Enable.checked = true;
+			if (customer == "Superonline"){
+				cn_Enable.disabled = false;	
+			}
+		} else {
+			vad_Enable.checked = false;
+			if (customer == "Superonline"){
+				cn_Enable.disabled = true;
+			}
+		}
+
+		if (customer == "Superonline"){
+			// Enable Comfort Noise
+			if ( defcnenable == 1  ){
+				cn_Enable.checked = true;
+			} else {
+				cn_Enable.checked = false;
+			}
+		}		
+		// Send Caller ID
+		if ( defanc == 1  ){
+			sendCallerIdEnable.checked = false;
+		} else {
+			sendCallerIdEnable.checked = true;
+		}
+
+		// Enable Call Transfer
+		if ( deftrans == 1  ){
+			callTransferEnable.checked = true;
+		} else {
+			callTransferEnable.checked = false;
+		}
+
+		// Enable Call Waiting
+		if ( defcallwait == 1  ){
+			callWaitingEnable.checked = true;
+		} else {
+			callWaitingEnable.checked = false;
+		}
+
+		// Call Waiting Reject Timer
+		waitingRejectTimer.value = defcwrej;
+
+		// Enable Unconditional Forward 
+		if ( deffwdall == 1){
+			unconditionalEnable.checked = true;
+		} else {
+			unconditionalEnable.checked = false;
+		}
+		 
+		// Enable Busy Forward 
+		if ( deffwdbusy == 1  ){
+			busyEnable.checked = true;
+		} else {
+			busyEnable.checked = false;
+		}
+
+		// Enable No Answer Forward 
+		if ( deffwdnoans == 1  ){
+			noAnswerEnable.checked = true;
+		} else {
+			noAnswerEnable.checked = false;
+		}
+
+		// Call Forward Number
+		unconditionalNumber.value = deffwdNum;
+		busyNumber.value = deffwdBusyNum;
+		noAnswerNumber.value = deffwdNoAnsNum;
+		noAnswerCount.value = deffwdringcount;
+
+		// Enable Do Not Disturb
+		if ( defdnd == 1  ){
+			doNotDisturbEnable.checked = true;
+		} else {
+			doNotDisturbEnable.checked = false;
+		}
+
+		// Enable Do Not Disturb
+		if ( defacb == 1  ){
+			anonBlockEnable.checked = true;
+		} else {
+			anonBlockEnable.checked = false;
+		}
+
+
+		// Enable Call Completion on Busy Subscriber (CCBS)
+		if(defccbs == 1){
+			ccbsEnable.checked = true;
+		}
+		else{
+			ccbsEnable.checked = false;
+		}
+		
+		// MWI (Message Waiting Indication)
+		if ( defmw == 1  ){
+			mwiEnable.checked = true;
+			mwiExpireTime.disabled = false;
+		} else {
+			mwiEnable.checked = false;
+			mwiExpireTime.disabled = true;
+		}
+		mwiExpireTime.value = defmwt;
+		
+		// Hot Line / Warm Line Enable
+		warmExpireTime.value = defwltm;		 		  
+		warmExpireTime.disabled = true;
+		if (defhl == 1){
+			warmHotEnable.checked = true;    	
+			warmHotNumber.disabled = false;		
+			warmLineSelect[0].checked = false;
+			warmLineSelect[1].checked = true;
+			warmLineSelect[0].disabled = false;
+			warmLineSelect[1].disabled = false;		 
+			warmHotNumber.value = defhlnum;       	 
+		}
+		else if(defwl == 1){       
+			warmHotEnable.checked = true;	  
+			warmHotNumber.disabled = false; 		 
+			warmLineSelect[0].checked = true;
+			warmLineSelect[1].checked = false;       
+			warmLineSelect[0].disabled = false;
+			warmLineSelect[1].disabled = false;			 
+			warmHotNumber.value = defwlnum;
+			warmExpireTime.disabled = false;
+		}
+		else{
+			warmHotEnable.checked = false;
+			warmLineSelect[0].checked = false;
+			warmLineSelect[1].checked = false;
+			warmLineSelect[0].disabled = true;
+			warmLineSelect[1].disabled = true;
+			warmHotNumber.disabled = true;      	
+		}
+
+		// Enable Missed Call Email Notification
+		if(defmce == 1){
+			missedCallEmailEnable.checked = true;
+			mailServerSelect.disabled = false;	
+			missed_CallEmailTo.disabled = false;
+			missed_CallEmailTitle.disabled = false;
+		}
+		else{
+			missedCallEmailEnable.checked = false;
+			mailServerSelect.disabled = true;	
+			missed_CallEmailTo.disabled = true;
+			missed_CallEmailTitle.disabled = true;
+		}
+		missed_CallEmailTo.value = defmceto;
+		missed_CallEmailTitle.value = defmceti;
+
+		// Early Media
+		if ( defem == 1  ){
+			early_Media.checked = true;
+			early_MediaIndex.disabled = false;
+		}
+		else {
+			early_Media.checked = false;
+			early_MediaIndex.disabled = true;
+		}
+		early_MediaIndex.value = defemi;
+		
+		// Music On Hold 
+		if ( defmoh == 1  ){
+			music_OnHold.checked = true;
+			music_OnHoldIndex.disabled = false;
+		}
+		else {
+			music_OnHold.checked = false;
+			music_OnHoldIndex.disabled = true;
+		}
+		music_OnHoldIndex.value = defmohi;
+	}
+	
+	loadPreprocess();
+}
+
+function btnSave() {
+
+	if(!formCheck_account()){
+		return;
+	}
+	 
+    var SPSelect = document.forms[0].vpSelect.value;	// SIP Service Provider
+	//var j =  document.forms[0].sipSelect.value;	// SIP Account
+	var j = eval("lc" + SPSelect);	// SIP Account, special for ADD_NEW
+
+	// Check sipAccountNumber
+	with( document.forms[0] ){
+		var newNum = sipAccountNumber.value;
+		for (var sp = 0; sp < currentSp; sp++) {
+			for (var m = 0; m < lineCountArray[sp]; m++) {
+			    if(!((parseInt(SPSelect)==parseInt(sp)) && (parseInt(j)==parseInt(m)))){
+					if(newNum == eval("ex" + sp + "_" + m) ){
+						alert("<%ejGetML(MLG_VoIP_SIPAccount_AlertMsg_Str3)%>");		
+						return;
+					}
+				}
+			}
+		}	 
+	}
+	
+	// Choose action
+	var lines = eval("lc"+SPSelect);
+	//var loc = '' ;
+	if(parseInt(j) < parseInt(lines) ){
+		document.forms[0].action.value = "start";
+	}else{
+		if(parseInt(currentAcnt) >= parseInt(maxLines)){
+			alert(MLG_Makestring("<%ejGetML(MLG_VoIP_SIPAccount_AlertMsg_Str4)%>", maxLines));
+			return;
+		}else{	
+			document.forms[0].action.value = "addLine";
+		}		
+	}
+
+	with ( document.forms[0] ) {
+		// Session Key
+		sessionKey.value = glbSessionKey;
+		// SIP Service Provider
+		spnum.value = SPSelect;
+		// SIP Account Number
+		extension.value = sipAccountNumber.value;
+		document.getElementById('extension').name = "extension" + SPSelect + "_" + j;
+		dispName.value = sipAccountNumber.value;
+		document.getElementById('dispName').name = "dispName" + SPSelect + "_" + j;
+		// Authentication
+		authName.value = authUserName.value;
+		document.getElementById('authName').name = "authName" + SPSelect + "_" + j;
+		password.value = authPassword.value;
+		document.getElementById('password').name = "password" + SPSelect + "_" + j;
+      	
+		// Enable SIP Account
+		if ( sipAccountEnable.checked ){
+			lineEnabled.value = "on";
+			document.getElementById('lineEnabled').name = "lineEnabled" + SPSelect + "_" + j;
+		} else {
+          	lineEnabled.value = "off";
+			document.getElementById('lineEnabled').name = "lineEnabled" + SPSelect + "_" + j;
+		}
+
+		// Apply To Phone
+		var phone_Select = 0;
+		if(phoneSelect1.checked){
+			phone_Select = 1 << 0;
+		}
+		if(phoneSelect2.checked){
+			phone_Select |= (1 << 1);
+		}
+		phoneSelect.value = phone_Select;  
+ 		document.getElementById('phoneSelect').name = "phoneSelect" + SPSelect + "_" + j;
+
+		// URI Type
+		urlType.value = urlTypeSelect.value;
+		document.getElementById('urlType').name = "urlType" + SPSelect + "_" + j;
+		
+		// Codec List
+		var maxPrefCodecs = 3;
+		var prefCodecList="";
+		var l;
+		//check codec
+		for (var k = 1; k <= maxPrefCodecs; k++) {
+			var codec = eval( "codecSelect" + k + ".value" );
+			if(!(customizationFlag & 0x00000800) && codec == "G.729a"){
+				alert("<%ejGetML(MLG_VoIP_SIPAccount_AlertMsg_Str5)%>");
+				return;
+			}
+		}
+
+		for (var k = 0; k < maxPrefCodecs; k++) {
+			l = k + 1;
+			if ( l == 1 ){
+				prefCodecList += eval( "codecSelect" + l + ".value" );
+			} else {
+				if(eval( "codecSelect" + l + ".value" ) == 'None'){
+					break;
+				}
+				prefCodecList += "," + eval( "codecSelect" + l + ".value" );
+			}
+		}
+		prefCodecList += ",X_5067F0_T38,X_5067F0_NTE" 
+		codecList.value = prefCodecList;  
+ 		document.getElementById('codecList').name = "codecList" + SPSelect + "_" + j;
+		
+		// Codec List, handle codec list box
+		if(j >= eval("lc" + SPSelect)){			
+			//set codecListEnable for new line
+			codecListEnable.value = defcle;  			
+			document.getElementById('codecListEnable').name = "codecListEnable" + SPSelect + "_" + j;
+		}
+		
+		// Speaking Volume Control
+		egressGain.value = speakingVolume.value;
+		document.getElementById('egressGain').name = "egressGain" + SPSelect + "_" + j;
+		
+		// Listening Volume Control
+		ingressGain.value = listeningVolume.value;
+		document.getElementById('ingressGain').name = "ingressGain" + SPSelect + "_" + j;
+
+		// Enable G.168 (Echo Cancellation)
+		if ( g168Enable.checked ){
+			echoCancel.value = "on";
+			document.getElementById('echoCancel').name = "echoCancel" + SPSelect + "_" + j;
+		} else {
+			echoCancel.value = "off";
+			document.getElementById('echoCancel').name = "echoCancel" + SPSelect + "_" + j;
+		}
+		
+		// Enable VAD (Voice Active Detector)
+		if ( vad_Enable.checked ){
+			vadEnable.value = "on";
+			document.getElementById('vadEnable').name = "vadEnable" + SPSelect + "_" + j;
+		} else {
+			vadEnable.value = "off";
+			document.getElementById('vadEnable').name = "vadEnable" + SPSelect + "_" + j;
+		}
+		if (customer == "Superonline"){
+			// Enable Comfort Noise
+			if ( cn_Enable.checked ){
+				cnEnable.value = "on";
+				document.getElementById('cnEnable').name = "cnEnable" + SPSelect + "_" + j;
+			} else {
+				cnEnable.value = "off";
+				document.getElementById('cnEnable').name = "cnEnable" + SPSelect + "_" + j;
+			}
+		}
+		// Send Caller ID
+		if ( sendCallerIdEnable.checked ){
+			anonCall.value = "off";
+			document.getElementById('anonCall').name = "anonCall" + SPSelect + "_" + j;
+		} else {
+			anonCall.value = "on";
+			document.getElementById('anonCall').name = "anonCall" + SPSelect + "_" + j;
+		}
+
+		// Enable Call Transfer
+		if ( callTransferEnable.checked ){
+			calltrans.value = "on";
+			document.getElementById('calltrans').name = "calltrans" + SPSelect + "_" + j;
+		} else {
+			calltrans.value = "off";
+			document.getElementById('calltrans').name = "calltrans" + SPSelect + "_" + j;
+		}
+		
+		// Enable Call Waiting
+		if ( callWaitingEnable.checked ){
+			callwait.value = "on";
+			document.getElementById('callwait').name = "callwait" + SPSelect + "_" + j;
+		} else {
+			callwait.value = "off";
+			document.getElementById('callwait').name = "callwait" + SPSelect + "_" + j;
+		}
+
+		// Call Waiting Reject Timer
+		callwaitRejTime.value = waitingRejectTimer.value;             
+ 		document.getElementById('callwaitRejTime').name = "callwaitRejTime" + SPSelect + "_" + j;
+
+		// Enable Unconditional Forward 
+		if ( unconditionalEnable.checked ){
+			fwdAll.value = "on";
+			document.getElementById('fwdAll').name = "fwdAll" + SPSelect + "_" + j;
+		} else {
+			fwdAll.value = "off";
+			document.getElementById('fwdAll').name = "fwdAll" + SPSelect + "_" + j;
+		}
+		
+		if(unconditionalNumber.value.length > 0){
+			fwdNum.value = unconditionalNumber.value;
+			document.getElementById('fwdNum').name = "fwdNum" + SPSelect + "_" + j;
+		}
+
+		// Enable Busy Forward 
+		if ( busyEnable.checked ){
+			fwdBusy.value = "on";
+			document.getElementById('fwdBusy').name = "fwdBusy" + SPSelect + "_" + j;
+		} else {
+			fwdBusy.value = "off";
+			document.getElementById('fwdBusy').name = "fwdBusy" + SPSelect + "_" + j;
+		}
+
+		if(busyNumber.value.length > 0){
+			fwdBusyNum.value = busyNumber.value;
+			document.getElementById('fwdBusyNum').name = "fwdBusyNum" + SPSelect + "_" + j;
+		}
+
+		// Enable No Answer Forward 
+		if ( noAnswerEnable.checked ){
+			fwdNoAns.value = "on";
+			document.getElementById('fwdNoAns').name = "fwdNoAns" + SPSelect + "_" + j;
+		} else {
+			fwdNoAns.value = "off";
+			document.getElementById('fwdNoAns').name = "fwdNoAns" + SPSelect + "_" + j;
+		}
+
+		if(noAnswerNumber.value.length > 0){
+			fwdNoAnsNum.value = noAnswerNumber.value;
+			document.getElementById('fwdNoAnsNum').name = "fwdNoAnsNum" + SPSelect + "_" + j;
+		}
+
+		ringcount.value = noAnswerCount.value;
+ 		document.getElementById('ringcount').name = "ringcount" + SPSelect + "_" + j;
+
+		// Enable Do Not Disturb
+		if ( doNotDisturbEnable.checked ){
+			doNotDisturb.value = "on";
+			document.getElementById('doNotDisturb').name = "doNotDisturb" + SPSelect + "_" + j;
+		} else {
+			doNotDisturb.value = "off";
+			document.getElementById('doNotDisturb').name = "doNotDisturb" + SPSelect + "_" + j;
+		}
+
+		// Enable Anonymous Call Block
+		if ( anonBlockEnable.checked ){
+			anonBlock.value = "on";
+			document.getElementById('anonBlock').name = "anonBlock" + SPSelect + "_" + j;
+		} else {
+			anonBlock.value = "off";
+			document.getElementById('anonBlock').name = "anonBlock" + SPSelect + "_" + j;
+		}
+
+		// Enable Call Completion on Busy Subscriber (CCBS)
+		if ( ccbsEnable.checked ){
+			CCBS.value = "on";         
+			document.getElementById('CCBS').name = "CCBS" + SPSelect + "_" + j;
+		} else {
+			CCBS.value = "off"; 
+			document.getElementById('CCBS').name = "CCBS" + SPSelect + "_" + j;
+		}
+
+		// MWI (Message Waiting Indication)
+		if ( mwiEnable.checked ){
+			mwi.value = "on";
+			document.getElementById('mwi').name = "mwi" + SPSelect + "_" + j;
+		} else {
+			mwi.value = "off";
+			document.getElementById('mwi').name = "mwi" + SPSelect + "_" + j;
+		}
+		mwiet.value = mwiExpireTime.value; 
+ 		document.getElementById('mwiet').name = "mwiet" + SPSelect + "_" + j;
+
+		// Hot Line / Warm Line Enable
+		if(warmHotEnable.checked){
+			if(warmLineSelect[0].checked){
+				hotLine.value = "off";
+				document.getElementById('hotLine').name = "hotLine" + SPSelect + "_" + j;
+				warmLine.value = "on";
+				document.getElementById('warmLine').name = "warmLine" + SPSelect + "_" + j;
+				warmLineNum.value = warmHotNumber.value;
+				document.getElementById('warmLineNum').name = "warmLineNum" + SPSelect + "_" + j;
+			}
+			else if(warmLineSelect[1].checked){
+				hotLine.value = "on";
+				document.getElementById('hotLine').name = "hotLine" + SPSelect + "_" + j;
+				warmLine.value = "off";
+				document.getElementById('warmLine').name = "warmLine" + SPSelect + "_" + j;
+				hotLineNum.value = warmHotNumber.value;
+				document.getElementById('hotLineNum').name = "hotLineNum" + SPSelect + "_" + j;
+			}
+		}
+		else{
+			hotLine.value = "off";
+			document.getElementById('hotLine').name = "hotLine" + SPSelect + "_" + j;
+			warmLine.value = "off";
+			document.getElementById('warmLine').name = "warmLine" + SPSelect + "_" + j;
+		}
+
+		warmLineTimer.value = warmExpireTime.value;  
+ 		document.getElementById('warmLineTimer').name = "warmLineTimer" + SPSelect + "_" + j;
+
+		// Enable Missed Call Email Notification
+		if ( missedCallEmailEnable.checked ){
+			missedCallEmail.value = "on";         
+			document.getElementById('missedCallEmail').name = "missedCallEmail" + SPSelect + "_" + j;
+		} else {
+			missedCallEmail.value = "off";
+			document.getElementById('missedCallEmail').name = "missedCallEmail" + SPSelect + "_" + j;
+		}
+		missedCallEmailSA.value = mailServerSelect.value; 
+ 		document.getElementById('missedCallEmailSA').name = "missedCallEmailSA" + SPSelect + "_" + j;
+		missedCallEmailTo.value = missed_CallEmailTo.value; 
+ 		document.getElementById('missedCallEmailTo').name = "missedCallEmailTo" + SPSelect + "_" + j;
+		missedCallEmailTitle.value = missed_CallEmailTitle.value; 
+ 		document.getElementById('missedCallEmailTitle').name = "missedCallEmailTitle" + SPSelect + "_" + j;
+		
+		// Early Media
+		if ( early_Media.checked ){
+			earlyMedia.value = "on"; 
+			document.getElementById('earlyMedia').name = "earlyMedia" + SPSelect + "_" + j;
+			earlyMediaIndex.value = early_MediaIndex.value; 
+			document.getElementById('earlyMediaIndex').name = "earlyMediaIndex" + SPSelect + "_" + j;
+		} else {
+			earlyMedia.value = "off"; 
+			document.getElementById('earlyMedia').name = "earlyMedia" + SPSelect + "_" + j;
+			earlyMediaIndex.value = early_MediaIndex.value; 
+			document.getElementById('earlyMediaIndex').name = "earlyMediaIndex" + SPSelect + "_" + j;
+		}
+
+		// Music On Hold 
+		if ( music_OnHold.checked ){
+			musicOnHold.value = "on"; 
+			document.getElementById('musicOnHold').name = "musicOnHold" + SPSelect + "_" + j;
+			musicOnHoldIndex.value = music_OnHoldIndex.value; 
+			document.getElementById('musicOnHoldIndex').name = "musicOnHoldIndex" + SPSelect + "_" + j;
+		} else {
+			musicOnHold.value = "off"; 
+			document.getElementById('musicOnHold').name = "musicOnHold" + SPSelect + "_" + j;
+			musicOnHoldIndex.value = music_OnHoldIndex.value; 
+			document.getElementById('musicOnHoldIndex').name = "musicOnHoldIndex" + SPSelect + "_" + j;
+		}
+		
+		submit();
+		$('.ui-dialog-titlebar-close').trigger('click');
+		$.openLoadingMask(1);
+	}
+}
+
+$(function(){           
+$('#btn_wepmore').toggle(
+	function(){
+		$(this).html('less');
+		$('#detailedInfo').slideDown(200);	
+	}, function(){
+		$(this).html('more...');
+		$('#detailedInfo').slideUp(200);
+	});
+});
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnSave(); });
+
+$(document).ready(function() {
+	//resetMsg();
+	printSPSelectList();
+	frmLoad();
+});
+
+// done hiding -->
+</script>
+
+<form id="SipAccountAddForm" name="SipAccountAddForm" method="post" action="/pages/tabFW/sip-voicesipcfg.cmd" target="mainFrame">
+
+<input name="action" type="HIDDEN" id="action" value="view"; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""; />
+
+<input name="spnum" type="HIDDEN" id="spnum" value=""; />
+<input name="extension" type="HIDDEN" id="extension" value=""; />
+<input name="dispName" type="HIDDEN" id="dispName" value=""; />
+<input name="authName" type="HIDDEN" id="authName" value=""; />
+<input name="password" type="HIDDEN" id="password" value=""; />
+<input name="lineEnabled" type="HIDDEN" id="lineEnabled" value=""; />
+<input name="urlType" type="HIDDEN" id="urlType" value=""; />
+<input name="egressGain" type="HIDDEN" id="egressGain" value=""; />
+<input name="ingressGain" type="HIDDEN" id="ingressGain" value=""; />
+<input name="vadEnable" type="HIDDEN" id="vadEnable" value=""; />
+<input name="echoCancel" type="HIDDEN" id="echoCancel" value=""; />
+<input name="cnEnable" type="HIDDEN" id="cnEnable" value=""; />
+<input name="callwait" type="HIDDEN" id="callwait" value=""; />      			 
+<input name="fwdAll" type="HIDDEN" id="fwdAll" value=""; />     
+<input name="fwdNum" type="HIDDEN" id="fwdNum" value=""; />     
+<input name="fwdBusy" type="HIDDEN" id="fwdBusy" value=""; />  
+<input name="fwdBusyNum" type="HIDDEN" id="fwdBusyNum" value=""; />         
+<input name="fwdNoAns" type="HIDDEN" id="fwdNoAns" value=""; /> 
+<input name="fwdNoAnsNum" type="HIDDEN" id="fwdNoAnsNum" value=""; /> 
+<input name="ringcount" type="HIDDEN" id="ringcount" value=""; />        
+<input name="doNotDisturb" type="HIDDEN" id="doNotDisturb" value=""; /> 
+<input name="anonBlock" type="HIDDEN" id="anonBlock" value=""; /> 
+<input name="calltrans" type="HIDDEN" id="calltrans" value=""; /> 
+<input name="anonCall" type="HIDDEN" id="anonCall" value=""; /> 
+<input name="callwaitRejTime" type="HIDDEN" id="callwaitRejTime" value=""; /> 
+<input name="phoneSelect" type="HIDDEN" id="phoneSelect" value=""; />   
+<input name="codecListEnable" type="HIDDEN" id="codecListEnable" value=""; /> 
+<input name="mwi" type="HIDDEN" id="mwi" value=""; />       
+<input name="mwiet" type="HIDDEN" id="mwiet" value=""; /> 
+<input name="hotLine" type="HIDDEN" id="hotLine" value=""; />	   
+<input name="warmLine" type="HIDDEN" id="warmLine" value=""; />
+<input name="hotLineNum" type="HIDDEN" id="hotLineNum" value=""; />
+<input name="warmLineNum" type="HIDDEN" id="warmLineNum" value=""; />
+<input name="warmLineTimer" type="HIDDEN" id="warmLineTimer" value=""; />
+<input name="missedCallEmail" type="HIDDEN" id="missedCallEmail" value=""; />
+<input name="missedCallEmailSA" type="HIDDEN" id="missedCallEmailSA" value=""; />
+<input name="missedCallEmailTo" type="HIDDEN" id="missedCallEmailTo" value=""; />	
+<input name="missedCallEmailTitle" type="HIDDEN" id="missedCallEmailTitle" value=""; />
+<input name="CCBS" type="HIDDEN" id="CCBS" value=""; />
+<input name="earlyMedia" type="HIDDEN" id="earlyMedia" value=""; />
+<input name="earlyMediaIndex" type="HIDDEN" id="earlyMediaIndex" value=""; />
+<input name="musicOnHold" type="HIDDEN" id="musicOnHold" value=""; />
+<input name="musicOnHoldIndex" type="HIDDEN" id="musicOnHoldIndex" value=""; />
+<input name="codecList" type="HIDDEN" id="codecList" value=""; />
+<input name="cmacnt" type="HIDDEN" id="cmacnt" value=""; />
+
+<div class="popup_frame" >
+<div class="data_frame">
+	<ul>
+		<!--
+		<li class="set1">
+			<div class="title"><%ejGetML(MLG_Common_Status)%>  </div>
+			<div class="w_text"><input type="checkbox" name="CIFS_Serv_Active" onclick="doAccessChange('EnShare',this);" checked="checked"/><%ejGetML(MLG_Common_Active)%></div>
+		</li>
+		-->
+		
+		<li class="space"></li>
+		
+		<!--SIP Account Selection START-->
+		<li class="set1">
+			<div class="title"><%ejGetML(MLG_VoIP_SIPAccount_Str2)%> </div>
+			<div class="w_text">
+				<ul>
+					<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str2)%> : </li>
+					<li class="right_table">
+						<span id="sipSelect" name="sipSelect" value=""></span>
+					</li>
+				</ul>
+			</div>
+		</li>
+		<!--SIP Account Selection END-->
+		
+		<li class="space"></li>
+		
+		<!--SIP Service Provider Selection START-->
+		<li class="set1">
+			<div class="title"><%ejGetML(MLG_VoIP_SIPAccount_Str3)%></div>
+			<div class="w_text">
+				<ul>
+					<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str4)%> : </li>
+					<li class="right_table">
+						<select id='vpSelect' name='vpSelect' >
+						</select>
+					</li>
+				</ul>
+			</div>
+		</li>
+		<!--SIP Service Provider Selection END-->
+		
+		<li class="space"></li>
+		
+		<!--General STAR-->
+		<li class="set1">
+			<div class="title"><%ejGetML(MLG_Common_General)%></div>
+			<div class="w_text">
+				<ul>
+					<li class="right_table">
+						<input type="checkbox" id="sipAccountEnable" name="sipAccountEnable" value="" /> <%ejGetML(MLG_VoIP_SIPAccount_Str5)%>
+					</li>
+					<!--
+					<li class="left_table">SIP Account :</li>
+					<li class="right_table">
+						<input name="ssid_state" id="radio" type="radio" value="enable" checked="checked" /><%ejGetML(MLG_Common_Enabled)%>
+						<input name="ssid_state" id="radio2" type="radio" value="disable" /><%ejGetML(MLG_Common_Disabled)%> 
+					</li>
+					-->
+				</ul>
+				<ul>
+					<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str6)%> : </li>
+					<li class="right_table">
+						<input type="text" maxlength="32" id="sipAccountNumber" name="sipAccountNumber" value="" />
+					</li>
+				</ul>
+			</div>
+		</li>
+		<!--General END-->
+
+		<li class="space"></li>
+		
+		<!--Authentication START-->
+		<li class="set1">
+			<div class="title"><%ejGetML(MLG_VoIP_SIPAccount_Str7)%></div>
+			<div class="w_text">
+				<ul>
+					<li class="left_table"><%ejGetML(MLG_Common_Username)%> : </li>
+					<li class="right_table">
+						<input type="text" maxlength="127" id="authUserName" name="authUserName" />
+					</li>
+				</ul>
+				<ul>
+					<li class="left_table"><%ejGetML(MLG_ConnStatus_QuickStart_Str4)%>  : </li>
+					<li class="right_table">
+						<input type="password" maxlength="127" id="authPassword" name="authPassword" autocomplete="new-password" />
+					</li>
+				</ul>
+			</div>
+		</li>
+		<!--Authentication END-->
+		
+		<li class="space"></li>
+
+		<!--Apply To Phone START-->
+		<li class="set1">
+			<div class="title"><%ejGetML(MLG_VoIP_SIPAccount_Str8)%></div>
+			<div class="w_text">
+				<ul>
+					<li class="left_table">
+						<input type='checkbox' size="10" id='phoneSelect1' name='phoneSelect1' /> <%ejGetML(MLG_Menu_voipPhone)%> 1
+					</li>
+					<li class="right_table">							
+						<input type='checkbox' size="10" id='phoneSelect2' name='phoneSelect2' /> <%ejGetML(MLG_Menu_voipPhone)%> 2							
+					</li>
+				</ul>
+			</div>
+		</li>
+		<!--Apply To Phone END-->
+		
+		<li class="space"></li>
+
+		<!--Warning info applyToPhoneTag STAR-->
+		<li class="set1">
+			<div class="explain_text" id="applyToPhoneTag">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPAccount_Str9)%> :</div>
+				<p><%ejGetML(MLG_VoIP_SIPAccount_Str10)%></p>
+			</div>
+		</li>
+		<!--Warning info applyToPhoneTag END-->
+		
+		<span class="linking moreBtn" id="btn_wepmore" style="float:right;"><%ejGetML(MLG_Common_more)%>...</span>
+		
+		<li class="space"></li>
+	
+		<div id='detailedInfo'  style="display:none; width:100%;">
+			<!--URI Type STAR-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPAccount_Str11)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str11)%> : </li>
+						<li class="right_table">
+							<select id="urlTypeSelect" name="urlTypeSelect">
+								<option value="URL_Sip"><%ejGetML(MLG_Menu_voipSIP)%></option>
+								<option value="URL_Tel"><%ejGetML(MLG_VoIP_SIPAccount_Str12)%></option>					  
+							</select>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--URI Type END-->
+			
+			<li class="space"></li>
+			
+			<!--Voice Features START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPAccount_Str13)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str14)%> : </li>
+						<li class="right_table">
+							<select id="codecSelect1" name="codecSelect1" onchange="javascript:codecChange()"></select>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str15)%> : </li>
+						<li class="right_table">
+							<select id="codecSelect2" name="codecSelect2" onchange="javascript:codecChange()"></select>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str16)%> : </li>
+						<li class="right_table">
+							<select id="codecSelect3" name="codecSelect3" onchange="javascript:codecChange()"></select>
+						</li>
+					</ul>
+					
+					<ul class="space"> </ul>
+					
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str17)%> : </li>
+						<li class="right_table">
+							<select id="speakingVolume" name="speakingVolume">
+                       <option value="12" selected="selected">12</option>
+                       <option value="11">11</option>
+                       <option value="10">10</option>
+                       <option value="9">9</option>
+                       <option value="8">8</option>
+                       <option value="7">7</option>
+                       <option value="6">6</option>
+                       <option value="5">5</option>
+                       <option value="4">4</option>
+                       <option value="3">3</option>
+                       <option value="2">2</option>
+                       <option value="1">1</option>
+                       <option value="0">0</option>
+                       <option value="-1">-1</option>
+                       <option value="-2">-2</option>
+                       <option value="-3">-3</option>
+                       <option value="-4">-4</option>
+                       <option value="-5">-5</option>
+                       <option value="-6">-6</option>
+                       <option value="-7">-7</option>
+                       <option value="-8">-8</option>
+                       <option value="-9">-9</option>
+                       <option value="-10">-10</option>
+                       <option value="-11">-11</option>
+                       <option value="-12">-12</option>
+							</select>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str18)%> : </li>
+						<li class="right_table">
+							<select id="listeningVolume" >
+                       <option value="12" selected="selected">12</option>
+                       <option value="11">11</option>
+                       <option value="10">10</option>
+                       <option value="9">9</option>
+                       <option value="8">8</option>
+                       <option value="7">7</option>
+                       <option value="6">6</option>
+                       <option value="5">5</option>
+                       <option value="4">4</option>
+                       <option value="3">3</option>
+                       <option value="2">2</option>
+                       <option value="1">1</option>
+                       <option value="0">0</option>
+                       <option value="-1">-1</option>
+                       <option value="-2">-2</option>
+                       <option value="-3">-3</option>
+                       <option value="-4">-4</option>
+                       <option value="-5">-5</option>
+                       <option value="-6">-6</option>
+                       <option value="-7">-7</option>
+                       <option value="-8">-8</option>
+                       <option value="-9">-9</option>
+                       <option value="-10">-10</option>
+                       <option value="-11">-11</option>
+                       <option value="-12">-12</option>
+							</select>
+						</li>
+					</ul>
+					
+					<ul class="space"> </ul>
+					
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="g168Enable" name="g168Enable" value="1" ##g168Enable## /> <%ejGetML(MLG_VoIP_SIPAccount_Str19)%>
+						</li>
+					</ul>						
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="vad_Enable" name="vad_Enable" value="1" ##vadEnable## onclick="checkVadEnable()"/> <%ejGetML(MLG_VoIP_SIPAccount_Str20)%>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table">
+							<div id="configCN">
+								<input type="checkbox" id="cn_Enable" name="cn_Enable" value="1" ##cnEnable##/> <%ejGetML(MLG_VoIP_SIPAccount_Str21)%>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--Voice Features END-->
+
+			<li class="space"></li>
+			
+			<!--Call Features START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPAccount_Str22)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table">
+							<input id="sendCallerIdEnable" name="sendCallerIdEnable" type="checkbox" value="1" ##sendCallerIdEnable##/> <%ejGetML(MLG_VoIP_SIPAccount_Str23)%>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="callTransferEnable" name="callTransferEnable" value="1" ##callTransferEnable##/> <%ejGetML(MLG_VoIP_SIPAccount_Str24)%>
+						</li>
+					</ul>						
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="callWaitingEnable" name="callWaitingEnable" value="1" ##callWaitingEnable## /> <%ejGetML(MLG_VoIP_SIPAccount_Str25)%>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str26)%> : </li>
+						<li class="right_table">
+							<input type="text" id="waitingRejectTimer" name="waitingRejectTimer" size="5" maxlength="5"  onchange="rangeCheck(10,60,20,this,1,1)"/>(10~60) <%ejGetML(MLG_Common_Seconds)%>
+						</li>
+					</ul>
+				</div>
+				
+				<!--Call Forward START-->
+				<div class="w_text">
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="unconditionalEnable" name="unconditionalEnable" value="1" ##unconditionalEnable## onclick="javascript:disableItem(1,'unconditionalEnable','busyEnable','busyNumber','noAnswerEnable','noAnswerNumber','noAnswerCount')"/> <%ejGetML(MLG_VoIP_SIPAccount_Str27)%>
+						</li>
+						<li class="right_table">
+							<%ejGetML(MLG_VoIP_SIPAccount_Str28)%> : <input type="text" maxlength="32" id="unconditionalNumber" name="unconditionalNumber" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="busyEnable" name="busyEnable" value="1" ##busyEnable## /> <%ejGetML(MLG_VoIP_SIPAccount_Str29)%>
+						</li>
+						<li class="right_table">
+							<%ejGetML(MLG_VoIP_SIPAccount_Str28)%> : <input type="text" maxlength="32" id="busyNumber" name="busyNumber"/>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="noAnswerEnable" name="noAnswerEnable" value="1" ##noAnswerEnable## /> <%ejGetML(MLG_VoIP_SIPAccount_Str30)%>
+						</li>
+						<li class="right_table">
+							<%ejGetML(MLG_VoIP_SIPAccount_Str28)%> : <input type="text" maxlength="32" id="noAnswerNumber" name="noAnswerNumber"/>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str31)%> : </li>
+						<li class="right_table">
+							<input id="noAnswerCount" name="noAnswerCount" type="text" size="5" maxlength="5" onchange="rangeCheck(10,180,20,this,1,1)" />(10~180) <%ejGetML(MLG_Common_Seconds)%>
+						</li>
+					</ul>
+				</div>
+				<!--Call Forward END-->
+				
+				<div class="space"> </div>
+				
+				<!--Warning info callForwardTag START-->
+				<div class="explain_text" id="callForwardTag">
+					<div class="title"><%ejGetML(MLG_VoIP_SIPAccount_Str9)%> :</div>
+					<p><%ejGetML(MLG_VoIP_SIPAccount_Str32)%></p>
+				</div>
+				<!--Warning info callForwardTag END-->
+
+				<div class="space"> </div>
+				
+				<!--Do Not Disturb START-->
+				<div class="w_text">
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="doNotDisturbEnable" name="doNotDisturbEnable" value="1" ##doNotDisturbEnable##/> <%ejGetML(MLG_VoIP_SIPAccount_Str33)%>
+						</li>
+					</ul>
+				</div>
+				<!--Do Not Disturb END-->
+
+				<div class="space"> </div>
+
+				<!--Warning info dndTag START-->
+				<div class="explain_text" id="dndTag">
+					<div class="title"><%ejGetML(MLG_Common_Warning)%> :</div>
+					<p><%ejGetML(MLG_VoIP_SIPAccount_Str34)%></p>
+				</div>
+				<!--Warning info dndTag END-->
+
+				<div class="space"> </div>
+				<!--Anonymous Call Block START-->
+				<div class="w_text">
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="anonBlockEnable" name="anonBlockEnable" value="1" ##anonBlockEnable##/> <%ejGetML(MLG_VoIP_SIPAccount_Str35)%>
+						</li>
+					</ul>
+				</div>
+				<!--Anonymous Call Block END-->
+				
+				<div class="space"> </div>
+				<!--CCBS START-->
+				<div class="w_text">
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="ccbsEnable" name="ccbsEnable" value="1" ##ccbsEnable##/> <%ejGetML(MLG_VoIP_SIPAccount_Str36)%>
+						</li>
+					</ul>
+				</div>
+				<!--CCBS END-->
+
+				<div class="space"> </div>
+
+				<!--Warning info ccbsTag START-->
+				<div class="explain_text" id="ccbsTag">
+					<div class="title"><%ejGetML(MLG_Common_Notice)%> :</div>
+					<p><%ejGetML(MLG_VoIP_SIPAccount_Str37)%></p>
+				</div>
+				<!--Warning info ccbsTag END-->
+
+				<div class="space"> </div>
+
+				<!--MWI START-->
+				<div class="w_text">
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="mwiEnable" name="mwiEnable" value="1" onclick="checkMWIEnable()"/> <%ejGetML(MLG_VoIP_SIPAccount_Str38)%>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str39)%> : </li>
+						<li class="right_table">
+							<input type="text" id="mwiExpireTime" name="mwiExpireTime" size="5" maxlength="5"  onchange="rangeCheck(120,86400,3600,this,1,1)"/>(120~86400) <%ejGetML(MLG_Common_Seconds)%>
+						</li>
+					</ul>
+				</div>
+				<!--MWI END-->
+				
+				<div class="space"> </div>
+				
+				<!--Warm/Hot Line START-->
+				<div class="w_text">
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="warmHotEnable" name="warmHotEnable" value="0" onclick="checkWarmHotEnable()"/> <%ejGetML(MLG_VoIP_SIPAccount_Str40)%>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table">
+							<input type="radio" name="warmLineSelect" value="1" onclick="checkWarmHotSelect()"><%ejGetML(MLG_VoIP_SIPAccount_Str41)%>
+						</li>
+						<li class="right_table">
+							<input type="radio" name="warmLineSelect" value="0" onclick="checkWarmHotSelect()"><%ejGetML(MLG_VoIP_SIPAccount_Str42)%>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str43)%> : </li>
+						<li class="right_table">
+							<input type="text" maxlength="32" id="warmHotNumber" name="warmHotNumber" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str44)%> : </li>
+						<li class="right_table">
+							<input type="text" id="warmExpireTime" name="warmExpireTime" size="5" maxlength="5"  onchange="rangeCheck(5,300,5,this,1,1)"/>(5~300) <%ejGetML(MLG_Common_Seconds)%>
+						</li>
+					</ul>
+				</div>
+				<!--Warm/Hot Line END-->
+				
+				<div class="space"> </div>
+				
+				<!--Missed Call Email Notification START-->
+				<div class="w_text">
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="missedCallEmailEnable" name="missedCallEmailEnable" value="1" onclick = "checkmissedCallEmailEnable()"/> <%ejGetML(MLG_VoIP_SIPAccount_Str45)%>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_Maintenance_LogsSetting_Str9)%> : </li>
+						<li class="right_table">
+							<select name="mailServerSelect" id="mailServerSelect"size="1">
+								<script language="javascript">
+									printMailServerListBox()
+								</script>
+							</select>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_WAN_3gbackup_Str43)%> : </li>
+						<li class="right_table">
+							<input type="text" id="missed_CallEmailTo" name="missed_CallEmailTo" size="32" maxlength="32" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str46)%> : </li>
+						<li class="right_table">
+							<input type="text" id="missed_CallEmailTitle" name="missed_CallEmailTitle" size="32" maxlength="32" />
+						</li>
+					</ul>
+				</div>
+				<!--Missed Call Email Notification END-->
+
+				<div class="space"> </div>
+
+				<!--Warning info emailNotificationTag START-->
+				<div class="explain_text" id="emailNotificationTag">
+					<div class="title"><%ejGetML(MLG_Common_Notice)%> :</div>
+					<p><%ejGetML(MLG_VoIP_SIPAccount_Str47)%></p>
+				</div>
+				<!--Warning info emailNotificationTag END-->
+
+				<div class="space"> </div>
+
+				<!--Early Media START-->
+				<div class="w_text">
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="early_Media" name="early_Media" value="0" onclick="checkEarlyMediaEnable()"/> <%ejGetML(MLG_VoIP_SIPAccount_Str48)%>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str49)%> : </li>
+						<li class="right_table">
+							<select id="early_MediaIndex" name="early_MediaIndex">
+								<option value="66"><%ejGetML(MLG_Common_Default)%></option>
+								<option value="0">No. 1</option>
+								<option value="1">No. 2</option>
+								<option value="2">No. 3</option>
+								<option value="3">No. 4</option>
+								<option value="4">No. 5</option>
+							</select>
+						</li>
+					</ul>
+				</div>
+				<!--Early Media END-->
+				
+				<div class="space"> </div>
+				
+				<!--Music On Hold START-->
+				<div class="w_text">
+					<ul>
+						<li class="left_table">
+							<input type="checkbox" id="music_OnHold" name="music_OnHold" value="0" onclick="checkMusicOnHoldEnable()"/> <%ejGetML(MLG_VoIP_SIPAccount_Str50)%>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPAccount_Str49)%> : </li>
+						<li class="right_table">
+							<select id="music_OnHoldIndex" name="music_OnHoldIndex">
+								<option value="66"><%ejGetML(MLG_Common_Default)%></option>
+								<option value="0">No. 1</option>
+								<option value="1">No. 2</option>
+								<option value="2">No. 3</option>
+								<option value="3">No. 4</option>
+								<option value="4">No. 5</option>
+							</select>
+						</li>
+					</ul>
+				</div>
+				<!--Music On Hold END-->
+			</li>
+			<!--Call Features END-->
+		</div>
+	
+		<li class="space"></li>
+	</ul>
+</div>
+</div>
+
+</form>

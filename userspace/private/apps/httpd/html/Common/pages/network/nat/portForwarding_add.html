@@ -1,0 +1,484 @@
+<script language="javascript">
+var keyPressed = false;
+var portForwardingall = '<%ejGetOtherBig(portMap, all)%>';
+var enableAddressMapping  = '<%ejGetOther(sysInfo, enblAddressMapping)%>';
+var enableWakeOnLan  = '<%ejGetOther(sysInfo, enblWakeOnLan)%>';
+var customer = '<%ejGetOther(customer)%>';
+//cathy add
+var httpPort = <%ejGetOther(remoteMGMTPort, httpPort)%>;
+var httpsPort = <%ejGetOther(remoteMGMTPort, httpsPort)%>;
+var sshPort = <%ejGetOther(remoteMGMTPort, sshPort)%>;
+var telnetPort = <%ejGetOther(remoteMGMTPort, telnetPort)%>;
+var ftpPort = <%ejGetOther(remoteMGMTPort, ftpPort)%>;
+//
+function frmLoad() {	
+	
+	ethIp = '<%ejGet(ethIpAddress)%>';
+	ethMask = '<%ejGet(ethSubnetMask)%>';
+
+	if (enableAddressMapping == '1' )
+		showhide("WANIP", "1");
+	else
+		showhide("WANIP", "0");
+		
+	if (enableWakeOnLan == '1' ){
+		showhide("WAKEONLAN", "1");		
+	}
+	else{
+		showhide("WAKEONLAN", "0");
+	}
+	
+	with ( document.forms[0] ) {
+		srvAddr.value = '';
+		mask = ethMask.split('.');
+		lan = ethIp.split('.');
+		for (i = 0; i < 3; i++) {
+			m = parseInt(mask[i]);
+			if (m == 255)
+				srvAddr.value = srvAddr.value + lan[i] + '.';
+		}
+//		enable.checked = true;
+//		enable.disabled = true;
+		wolAddr.disabled = true;
+
+	}
+	
+}
+
+function clickEPS()
+{
+	if( document.forms[0].iStart.value == ""){
+		document.forms[0].iStart.value = document.forms[0].eStart.value;     
+	}
+}
+
+function changeIPS () {
+	keyPressed = true;
+}
+
+function clickEPE()
+{
+	if( (document.forms[0].iStart.value != "") && 
+		(document.forms[0].iStart.value == document.forms[0].eStart.value)){
+		document.forms[0].iEnd.value = document.forms[0].eEnd.value;     
+	}else if ( document.forms[0].iStart.value == "" ) {
+		document.forms[0].iEnd.value = document.forms[0].iStart.value;
+	}
+	else {
+		document.forms[0].iEnd.value = document.forms[0].eEnd.value - document.forms[0].eStart.value + (document.forms[0].iStart.value-0);
+	}
+	return;	
+}
+
+function clickIPS()
+{
+	if( keyPressed ) {
+		document.forms[0].iEnd.value = document.forms[0].eEnd.value - document.forms[0].eStart.value + (document.forms[0].iStart.value-0);
+	}
+	keyPressed = false;
+	return;	
+}
+
+function checkPortCover( cS, cE, rS, rE ) {
+	if ( cS >= rS && cS <= rE ) {
+		return true;
+	}
+	else if ( cE >= rS && cE <= rE ) {
+		return true;
+	}
+	else if ( rS >= cS && rS <= cE ) {
+		return true;
+	}
+	else if ( rE >= cS && rE <= cE ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function doSubmit() {
+	with ( document.forms[0] ) {
+    sessionKey.value = mainFrame.glbSessionKey;
+    submit();
+    $('.ui-dialog-titlebar-close').trigger('click');
+    $.openLoadingMask(1);
+  }
+}
+
+function checkWolEnable(){
+	with ( document.forms[0] ) {
+		if(wolEnable.checked){
+			wolAddr.disabled = false;
+		}
+		else{
+			wolAddr.disabled = true;
+		}
+	}
+}
+
+function btnSave() {
+	with ( document.forms[0] ) {
+		var eStartValue = eStart.value;
+		var eEndValue = eEnd.value;
+		var iStartValue = iStart.value;
+		var iEndValue = iEnd.value;
+		var protoValue;
+		if ( proto.value == "TCP" ) {
+			protoValue = "1";
+		}
+		else if ( proto.value == "UDP" ) {
+			protoValue = "2";
+		}
+		else {
+			protoValue = "3";
+		}
+		
+		if (enable.checked == true)
+		 enableRule.value="TRUE";
+		else
+		 enableRule.value="FALSE";
+
+		if ( srvName.value=='' || srvName.value.indexOf('|') != -1 || srvName.value.indexOf('/') != -1 || srvName.value.indexOf(',') != -1 || srvName.value.indexOf('\'') != -1  || srvName.value.indexOf('\"') != -1 ) {
+			hciAlert('<%ejGetML(MLG_NAT_PortTriggering_AlertMsg_Str19)%>', {height: 180, type: 2, title: ''});
+			return;
+		}
+
+		if (isValidIpAddress(srvAddr.value) == false) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_NAT_Applications_AlertMsg_Str1)%>", srvAddr.value), {height: 180, type: 2, title: ''});
+			return;
+		} 
+
+		if (wanIp.value != "")
+		{
+			if (isValidIpAddress(wanIp.value) == false) {
+				hciAlert(MLG_Makestring("<%ejGetML(MLG_NAT_Applications_AlertMsg_Str8)%>", wanIp.value), {height: 180, type: 2, title: ''});
+				return;
+			}
+		}
+
+		if (isValidPort(eStartValue) == false ) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str3)%>", eStartValue), {height: 180, type: 2, title: ''});
+			return;
+		}
+		if (isValidPort(eEndValue) == false ) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str27)%>", eEndValue ), {height: 180, type: 2, title: ''});
+			return;
+		}
+		if (isValidPort(iStartValue) == false ) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str28)%>", iStartValue ), {height: 180, type: 2, title: ''});
+			return;
+		}
+		if (isValidPort(iEndValue) == false ) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str29)%>", iEndValue  ), {height: 180, type: 2, title: ''});
+			return;
+		}
+	
+		eS = parseInt(eStartValue);
+		eE = parseInt(eEndValue);
+		inS = parseInt(iStartValue);
+		inE = parseInt(iEndValue);
+	
+		if (eS > eE) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str7)%>", eS , eE  ), {height: 180, type: 2, title: ''});
+			return;
+		}
+		if (inS > inE) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str31)%>", inS  , inE  ), {height: 180, type: 2, title: ''});
+			return;
+		}
+
+		var info = portForwardingall.split('|');		
+/*
+			names[0]	name
+			names[1]	desc
+			names[2]	ifName
+			names[3]	externalPort
+			names[4]	X_0023F8_ExternalPortEnd
+			names[5]	internalClient
+			names[6]	internalPort
+			names[7]	X_0023F8_InternalPortEnd		
+*/
+		var j = 0;	
+		if (info != '') {
+			var tmpeS;
+			var tmpeE;
+			for ( j = 0; j < info.length; j++ ) 
+			{
+				if (info[j] == '')
+					break;
+				var names = info[j].split('/');
+				/* don't check duplicate rules for different interface */
+				if (names[2] != dstWanIf)
+				{
+					continue;
+				}
+				/* end, Steven */
+				if ( parseInt(protoValue) != 4 ) {
+					tmpeS = parseInt(names[6]);
+					tmpeE = parseInt(names[7]);
+					if ( tmpeS == 0 && tmpeE == 0 ) {
+						tmpeS = parseInt(names[3]);
+						tmpeE = parseInt(names[4]);
+					}
+					if (enableAddressMapping == '1' )
+						tmpP = parseInt(names[9]);
+					else
+						tmpP = parseInt(names[8]);
+					if ( parseInt(protoValue) == 3 ) {
+						if ( checkPortCover(eS, eE, tmpeS, tmpeE ) ) {
+							hciAlert("<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str9)%> .", {height: 180, type: 2, title: ''});
+							return;
+						}
+					}
+					else if ( tmpP == 3 ) {
+						if ( checkPortCover(eS, eE, tmpeS, tmpeE ) ) {
+							hciAlert("<%ejGetML(MLG_NAT_Applications_AlertMsg_Str4)%> .", {height: 180, type: 2, title: ''});
+							return;
+						}
+					}
+					else if ( parseInt(protoValue) == tmpP ) {
+						if ( checkPortCover(eS, eE, tmpeS, tmpeE ) ) {
+							hciAlert("<%ejGetML(MLG_NAT_Applications_AlertMsg_Str4)%> .", {height: 180, type: 2, title: ''});
+							return;
+						}
+					}
+				}
+				else if ( parseInt(protoValue) == tmpP && srvAddress != names[5] ) {
+					hciAlert("<%ejGetML(MLG_NAT_Applications_AlertMsg_Str7)%> .", {height: 180, type: 2, title: ''});
+					return;
+				}
+			}
+		}
+		if(enableWakeOnLan=='1' && wolEnable.checked){
+			if (isValidMacAddress(wolAddr.value) == false) {
+			 msg = 'MAC address of WOL device "' + wolAddr.value + '" is invalid MAC address.';
+			
+			 hciAlert(msg, {height: 180,type: 2, title: ''});
+			 return;
+			}
+		}
+		
+		if ( parseInt(protoValue) == 3 || parseInt(protoValue) == 1 ) {
+			if (eS <= 30005 && eE >= 30005){
+				hciAlert("<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str12)%> .", {height: 180, type: 2, title: ''});
+				return;
+			}
+			var portmsg = '<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str49)%>';
+			var portmsg2 = '';
+			var count = 0;
+			if (eS <= parseInt(ftpPort) && eE >= parseInt(ftpPort)){
+				portmsg += '<%ejGetOther(remoteMGMTPort, ftpPort)%>';
+				portmsg2 += "<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str50)%>";
+				count ++;
+			}
+			if (eS <= parseInt(telnetPort) && eE >= parseInt(telnetPort)){
+				if ( count > 0 ) {
+					portmsg += ',';
+				}
+				portmsg += '<%ejGetOther(remoteMGMTPort, telnetPort)%>';
+				portmsg2 += "<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str51)%>";
+				count ++;
+			}
+			if (eS <= parseInt(sshPort) && eE >= parseInt(sshPort)){
+				if ( count > 0 ) {
+					portmsg += ',';
+				}
+				portmsg += '<%ejGetOther(remoteMGMTPort, sshPort)%>';
+				portmsg2 += "<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str52)%>";
+				count ++;
+			}
+			if (eS <=69 && eE >= 69){
+				if ( count > 0 ) {
+					portmsg += ',';
+				}
+				portmsg += '69';
+				portmsg2 += "<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str53)%>";
+				count ++;
+			}
+			if (eS <= parseInt(httpPort) && eE >= parseInt(httpPort)){
+				if ( count > 0 ) {
+					portmsg += ',';
+				}
+				portmsg += '<%ejGetOther(remoteMGMTPort, httpPort)%>';
+				portmsg2 += "<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str54)%>";
+				count ++;
+			}
+			if (eS <= parseInt(httpsPort) && eE >= parseInt(httpsPort)){
+				if (count > 0) {
+					portmsg += ',';
+				}
+				portmsg += '<%ejGetOther(remoteMGMTPort, httpsPort)%>'
+				portmsg2 += "<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str55)%>";
+				count ++;
+			}
+			if ( count > 1 ) {
+				portmsg += " <%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str56)%>" + portmsg2;
+			}
+			else if ( count == 1 ){
+				portmsg += " <%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str57)%>" + portmsg2;
+			}
+			if ( portmsg != '<%ejGetML(MLG_NAT_PortForwarding_AlertMsg_Str49)%>' && enable.checked == true) {
+				ConfirmOpen(portmsg, doSubmit);
+			}
+			else {
+				doSubmit();
+			}
+		}
+		else {
+			doSubmit();
+		}
+    	return;     
+	}
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnSave(); });
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+</script>
+   <form action="/pages/tabFW/nat-portForwarding.cmd" method="post" target="mainFrame">
+      <input type="hidden" name="action" id="action" value="add">
+      <input type="hidden" name="enableRule" id="enableRule" value="TRUE">
+      <input type="hidden" name="configdone" id="configdone" value="0">
+      <input type="hidden" name="sessionKey" id="sessionKey" value="">
+
+ <div class="popup_frame" >
+<div class="data_frame2"><ul>
+            <li class="set1">
+               <div class="w_text"><input type="checkbox" name="enable" /> <%ejGetML(MLG_Common_Active)%></div>
+            </li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMPFilter_Str17)%> :</li>
+                     <li class="right_table">
+                        <input name="srvName" id="srvName" size="20" maxlength="20" type="text" />
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_InterfaceGrouping_Str5)%> :</li>
+                     <li class="right_table">
+                        <select name='dstWanIf'></select>
+<script language="javascript">
+<!-- hide
+{
+   var customer = '<%ejGetOther(customer)%>';
+   var curUserName = '<%ejGet(curUserName)%>';
+   var i = 0;
+   var interfaceInfo;
+   var interfaces;
+//   var interfaceInfo = '<%ejGetOther(wanInterfaceInfo, route)%>';
+//   var interfaces = interfaceInfo.split('|');
+ 
+   if (customer != "ISKON"){
+      interfaceInfo = '<%ejGetOther(wanInterfaceInfo, route)%>';
+      interfaces = interfaceInfo.split('|');
+      
+      for ( i = 0; i < interfaces.length; i++ ) {
+         var names = interfaces[i].split('/');
+         document.forms[0].dstWanIf[i] = new Option(names[0], names[1]);
+      }
+      $("#dstWanIf").attr("value", document.forms[0].oldDstWanIf.value);
+   } else {
+      if ( (curUserName != "admin") && (curUserName != "supervisor") ) {
+         interfaceInfo = '<%ejGetOther(defaultWanNameList, route)%>';
+         interfaces = interfaceInfo.split('|');
+ 
+   for ( i = 0; i < interfaces.length; i++ ) {
+      var names = interfaces[i].split('/');
+      document.forms[0].dstWanIf[i] = new Option(names[0], names[1]);
+   }
+         $("#dstWanIf").attr("value", document.forms[0].oldDstWanIf.value);         
+      } else {
+         interfaceInfo = '<%ejGetOther(wanInterfaceInfo, route)%>';
+         interfaces = interfaceInfo.split('|');
+          
+         for ( i = 0; i < interfaces.length; i++ ) {
+            var names = interfaces[i].split('/');
+            document.forms[0].dstWanIf[i] = new Option(names[0], names[1]);
+         }
+         $("#dstWanIf").attr("value", document.forms[0].oldDstWanIf.value);
+      }
+   }
+}
+// done hiding -->
+</script>
+                     </li>
+                  </ul>
+                  <div id="WANIP">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_PortForwarding_Str21)%> :</li>
+                     <li class="right_table">
+                        <input name="wanIp" id="wanIp" size="15" maxlength="15" type="text" />
+                     </li>
+                  </ul>
+                  </div>
+                  <ul>
+                     <li class="left_table"> <%ejGetML(MLG_NAT_PortTriggering_Str5)%> :</li>
+                     <li class="right_table">
+                        <input name="eStart" id="eStart" size="12" maxlength="12" type="text" onblur="clickEPS()"/>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_Applications_Str145)%> :</li>
+                     <li class="right_table">
+                        <input name="eEnd" id="eEnd" size="12" maxlength="12" type="text" onblur="clickEPE()"/>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_PortForwarding_Str23)%> :</li>
+                     <li class="right_table">
+                        <input name="iStart" id="iStart" size="12" maxlength="12" type="text" onChange="changeIPS()" onblur="clickIPS()"/>
+</li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_PortForwarding_Str24)%> :</li>
+                     <li class="right_table">
+                        <input name="iEnd" id="iEnd" size="12" maxlength="12" type="text" />
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_PortForwarding_Str8)%> :</li>
+                     <li class="right_table">
+                        <input name="srvAddr" id="srvAddr" size="15" maxlength="15" type="text" />
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_NAT_Applications_Str143)%> :</li>
+                     <li class="right_table">
+                        <select name="proto" size="1" tabindex="1">
+                              <option value="TCP" selected><%ejGetML(MLG_Common_TCP)%></option>
+                              <option value="UDP"><%ejGetML(MLG_Common_UDP)%></option>
+                              <option value="TCP or UDP"><%ejGetML(MLG_NAT_PortForwarding_Str22)%></option>
+                        </select>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+			<div id="WAKEONLAN">
+			<li class="set1">
+               <div class="w_text"><input type="checkbox" name="wolEnable" id="wolEnable" onClick="checkWolEnable()"/> <%ejGetML(MLG_NAT_PortForwarding_Str28)%></div>
+            </li>
+			<li class="set1">
+               <div class="w_text">
+				<ul>  
+					<li><%ejGetML(MLG_NAT_PortForwarding_Str29)%></li>
+					<li><input name="wolAddr" id="wolAddr" size="17" maxlength="17" type="text" /></li>
+                </ul>
+			   </div>
+            </li>
+			</div>
+			<li class="space"> </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Network_Note)%>:</span></div>
+<div class="note_text">1. &nbsp;&nbsp;<%ejGetML(MLG_NAT_PortForwarding_Str25)%> </div>
+<div class="note_text">2. &nbsp;&nbsp;<%ejGetML(MLG_NAT_PortForwarding_Str26)%> </div>
+</li> <li class="space"> </li>  
+         </ul></div>
+      </div>
+   </form>

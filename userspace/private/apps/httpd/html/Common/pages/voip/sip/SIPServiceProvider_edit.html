@@ -1,0 +1,1925 @@
+<script type="text/javascript">
+
+<!-- hide
+
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+
+var maxSp = '<%ejGetVoice(maxSp)%>';                            // MaxProfileCount
+var maxLines = '<%ejGetVoice(maxLines)%>';                      // MaxLineCount
+if ( maxLines.search("ejGetVoice") >= 0 ) {
+   maxLines = 2;                                                // if not provided by provisioning, hard-code maxLines
+}
+var currentSp = '<%ejGetVoice(numSp)%>';                        // current Profile count
+var currentAcnt = '<%ejGetVoice(numLines)%>';                   // current sip accounts
+
+var voiceRunning='<%ejGetVoice(voiceInUse)%>';
+
+var tmplc = '<%ejGetVoice(linesPerVP)%>';                       // number of lines per profile
+var tmpvpn = '<%ejGetVoice(VPName)%>';                          // SIP Service Provider Name
+var tmplp = '<%ejGetVoice(localPort)%>';                        // SIP Local Port
+var tmppa = '<%ejGetVoice(proxyAddr)%>';                        // SIP Server Address
+var tmppp = '<%ejGetVoice(proxyPort)%>';                        // SIP Server Port
+var tmpra = '<%ejGetVoice(regAddr)%>';                          // REGISTER Server Address
+var tmprp = '<%ejGetVoice(regPort)%>';                          // REGISTER Server Port
+var tmpuad  = '<%ejGetVoice(domainName)%>';                     // SIP Service Domain
+var tmps3263 = '<%ejGetVoice(rfc3263support)%>';                // Support Locating SIP Server (RFC 3263)
+var tmps3262 = '<%ejGetVoice(rfc3262support)%>';                // RFC 3262 (Require: 100rel)
+var tmpvi  = '<%ejGetVoice(voipiop)%>';                         // VoIP IOP Flags
+var tmpifn  = '<%ejGetVoice(ifName)%>';                         // Bound Interface Name
+var tmpoa = '<%ejGetVoice(obProxyAddr)%>';                      // Outbound Proxy Address
+var tmpop = '<%ejGetVoice(obProxyPort)%>';                      // Outbound Proxy Port
+
+var tmpobProxyOp120_Enable = '<%ejGetVoice(obProxyOp120_Enable)%>';     // __ZyXEL__, Albert, 20131216, for DHCP option 120  
+
+var tmprpmi  = '<%ejGetVoice(rtpPortMin)%>';                    // RTP Port Range, Start Port 
+var tmprpmx  = '<%ejGetVoice(rtpPortMax)%>';                    // RTP Port Range, End Port
+var tmpsrtpEnable = '<%ejGetVoice(srtpEnable)%>';               // SRTP Support
+var tmpsrtpCryptoSuite = '<%ejGetVoice(srtpCryptoSuiteName)%>'; // Crypto Suite
+var tmpdt = '<%ejGetVoice(dtmfRelay)%>';                        // DTMF Mode
+var tmpst = '<%ejGetVoice(transport)%>';                        // Transport Type
+var tmpdip = '<%ejGetVoice(IgnoreDirectIP)%>';                  // Ignore Direct IP
+var tmpfm  = '<%ejGetVoice(faxMode)%>';                  		// FAX Option, FaxMode: Disable,G711,T38
+var tmpft  = '<%ejGetVoice(faxPassThrough)%>';                  // FAX Option, G.711 Fax Passthrough 
+var tmpt38  = '<%ejGetVoice(t38Enable)%>';                      // FAX Option, T.38 Fax Relay 
+var tmpfc  = '<%ejGetVoice(faxCodec)%>';                        // FAX Option, Fax Passthrough Codec 
+var tmpts  = '<%ejGetVoice(tosByteSip)%>';                      // QoS Tag, SIP DSCP Mark Setting 
+var tmptr  = '<%ejGetVoice(tosByteRtp)%>';                      // QoS Tag, RTP DSCP Mark Setting 
+var tmpre  = '<%ejGetVoice(regExpTmr)%>';                       // Timer Setting, Expiration Duration
+var tmpri  = '<%ejGetVoice(regRetryInt)%>';                     // Timer Setting, Register Re-send timer
+var tmpie  = '<%ejGetVoice(inviteExpTmr)%>';                    // Timer Setting, Session Expires
+var tmpms  = '<%ejGetVoice(minSE)%>';                           // Timer Setting, Min-SE
+// *** Phone Key Config Start ***
+var tmpphcfgcr = '<%ejGetVoice(phcfgkeyCallReturn)%>';          // Call Return
+/*ZyXEL, Cathy add for Call hidden Call*/
+var tmpphcfgclird = '<%ejGetVoice(phcfgkeyCLIR_Disable)%>';     // Caller ID Display Call
+var tmpphcfgclira = '<%ejGetVoice(phcfgkeyCLIR_Active)%>';      // Caller ID Hidden Call
+/*ZyXEL, Cathy add end*/
+var tmpphcfgcaa = '<%ejGetVoice(phcfgkeyCA_Active)%>';          // One Shot Caller Display Call
+var tmpphcfgcad = '<%ejGetVoice(phcfgkeyCA_Disable)%>';         // One Shot Caller Hidden Call
+var tmpphcfgcwa = '<%ejGetVoice(phcfgkeyCW_Active)%>';          // Call Waiting Enable
+var tmpphcfgcwd = '<%ejGetVoice(phcfgkeyCW_Deactive)%>';        // Call Waiting Disable
+var tmpphcfgivr = '<%ejGetVoice(phcfgkeyIVR)%>';                // IVR
+var tmpphcfginternal = '<%ejGetVoice(phcfgkeyInternal)%>';      // Internal Call
+var tmpphcfgtransfer = '<%ejGetVoice(phcfgkeyTransfer)%>';      // Call Transfer
+var tmpphcfgcpa = '<%ejGetVoice(phcfgkeyCP_Active)%>';          // Call Park
+var tmpphcfgcpr = '<%ejGetVoice(phcfgkeyCP_Retreive)%>';        // Call Park Retreive
+var tmpphcfgcfua = '<%ejGetVoice(phcfgkeyCFU_Active)%>';        // Unconditional Call Forward Enable
+var tmpphcfgcfud = '<%ejGetVoice(phcfgkeyCFU_Deactive)%>';      // Unconditional Call Forward Disable
+var tmpphcfgcfnra = '<%ejGetVoice(phcfgkeyCFNR_Active)%>';      // No Answer Call Forward Enable
+var tmpphcfgcfnrd = '<%ejGetVoice(phcfgkeyCFNR_Deactive)%>';    // No Answer Call Forward Disable
+var tmpphcfgcfba = '<%ejGetVoice(phcfgkeyCFB_Active)%>';        // Call Forward When Busy Enable
+var tmpphcfgcfbd = '<%ejGetVoice(phcfgkeyCFB_Deactive)%>';      // Call Forward When Busy Disable
+var tmpphcfgoscwa = '<%ejGetVoice(phcfgkeyOSCW_Active)%>';      // One Shot Call Waiting Enable
+var tmpphcfgoscwd = '<%ejGetVoice(phcfgkeyOSCW_Deactive)%>';    // One Shot Call Waiting Disable
+var tmpphcfgdnde = '<%ejGetVoice(phcfgkeyDND_Enable)%>';        // Do Not Disturb Enable
+var tmpphcfgdndd = '<%ejGetVoice(phcfgkeyDND_Disable)%>';       // Do Not Disturb Disable
+var tmpphcfgccbsd = '<%ejGetVoice(phcfgkeyCCBS_Deactive)%>';    // Call Completion on Busy Subscriber (CCBS) Deactivate
+var tmpphcfgos = '<%ejGetVoice(phcfgkeyOutgoingSip)%>';         // Outgoing SIP
+// *** Phone Key Config End ***
+var tmpdme  = '<%ejGetVoice(digiMapEnable)%>';                  // Dial Plan Enable
+var tmpdm  = '<%ejGetVoice(digiMap)%>';                         // Dial Plan
+var tmpdialint = '<%ejGetVoice(dialInterDigit)%>';              // Dialing Interval Selection
+var tmppe = '<%ejGetVoice(poundEnable)%>';                 // Immediate Dial Enable
+
+var transportList  = '<%ejGetVoice(transportList)%>';
+var toktransportList = transportList.split(" ");
+var ifList  = '<%ejGetVoice(ifList)%>';
+var tokInterfaceList = ifList.split(" ");
+var tmpboundIfList = '<%ejGetVoice(boundIfList)%>';
+// Get Bound Interface ServiceName
+var serverNameList  = '<%ejGetVoice(serviceNameList)%>';
+var tokServerNameList = serverNameList.split(" ");
+var forNorway  = '<%ejGetOther(sysInfo, forNorway)%>';
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; //ZyXEL, Brady add for hide Register Re-send timer
+
+
+
+for (var i = 0; i < currentSp; i++) {
+
+	eval( "var lc" + i + " \= \"\" " );            /*line count per profile*/
+	eval( "var vpn" + i + " \= \"\" " );           /*vpName*/
+	eval( "var lp" + i + " \= \"\" " );            /*localPort*/
+	eval( "var pa" + i + " \= \"\" " );            /*proxyAddr*/
+	eval( "var pp" + i + " \= \"\" " );            /*proxyPort*/
+	eval( "var ra" + i + " \= \"\" " );            /*regAddr*/
+	eval( "var rp" + i + " \= \"\" " );            /*regPort*/
+	eval( "var uad" + i + " \= \"\" " );           /*domainName*/ 
+	eval( "var s3263" + i + " \= \"\" " );         /*rfc3263support*/
+	eval( "var s3262" + i + " \= \"\" ");          /*rfc3262support*/
+	eval( "var ifn" + i + " \= \"\" " );           /*ifName*/
+	eval( "var oa" + i + " \= \"\" " );            /*obProxyAddr*/
+	eval( "var op" + i + " \= \"\" " );            /*obProxyPort*/   
+
+	eval( "var op120e" + i + " \= \"\" " );            /* __ZyXEL__, Albert, 20131216, for DHCP option 120 */
+	
+	eval( "var rpmi" + i + " \= \"\" ");           /*rtpPortMin*/
+	eval( "var rpmx" + i + " \= \"\" ");           /*rtpPortMax*/
+	eval( "var srtpe" + i + " \= \"\" " );         /*srtpEnable*/
+	eval( "var srtpcs" + i + " \= \"\" " );        /*srtpCryptoSuiteName*/
+	eval( "var dt" + i + " \= \"\" " );            /*dtmfRelay*/
+	eval( "var st" + i + " \= \"\" " );            /*transport*/
+	eval( "var fm" + i + " \= \"\" " );            /*faxMode*/
+	eval( "var ft" + i + " \= \"\" " );            /*faxPassThrough*/
+	eval( "var t38" + i + " \= \"\" " );           /*t38Enable*/
+	eval( "var dip" + i + " \= \"\" " );           /*IgnoreDirectIP*/
+	eval( "var fc" + i + " \= \"\" " );            /*faxCodec*/
+	eval( "var ts" + i + " \= \"\" " );            /*tosByteSip*/
+	eval( "var tr" + i + " \= \"\" " );            /*tosByteRtp*/
+	eval( "var re" + i + " \= \"\" " );            /*regExpTmr*/
+	eval( "var ri" + i + " \= \"\" " );            /*regRetryInt*/
+	eval( "var ie" + i + " \= \"\" " );            /*inviteExpTmr*/
+	eval( "var ms" + i + " \= \"\" " );            /*minSE*/
+	// *** Phone Key Config Start ***
+	eval( "var phcfgcr" + i + " \= \"\" " );       /*phcfgkeyCallReturn*/   
+/*ZyXEL, Cathy, add for Caller ID Hidden/Display Call*/
+	eval( "var phcfgclira" + i + " \= \"\" " );      /*phcfgkeyCLIR_Active*/  
+	eval( "var phcfgclird" + i + " \= \"\" " );      /*phcfgkeyCLIR_Disable*/
+/*ZyXEL, Cathy add end*/
+	eval( "var phcfgcaa" + i + " \= \"\" " );      /*phcfgkeyCA_Active*/  
+	eval( "var phcfgcad" + i + " \= \"\" " );      /*phcfgkeyCA_Disable*/
+	eval( "var phcfgcwa" + i + " \= \"\" " );      /*phcfgkeyCW_Active*/
+	eval( "var phcfgcwd" + i + " \= \"\" " );      /*phcfgkeyCW_Deactive*/ 
+	eval( "var phcfgivr" + i + " \= \"\" " );      /*phcfgkeyIVR*/ 
+	eval( "var phcfginternal" + i + " \= \"\" " ); /*phcfgkeyInternal*/  
+	eval( "var phcfgtransfer" + i + " \= \"\" " ); /*phcfgkeyTransfer*/  
+	eval( "var phcfgcpa" + i + " \= \"\" " );      /*phcfgkeyCP_Active*/
+	eval( "var phcfgcpr" + i + " \= \"\" " );      /*phcfgkeyCP_Retreive*/
+	eval( "var phcfgcfua" + i + " \= \"\" " );     /*phcfgkeyCFU_Active*/ 
+	eval( "var phcfgcfud" + i + " \= \"\" " );     /*phcfgkeyCFU_Deactive*/
+	eval( "var phcfgcfnra" + i + " \= \"\" " );    /*phcfgkeyCFNR_Active*/
+	eval( "var phcfgcfnrd" + i + " \= \"\" " );    /*phcfgkeyCFNR_Deactive*/
+	eval( "var phcfgcfba" + i + " \= \"\" " );     /*phcfgkeyCFB_Active*/
+	eval( "var phcfgcfbd" + i + " \= \"\" " );     /*phcfgkeyCFB_Deactive*/  
+	eval( "var phcfgoscwa" + i + " \= \"\" " );    /*phcfgkeyOSCW_Active*/
+	eval( "var phcfgoscwd" + i + " \= \"\" " );    /*phcfgkeyOSCW_Deactive*/
+	eval( "var phcfgdnde" + i + " \= \"\" " );     /*phcfgkeyDND_Enable*/
+	eval( "var phcfgdndd" + i + " \= \"\" " );     /*phcfgkeyDND_Disable*/	 
+	eval( "var phcfgccbsd" + i + " \= \"\" " );    /*phcfgkeyCCBS_Deactive*/
+	eval( "var phcfgos" + i + " \= \"\" " );       /*phcfgkeyOutgoingSip*/
+	// *** Phone Key Config End ***
+	eval( "var dme" + i + " \= \"\" " );           /*digiMapEnable*/
+	eval( "var dm" + i + " \= \"\" " );            /*digiMap*/
+	eval( "var dialint" + i + " \= \"\" " );       /*dialInterDigit*/   
+	//eval( "var pe" + i + " \= \"\" " );          /*poundEnable*/
+	eval( "var bil" + i + " \= \"\" " );           /*boundIfList*/
+}
+
+
+if ( tmplc.search("ejGetVoice") < 0 ){
+	eval(tmplc);
+}
+if ( tmpvpn.search("ejGetVoice") < 0 ){
+	eval(tmpvpn);
+}
+if ( tmplp.search("ejGetVoice") < 0 ){
+	eval(tmplp);
+}
+if ( tmppa.search("ejGetVoice") < 0 ){
+	eval(tmppa);
+}
+if ( tmppp.search("ejGetVoice") < 0 ){
+	eval(tmppp);
+}
+if ( tmpra.search("ejGetVoice") < 0 ){
+	eval(tmpra);
+}
+if ( tmprp.search("ejGetVoice") < 0 ){
+	eval(tmprp);
+}
+if ( tmpuad.search("ejGetVoice") < 0 ){
+	eval(tmpuad);
+}
+if ( tmps3263.search("ejGetVoice") < 0 ){
+	eval(tmps3263);
+}
+if ( tmps3262.search("ejGetVoice") < 0 ){
+	eval(tmps3262);
+}
+if ( tmpvi.search("ejGetVoice") < 0 ){
+	eval(tmpvi);
+}
+if ( tmpifn.search("ejGetVoice") < 0 ){
+	eval(tmpifn);
+}
+if ( tmpoa.search("ejGetVoice") < 0 ){
+	eval(tmpoa);
+}
+if ( tmpop.search("ejGetVoice") < 0 ){
+	eval(tmpop);
+}
+
+// __ZyXEL__, Albert, 20131216, for DHCP option 120  
+if ( tmpobProxyOp120_Enable.search("ejGetVoice") < 0 ){
+	eval(tmpobProxyOp120_Enable);
+}
+
+if ( tmprpmi.search("ejGetVoice") < 0 ){
+	eval(tmprpmi);
+}
+if ( tmprpmx.search("ejGetVoice") < 0 ){
+	eval(tmprpmx);
+}
+if ( tmpsrtpEnable.search("ejGetVoice") < 0 ){
+	eval(tmpsrtpEnable);
+}
+if ( tmpsrtpCryptoSuite.search("ejGetVoice") < 0 ){
+	eval(tmpsrtpCryptoSuite);
+}
+if ( tmpdt.search("ejGetVoice") < 0 ){
+	eval(tmpdt);
+}
+if ( tmpst.search("ejGetVoice") < 0 ){
+	eval(tmpst);
+}
+if ( tmpfm.search("ejGetVoice") < 0 ){
+	eval(tmpfm);
+}
+if ( tmpft.search("ejGetVoice") < 0 ){
+	eval(tmpft);
+}
+if ( tmpt38.search("ejGetVoice") < 0 ){
+	eval(tmpt38);
+}
+if ( tmpdip.search("ejGetVoice") < 0 ){
+	eval(tmpdip);
+}
+if ( tmpfc.search("ejGetVoice") < 0 ){
+	eval(tmpfc);
+}
+if ( tmpts.search("ejGetVoice") < 0 ){
+	eval(tmpts);
+}
+if ( tmptr.search("ejGetVoice") < 0 ){
+	eval(tmptr);
+}
+if ( tmpre.search("ejGetVoice") < 0 ){
+	eval(tmpre);
+}
+if ( tmpri.search("ejGetVoice") < 0 ){
+	eval(tmpri);
+}
+if ( tmpie.search("ejGetVoice") < 0 ){
+	eval(tmpie);
+}
+if ( tmpms.search("ejGetVoice") < 0 ){
+	eval(tmpms);
+}
+// *** Phone Key Config Start ***
+if ( tmpphcfgcr.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgcr);
+}
+/*ZyXEL, Cathy add for Caller ID hidden/Display Call*/
+if ( tmpphcfgclird.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgclird); //caller ID display
+}
+if ( tmpphcfgclira.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgclira); //caller ID hidden
+}
+/*ZyXEL, Cathy add end*/
+if ( tmpphcfgcaa.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgcaa);
+}
+if ( tmpphcfgcad.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgcad);
+}
+if ( tmpphcfgcwa.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgcwa);
+}
+if ( tmpphcfgcwd.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgcwd);
+}
+if ( tmpphcfgivr.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgivr);
+}
+if ( tmpphcfginternal.search("ejGetVoice") < 0 ){
+	eval(tmpphcfginternal);
+}
+if ( tmpphcfgtransfer.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgtransfer);
+}
+if ( tmpphcfgcpa.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgcpa);
+}
+if ( tmpphcfgcpr.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgcpr);
+}
+if ( tmpphcfgcfua.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgcfua);
+}
+if ( tmpphcfgcfud.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgcfud);
+}
+if ( tmpphcfgcfnra.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgcfnra);
+}
+if ( tmpphcfgcfnrd.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgcfnrd);
+}
+if ( tmpphcfgcfba.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgcfba);
+}
+if ( tmpphcfgcfbd.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgcfbd);
+}
+if ( tmpphcfgoscwa.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgoscwa);
+}
+if ( tmpphcfgoscwd.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgoscwd);
+}
+if ( tmpphcfgdnde.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgdnde);
+}
+if ( tmpphcfgdndd.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgdndd);
+}
+if ( tmpphcfgccbsd.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgccbsd);
+}
+if ( tmpphcfgos.search("ejGetVoice") < 0 ){
+	eval(tmpphcfgos);
+}
+// *** Phone Key Config End ***
+if ( tmpdme.search("ejGetVoice") < 0 ){
+	eval(tmpdme);
+}
+if ( tmpdm.search("ejGetVoice") < 0 ){
+	eval(tmpdm);
+}
+if ( tmpdialint.search("ejGetVoice") < 0 ){
+	eval(tmpdialint);
+}
+if ( tmppe.search("ejGetVoice") < 0 ){
+	eval(tmppe);
+}
+if ( tmpboundIfList.search("ejGetVoice") < 0 ){
+	eval(tmpboundIfList);
+}
+
+/**************************************/
+
+function hideMultiIf(){
+	if(tokInterfaceList.length < 2) {
+	} else if(tokInterfaceList.length == 2) {
+		document.forms[0].multiIf.disabled = true;
+	} else {
+		for (i = 1; i < tokInterfaceList.length; i++) {
+			document.forms[0].multiIf[i-1].disabled = true;
+		}
+	}
+}
+
+function showMultiIf(){
+	if(tokInterfaceList.length < 2) {
+	} else if(tokInterfaceList.length == 2) {
+		document.forms[0].multiIf.disabled = false;
+	} else {
+		for (i = 1; i < tokInterfaceList.length; i++) {
+			document.forms[0].multiIf[i-1].disabled = false;
+		}
+	}
+}
+
+function updateTransportList(){
+	var SPSelect = document.getElementById("SPSelect").value; 
+	for(i=0;i<toktransportList.length;i++){
+		document.forms[0].sipTransport.options[i] = new Option(toktransportList[i],toktransportList[i]);
+		if(SPSelect < parseInt(currentSp)){
+			if(document.forms[0].sipTransport.options[i].value == eval("st"+ SPSelect )){
+				document.forms[0].sipTransport.options[i].selected = true;
+			}
+		}else{
+			if(document.forms[0].sipTransport.options[i].value == defst){
+				document.forms[0].sipTransport.options[i].selected = true;	
+			}					
+		}
+	}
+	if(document.getElementById("support3263").checked == true){
+		document.forms[0].sipTransport.options[parseInt(toktransportList.length)] = new Option('AUTO','Auto');			
+		document.forms[0].sipTransport.length = parseInt(toktransportList.length) + 1;			
+	}else{
+		document.forms[0].sipTransport.length = toktransportList.length;		
+	}
+}
+
+function rfc3263_showPort(){
+	if(document.getElementById("support3263").checked == true){
+		document.getElementById("proxy_Port").disabled = true;
+		document.getElementById("reg_Port").disabled = true;		
+	}else{
+		document.getElementById("proxy_Port").disabled = false;
+		document.getElementById("reg_Port").disabled = false;		
+	}
+	updateTransportList();
+}
+
+function printInterfaceListBox(){
+	var inBoundIfList = 0;
+	var j =  document.getElementById("SPSelect").value; 	
+	var tmplist = '';
+	var boundInterfaces = '';
+	var str = '';
+	if(j < parseInt(currentSp)){
+		boundInterfaces = eval("bil" + j + ".split('|')");
+	}
+
+	for(i = 1; i < tokInterfaceList.length; i++)
+	{
+		inBoundIfList = 0;
+		for(j = 0; j < boundInterfaces.length; j++)
+		{		
+			if( tokInterfaceList[i] == boundInterfaces[j] ) {
+				inBoundIfList = 1;
+				break;
+			}
+		}
+		
+		if(inBoundIfList == 1) {
+			str += " <input type='checkbox' name='multiIf' checked value=" + tokInterfaceList[i] + '>' + tokServerNameList[i] ;
+			$('#ifNameTable').append(str);
+		} else {
+			str += " <input type='checkbox' name='multiIf' value=" + tokInterfaceList[i] + '>' + tokServerNameList[i] ;
+			$('#ifNameTable').append(str);
+		}
+		str = '';
+	}
+
+	if(document.forms[0].if_Name[0].checked == true){
+		hideMultiIf();
+	} else if(document.forms[0].if_Name[1].checked == true){
+		hideMultiIf();
+	} else{
+		showMultiIf();				
+	}		  
+
+}
+
+function printSPSelectList(){
+	var addNewIdx ; 
+	var i = 0;
+
+	$('#SPSelect').empty();
+
+	for (i = 0; i < currentSp; i++) {
+		addNewIdx = i + 1;
+		vpname = eval('vpn'+i) ;
+		if (i == 0){
+			$('#SPSelect').append('<option value='+i+' selected>'+vpname+'</option>'); 	
+		}else{
+			$('#SPSelect').append('<option value='+i+' >'+vpname+'</option>'); 
+		}
+	}
+	if( parseInt(currentSp) < parseInt(maxSp) && parseInt(currentAcnt)<parseInt(maxLines)){
+		$('#SPSelect').append('<option value='+addNewIdx+' >ADD_NEW</option>'); 
+	}	
+}
+
+function chkPortRange(portvalue,i)
+{
+	if (i == 'local_Port'){
+		if (portvalue > 65535 || portvalue < 1030 || (portvalue > 9980 && portvalue < 14097))
+		{alert("<%ejGetML(MLG_VoIP_SIPServiceProvider_AlertMsg_Str2)%>");
+				sipLogPort.value = 5060;
+				sipLogPort.focus();
+		}
+	}
+	else if (i == 'proxy_Port'){
+		if (portvalue > 65535 || portvalue < 1)
+		{
+			alert("<%ejGetML(MLG_VoIP_SIPServiceProvider_AlertMsg_Str3)%>");
+			proxy_Port.value = 5060;
+			proxy_Port.focus();
+		}
+	}		
+	else if (i == 'reg_Port'){
+		if (portvalue > 65535 || portvalue < 1)
+		{
+			alert("<%ejGetML(MLG_VoIP_SIPServiceProvider_AlertMsg_Str3)%>");
+			reg_Port.value = 5060;
+			reg_Port.focus();
+		}
+	}		
+}
+
+function checkPhoneConfigKey(phcfgarray, phcfg, namestr){
+	var key = phcfg.value;	
+	var j;
+	if(key.length>0){		
+		if(key.substr(0,1) == '*' || key.substr(0,1)=='#'){
+			for(i=0; i< phcfgarray.length; i++){
+				if(phcfgarray[i] == key){
+					alert(MLG_Makestring("<%ejGetML(MLG_VoIP_SIPServiceProvider_AlertMsg_Str4)%>", namestr, key));
+					return false;
+				}
+			}
+			
+			for(i=1;i<10;i++){
+				if(key == '#0'+i || key == '#10'){
+					alert(MLG_Makestring("<%ejGetML(MLG_VoIP_SIPServiceProvider_AlertMsg_Str5)%>", namestr, key));
+					return false;
+				}
+			}
+		
+			phcfgarray[phcfgarray.length] = key;
+			return true;
+		}
+	}	
+	return true;
+}
+
+function checkchars(field, maxchar) {
+	//var strtmp = field.value.replace(/[\r\n]/g,'');
+	//alert( strtmp + " hello!");
+	if (field.value.length > maxchar) {
+		alert(MLG_Makestring("<%ejGetML(MLG_VoIP_SIPServiceProvider_AlertMsg_Str6)%>", maxchar));
+		field.focus();
+		return false;
+	}
+	return true;  
+}
+
+function hideFaxPassthroughCodec(hide) {
+	var status = 'visible';
+
+	if ( hide == 1 )
+		status = 'hidden';
+	if (document.getElementById)  // DOM3 = IE5, NS6
+		document.getElementById('faxcodec').style.visibility = status;
+	else {
+		if (document.layers == false) // IE4
+			document.all.faxcodec.style.visibility = status;
+	}
+}
+
+function frmLoad() {
+
+	var SP_Select = window.parent.document.getElementById('mainFrame').contentWindow.document.getElementById("editVpSelect").value;
+	//var SP_Select = document.forms[0].SPSelect.value;
+	//var boundInterfaces = '';
+	with ( document.forms[0] ) {
+		
+		// Service Provider Selection
+		//SPSelect.options[0] = new Option( eval('vpn'+SP_Select), SP_Select );
+		document.getElementById("SPSelect").innerHTML = eval('vpn'+SP_Select);
+		document.getElementById("SPSelect").value = SP_Select;
+
+		// General
+		VP_Name.value = eval('vpn'+SP_Select);             // SIP Service Provider Name
+		local_Port.value = eval('lp'+SP_Select);           // SIP Local Port
+		proxy_Addr.value = eval('pa'+SP_Select);           // SIP Server Address
+		proxy_Port.value = eval('pp'+SP_Select);           // SIP Server Port
+		reg_Addr.value = eval('ra'+SP_Select);             // REGISTER Server Address
+		reg_Port.value = eval('rp'+SP_Select);             // REGISTER Server Port
+		domain_Name.value = eval('uad'+SP_Select);         // SIP Service Domain
+
+		// brady, 20150720 ,Modify re-transmission behavior for TIM
+		if ( (customizationFlag & 0x00100000)){
+			document.getElementById("reg_RetryInt").disabled = true;	
+		}
+
+		// brady,20150722 ,disable session refresh for TIM
+		if ( (customizationFlag & 0x00200000)){
+			document.getElementById("invite_ExpTmr").disabled = true;
+			document.getElementById("min_SE").disabled = true;
+		}
+		
+		// Support Locating SIP Server (RFC 3263)
+		if (eval("s3263" + SP_Select) == 1){
+			support3263.checked = true;
+		}    
+		else{
+			support3263.checked = false;		
+		}	
+
+		// RFC 3262 (Require: 100rel)
+		if( eval("s3262"+SP_Select) == 1){
+			support3262.checked = true;
+		}
+		else{
+			support3262.checked = false;
+		}
+
+		if (forNorway == '1'){
+			document.getElementById("select3262").style.display='none';
+			document.getElementById("cfgForNorway").value="yes";
+		}
+		else{
+			document.getElementById("cfgForNorway").value="no";
+		}
+		
+		// VoIP IOP Flags
+		for(i=0;i<voip_iop.length;i++){
+			if(parseInt(tmpvi) & (1<<i)){
+				voip_iop[i].checked = true;
+			}
+			else{
+				voip_iop[i].checked = false;
+			}
+		}
+
+		// Bound Interface Name
+		if(eval('ifn'+SP_Select) == 'LAN'){
+			if_Name[0].checked = true;
+		} else if(eval('ifn'+SP_Select) == 'Any_WAN'){
+			if_Name[1].checked = true;
+		} else{
+			if_Name[2].checked = true;	
+		}	
+		
+		// Outbound Proxy
+		obProxy_Addr.value = eval('oa'+SP_Select);
+		obProxy_Port.value = eval('op'+SP_Select);
+
+		// __ZyXEL__, Albert, 20131216, for DHCP option 120  
+		if(eval("op120e" + SP_Select) == 1){
+			obProxy_Addr_op120.checked = true;
+		}
+		else{
+			obProxy_Addr_op120.checked = false;
+		}
+
+		// RTP Port Range
+		rtp_PortMin.value = eval("rpmi"+ SP_Select);
+		rtp_PortMax.value = eval("rpmx"+ SP_Select);
+
+		// SRTP Support
+		if(eval("srtpe" + SP_Select) == 1){
+			supportSRTP.checked = true;
+		}
+		else{
+			supportSRTP.checked = false;
+		}
+		SRTPCryptoSuite.value = eval("srtpcs"+SP_Select);
+
+		// DTMF Mode
+		for(i=0; i<dtmf_Relay.length; i++){
+			if(dtmf_Relay.options[i].value == eval("dt"+ SP_Select )){
+				dtmf_Relay.options[i].selected = true;         	 
+			}
+		}
+
+		// Transport Type
+		for(i=0;i<toktransportList.length;i++){
+			sipTransport.options[i] = new Option(toktransportList[i],toktransportList[i]);
+		}
+		if(eval("s3263" + SP_Select) == 1){
+			sipTransport.options[parseInt(toktransportList.length)] = new Option('AUTO','Auto');		
+			sipTransport.length = parseInt(toktransportList.length) + 1;			
+		}else{
+			sipTransport.length = toktransportList.length;		
+		}
+		for(i=0;i<sipTransport.length;i++){
+			if(sipTransport.options[i].value == eval("st"+ SP_Select )){
+				sipTransport.options[i].selected = true;
+			}	
+		}
+
+		//Ignore Direct IP
+		if (eval("dip" + SP_Select) == 1){
+			VoIP_IgnoreDirectIP[0].checked =true;
+			VoIP_IgnoreDirectIP[1].checked =false;
+		}else{
+			VoIP_IgnoreDirectIP[0].checked =false;
+			VoIP_IgnoreDirectIP[1].checked =true;
+		}
+
+		// FAX Option
+		/*if (eval("t38" + SP_Select) == 1){
+			VoIP_FaxRelay[0].checked = false;
+			VoIP_FaxRelay[1].checked = true;
+			hideFaxPassthroughCodec(1);			
+		}    
+		else
+		{
+			VoIP_FaxRelay[0].checked = true;
+			VoIP_FaxRelay[1].checked = false;
+			hideFaxPassthroughCodec(0);	
+		}*/
+
+		// FAX Option , VoIP_FaxRelay[0] is Disable , VoIP_FaxRelay[1] is G711PassThrough , VoIP_FaxRelay[2] is T38Relay ,yushiuan 2014/10/24
+		if (eval("fm" + SP_Select) == 'T38Relay'){
+			VoIP_FaxRelay[0].checked = false;
+			VoIP_FaxRelay[1].checked = true;
+			hideFaxPassthroughCodec(1);			
+		}    
+		else if(eval("fm" + SP_Select) == 'G711PassThrough') {;
+			VoIP_FaxRelay[0].checked = true;
+			VoIP_FaxRelay[1].checked = false;
+			hideFaxPassthroughCodec(0);			
+		}
+		/*else
+		{
+			VoIP_FaxRelay[0].checked = true;
+			VoIP_FaxRelay[1].checked = false;
+			VoIP_FaxRelay[2].checked = false;
+			hideFaxPassthroughCodec(1);	
+		}*/
+
+		if(eval("fc" + SP_Select) == 'pcmu'){
+			faxPassCodec[0].checked = true;
+		}
+		else{
+			faxPassCodec[1].checked = true;
+		}
+
+		// QoS Tag
+		tosByte_Sip.value = eval("ts"+SP_Select);
+		tosByte_Rtp.value = eval("tr"+SP_Select);
+
+		// Timer Setting
+		reg_ExpTmr.value = eval("re"+ SP_Select );
+		reg_RetryInt.value = eval("ri"+ SP_Select );
+		invite_ExpTmr.value = eval("ie"+ SP_Select );
+		min_SE.value = eval("ms"+ SP_Select);
+		
+		// *** Phone Key Config Start ***
+		
+		// Call Return
+		if(eval( "phcfgcr" + SP_Select + ".indexOf('(null)')==-1")){
+			callReturn.value = eval("phcfgcr"+SP_Select) ;
+		}
+/*ZyXEL, Cathy add for Caller ID Hidden/Display Call*/
+		// Caller Display Call
+		if(eval( "phcfgclird" + SP_Select + ".indexOf('(null)')==-1")){
+			CallidDisplay.value = eval("phcfgclird"+SP_Select);
+		}
+
+		// Caller Hidden Call
+		if(eval( "phcfgclira" + SP_Select + ".indexOf('(null)')==-1")){
+			CallerHiddenCall.value =eval("phcfgclira"+SP_Select);
+		}
+/*ZyXEL, Cathy add end*/
+		// One Shot Caller Display Call
+		if(eval( "phcfgcaa" + SP_Select + ".indexOf('(null)')==-1")){
+			oneShotCallidDisplay.value = eval("phcfgcaa"+SP_Select);
+		}
+		
+		// One Shot Caller Hidden Call
+		if(eval( "phcfgcad" + SP_Select + ".indexOf('(null)')==-1")){
+			oneShotCallerHiddenCall.value =eval("phcfgcad"+SP_Select);
+		}
+
+		// Call Waiting Enable
+		if(eval("phcfgcwa" + SP_Select + ".indexOf('(null)')==-1")){
+			CallWaitingEnable.value = eval("phcfgcwa"+SP_Select);
+		}
+		
+		// Call Waiting Disable
+		if(eval("phcfgcwd" + SP_Select + ".indexOf('(null)')==-1")){
+			CallWaitingDisable.value = eval("phcfgcwd"+SP_Select);
+		}
+
+		// IVR
+		if(eval( "phcfgivr" + SP_Select + ".indexOf('(null)')==-1")){
+			IVR.value = eval("phcfgivr"+SP_Select);
+		}
+		
+		// Internal Call
+		if(eval( "phcfginternal" + SP_Select + ".indexOf('(null)')==-1")){
+			InternalCall.value = eval("phcfginternal"+SP_Select);
+		}
+		
+		// Call Transfer
+		if(eval("phcfgtransfer" + SP_Select + ".indexOf('(null)')==-1")){
+			CallTransfer.value = eval("phcfgtransfer"+SP_Select);
+		}
+
+/*
+		// Call Park
+		if(eval("phcfgcpa" + SP_Select + ".indexOf('(null)')==-1")){
+			CallPark.value = eval("phcfgcpa"+SP_Select);
+		}
+
+		// Call Park Retreive
+		if(eval("phcfgcpr" + SP_Select + ".indexOf('(null)')==-1")){
+			CallParkRetreive.value = eval("phcfgcpr"+SP_Select);
+		}
+*/
+
+		// Unconditional Call Forward Enable
+		if(eval("phcfgcfua" + SP_Select + ".indexOf('(null)')==-1")){
+			unCallForwardEnable.value = eval("phcfgcfua"+SP_Select);
+		}
+		
+		// Unconditional Call Forward Disable
+		if(eval("phcfgcfud" + SP_Select + ".indexOf('(null)')==-1")){
+			unCallForwardDisable.value = eval("phcfgcfud"+SP_Select);
+		}
+		
+		// No Answer Call Forward Enable
+		if(eval("phcfgcfnra" + SP_Select + ".indexOf('(null)')==-1")){
+			noCallForwardEnable.value = eval("phcfgcfnra"+SP_Select);
+		}
+		
+		// No Answer Call Forward Disable
+		if(eval("phcfgcfnrd" + SP_Select + ".indexOf('(null)')==-1")){
+			noCallForwardDisable.value = eval("phcfgcfnrd"+SP_Select);
+		}
+		
+		// Call Forward When Busy Enable
+		if(eval("phcfgcfba" + SP_Select + ".indexOf('(null)')==-1")){
+			BusyCallForwardEnable.value = eval("phcfgcfba"+SP_Select);
+		}
+		
+		// Call Forward When Busy Disable
+		if(eval("phcfgcfbd" + SP_Select + ".indexOf('(null)')==-1")){
+			BusyCallForwardDisable.value = eval("phcfgcfbd"+SP_Select);
+		}
+
+		// One Shot Call Waiting Enable
+		if(eval("phcfgoscwa" + SP_Select + ".indexOf('(null)')==-1")){
+			oneShotCallWaitingEnable.value = eval("phcfgoscwa"+SP_Select);
+		}
+		
+		// One Shot Call Waiting Disable
+		if(eval("phcfgoscwd" + SP_Select + ".indexOf('(null)')==-1")){
+			oneShotCallWaitingDisable.value = eval("phcfgoscwd"+SP_Select);
+		}
+
+		// Do Not Disturb Enable
+		if(eval("phcfgdnde" + SP_Select + ".indexOf('(null)')==-1")){
+			dndenable.value = eval("phcfgdnde"+SP_Select);
+		}
+		
+		// Do Not Disturb Disable
+		if(eval("phcfgdndd" + SP_Select + ".indexOf('(null)')==-1")){
+			dnddisable.value = eval("phcfgdndd"+SP_Select);
+		}
+
+		// Call Completion on Busy Subscriber (CCBS) Deactivate
+		if(eval("phcfgccbsd" + SP_Select + ".indexOf('(null)')==-1")){
+			ccbsDeactive.value = eval("phcfgccbsd"+SP_Select);
+		}
+
+		// Outgoing SIP
+		if(eval("phcfgos" + SP_Select + ".indexOf('(null)')==-1")){
+			outgoingSip.value = eval("phcfgos"+SP_Select);
+		}
+
+		// *** Phone Key Config End ***
+
+		// Dial Plan
+		if(eval("dme"+SP_Select) == 1){
+			dialPlanEnable.checked = true;
+		}
+		else{
+			dialPlanEnable.checked = false;
+		}
+
+		dialPlan.value = eval("dm"+ SP_Select);
+
+		// Dialing Interval Selection
+		for(i=0;i<dialingIntervalTime.length;i++){
+			if(dialingIntervalTime.options[i].value == eval("dialint"+SP_Select)){
+				dialingIntervalTime.options[i].selected = true;
+			}
+		}
+
+		// Immediate Dial Enable
+		if(eval("poundenable" + SP_Select) == 1){
+			pound_Enable.checked = true;
+		}
+		else{
+			pound_Enable.checked = false;
+		}
+	}
+}
+
+
+function btnSave() {
+
+	if(formCheck() ==false){
+		return;
+	}
+	
+	var SP_Select = document.getElementById("SPSelect").value; 
+	//var SP_Select = currentSp;	// SIP Service Provider, special for ADD_NEW
+
+	if(parseInt(SP_Select) < parseInt(currentSp) ){
+		document.forms[0].action.value = "start";
+	}else{
+		if( parseInt(currentSp) >= parseInt(maxSp) ){
+			alert(MLG_Makestring("<%ejGetML(MLG_VoIP_SIPServiceProvider_AlertMsg_Str7)%>", maxchar));
+			return;
+		}else if( parseInt(currentAcnt) >= parseInt(maxLines) ){
+			alert(MLG_Makestring("<%ejGetML(MLG_VoIP_SIPServiceProvider_AlertMsg_Str8)%>", maxchar));
+			return;
+		}else{
+			document.forms[0].action.value = "addSP";
+		}
+	}
+
+	with ( document.forms[0] ) {
+		// Session Key
+		sessionKey.value = glbSessionKey;
+		// SIP Service Provider Name
+		VPName.value = VP_Name.value;
+ 		document.getElementById('VPName').name = "VPName" + SP_Select;
+		// SIP Local Port
+		localPort.value = local_Port.value;
+ 		document.getElementById('localPort').name = "localPort" + SP_Select;
+		// SIP Server Address
+		proxyAddr.value = proxy_Addr.value;
+ 		document.getElementById('proxyAddr').name = "proxyAddr" + SP_Select;
+		// SIP Server Port
+		proxyPort.value = proxy_Port.value;
+ 		document.getElementById('proxyPort').name = "proxyPort" + SP_Select;
+		// REGISTER Server Address
+		regAddr.value = reg_Addr.value;
+ 		document.getElementById('regAddr').name = "regAddr" + SP_Select;
+		// REGISTER Server Port
+		regPort.value = reg_Port.value;
+ 		document.getElementById('regPort').name = "regPort" + SP_Select;
+		// SIP Service Domain
+		domainName.value = domain_Name.value;
+ 		document.getElementById('domainName').name = "domainName" + SP_Select;
+
+		// Support Locating SIP Server (RFC 3263) 
+		if(support3263.checked == true){
+			rfc3263support.value = 1;
+			document.getElementById('rfc3263support').name = "rfc3263support" + SP_Select;
+		}
+		else{
+			rfc3263support.value = 0;
+			document.getElementById('rfc3263support').name = "rfc3263support" + SP_Select;
+		}
+		
+		// RFC 3262 (Require: 100rel)
+		if (support3262.checked == true){
+			rfc3262support.value = "on";
+			document.getElementById('rfc3262support').name = "rfc3262support" + SP_Select;
+		}
+		else {
+			rfc3262support.value = "off";
+			document.getElementById('rfc3262support').name = "rfc3262support" + SP_Select;
+		} 
+		
+		// VoIP IOP Flags
+		var iopflags = parseInt(tmpvi);
+		for(i=0;i<voip_iop.length;i++){
+			if (voip_iop[i].checked == true){
+				iopflags |= (1<<i);
+			}else{
+				iopflags &= ~(1<<i);
+			}
+		}
+		voipiop.value = iopflags; 
+ 		//document.getElementById('voipiop').name = "voipiop" + SP_Select;
+
+		// Bound Interface Name
+		if(if_Name[0].checked == true) {
+			ifName.value = "LAN";
+			document.getElementById('ifName').name = "ifName" + SP_Select;
+			boundIfList.value = "";
+			document.getElementById('boundIfList').name = "boundIfList" + SP_Select;
+		} else if(if_Name[1].checked == true) {
+			ifName.value = "Any_WAN";
+			document.getElementById('ifName').name = "ifName" + SP_Select;
+			boundIfList.value = "";
+			document.getElementById('boundIfList').name = "boundIfList" + SP_Select;
+		} else {
+			ifName.value = "Multi_WAN";
+			document.getElementById('ifName').name = "ifName" + SP_Select;
+			var first = true;
+			var str = '';
+			if(tokInterfaceList.length < 2) {
+			} else if(tokInterfaceList.length == 2) {
+				if (multiIf.checked) {
+					boundIfList.value = multiIf.value;
+					document.getElementById('boundIfList').name = "boundIfList" + SP_Select;
+					first = false;
+				}
+			} else {
+				for (i = 1; i < tokInterfaceList.length; i++) {
+					if (multiIf[i-1].checked) {
+						if (!first) {
+							boundIfList.value = boundIfList.value + '|' + multiIf[i-1].value;
+							document.getElementById('boundIfList').name = "boundIfList" + SP_Select;
+						} else {
+							boundIfList.value = multiIf[i-1].value;
+							document.getElementById('boundIfList').name = "boundIfList" + SP_Select;
+						}
+						first = false;
+					}
+				}
+			}
+			if(first) {
+				alert('<%ejGetML(MLG_VoIP_SIPServiceProvider_AlertMsg_Str9)%>');
+				return false;
+			}
+		}
+
+		// Outbound Proxy Address
+		obProxyAddr.value = obProxy_Addr.value;
+ 		document.getElementById('obProxyAddr').name = "obProxyAddr" + SP_Select;
+		// Outbound Proxy Port
+		obProxyPort.value = obProxy_Port.value;
+ 		document.getElementById('obProxyPort').name = "obProxyPort" + SP_Select;
+
+		// __ZyXEL__, Albert, 20131216, for DHCP option 120 
+		if(obProxy_Addr_op120.checked == true){
+			obProxyOp120_Enable.value = 1;
+			document.getElementById('obProxyOp120_Enable').name = "obProxyOp120_Enable" + SP_Select;
+		}
+		else{
+			obProxyOp120_Enable.value = 0;
+			document.getElementById('obProxyOp120_Enable').name = "obProxyOp120_Enable" + SP_Select;
+		}
+ 		
+		// RTP Port Range
+		rtpPortMin.value = rtp_PortMin.value;
+ 		document.getElementById('rtpPortMin').name = "rtpPortMin" + SP_Select;
+		rtpPortMax.value = rtp_PortMax.value;
+ 		document.getElementById('rtpPortMax').name = "rtpPortMax" + SP_Select;
+
+		// SRTP Support
+		if(supportSRTP.checked == true){
+			srtpEnable.value = 1;
+			document.getElementById('srtpEnable').name = "srtpEnable" + SP_Select;
+		}
+		else{
+			srtpEnable.value = 0;
+			document.getElementById('srtpEnable').name = "srtpEnable" + SP_Select;
+		}
+		srtpCryptoSuiteName.value = SRTPCryptoSuite.value;
+ 		document.getElementById('srtpCryptoSuiteName').name = "srtpCryptoSuiteName" + SP_Select;
+
+		// DTMF Mode
+		dtmfRelay.value = dtmf_Relay.value;
+ 		document.getElementById('dtmfRelay').name = "dtmfRelay" + SP_Select;
+
+		// Transport Type
+		transport.value = sipTransport.value;
+ 		document.getElementById('transport').name = "transport" + SP_Select;
+
+		// Ignore Direct IP
+		if(VoIP_IgnoreDirectIP[0].checked == true){
+			IgnoreDirectIP.value = 1;
+ 			document.getElementById('IgnoreDirectIP').name = "IgnoreDirectIP" + SP_Select;
+
+ 		}else{
+			IgnoreDirectIP.value = 0;
+ 			document.getElementById('IgnoreDirectIP').name = "IgnoreDirectIP" + SP_Select;
+
+ 		}
+
+
+		// FAX Option only disable just set t38Enable.value = "off" , faxPassThrough.value = "Disable" , else the capbility should be on or Force , yushiuan 2014/10/24  
+		if (VoIP_FaxRelay[1].checked == true){
+			faxPassThrough.value = "Force";
+			document.getElementById('faxPassThrough').name = "faxPassThrough" + SP_Select;
+			t38Enable.value = "on";
+			document.getElementById('t38Enable').name = "t38Enable" + SP_Select;
+			faxMode.value = "T38Relay";
+			document.getElementById('faxMode').name = "faxMode" + SP_Select;
+		}
+		else if (VoIP_FaxRelay[0].checked == true){
+			faxPassThrough.value = "Force";
+			document.getElementById('faxPassThrough').name = "faxPassThrough" + SP_Select;
+			if(faxPassCodec[0].checked){
+				faxCodec.value = faxPassCodec[0].value;
+				document.getElementById('faxCodec').name = "faxCodec" + SP_Select;
+			}
+			else{
+				faxCodec.value = faxPassCodec[1].value;
+				document.getElementById('faxCodec').name = "faxCodec" + SP_Select;
+			}
+			t38Enable.value = "on";
+			document.getElementById('t38Enable').name = "t38Enable" + SP_Select;
+			faxMode.value = "G711PassThrough";
+			document.getElementById('faxMode').name = "faxMode" + SP_Select;
+		}
+		/*else{
+			faxPassThrough.value = "Disable";
+			document.getElementById('faxPassThrough').name = "faxPassThrough" + SP_Select;
+			t38Enable.value = "off";
+			document.getElementById('t38Enable').name = "t38Enable" + SP_Select;
+			faxMode.value = "Disable";
+			document.getElementById('faxMode').name = "faxMode" + SP_Select;
+		}*/
+
+		// QoS Tag
+		tosByteSip.value = tosByte_Sip.value;
+ 		document.getElementById('tosByteSip').name = "tosByteSip" + SP_Select;
+		tosByteRtp.value = tosByte_Rtp.value;
+ 		document.getElementById('tosByteRtp').name = "tosByteRtp" + SP_Select;
+		
+		// Timer Setting
+		regExpTmr.value = reg_ExpTmr.value;
+ 		document.getElementById('regExpTmr').name = "regExpTmr" + SP_Select;
+		regRetryInt.value = reg_RetryInt.value;
+ 		document.getElementById('regRetryInt').name = "regRetryInt" + SP_Select;
+		inviteExpTmr.value = invite_ExpTmr.value;
+ 		document.getElementById('inviteExpTmr').name = "inviteExpTmr" + SP_Select;
+		minSE.value = min_SE.value;
+ 		document.getElementById('minSE').name = "minSE" + SP_Select;
+
+		// *** Phone Key Config Start ***
+		
+		// Call Return
+		phcfgkeyCallReturn.value = callReturn.value;
+ 		document.getElementById('phcfgkeyCallReturn').name = "phcfgkeyCallReturn" + SP_Select;
+/* ZyXEL, Cathy, add for caller ID Hidden/Display call */ 		
+ 		// Caller ID Display Call
+ 		phcfgkeyCLIR_Disable.value = CallidDisplay.value;
+ 		document.getElementById('phcfgkeyCLIR_Disable').name = "phcfgkeyCLIR_Disable" + SP_Select; 		
+ 		// Caller ID Hidden Call
+  		phcfgkeyCLIR_Active.value = CallerHiddenCall.value;
+ 		document.getElementById('phcfgkeyCLIR_Active').name = "phcfgkeyCLIR_Active" + SP_Select; 		
+/* ZyXEL, Cathy, add end */ 		
+		// One Shot Caller Display Call
+		phcfgkeyCA_Active.value = oneShotCallidDisplay.value;
+ 		document.getElementById('phcfgkeyCA_Active').name = "phcfgkeyCA_Active" + SP_Select;
+		// One Shot Caller Hidden Call
+		phcfgkeyCA_Disable.value = oneShotCallerHiddenCall.value;
+ 		document.getElementById('phcfgkeyCA_Disable').name = "phcfgkeyCA_Disable" + SP_Select;
+		// Call Waiting Enable
+		phcfgkeyCW_Active.value = CallWaitingEnable.value;
+ 		document.getElementById('phcfgkeyCW_Active').name = "phcfgkeyCW_Active" + SP_Select;
+		// Call Waiting Disable
+		phcfgkeyCW_Deactive.value = CallWaitingDisable.value;
+ 		document.getElementById('phcfgkeyCW_Deactive').name = "phcfgkeyCW_Deactive" + SP_Select;
+		// IVR
+		phcfgkeyIVR.value = IVR.value;
+ 		document.getElementById('phcfgkeyIVR').name = "phcfgkeyIVR" + SP_Select;
+		// Internal Call
+		phcfgkeyInternal.value = InternalCall.value;
+ 		document.getElementById('phcfgkeyInternal').name = "phcfgkeyInternal" + SP_Select;
+		// Call Transfer
+		phcfgkeyTransfer.value = CallTransfer.value;
+ 		document.getElementById('phcfgkeyTransfer').name = "phcfgkeyTransfer" + SP_Select;	// add vpSelect info
+/*
+		// Call Park
+		phcfgkeyCP_Active.value = CallPark.value;
+ 		document.getElementById('phcfgkeyCP_Active').name = "phcfgkeyCP_Active" + SP_Select;
+		// Call Park Retreive
+		phcfgkeyCP_Retreive.value = CallParkRetreive.value;
+ 		document.getElementById('phcfgkeyCP_Retreive').name = "phcfgkeyCP_Retreive" + SP_Select;
+*/
+		// Unconditional Call Forward Enable
+		phcfgkeyCFU_Active.value = unCallForwardEnable.value;
+ 		document.getElementById('phcfgkeyCFU_Active').name = "phcfgkeyCFU_Active" + SP_Select;
+		// Unconditional Call Forward Disable
+		phcfgkeyCFU_Deactive.value = unCallForwardDisable.value;
+ 		document.getElementById('phcfgkeyCFU_Deactive').name = "phcfgkeyCFU_Deactive" + SP_Select;
+		// No Answer Call Forward Enable
+		phcfgkeyCFNR_Active.value = noCallForwardEnable.value;
+ 		document.getElementById('phcfgkeyCFNR_Active').name = "phcfgkeyCFNR_Active" + SP_Select;
+		// No Answer Call Forward Disable
+		phcfgkeyCFNR_Deactive.value = noCallForwardDisable.value;
+ 		document.getElementById('phcfgkeyCFNR_Deactive').name = "phcfgkeyCFNR_Deactive" + SP_Select;
+		// Call Forward When Busy Enable
+		phcfgkeyCFB_Active.value = BusyCallForwardEnable.value;
+ 		document.getElementById('phcfgkeyCFB_Active').name = "phcfgkeyCFB_Active" + SP_Select;
+		// Call Forward When Busy Disable
+		phcfgkeyCFB_Deactive.value = BusyCallForwardDisable.value;
+ 		document.getElementById('phcfgkeyCFB_Deactive').name = "phcfgkeyCFB_Deactive" + SP_Select;
+		// One Shot Call Waiting Enable
+		phcfgkeyOSCW_Active.value = oneShotCallWaitingEnable.value;
+ 		document.getElementById('phcfgkeyOSCW_Active').name = "phcfgkeyOSCW_Active" + SP_Select;
+		// One Shot Call Waiting Disable
+		phcfgkeyOSCW_Deactive.value = oneShotCallWaitingDisable.value;
+ 		document.getElementById('phcfgkeyOSCW_Deactive').name = "phcfgkeyOSCW_Deactive" + SP_Select;
+		// Do Not Disturb Enable
+		phcfgkeyDND_Enable.value = dndenable.value;
+ 		document.getElementById('phcfgkeyDND_Enable').name = "phcfgkeyDND_Enable" + SP_Select;
+		// Do Not Disturb Disable
+		phcfgkeyDND_Disable.value = dnddisable.value;
+ 		document.getElementById('phcfgkeyDND_Disable').name = "phcfgkeyDND_Disable" + SP_Select;
+		// Call Completion on Busy Subscriber (CCBS) Deactivate
+		phcfgkeyCCBS_Deactive.value = ccbsDeactive.value;
+ 		document.getElementById('phcfgkeyCCBS_Deactive').name = "phcfgkeyCCBS_Deactive" + SP_Select;
+		// Outgoing SIP
+		phcfgkeyOutgoingSip.value = outgoingSip.value;
+ 		document.getElementById('phcfgkeyOutgoingSip').name = "phcfgkeyOutgoingSip" + SP_Select;
+
+		// *** Phone Key Config End ***
+
+		// Dial Plan
+		if (dialPlanEnable.checked == true){
+			digiMapEnable.value = "on";
+			document.getElementById('digiMapEnable').name = "digiMapEnable" + SP_Select;
+		}
+		else {
+			digiMapEnable.value = "off";
+			document.getElementById('digiMapEnable').name = "digiMapEnable" + SP_Select;
+		}    
+		digiMap.value = dialPlan.value;
+ 		document.getElementById('digiMap').name = "digiMap" + SP_Select;
+		
+		// Dialing Interval Selection
+		dialInterDigit.value = dialingIntervalTime.value;
+ 		document.getElementById('dialInterDigit').name = "dialInterDigit" + SP_Select;
+
+		// Immediate Dial Enable
+		if (pound_Enable.checked == true){
+			poundEnable.value = "on";
+			document.getElementById('poundEnable').name = "poundEnable" + SP_Select;	// no need to add vpSelect info
+		}
+		else {
+			poundEnable.value = "off";
+			document.getElementById('poundEnable').name = "poundEnable" + SP_Select;	// no need to add vpSelect info
+		} 
+
+		submit();
+		$('.ui-dialog-titlebar-close').trigger('click');
+		$.openLoadingMask(1);
+	}
+}
+
+$(function(){
+$('#btn_wepmore').toggle(
+	function(){
+		$(this).html('less');
+		$('#detailedInfo').slideDown(200);
+		document.getElementById("local_Port").disabled = false;
+		document.getElementById("proxy_Port").disabled = false;
+		document.getElementById("reg_Port").disabled = false;
+	}, function(){
+		$(this).html('more...');
+		$('#detailedInfo').slideUp(200);
+		document.getElementById("local_Port").disabled = true;
+		document.getElementById("proxy_Port").disabled = true;
+		document.getElementById("reg_Port").disabled = true;
+	});
+});
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnSave(); });
+
+$(document).ready(function() {
+	//resetMsg();
+	//printSPSelectList();
+	frmLoad();
+});
+
+// done hiding -->
+</script>
+
+<form id="SipServerAddForm" name="sipServerAddForm" method="post" action="/pages/tabFW/sip-voicesipcfg.cmd" target="mainFrame">
+
+<input name="action" type="HIDDEN" id="action" value="view"; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""; />
+<input name="spnum" type="HIDDEN" id="spnum" value=""; />
+
+<input name="VPName" type="HIDDEN" id="VPName" value=""; />
+<input name="localPort" type="HIDDEN" id="localPort" value=""; />
+<input name="obProxyAddr" type="HIDDEN" id="obProxyAddr" value=""; />
+<input name="obProxyPort" type="HIDDEN" id="obProxyPort" value=""; />
+
+<!--  __ZyXEL__, Albert, 20131216, for DHCP option 120  -->
+<input name="obProxyOp120_Enable" type="HIDDEN" id="obProxyOp120_Enable" value=""; />
+
+<input name="proxyAddr" type="HIDDEN" id="proxyAddr" value=""; />
+<input name="proxyPort" type="HIDDEN" id="proxyPort" value=""; />
+<input name="regAddr" type="HIDDEN" id="regAddr" value=""; />
+<input name="regPort" type="HIDDEN" id="regPort" value=""; />
+<input name="domainName" type="HIDDEN" id="domainName" value=""; />
+<input name="transport" type="HIDDEN" id="transport" value=""; />
+<input name="IgnoreDirectIP" type="HIDDEN" id="IgnoreDirectIP" value=""; />
+<input name="inviteExpTmr" type="HIDDEN" id="inviteExpTmr" value=""; />
+<input name="regExpTmr" type="HIDDEN" id="regExpTmr" value=""; />
+<input name="regRetryInt" type="HIDDEN" id="regRetryInt" value=""; />
+<input name="rtpPortMin" type="HIDDEN" id="rtpPortMin" value=""; />
+<input name="rtpPortMax" type="HIDDEN" id="rtpPortMax" value=""; />
+<input name="dtmfRelay" type="HIDDEN" id="dtmfRelay" value=""; />
+<input name="minSE" type="HIDDEN" id="minSE" value=""; />
+<input name="digiMap" type="HIDDEN" id="digiMap" value=""; />
+<input name="dialInterDigit" type="HIDDEN" id="dialInterDigit" value=""; />
+<input name="rfc3263support" type="HIDDEN" id="rfc3263support" value=""; />
+<input name="voipiop" type="HIDDEN" id="voipiop" value=""; />
+<input name="srtpEnable" type="HIDDEN" id="srtpEnable" value=""; />
+<input name="srtpCryptoSuiteName" type="HIDDEN" id="srtpCryptoSuiteName" value=""; />
+<input name="faxMode" type="HIDDEN" id="faxMode" value=""; />
+<input name="faxPassThrough" type="HIDDEN" id="faxPassThrough" value=""; />
+<input name="t38Enable" type="HIDDEN" id="t38Enable" value=""; />
+<input name="faxCodec" type="HIDDEN" id="faxCodec" value=""; />
+<input name="tosByteSip" type="HIDDEN" id="tosByteSip" value=""; />
+<input name="tosByteRtp" type="HIDDEN" id="tosByteRtp" value=""; />
+<input name="ifName" type="HIDDEN" id="ifName" value=""; />
+<input name="boundIfList" type="HIDDEN" id="boundIfList" value=""; />
+<input name="rfc3262support" type="HIDDEN" id="rfc3262support" value=""; />
+<input name="digiMapEnable" type="HIDDEN" id="digiMapEnable" value=""; />
+<input name="poundEnable" type="HIDDEN" id="poundEnable" value=""; />
+<input name="phcfgkeyCallReturn" type="HIDDEN" id="phcfgkeyCallReturn" value=""; />
+<!-- ZyXEL, Cathy, add for Caller ID Hidden/Display Call-->
+<input name="phcfgkeyCLIR_Active" type="HIDDEN" id="phcfgkeyCLIR_Active" value=""; />
+<input name="phcfgkeyCLIR_Disable" type="HIDDEN" id="phcfgkeyCLIR_Disable" value=""; />
+<!--ZyXEL, Cathy add end -->
+<input name="phcfgkeyCA_Active" type="HIDDEN" id="phcfgkeyCA_Active" value=""; />
+<input name="phcfgkeyCA_Disable" type="HIDDEN" id="phcfgkeyCA_Disable" value=""; />
+<input name="phcfgkeyIVR" type="HIDDEN" id="phcfgkeyIVR" value=""; />
+<input name="phcfgkeyInternal" type="HIDDEN" id="phcfgkeyInternal" value=""; />
+<input name="phcfgkeyTransfer" type="HIDDEN" id="phcfgkeyTransfer" value=""; />
+<input name="phcfgkeyCW_Active" type="HIDDEN" id="phcfgkeyCW_Active" value=""; />
+<input name="phcfgkeyCW_Deactive" type="HIDDEN" id="phcfgkeyCW_Deactive" value=""; />
+<input name="phcfgkeyCFU_Active" type="HIDDEN" id="phcfgkeyCFU_Active" value=""; />
+<input name="phcfgkeyCFU_Deactive" type="HIDDEN" id="phcfgkeyCFU_Deactive" value=""; />
+<input name="phcfgkeyCFNR_Active" type="HIDDEN" id="phcfgkeyCFNR_Active" value=""; />
+<input name="phcfgkeyCFNR_Deactive" type="HIDDEN" id="phcfgkeyCFNR_Deactive" value=""; />
+<input name="phcfgkeyCFB_Active" type="HIDDEN" id="phcfgkeyCFB_Active" value=""; />
+<input name="phcfgkeyCFB_Deactive" type="HIDDEN" id="phcfgkeyCFB_Deactive" value=""; />
+<input name="phcfgkeyOSCW_Active" type="HIDDEN" id="phcfgkeyOSCW_Active" value=""; />
+<input name="phcfgkeyOSCW_Deactive" type="HIDDEN" id="phcfgkeyOSCW_Deactive" value=""; />
+<input name="phcfgkeyDND_Enable" type="HIDDEN" id="phcfgkeyDND_Enable" value=""; />
+<input name="phcfgkeyDND_Disable" type="HIDDEN" id="phcfgkeyDND_Disable" value=""; />
+<!--
+<input name="phcfgkeyCP_Active" type="HIDDEN" id="phcfgkeyCP_Active" value=""; />
+<input name="phcfgkeyCP_Retreive" type="HIDDEN" id="phcfgkeyCP_Retreive" value=""; />
+-->
+<input name="phcfgkeyCCBS_Deactive" type="HIDDEN" id="phcfgkeyCCBS_Deactive" value=""; />
+<input name="phcfgkeyOutgoingSip" type="HIDDEN" id="phcfgkeyOutgoingSip" value=""; />
+<input name="cfgForNorway" type="HIDDEN" id="cfgForNorway" value=""; />
+
+<div class="popup_frame" >
+<div class="data_frame">
+	<ul>
+
+		<li class="space"></li>
+
+		<!--SIP Service Provider Selection START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str8)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str9)%> : </li>
+						<li class="right_table">
+							<span id="SPSelect" name="SPSelect" value=""></span>
+						</li>
+					</ul>
+				</div>
+			</li>
+		<!--SIP Service Provider Selection END-->
+
+		<li class="space"></li>	
+		
+		<!--General START-->
+		<li class="set1">
+			<div class="title"><%ejGetML(MLG_Common_General)%></div>
+			<div class="w_text">
+				<ul>
+					<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str10)%> : </li>
+					<li class="right_table">
+						<input id="VP_Name" type="text" maxlength="63" name="VP_Name"/>
+					</li>
+				</ul>
+				<ul>
+					<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str11)%> : </li>
+					<li class="right_table">
+						<input name="local_Port" type="text" id="local_Port" value="5060" onchange="javascript:rangeCheck(1025,65535,5060,this,1,1)" size="10" disabled="disabled"/><span >(1025-65535)</span>
+					</li>
+				</ul>
+				<ul>
+					<li class="left_table"><%ejGetML(MLG_ConnStatus_QuickStart_Str66)%></li>
+					<li class="right_table">
+						<input type="text" id="proxy_Addr" maxlength="63" name="proxy_Addr"/>
+					</li>
+				</ul>
+				<ul>
+					<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str12)%> : </li>
+					<li class="right_table">
+						<input id="proxy_Port" name="proxy_Port" type="text" size="10" value="5060" onchange="javascript:rangeCheck(1025,65535,5060,this,1,1)" disabled="disabled"/><span >(1025-65535)</span>
+					</li>
+				</ul>
+				<ul>
+					<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str3)%> : </li>
+					<li class="right_table">
+						<input type="text" id="reg_Addr" name="reg_Addr" maxlength="63" />
+					</li>
+				</ul>
+				<ul>
+					<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str13)%> : </li>
+					<li class="right_table">
+						<input id="reg_Port" name="reg_Port" type="text" size="10" value="5060" onchange="javascript:rangeCheck(1025,65535,5060,this,1,1)" disabled="disabled"/><span >(1025-65535)</span>
+					</li>
+				</ul>
+				<ul>
+					<li class="left_table"><%ejGetML(MLG_ConnStatus_QuickStart_Str67)%></li>
+					<li class="right_table">
+						<input type="text" id="domain_Name" maxlength="63" name="domain_Name"/>
+					</li>
+				</ul>
+			</div>
+		</li>
+		<!--General END-->
+	
+		<li>
+<span class="linking moreBtn" id="btn_wepmore" style="float:right;"><%ejGetML(MLG_Common_more)%>...</span>
+		</li>
+
+		<li class="space"> </li>
+
+		<div id='detailedInfo'  style="display:none; width:100%;">
+			<!--RFC support START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str14)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="all_table">
+							<input type='checkbox' size="10" name='support3263' id='support3263' onClick='rfc3263_showPort()'/> <%ejGetML(MLG_VoIP_SIPServiceProvider_Str15)%> 
+						</li>
+					</ul>
+					<ul id="select3262">
+						<li class="all_table">
+							<input type='checkbox' size="10" name='support3262' id='support3262' /> <%ejGetML(MLG_VoIP_SIPServiceProvider_Str16)%>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--RFC support END-->
+
+			<li class="space"></li>
+
+			<!--VoIP IOP Flags START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str17)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="all_table">
+							<input type='checkbox' size="10" name='voip_iop' id='voip_iop'/> <%ejGetML(MLG_VoIP_SIPServiceProvider_Str18)%>
+						</li>
+					</ul>
+					<ul>
+						<li class="all_table">
+							<input type='checkbox' size="10" name='voip_iop' id='voip_iop' /> <%ejGetML(MLG_VoIP_SIPServiceProvider_Str19)%>
+						</li>
+					</ul>
+					<ul>
+						<li class="all_table">
+							<input type='checkbox' size="10" name='voip_iop' id='voip_iop' /> <%ejGetML(MLG_VoIP_SIPServiceProvider_Str20)%>
+						</li>
+					</ul>
+					<ul>
+						<li class="all_table">
+							<input type='checkbox' size="10" name='voip_iop' id='voip_iop' /> <%ejGetML(MLG_VoIP_SIPServiceProvider_Str21)%>
+						</li>
+					</ul>					
+				</div>
+			</li>
+			<!--VoIP IOP Flags END-->
+
+			<li class="space"></li>
+
+			<!--Bound Interface Name START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str22)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str22)%> : </li>
+						<li class="right_table" id="ifNameTable">
+							<input name='if_Name' type='radio' onClick='hideMultiIf()' style="display: none"><a style="display: none">LAN</a>
+							<input name='if_Name' type='radio' onClick='hideMultiIf()'>Any_WAN
+							<input name='if_Name' type='radio' onClick='showMultiIf()'>Multi_WAN
+							<script language="javascript">
+								printInterfaceListBox()
+							</script>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--Bound Interface Name END-->
+
+			<li class="space"></li>
+
+			<!--Outbound Proxy START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str23)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str24)%> : </li>
+						<li class="right_table">
+							<input type="text" id="obProxy_Addr" maxlength="63" name="obProxy_Addr"/>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str25)%> : </li>
+						<li class="right_table">
+							<input id="obProxy_Port" name="obProxy_Port" type="text" size="10" value="5060" onchange="javascript:rangeCheck(1025,65535,5060,this,1,1)" /><span class="hint">(1025-65535)</span>
+						</li>
+					</ul>
+					
+					<!--  __ZyXEL__, Albert, 20131216, for DHCP option 120  -->							
+					<ul>
+						<li class="left_table">
+							<input type='checkbox' size="10" name='obProxy_Addr_op120' id='obProxy_Addr_op120' /> <%ejGetML(MLG_VoIP_SIPServiceProvider_Str26)%>
+						</li>
+					</ul>						
+				</div>
+			</li>
+			<!--Outbound Proxy END-->
+
+			<li class="space"></li>			
+			
+			<!--RTP Port Range START-->
+			<li class="set1" >
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str27)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_NAT_Applications_Str144)%>: </li>
+						<li class="right_table">
+							<input id="rtp_PortMin" name="rtp_PortMin" type="text"  size="10" onchange="javascript:rangeCheck(1026,65494,51000,this,1,1)"/><span class="hint">(1026-65494)</span>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_NAT_Applications_Str145)%>: </li>
+						<li class="right_table">
+							<input id="rtp_PortMax" name="rtp_PortMax" type="text" size="10" onchange="javascript:rangeCheck(1032,65500,65500,this,1,1)"/><span class="hint">(1032-65500)</span>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--RTP Port Range END-->
+			
+			<li class="space"></li>
+			
+			<!--SRTP Support START-->
+			<li class="set1" >
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str28)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="all_table">
+							<input type='checkbox' size="10" name='supportSRTP' id='supportSRTP' /> <%ejGetML(MLG_VoIP_SIPServiceProvider_Str28)%>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str29)%> : </li>
+						<li class="right_table">
+							<select id="SRTPCryptoSuite" name="SRTPCryptoSuite">
+								<option value="AES_CM_128_HMAC_SHA1_80" selected>AES_CM_128_HMAC_SHA1_80</option>
+								<option value="AES_CM_128_HMAC_SHA1_32">AES_CM_128_HMAC_SHA1_32</option>
+								<option value="AES_CM_128_NULL">AES_CM_128_NULL</option>
+								<option value="NULL_CIPHER_HMAC_SHA1_80">NULL_CIPHER_HMAC_SHA1_80</option>
+							</select>
+							<span class="hint"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str30)%></span>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--SRTP Support END-->
+
+			<li class="space"></li>
+
+			<!--DTMF Mode START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str31)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str31)%> : </li>
+						<li class="right_table">
+							<select id="dtmf_Relay" name="dtmf_Relay">
+								<option value="RFC2833" selected>RFC2833</option>
+								<option value="InBand">InBand</option>
+								<option value="SIPInfo">SIPInfo</option>
+							</select>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--DTMF Mode END-->
+			
+			<li class="space"></li>
+
+			<!--Transport Type START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str32)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str32)%> : </li>
+						<li class="right_table">
+							<select id="sipTransport" name="sipTransport">
+								<option value="UDP" selected><%ejGetML(MLG_Common_UDP)%></option>
+								<option value="TCP"><%ejGetML(MLG_Common_TCP)%></option>                  			  
+							</select>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--Transport Type END-->
+
+			<li class="space"></li>
+
+			<!--Ignore Direct IP START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str33)%> </div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table">
+							<input type="radio" name="VoIP_IgnoreDirectIP" value="0"><%ejGetML(MLG_Common_Enable)%>
+						</li>
+						<li class="right_table">
+							<input type="radio" name="VoIP_IgnoreDirectIP" value="1"><%ejGetML(MLG_Common_Disable)%>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--Ignore Direct IP END-->
+			
+			<li class="space"></li>
+
+			<!--FAX Option START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str34)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table">
+							<input type="radio" name="VoIP_FaxRelay" value="0" onclick='hideFaxPassthroughCodec(0)'><%ejGetML(MLG_VoIP_SIPServiceProvider_Str35)%>
+						</li>
+						<li class="right_table">
+							<input type="radio" name="VoIP_FaxRelay" value="1" onclick='hideFaxPassthroughCodec(1)'><%ejGetML(MLG_VoIP_SIPServiceProvider_Str36)%>
+						</li>
+					</ul>
+					<ul class="space"></ul>
+					<ul id='faxcodec'>
+						<li class="all_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str37)%></li>
+						<li class="all_table">
+							<input type="radio" name="faxPassCodec" value="pcmu"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str38)%>
+						</li>
+						<li class="all_table">
+							<input type="radio" name="faxPassCodec" value="pcma"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str39)%>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--FAX Option END-->
+			
+			<li class="space"></li>
+
+			<!--QoS Tag START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str40)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str41)%> : </li>
+						<li class="right_table">
+							<input id="tosByte_Sip" name="tosByte_Sip" type="text" size="2" onchange="rangeCheck(0,63,0,this,1,1)"/><span class="hint">(0-63)</span>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str42)%> : </li>
+						<li class="right_table">
+							<input id="tosByte_Rtp" name="tosByte_Rtp" type="text" size="2" onchange="rangeCheck(0,63,0,this,1,1)"/><span class="hint">(0-63)</span>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--QoS Tag END-->
+			
+			<li class="space"></li>
+
+			<!--Timer Setting START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str43)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str44)%> : </li>
+						<li class="right_table">
+							<input id="reg_ExpTmr" name="reg_ExpTmr" type="text" size="10" onchange="rangeCheck(20,65535,3600,this,1,1)"/><span class="hint">(20-65535) <%ejGetML(MLG_Common_Second)%> </span>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str45)%> : </li>
+						<li class="right_table">
+							<input id="reg_RetryInt" name="reg_RetryInt" type="text" size="10" onchange="rangeCheck(1,65535,180,this,1,1)"/><span class="hint">(1-65535) <%ejGetML(MLG_Common_Second)%>  </span>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str46)%> : </li>
+						<li class="right_table">
+							<input id="invite_ExpTmr" name="invite_ExpTmr" type="text" size="10" onchange="rangeCheck(91,3600,180,this,1,1)"/><span class="hint">(91-3600) <%ejGetML(MLG_Common_Second)%>  </span>
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str47)%> : </li>
+						<li class="right_table">
+							<input id="min_SE" name="min_SE" type="text" size="10"  onchange="rangeCheck(90,1800,120,this,1,1)"/><span class="hint">(90-1800) <%ejGetML(MLG_Common_Second)%>  </span>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--Timer Setting END-->
+
+			<li class="space"></li>
+
+			<!--Phone Key Config START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str48)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str49)%> : </li>
+						<li class="right_table">
+							<input id="callReturn" name="callReturn" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<!-- ZyXEL, Cathy add for Caller ID hidden/Display Call-->
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str50)%> : </li>
+						<li class="right_table">
+							<input id="CallidDisplay" name="CallidDisplay" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str51)%> : </li>
+						<li class="right_table">
+							<input id="CallerHiddenCall" name="CallerHiddenCall" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>					
+					<!-- ZyXEL, Cathy add end-->
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str52)%> : </li>
+						<li class="right_table">
+							<input id="oneShotCallidDisplay" name="oneShotCallidDisplay" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str53)%> : </li>
+						<li class="right_table">
+							<input id="oneShotCallerHiddenCall" name="oneShotCallerHiddenCall" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str54)%> : </li>
+						<li class="right_table">
+							<input id="CallWaitingEnable" name="CallWaitingEnable" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str55)%> : </li>
+						<li class="right_table">
+							<input id="CallWaitingDisable" name="CallWaitingDisable" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str56)%> : </li>
+						<li class="right_table">
+							<input id="IVR" name="IVR" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str57)%> : </li>
+						<li class="right_table">
+							<input id="InternalCall" name="InternalCall" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str58)%> : </li>
+						<li class="right_table">
+							<input id="CallTransfer" name="CallTransfer" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<!--
+					<ul>
+						<li class="left_table">Call Park : </li>
+						<li class="right_table">
+							<input id="CallPark" name="CallPark" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table">Call Park Retreive : </li>
+						<li class="right_table">
+							<input id="CallParkRetreive" name="CallParkRetreive" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					-->
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str59)%> : </li>
+						<li class="right_table">
+							<input id="unCallForwardEnable" name="unCallForwardEnable" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str60)%> : </li>
+						<li class="right_table">
+							<input id="unCallForwardDisable" name="unCallForwardDisable" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str61)%> : </li>
+						<li class="right_table">
+							<input id="noCallForwardEnable" name="noCallForwardEnable" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str62)%> : </li>
+						<li class="right_table">
+							<input id="noCallForwardDisable" name="noCallForwardDisable" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str63)%> : </li>
+						<li class="right_table">
+							<input id="BusyCallForwardEnable" name="BusyCallForwardEnable" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str64)%> : </li>
+						<li class="right_table">
+							<input id="BusyCallForwardDisable" name="BusyCallForwardDisable" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str65)%> : </li>
+						<li class="right_table">
+							<input id="oneShotCallWaitingEnable" name="oneShotCallWaitingEnable" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str66)%> : </li>
+						<li class="right_table">
+							<input id="oneShotCallWaitingDisable" name="oneShotCallWaitingDisable" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str67)%> : </li>
+						<li class="right_table">
+							<input id="dndenable" name="dndenable" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str68)%> : </li>
+						<li class="right_table">
+							<input id="dnddisable" name="dnddisable" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str69)%> : </li>
+						<li class="right_table">
+							<input id="ccbsDeactive" name="ccbsDeactive" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str70)%> : </li>
+						<li class="right_table">
+							<input id="outgoingSip" name="outgoingSip" type="text" size="4" maxlength="4" />
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--Phone Key Config END-->
+
+			<li class="space"></li>
+		
+			<!--Dial Plan START-->
+			<li class="set1" >
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str71)%>Dial Plan</div>
+				<div class="w_text3">
+					<ul>
+						<li class="left_table">
+							<input type='checkbox' size="10" name='dialPlanEnable' /> <%ejGetML(MLG_VoIP_SIPServiceProvider_Str71)%> <%ejGetML(MLG_Common_Enable)%>
+						</li>
+					</ul>
+					<ul>
+						<li class="right_table">
+							<textarea id="iddialPlan" name="dialPlan" wrap="VIRTUAL" rows="5" cols="40" style="width:95%" onBlur="checkchars(this,512)"> <%ejGetML(MLG_VoIP_SIPServiceProvider_Str72)%></textarea>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--Dial Plan END-->
+			
+			<li class="space"></li>
+
+			<!--Dialing Interval Selection START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str73)%></div>
+				<div class="w_text">
+					<ul>
+						<li class="left_table"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str73)%> : </li>
+						<li class="right_table">
+							<select id="dialingIntervalTime" name="dialingIntervalTime">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3" selected="selected">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+							</select>
+							<span class="hint"><%ejGetML(MLG_Common_Second)%></span>
+						</li>
+					</ul>
+				</div>
+			</li>
+			<!--Dialing Interval Selection END-->
+
+			<li class="space"> </li>
+
+			<!--Immediate Dial Enable START-->
+			<li class="set1">
+				<div class="title"><%ejGetML(MLG_VoIP_SIPServiceProvider_Str74)%></div>
+				<div class="w_text">
+					<input type='checkbox' size="10" name='pound_Enable' id='pound_Enable' /> <%ejGetML(MLG_VoIP_SIPServiceProvider_Str74)%>
+				</div>
+			</li>
+			<!--Immediate Dial Enable END-->
+
+		</div>
+	
+		<li class="space"> </li>
+	</ul>
+</div>
+</div>
+</form>

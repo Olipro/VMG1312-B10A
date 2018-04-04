@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/des/asm
+END
+desboth.pl
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/des/asm/desboth.pl
+END
+des-586.pl
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/des/asm/des-586.pl
+END
+des686.pl
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/des/asm/des686.pl
+END
+readme
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/des/asm/readme
+END
+crypt586.pl
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/des/asm/crypt586.pl
+END

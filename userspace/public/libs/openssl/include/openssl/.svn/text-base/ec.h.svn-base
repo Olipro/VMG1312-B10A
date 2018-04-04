@@ -1,0 +1,1 @@
+link ../../crypto/ec/ec.h

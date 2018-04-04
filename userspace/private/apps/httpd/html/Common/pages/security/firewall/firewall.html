@@ -1,0 +1,265 @@
+<script language='javascript'>
+<!-- hide
+var optionLength = 4;
+var periousValue = 2;
+var silder;
+var currfwLevel = '<%ejGet(fwLevel)%>';
+var glbFwLevel;
+var enbl_Fw = '<%ejGet(enblFw)%>';
+
+var supportIPv6 = '<%ejGetOther(sysInfo, buildIPv6)%>';
+var supportFwIdpt = '<%ejGetOther(sysInfo, buildFwIdpt)%>'; //support ipv4 or ipv6 firewall control
+var enbl_Fw_ipv4 = '<%ejGet(enblFw_ipv4)%>';
+var enbl_Fw_ipv6 = '<%ejGet(enblFw_ipv6)%>';
+
+//ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+var customizationFlag = '<%ejGetOther(customizationFlag)%>';
+
+//hide all selections	
+function stopSilde(){
+	for (var x = 1; x <= optionLength - 1; x++) {
+		if (silder.value == x) 
+			continue;
+		$('#select_' + x).find('._on').attr('style', 'display:none;');
+		$('#select_' + x).find('._off').removeAttr('style');
+	}
+	$('#error_mssage').fadeOut('fast');
+}
+
+function updateSliderHandlePQAAttr(value){
+    switch (value) {
+      case 1:
+          $('#silder .ui-slider-handle').attr('pqaattr', 'None');
+          break;
+      case 2:
+          $('#silder .ui-slider-handle').attr('pqaattr', 'Medium');
+          break;
+      case 3:
+          $('#silder .ui-slider-handle').attr('pqaattr', 'High');
+          break;
+    }
+}
+
+function frmLoad() {
+    stopSilde();
+
+    $('#select_'+glbFwLevel).trigger('selectMe');
+
+    periousValue = glbFwLevel;
+    
+    updateSliderHandlePQAAttr(periousValue);
+    
+    $("#silder").slider('value', glbFwLevel); 
+	
+	if(supportFwIdpt == '1'){
+		if(enbl_Fw_ipv4=='1')
+		  $("input[name='enblFw_ipv4']").get(0).checked = true;
+		else 
+		  $("input[name='enblFw_ipv4']").get(1).checked = true;
+	
+		if(enbl_Fw_ipv6=='1')
+		  $("input[name='enblFw_ipv6']").get(0).checked = true;
+		else 
+		  $("input[name='enblFw_ipv6']").get(1).checked = true;
+	}
+	else{
+		if(enbl_Fw=='1')
+		  $("input[name='enblFw']").get(0).checked = true;
+		else 
+		  $("input[name='enblFw']").get(1).checked = true;
+	}	
+}
+
+$(document).ready(function() {
+    if (currfwLevel == 'High')
+      	glbFwLevel = 3;
+    else if (currfwLevel == 'Medium')
+       	glbFwLevel = 2;
+    else
+      	glbFwLevel = 1;
+        
+    for (var x = 1; x <= optionLength - 1; x++) {
+        $('#select_' + x).bind('selectMe', function(e){
+            {;
+                $(e.target).find('._off').fadeOut('fast');
+                $(e.target).find('._on').fadeIn('fast');
+            }
+        });
+    }
+    $('#select_4').bind('selectMe', function(e){
+        $('#error_mssage').fadeIn('fast');
+    });
+
+    silder = $("#silder").slider({
+        value: glbFwLevel,
+        animate: true,
+        orientation: 'horizontal',
+        min: 1,
+        max: 3,
+        //handle: $('.draw_btn'),
+        step: 1,
+//modify 20100114 start
+	      change: function(event, ui){
+            if (periousValue != ui.value) {
+                stopSilde();
+                $('#select_' + ui.value).trigger('selectMe');
+                updateSliderHandlePQAAttr(ui.value);
+                if (ui.value == 1)
+                  $("#fwLevel").attr("value", "Low");
+                else if (ui.value == 2)
+                  $("#fwLevel").attr("value", "Medium");
+                else
+                  $("#fwLevel").attr("value", "High");
+                periousValue = ui.value;
+//modify 20100114 end
+            }
+        }
+    });
+
+    $('li.sliderBlock').each(function(i, d){
+      $(this).click(function(){
+          $("#silder").slider('value', i + 1); 
+      })
+    });
+
+	if(supportFwIdpt == '1'){
+		var text = '<ul>';
+			text+= '<li class="left_table">IPv4 <%ejGetML(MLG_Menu_Firewall)%> :</li>';
+			text+= '<li class="right_table">';
+			text+= '<input name="enblFw_ipv4" id="FwIpv4_enbl" type="radio" value="1" />';
+			text+= '&nbsp;<label for="FwIpv4_enbl" style="float:none"><%ejGetML(MLG_Security_FirewallACL_Str4)%></label>';
+			text+= '&nbsp;&nbsp;&nbsp;&nbsp;'
+			text+= '<input name="enblFw_ipv4" id="FwIpv4_disbl" type="radio" value="0" />';
+			text+= '&nbsp;<label for="FwIpv4_disbl" style="float:none"><%ejGetML(MLG_Security_FirewallACL_Str5)%></label>';
+			text+= '</li>';
+		if(supportIPv6){
+			text+= '<li class="left_table">IPv6 <%ejGetML(MLG_Menu_Firewall)%> :</li>';
+			text+= '<li class="right_table">';
+			text+= '<input name="enblFw_ipv6" id="FwIpv6_enbl" type="radio" value="1" />';
+			text+= '&nbsp;<label for="FwIpv6_enbl" style="float:none"><%ejGetML(MLG_Security_FirewallACL_Str4)%></label>';
+			text+= '&nbsp;&nbsp;&nbsp;&nbsp;'
+			text+= '<input name="enblFw_ipv6" id="FwIpv6_disbl" type="radio" value="0" />';
+			text+= '&nbsp;<label for="FwIpv6_disbl" style="float:none"><%ejGetML(MLG_Security_FirewallACL_Str5)%></label>';
+			text+= '</li>';
+		}
+			text+= '</ul>';
+
+		$("#firewall_enbl").html(text);
+
+		if(enbl_Fw_ipv4=='1')
+		  $("input[name='enblFw_ipv4']").get(0).checked = true;
+		else 
+		  $("input[name='enblFw_ipv4']").get(1).checked = true;
+	
+		if(enbl_Fw_ipv6=='1')
+		  $("input[name='enblFw_ipv6']").get(0).checked = true;
+		else 
+		  $("input[name='enblFw_ipv6']").get(1).checked = true;
+	}
+	else{
+		var text = '<ul>';
+			text+= '<li class="left_table"><%ejGetML(MLG_Menu_Firewall)%> :</li>';
+			text+= '<li class="right_table">';
+			text+= '<input name="enblFw" id="Fw_enbl" type="radio" value="1" />';
+			text+= '&nbsp;<label for="Fw_enbl" style="float:none"><%ejGetML(MLG_Security_FirewallACL_Str4)%></label>';
+			text+= '&nbsp;&nbsp;&nbsp;&nbsp;'
+			text+= '<input name="enblFw" id="Fw_disbl" type="radio" value="0" />';
+			text+= '&nbsp;<label for="Fw_disbl" style="float:none"><%ejGetML(MLG_Security_FirewallACL_Str5)%></label>';
+			text+= '</li>';
+			text+= '</ul>';
+
+		$("#firewall_enbl").html(text);
+
+		if(enbl_Fw=='1')
+		  $("input[name='enblFw']").get(0).checked = true;
+		else 
+		  $("input[name='enblFw']").get(1).checked = true;
+	}
+
+		frmLoad();
+    
+	  var errMsg = "<%ejGetOther(errMsg)%>";
+
+	  if (errMsg != '')
+	  {
+	  	hciAlert(errMsg, 2);
+	  }
+	
+//ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+	if((customizationFlag & 0x00080000)){
+		var text = "&nbsp;(1) <%ejGetML(MLG_Security_Note_Str1)%> <br>";
+			text+= "&nbsp;(2) <%ejGetML(MLG_Security_Note_Str2)%> <br>";
+    	$("#note_text").html(text);			
+    }else{
+		var text = "&nbsp;(1) <%ejGetML(MLG_Security_Note_Str1)%> <br>";
+			text+= "&nbsp;(2) <%ejGetML(MLG_Security_Note_Str2)%> <br>";
+			text+= "&nbsp;(3) <%ejGetML(MLG_Security_Note_Str3)%> ";    
+    	$("#note_text").html(text);			
+    }	
+});
+
+function btnApply()
+{
+	$.openLoadingMask(1);
+	document.forms[0].submit();
+}
+
+//-->
+</script>
+<form action="/pages/tabFW/firewall-cfg.cgi" method="post">
+<input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">
+<input type="hidden" name="fwLevel" id="fwLevel" value='<%ejGet(fwLevel)%>' >
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Security_FirewallIndex)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1"> <div class="w_text">
+<div id="firewall_enbl">
+</div>
+</li>
+</ul>
+<ul>
+<li class="set1">
+<div class="security" style=" margin-top:20px;">
+<div class="i_firewall_img"></div>
+<div class="level_item  clearfix"><ul><li><%ejGetML(MLG_Security_LAN_to_WAN)%></li><li><%ejGetML(MLG_Security_WAN_to_LAN)%></li></ul> <br style="clear:both;" /></div>
+<div class="level_color"><ul><li><img src="../../images/i_s_bar_left.gif" /></li><li class="s01 sliderBlock" id='slider_none'><span class="triangle" style="margin-left:60px;"></span></li><li class="s02 sliderBlock" id='slider_Medium'><span class="triangle"></span></li><li class="s03 sliderBlock" id='slider_High'><span class="triangle"></span></li><li><img src="../../images/i_s_bar_right.gif" /></li></ul> </div>
+<div class="draw">
+<div style="position:absolute; z-index:100; width:262px; margin:0 auto; margin-top:10px; left: 60px; top: -10px;">
+<div id='silder'><a href="#"></a></div></div>
+<ul><li class="draw_center">&nbsp;</li></ul> 
+</div>
+<span id ='select_1'>
+<div id="low" class='_off'><ul>
+  <div class="dataword"><%ejGetML(MLG_Security_Low)%></div>
+  <li>&nbsp;</li><li>&nbsp;</li></ul> </div>
+<div id="low_on" class='_on' style="display:none;"><ul><div class="dataword" style="line-height:20px;"><%ejGetML(MLG_Security_Low)%></div><li>&nbsp;</li><li>&nbsp;</li></ul> </div>
+</span>
+<span id ='select_2'>
+<div id="medium" class='_off'><ul><div class="dataword"><%ejGetML(MLG_Security_Medium)%><br /><%ejGetML(MLG_Security_Recommended)%></div><li>&nbsp;</li><li class="block">&nbsp;</li></ul> </div>
+<div id="medium_on" style="display:none;" class='_on'><ul><div class="dataword"><%ejGetML(MLG_Security_Medium)%><br /><%ejGetML(MLG_Security_Recommended)%></div><li>&nbsp;</li><li class="block">&nbsp;</li></ul> 
+</div>
+</span>
+<span id ='select_3'>
+<div id="high" class='_off'><ul><div class="dataword"><%ejGetML(MLG_Security_High)%></div><li>&nbsp;</li><li>&nbsp;</li></ul></div>
+<div id="high_on" style="display:none;" class='_on'><ul><div class="dataword"><%ejGetML(MLG_Security_High)%></div><li>&nbsp;</li><li>&nbsp;</li></ul> 
+</div>
+</span>
+</div>
+</li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Security_FirewallProtocol_Str7)%>:</span></div>
+<div class="note_text" id = "note_text" >
+
+</div></li><li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onclick="btnApply();" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();'/></div></li>
+<!--Button define end-->
+</ul> </div>
+</div>
+<br/><br/>
+</form>

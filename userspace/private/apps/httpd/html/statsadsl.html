@@ -1,0 +1,82 @@
+<html>
+   <head>
+      <meta http-equiv='Pragma' content='no-cache'>
+      <meta http-equiv="refresh" content="15">
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript">
+<!-- hide
+var DslBondingEnabled='<%ejGetOther(isDslBondingEnabled)%>';
+var currLineNum='<%ejGet(bondingLineNum)%>';
+function frmLoad() {
+   var errMsg = '<%ejGetOther(memInfo, errMsg)%>';
+   
+   if ( errMsg != '&nbsp' )
+      eval('location="statsadslerr.html"');
+}
+
+function btnBerTest() {
+   var options;
+
+   options = 'menubar=no,resizable=no,scrollbars=yes,titlebar=yes,toolbar=no,width=400,height=300';
+
+   window.open('berstart.tst?berState=1', 'BCM963xxBerTest', options);
+}
+
+function btnReset() {
+   var loc = 'statsadslreset.html';
+
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function changeLineNum() {
+   var loc = 'statsadsl.cgi?';   
+   with ( document.forms[0] ) { 
+       loc += 'bondingLineNum=' + lineNum.value;   
+   }
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function btnClose() {
+   window.close();
+}
+
+// done hiding -->
+      </script>
+   </head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <form>
+            <b>Statistics -- xDSL</b><br><br>
+<script language="javascript">
+            if ( DslBondingEnabled == 1 ) {
+               document.write("<br>");
+               document.write("Bonding Line Selection  <select size=\"1\" name=\"lineNum\" onChange='changeLineNum()'> \n");
+               if ( currLineNum == 0 ) {
+                   document.write("<option value=\"0\" selected=\"1\"> line 0 \n");
+               } else {
+                   document.write("<option value=\"0\"> line 0 \n");
+               }
+               if ( currLineNum == 1 ) {
+                   document.write("<option value=\"1\" selected=\"1\"> line 1 \n");
+               } else {
+                   document.write("<option value=\"1\"> line 1 \n");
+               }
+               document.write("</option> </select>\n");
+               document.write("<br><br>");
+            }
+</script>
+            <table border="1" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td><%ejGetOther(stsadslget, 0, 0)%>&nbsp;</td>
+               </tr>
+            </table>
+            <br><br>
+            <input type='button' onClick='btnBerTest()' value='xDSL BER Test'>
+            <input type='button' onClick='btnReset()' value='Reset Statistics'>
+         </form>
+      </blockquote>
+   </body>
+</html>

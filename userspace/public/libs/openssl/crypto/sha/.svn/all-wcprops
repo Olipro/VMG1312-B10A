@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/sha
+END
+sha1dgst.c
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/sha/sha1dgst.c
+END
+sha1s.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/sha/sha1s.cpp
+END
+sha.h
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/sha/sha.h
+END
+sha_locl.h
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/sha/sha_locl.h
+END
+sha.c
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/sha/sha.c
+END
+shatest.c
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/sha/shatest.c
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/sha/Makefile
+END
+sha1.c
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/sha/sha1.c
+END
+sha1test.c
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/sha/sha1test.c
+END
+sha_dgst.c
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/sha/sha_dgst.c
+END
+sha_one.c
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/sha/sha_one.c
+END
+sha1_one.c
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/sha/sha1_one.c
+END

@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/MacOS/GetHTTPS.src
+END
+ErrorHandling.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/MacOS/GetHTTPS.src/ErrorHandling.cpp
+END
+MacSocket.h
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/MacOS/GetHTTPS.src/MacSocket.h
+END
+CPStringUtils.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/MacOS/GetHTTPS.src/CPStringUtils.hpp
+END
+GetHTTPS.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/MacOS/GetHTTPS.src/GetHTTPS.cpp
+END
+ErrorHandling.hpp
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/MacOS/GetHTTPS.src/ErrorHandling.hpp
+END
+MacSocket.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/MacOS/GetHTTPS.src/MacSocket.cpp
+END
+CPStringUtils.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/MacOS/GetHTTPS.src/CPStringUtils.cpp
+END

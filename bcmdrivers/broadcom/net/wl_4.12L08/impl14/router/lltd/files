@@ -1,0 +1,13 @@
+FILES = osl-linux.c
+FILES += main.c
+FILES += event.c
+FILES += util.c
+FILES += packetio.c
+FILES += band.c
+FILES += state.c
+FILES += sessionmgr.c
+FILES += enumeration.c
+FILES += mapping.c
+FILES += seeslist.c
+FILES += tlv.c
+FILES += qospktio.c

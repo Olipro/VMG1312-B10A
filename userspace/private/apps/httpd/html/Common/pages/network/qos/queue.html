@@ -1,0 +1,283 @@
+<script language="javascript">
+<!-- hide
+   clearTimeout(gblTimeValue);
+// done hiding -->
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+var autoMapType = '<%ejGetOther(qosMgmtAutoMapType, all)%>';
+var errMsg = "<%ejGetOther(errMsg)%>";
+
+$(function(){
+/*
+    $('#editBtn').click(function(mac){
+        var db1 = window.parent.$.zyUiDialog({
+            width: 600,
+            height: 320,
+            title: '<%ejGetML(MLG_QOS_QOSQueueSetup_Str14)%>',
+						buttons: {
+						'<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close');},
+						'<%ejGetML(MLG_Common_Apply)%>': function(){}
+						}
+        });
+    		var link = 'qos-qos_queue_edit.cgi';
+    		link = link+'?action=openforEdit&qosQueueKey='+mac;
+    		link = link+'&sessionKey=' + gblsessionKey;
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+*/
+    $('#addnewshareBtn').click(function(){
+    
+       var db1 = window.parent.$.zyUiDialog({
+            width: 600,
+            height: 320,
+            title: '<%ejGetML(MLG_QOS_QOSQueueSetup_Str3)%>',
+			buttons: {
+				'<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close');},
+				'<%ejGetML(MLG_Common_OK)%>': function(){}
+			}
+
+        });
+    var link = 'pages/network/qos/queue_add.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+/*
+    $('#deleteBtn').click(function(mac){
+    
+        var db1 = window.parent.$.zyUiDialog({
+            width: 450,
+            height: 190,
+            title: '<%ejGetML(MLG_Common_Delete)%>',
+            buttons: {
+                '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close');},
+                '<%ejGetML(MLG_Common_OK)%>': function(mac){db1.dialog('close'); deleteProcess(mac);}
+            }
+      
+        });
+    var link = 'pages/delete.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+*/
+});
+
+function editClick(mac) {
+   var loc = 'qos-qos_queue_edit.cgi?action=openforEdit&qosQueueKey=' + mac;
+   loc += '&sessionKey=' + gblsessionKey;
+
+   var db1 = window.parent.$.zyUiDialog({
+              width: '75%',
+              height: 370,
+              title: '<%ejGetML(MLG_QOS_QOSQueueSetup_Str14)%>',
+
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close');  },
+                 '<%ejGetML(MLG_Common_Apply)%>':function(){}
+              }
+             });
+   db1.load(loc);
+   db1.dialog('open');
+}
+
+function deleteProcess(mac) {
+			var lst = '';
+			for (i = 0; i < 32; i++) {
+				if ( i==mac )
+					lst += '1,';
+				else
+					lst += '0,';
+			}
+	 with ( document.forms[0] ) {
+      sessionKey.value = gblsessionKey;
+      $('#rmLst').val(lst);
+      $.openLoadingMask(1);
+      document.forms[0].submit();
+   }
+}
+
+function removeClick(mac) {
+   var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 200,
+              title: '<%ejGetML(MLG_QOS_QOSQueueSetup_Str22)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_No)%>': function(){ db1.dialog('close'); },
+                 '<%ejGetML(MLG_Common_Yes)%>': function(){ db1.dialog('close'); deleteProcess(mac); }
+              }
+             });
+   db1.load('pages/delete.html');
+   db1.dialog('open');
+}
+
+function enableProcess(mac) {
+		var lst = '';
+	for (i = 0; i < 32; i++) {
+		if ( i==mac )
+			lst += '1,';
+		else
+			lst += '0,';
+	}
+	 with ( document.forms[0] ) {
+      sessionKey.value = gblsessionKey;
+      $('#eblLst').val(lst);
+      action.value = "enable";
+      $.openLoadingMask(1);
+      submit();
+   }
+}
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+       var qosQueueCount = '<%ejGetOther(qosQueueCount, all)%>';
+       var qosWanLanCount = qosQueueCount.split('/');
+       if(autoMapType != '0' || (qosWanLanCount[0]==8 && qosWanLanCount[1]==3)) {
+           showhide("AddQueue", 0);
+       }
+       if(errMsg != ""){
+		   hciAlert(errMsg, {height: 180, type: 2, title: ''});
+           return;
+			 }
+   }
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+</script>
+<form action="/pages/tabFW/qos-qosqueue.cmd" method="post">
+   <input type=hidden name="sessionKey" id="sessionKey">
+   <input type=hidden name="action" id="action" value="remove">
+   <input type=hidden name="rmLst" id="rmLst" value="">
+   <input type=hidden name="eblLst" id="eblLst" value="">
+   </form>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div>
+  <b class="r1"></b>
+  <b class="r2"></b>
+  <b class="r3"></b>
+  <b class="r4"></b>
+  <b class="r4"></b>
+</div>
+<div class="explain_text"><%ejGetML(MLG_QOS_QOSQueueSetup_Str1)%></div>
+<div>
+  <b class="r4"></b>
+  <b class="r4"></b>
+  <b class="r3"></b>
+  <b class="r2"></b>
+  <b class="r1"></b>
+</div>
+</div>
+<!--Unit Explain End-->
+<div class="data_frame">
+  <ul>
+    <li class="set1">
+<!---
+      <div class="w_text">
+        <ul>
+          <li class="left_table">Default Queue</li>
+          <li class="right_table">
+              <select name="defaultQueue" id="defaultQueue" >
+              <option value="-1"> None </option>
+              <option value="0"> QueuePri1 </option>
+              <option value="1"> QueuePri2 </option>
+              <option value="2"> QueuePri3 </option>
+              <option value="3"> QueuePri4 </option>
+            </select>
+          </li>
+        </ul>
+      </div>
+--->
+      <div id="AddQueue" class="w_table">
+        <input type="button" value="<%ejGetML(MLG_QOS_QOSQueueSetup_Str3)%>" id='addnewshareBtn'>
+      </div>
+      <div class="w_table">
+<!--Table define start-->
+        <table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame" id="queueTable">
+          <tr align="center" valign="top">
+            <td width="5%" class="top_font ">#</td>
+            <td class="top_font "><%ejGetML(MLG_Network_StaticRoute_Str3)%></td>
+            <td class="top_font "><%ejGetML(MLG_Network_StaticRoute_Str4)%></td>
+            <td class="top_font "><%ejGetML(MLG_Network_StaticRoute_Str8)%></td>
+            <td class="top_font "><%ejGetML(MLG_QOS_QOSQueueSetup_Str8)%></td>
+            <td class="top_font "><%ejGetML(MLG_QOS_QOSQueueSetup_Str9)%></td>
+            <td  class="top_font "><%ejGetML(MLG_QOS_QOSQueueSetup_Str10)%></td>
+            <td  class="top_font "><%ejGetML(MLG_QOS_QOSQueueSetup_Str11)%></td>
+            <td width="60"  class="top_font " style="border-right:0px;"><%ejGetML(MLG_Network_StaticRoute_Str9)%></td>
+          </tr>
+          <tr align="center">
+<script language="javascript">
+<!-- hide
+{
+   var i = 0;
+   var queuelist = '<%ejGetOther(qosQueueList)%>';
+/*   var staticiplease = '1/00:19:cb:11:22:33/192.168.1.100|0/00:11:22:ab:12:13/192.168.1.200'; */
+   var info = queuelist.split('|');
+   var str = '';
+
+   staticiplease_count = 0;
+   if (info != '') {
+      for ( i = 0; i < info.length; i++ ) {
+         var names = info[i].split(':');
+         str += "<tr align=\"center\" >";
+         str += "<td class=\"table_font\">" + (i + 1) + "</td>";
+         if (names[1] == "1")
+         {
+            if ((autoMapType != '0' || names[4] == '8') && (names[3] != 'LAN/WLAN'))
+               str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" class=\"active_on\" id='activeoffBtn' title=\"<%ejGetML(MLG_Common_On)%>\"></a></li></ul></div></td>";
+            else
+               str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"enableProcess('" + i + "')\" class=\"active_on\" id='activeoffBtn' title=\"<%ejGetML(MLG_Common_On)%>\"></a></li></ul></div></td>";
+         }
+         else
+         {
+            if ((autoMapType != '0' || names[4] == '8') && (names[3] != 'LAN/WLAN'))
+               str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" class=\"active_off\" id='activeonBtn' title=\"<%ejGetML(MLG_Common_Off)%>\"</a></li></ul></div></td>";
+            else
+               str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"enableProcess('" + i + "')\" class=\"active_off\" id='activeonBtn' title=\"<%ejGetML(MLG_Common_Off)%>\"</a></li></ul></div></td>";
+         }
+         str += "<td class=\"table_font\">" + names[2] + "</td>";
+         str += "<td class=\"table_font\">" + names[3] + "</td>";
+         str += "<td class=\"table_font\">" + names[4] + "</td>";
+         str += "<td class=\"table_font\">" + names[5] + "</td>";
+         str += "<td class=\"table_font\">" + names[6] + "</td>";
+         str += "<td class=\"table_font\">" + names[7] + "</td>";
+         str += "<td class=\"table_font\"><div class=\"i_modify\"><ul>";
+         if(names[4] != '8')
+           str += "<li><a href=\"#\" onClick=\"editClick('" + names[0] + "')\" class=\"edit\" title=\"<%ejGetML(MLG_Common_Edit)%>\" id='editBtn'></a></li>";
+         if(autoMapType == '0' && names[4] != '8')
+           str += "<li><a href=\"#\" onclick=\"removeClick('" + i + "');\" class=\"delete\" title=\"<%ejGetML(MLG_Common_Delete)%>\" id='deleteBtn'></a></li>";
+         str += "</ul></div></td>";
+/*         str += "<td class=\"table_font\"><a onClick=\"editClick('" + names[1] + "')\" onmouseout=\"MM_swapImgRestore()\" onmouseover=\"MM_swapImage('ImageEdit" + i +"','','../../images/i_edit_on.gif',1)\" ><img src=\"../../images/i_edit.gif\" name=\"ImageEdit" + i + "\" width=\"18\" height=\"18\" border=\"0\" id=\"ImageEdit" + i + "\"  title=\"<%ejGetML(MLG_Common_Edit)%>\"/></a>&nbsp;&nbsp;<a onmouseout=\"MM_swapImgRestore()\" onmouseover=\"MM_swapImage('ImageDel" + i + "','','../../images/i_delete_on.gif',1)\"><img src=\"../../images/i_delete.gif\" name=\"ImageDel" + i + "\" width=\"18\" height=\"18\" border=\"0\" id=\"ImageDel" + i + "\" title=\"Delete\" onclick=\"removeClick('"+ names[1] + "')\" /></a></td>"; */
+         str += "</tr>";
+
+         staticiplease_count++;
+      }
+   }
+
+   $('#queueTable').append(str)
+}
+// done hiding -->
+</script>
+        </table>
+      </div>
+    </li>
+    <li class="space"></li>
+<!--Note define start-->
+    <li class="set2note">
+      <div class="w_text">
+        <span class="i_note"><%ejGetML(MLG_Network_Note)%>:</span>
+      </div>
+      <div class="note_text"><%ejGetML(MLG_QOS_QOSQueueSetup_Str12)%></div>
+    </li><!--Note define end-->
+    <li class="space"></li>
+  </ul>
+</div>
+<!--Set area end-->
+</div>

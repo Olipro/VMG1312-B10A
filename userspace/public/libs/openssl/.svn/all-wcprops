@@ -1,0 +1,161 @@
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/TPDC/Broadcom/!svn/ver/8373/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl
+END
+INSTALL.W32
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/INSTALL.W32
+END
+makevms.com
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/makevms.com
+END
+Configure
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/Configure
+END
+LICENSE
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/LICENSE
+END
+install.com
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/install.com
+END
+INSTALL.WCE
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/INSTALL.WCE
+END
+PROBLEMS
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/PROBLEMS
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/README
+END
+e_os2.h
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/e_os2.h
+END
+README.ASN1
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/README.ASN1
+END
+README.ENGINE
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/README.ENGINE
+END
+Makefile.org
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/Makefile.org
+END
+openssl.doxy
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/openssl.doxy
+END
+config
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/config
+END
+INSTALL
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/INSTALL
+END
+CHANGES.SSLeay
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/CHANGES.SSLeay
+END
+FAQ
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/FAQ
+END
+INSTALL.MacOS
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/INSTALL.MacOS
+END
+CHANGES
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/CHANGES
+END
+INSTALL.OS2
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/INSTALL.OS2
+END
+INSTALL.DJGPP
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/INSTALL.DJGPP
+END
+INSTALL.VMS
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/INSTALL.VMS
+END
+e_os.h
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/e_os.h
+END
+NEWS
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/NEWS
+END
+openssl.spec
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/openssl.spec
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/TPDC/Broadcom/!svn/ver/8373/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/Makefile
+END

@@ -1,0 +1,168 @@
+
+<script type="text/javascript">
+$(function(){
+    $('#editBtn').click(function(){
+    
+        var db1 = window.parent.$.zyUiDialog({
+            width: 770,
+            height: 430,
+            title: 'Analog Phone Edit'
+        });
+		var link = 'pages/voip/phone/phoneDevice_edit.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+    
+    $('.delete').click(function(){
+    
+        var db1 = window.parent.$.zyUiDialog({
+            width: 450,
+            height: 190,
+            title: 'Delete sample',
+            buttons: {
+                '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close')},
+                '<%ejGetML(MLG_Common_OK)%>': function(){}
+            }
+			
+        });
+		var link = 'pages/delete.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+});
+ </script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">Phone Device configuration defines the relations between your SIP account(s) and phone(s). That is, which phone(s) will ring when a specific SIP account number receive an incoming call; and which SIP account number will be used when a specific phone is used to make an outgoing call.
+ </div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<li class="set1">
+<div class="title">Analog Phone</div>
+<div class="w_table">
+  <!--Table define start-->
+<table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;"class="table_frame" id="phonedeviceTable1">
+                <tr align="center" valign="top">
+                  <td width="5%" class="top_font">#</td>
+                  <td class="top_font">Phone ID</td>
+                  <td class="top_font">Outgoing SIP Number</td>
+                  <td width="10%"class="top_font">Incoming SIP Number</td>
+                  <td width="10%"class="top_font">Test</td>
+                  <td width="60"  class="top_font" style="border-right:0px;"><%ejGetML(MLG_Common_Modify)%></td>
+                </tr>
+                <tr align="center">
+                  <td class="table_font">1</td>
+                  <td class="table_font">Analog phone 1</td>
+                  <td class="table_font textOverflow">SIP-1 (1234567)</td>
+                  <td class="table_font textOverflow">SIP1(1234567)</td>
+                  <td class="table_font"><span class="all_table">
+                    <input  type="submit"  value="Test"  />
+                  </span></td>
+                  <td class="table_font"><div class="i_modify"><ul><li><a href="#" class="edit" id='editBtn' title="<%ejGetML(MLG_Common_Edit)%>"></a></li><li ><a href="#"  id='deleteBtn' class="delete" title="<%ejGetML(MLG_Common_Delete)%>"></a></li></ul></div></td>
+                  </tr>
+              </table>
+</div></li>
+<li class="space"></li>
+<li class="set1">
+<div class="title">DECT Phone</div>
+<div class="w_table"> <input type="button" name="sysAddUserBtn" value="Un-register all"/> </div>
+<div class="w_table">
+  <!--Table define start-->
+<table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame" id="phonedeviceTable2">
+                <tr align="center" valign="top">
+                  <td width="5%" class="top_font">#</td>
+                  <td class="top_font">Registered DECT Phone</td>
+                  <td class="top_font">Outgoing SIP Number</td>
+                  <td width="10%"class="top_font">Incoming SIP Number</td>
+                  <td width="10%"class="top_font">Test</td>
+                  <td width="60"  class="top_font" style="border-right:0px;"><%ejGetML(MLG_Common_Modify)%></td>
+                </tr>
+                <tr align="center">
+                  <td class="table_font">1</td>
+               <td  class="table_font">DECT-01</td>
+                  <td  class="table_font textOverflow">SIP-1 (1234567)</td>
+                  <td class="table_font textOverflow">SIP1(1234567)</td>
+                  <td class="table_font"><span class="all_table">
+                    <input name="Fw_Add222" type="submit"  value="Test"  />
+                  </span></td>
+                  <td class="table_font"><div class="i_modify">
+                    <ul>
+                      <li><a href="#" class="edit" id='editBtnB' title="<%ejGetML(MLG_Common_Edit)%>"></a></li>
+                      <li ><a href="#"  id='deleteBtn' class="delete" title="<%ejGetML(MLG_Common_Delete)%>"></a></li>
+                    </ul>
+                  </div></td>
+                </tr>
+              </table>
+</div>
+</li>
+<li class="space"></li>
+<li class="set1"><div class="title"> ISDN Phone </div></li>
+<li class="set2">
+<div class="w_text">
+<table width="100%" border="0" cellpadding="0" cellspacing="2" >
+                <tr>
+                  <td width="45%" class="title2" >Assign default SIP Account</td>
+                  <td width="10%" rowspan="4"  align="center" class="blod" >Or</td>
+                  <td  width="45%" class="title2" >Manually configure the MSN of ISDN phone</td>
+                </tr>
+                <tr>
+                  <td >For those ISDN phones without MSN number configured, use this setting as default outgoing SIP account.</td>
+                  <td >You can also configure one of the following number as the MSN of your ISDN phone. The ISDN phone will chose this SIP account when making an outgoing call.</td>
+                </tr>
+                <tr >
+                  <td >&nbsp;</td>
+                  <td >&nbsp;</td>
+                </tr>
+                <tr >
+                  <td valign="top" ><span class="table_font">
+                    <select name="sipSelect">
+                      <option>SIP-1 (1234568)</option>
+                      <option>SIP-2 (1234568)</option>
+                    </select>
+                  </span></td>
+                  <td valign="top" ><ul>
+                    <div class="w_text3">
+                      <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame">
+                        <tr>
+                          <td><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+                              <tr>
+                                <td><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                      <td><table width="100%" cellpadding="0" cellspacing="0">
+                                          <tr align="center" >
+                                            <td class="top_font">SIP Number</td>
+                                          </tr>
+                                          <tr align="center" >
+                                            <td  class="table_font">SIP-1 (1234568)</td>
+                                          </tr>
+                                          <tr align="center" >
+                                            <td  class="table_font">SIP-2 (1234568)</td>
+                                          </tr>
+                                      </table></td>
+                                    </tr>
+                                </table></td>
+                              </tr>
+                          </table></td>
+                        </tr>
+                      </table>
+                    </div>
+                  </ul>
+                  </td>
+                </tr>
+              </table></div></li>
+<li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="Apply" type="submit" />&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="Cancel" value="Cancel" type="reset" /></div></li>
+<!--Button define end-->
+</ul>
+</div>
+</div>
+<br/><br/>

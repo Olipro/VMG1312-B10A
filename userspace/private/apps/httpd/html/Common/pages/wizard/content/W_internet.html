@@ -1,0 +1,80 @@
+<script type="text/javascript">
+$(function(){
+
+    function updateCheckRadio(){
+        //   alert('B');  
+        var infoCheck = $('input[name=r1]:checked').val();
+        if (infoCheck == 'yes') {
+            $("#yesinfo").show();
+            $("#noinfo").hide();
+        }
+        else 
+            if (infoCheck == 'no') {
+                $("#yesinfo").hide();
+                $("#noinfo").show();
+            }
+    }
+    $("input[name='r1']").click(function(){
+        updateCheckRadio();
+    });
+    updateCheckRadio();
+
+   });    
+</script>
+
+<div id="internetsetting" class='state'>
+     <div class="qs_content">
+       <div id="pppoe">
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str57)%><span class="blod"><%ejGetML(MLG_ConnStatus_QuickStart_Str56)%><!--(detect connection type by SW)--></span><%ejGetML(MLG_ConnStatus_QuickStart_Str55)%></p>
+         <table width="100%" border="0" cellspacing="0" cellpadding="0">
+           <tr>
+             <td width="40%"><%ejGetML(MLG_ConnStatus_QuickStart_Str53)%></td>
+             <td><input type="text" name="userName" id="textfield" /></td>
+           </tr>
+           <tr>
+             <td><%ejGetML(MLG_ConnStatus_QuickStart_Str47)%></td>
+             <td><input type="password" name="password" id="textfield2" /></td>
+           </tr>
+           <tr>
+             <td><%ejGetML(MLG_ConnStatus_QuickStart_Str54)%></td>
+             <td><input type="password" name="verifyPassword" id="textfield3" /></td>
+           </tr>
+         </table>
+         <p>&nbsp;</p>
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str46)%></p>
+       </div>
+       <div id="ethernet" style="display:none;">
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str50)%></p>
+       </div>
+       <p>
+         <input name="yes" type="radio" id="radio" value="yes" />
+         <%ejGetML(MLG_Common_Yes)%> &nbsp;&nbsp;&nbsp;&nbsp;
+         <input name="no" type="radio" id="radio2" value="no" checked="checked" />
+         <%ejGetML(MLG_ConnStatus_QuickStart_Str37)%></p>
+       <table width="100%" border="0" cellspacing="0" cellpadding="0" id="yesinfo" style='display:none;'>
+         <tr>
+           <td width="40%" class="indent"><%ejGetML(MLG_Common_IPAddress)%>:</td>
+           <td><input type="text" name="textfield4" id="textfield4" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_Common_SubnetMask)%>:</td>
+           <td><input type="password" name="textfield4" id="textfield5" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str45)%></td>
+           <td><input type="password" name="textfield4" id="textfield6" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str48)%></td>
+           <td><input type="password" name="textfield5" id="textfield7" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str49)%></td>
+           <td><input type="password" name="textfield6" id="textfield8" /></td>
+         </tr>
+       </table>
+       <p class="indent" id="noinfo"><%ejGetML(MLG_ConnStatus_QuickStart_Str52)%></p>
+     </div>
+   </div>
+   <!-- Internet Setting Ending -->
+  

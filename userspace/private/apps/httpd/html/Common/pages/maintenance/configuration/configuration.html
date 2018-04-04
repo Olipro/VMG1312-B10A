@@ -1,0 +1,276 @@
+<script language="javascript">
+
+var idxStr = '<%ejGetOther(sysInfo, upldSts)%>';
+var upprocess = '<%ejGet(UpdateProcess)%>';
+var glbSessionKey = '<%ejGetOther(sessionKey)%>';
+var passwordDisplay = '<%ejGet(password_Display)%>';
+var curUserName = '<%ejGet(curUserName)%>';
+var forEircom  = '<%ejGetOther(sysInfo, forEircom)%>';
+var forNorway  = '<%ejGetOther(sysInfo, forNorway)%>';//juwen,0220
+var voiceRunning='<%ejGetVoice(voiceInUse)%>';
+var customer = '<%ejGetOther(customer)%>';
+var trueLANIP = '<%ejGetOther(sysInfo, trueLANIP)%>' ////ZyXEL, Modify LAN IP address, Albert
+var ethIpAddress = '<%ejGet(ethIpAddress)%>';         
+var httpPort = '<%ejGetOther(remoteMGMTPort, httpPort)%>';
+
+function getMsgIndex() {
+	var idxNum = parseInt(idxStr);
+	if ( isNaN(idxNum) || idxNum < 0 || idxNum > 5 )
+		idxNum = 5;
+
+	return idxNum;
+}
+
+var msg = new Array();
+msg[1] = '<%ejGetML(MLG_Maintenance_Configuration_AlertMsg_Str1)%>';
+msg[2] = '<%ejGetML(MLG_Maintenance_Configuration_AlertMsg_Str2)%>';
+msg[3] = '<%ejGetML(MLG_Maintenance_Configuration_AlertMsg_Str3)%>';
+msg[5] = '<%ejGetML(MLG_Maintenance_Configuration_AlertMsg_Str4)%>';
+
+function Progress() {
+	document.forms[0].upload_btn.disabled = true;
+
+	if ($('#chkRestoreDefault').attr("checked"))
+	{
+		var x=document.getElementById("aForm");
+		x.action = "/pages/tabFW/firmwareUpgrade-upload-restore.cgi";
+	}
+
+	return true;
+}
+function BackgroundUrl(url)
+{
+	var objXMLHTTP = null;
+
+	if (window.XMLHttpRequest){
+		objXMLHTTP=new XMLHttpRequest();
+	}// code for IE
+	else if (window.ActiveXObject){
+		objXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	else{
+		alert("<%ejGetML(MLG_Common_XMLHttp)%>");
+		return;
+	}
+
+	if ( objXMLHTTP != null ){
+		objXMLHTTP.open("GET","./"+url,true);
+		objXMLHTTP.onreadystatechange = function()
+		{
+		}
+		objXMLHTTP.send(null);
+	}
+}
+function frmLoad () {
+
+	if( parseInt(voiceRunning) == 1 ){
+		alert("<%ejGetML(MLG_Maintenance_Configuration_AlertMsg_Str20)%>");
+	}
+
+	var idx = getMsgIndex();
+
+	if (passwordDisplay == "plainTxt") {
+		$("input[name='password_display']").get(0).checked = true;
+	}
+	else if (passwordDisplay == "starSymbol") {
+		$("input[name='password_display']").get(1).checked = true;
+	}
+	else {
+		$("input[name='password_display']").get(2).checked = true;
+	}
+
+	if (curUserName == "supervisor")
+		showhide("divDisplayPasswd", 0);
+	else
+		showhide("divDisplayPasswd", 0);
+		
+	if(customer == "ELISA")
+		showhide("elisa_hide", 0);
+
+	if ( idx != 0 ) {
+		hciAlert( msg[idx], {height: 180, type: 2, title: ''});
+		//AlertOpen ( msg[idx], 2 );
+	}
+	if (upprocess == '1') {
+		setTimeout("$.openLoadingMask(2)", 1500);
+		setTimeout("BackgroundUrl('configuration-uploadpost.cgi')", 1500);
+		setTimeout('reboot()', 150000);
+	}
+	if (upprocess == '2') {
+		setTimeout("$.openLoadingMask(2)", 1500);
+		setTimeout("BackgroundUrl('configuration-rebootpost.cgi')", 1500);
+		setTimeout('reboot()', 150000);
+	}
+
+	if(forEircom==1)
+	{
+		$('#EircomReset').fadeIn(0);
+		$('#ResetConfig').fadeOut(0);
+		$('#NorwayReset').fadeOut(0);
+		$('#trueLAN').fadeOut(0);
+	}
+	else if(trueLANIP==1)
+	{
+		$('#NorwayReset').fadeOut(0);
+		$('#ResetConfig').fadeOut(0);
+		$('#EircomReset').fadeOut(0);
+		$('#trueLAN').fadeIn(0);
+	}
+	else if(forNorway==1)
+	{
+		$('#NorwayReset').fadeIn(0);
+		$('#ResetConfig').fadeOut(0);
+		$('#EircomReset').fadeOut(0);
+		$('#trueLAN').fadeOut(0);
+	}
+	else
+	{
+		if(customer == "ISKON"){
+			$('#resetLANIP').html("192.168.5.1");
+		}else if(customer == "Etisalat"){
+			$('#resetLANIP').html("192.168.2.1");
+		}else{
+			$('#resetLANIP').html(ethIpAddress+":"+httpPort);
+		}
+
+		$('#EircomReset').fadeOut(0);
+		$('#NorwayReset').fadeOut(0);
+		$('#ResetConfig').fadeIn(0);
+		$('#trueLAN').fadeOut(0);
+	}
+
+}
+
+function reboot() {
+	var loc = '/login/login.html';
+	var code = 'window.top.location="' + loc + '"';
+	eval(code);
+}
+
+function backupClick() {
+	var loc = '/pages/tabFW/configuration-backupsettings.conf';
+	var code = 'location="' + loc + '"';
+	eval(code);
+}
+
+function restoreClick() {
+	var loc = '/pages/tabFW/configuration-restoreinfo.cgi?';
+	loc += 'sessionKey=' + glbSessionKey;
+	var code = 'location="' + loc + '"';
+	$.openLoadingMask(1);
+	eval(code);
+}
+
+function displayChange() {
+
+	var loc = 'configuration-displayPassword.cmd?action=viewcfg';
+	loc += '&sessionKey=' + glbSessionKey;
+
+	if ( $('input[name=password_display]').get(0).checked == true ) {
+		loc += '&passwdDisplay=plainTxt';
+	}
+	else if ( $('input[name=password_display]').get(1).checked == true ) {
+		loc += '&passwdDisplay=starSymbol';
+	}
+	else {
+		loc += '&passwdDisplay=AES256';
+	}
+
+	BackgroundUrl(loc);
+}
+
+
+$(document).ready(function() {
+  frmLoad();
+});
+</script>
+
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Maintenance_Configuration_Str1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+
+<form method="post" ENCTYPE="multipart/form-data" action="/pages/tabFW/configuration-uploadsettings.cgi" onSubmit="$.openLoadingMask(1);">
+
+<div class="data_frame"><ul>
+<div class="hide_frame" id="elisa_hide">
+<!--level 1 title start--><li class="title"><%ejGetML(MLG_Maintenance_Configuration_Str2)%> </li><!--level 1 title end-->
+<li class="set2">
+<div class="w_text">
+<ul>
+<li class="all_table"><%ejGetML(MLG_Maintenance_Configuration_Str3)%><span class="right_table">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span class="one_right" ><input name="Backup" value="<%ejGetML(MLG_Maintenance_Configuration_Btn1)%>" onclick="backupClick();" type="button" /></span>
+</span></li>
+</ul>
+</div>
+</li>
+<li class="space"> </li>
+
+<div class="title"><%ejGetML(MLG_Maintenance_Configuration_Str12)%></div>
+<li class="set2">
+<div class="w_text">
+<ul>
+<%ejGetML(MLG_Common_FilePath)%> : <span class="right_table"><input name="filename" size="20" maxlength="128" type="file" /><span class="none_right"><input value="<%ejGetML(MLG_Maintenance_FWUpgrade_Str6)%>" type="submit" /></span></span>
+</ul>
+</div>
+</li>
+</div>
+
+<li class="space"> </li>
+<!--level 1 title start--><li class="title"><%ejGetML(MLG_Maintenance_Configuration_Str14)%> </li><!--level 1 title end-->
+<li class="set2">
+<div class="w_text" id="ResetConfig" style="display:none;"><ul>
+<li class="all_table"><%ejGetML(MLG_Maintenance_Configuration_Str15)%><span class="one_right" ><input name="ROMReset22" value=" <%ejGetML(MLG_Maintenance_Configuration_Btn5)%> " onclick="ConfirmOpen('Are you sure you want to restore factory default settings?', restoreClick );" type="button" /></span></li>
+</ul>
+</div>
+<div class="w_text" id="EircomReset" style="display:none;"><ul>
+<li class="all_table"><%ejGetML(MLG_Maintenance_Configuration_Str15_1)%><span class="one_right" ><input name="ROMReset22" value=" <%ejGetML(MLG_Maintenance_Configuration_Btn5)%> " onclick="ConfirmOpen('Are you sure you want to restore factory default settings?', restoreClick );" type="button" /></span></li>
+</ul>
+</div>
+<div class="w_text" id="NorwayReset" style="display:none;"><ul>
+<li class="all_table"><%ejGetML(MLG_Maintenance_Configuration_Str15_2)%><span class="one_right" ><input name="ROMReset22" value=" <%ejGetML(MLG_Maintenance_Configuration_Btn5)%> " onclick="ConfirmOpen('Are you sure you want to restore factory default settings?', restoreClick );" type="button" /></span></li>
+</ul>
+</div>
+<div class="w_text" id="trueLAN" style="display:none;"><ul>
+<li class="all_table">Click <strong>Reset</strong> to clear all user-entered   configuration information and return to factory defaults. After resetting, the</li>
+</ul>
+<div class="w_text">
+<ul><li class="all_table">- LAN IP address will be <%ejGet(ethIpAddress)%><br/></li></ul>
+</div>
+<div class="w_text">
+<ul>
+<span style="font-weight: 400;">- DHCP will be reset to server </span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="one_right" ><input name="ROMReset22" value=" Reset " onclick="ConfirmOpen('Are you sure you want to restore factory default settings?', restoreClick );" type="button" /></span>
+</ul>
+</div>
+</div>
+</li>
+<li class="space"> </li>
+</ul></div>
+</form>
+
+<div id="divDisplayPasswd" class="data_frame">
+
+<div class="title">Display Password Configuration</div>
+<li class="set2">
+<div class="w_text">
+<ul>
+<li class="left_table">Password:</li>
+    <li class="right_table">
+       <input name="password_display" id="password_display" type='radio' value="1" onClick="displayChange();"/>
+       Plain Text
+       <input name="password_display" id="password_display" type='radio' value="2" onClick="displayChange();"/>
+       Replace with '****'
+       <input name="password_display" id="password_display" type='radio' value="3" onClick="displayChange();"/>
+       Encrypt with AES
+    </li>
+</ul>
+</div>
+</li>
+</div>
+
+</div>
+<br/><br/>

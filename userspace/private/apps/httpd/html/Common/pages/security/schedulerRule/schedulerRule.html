@@ -1,0 +1,189 @@
+<script language='javascript'>
+<!-- hide
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+var schList = "<%ejGetOther(getSchList)%>";
+var entryNum = '<%ejGet(ruleEntryNum)%>';
+var errMsg = '<%ejGetOther(errMsg)%>';
+var NtpEnbl = '<%ejGet(ntp_enabled)%>';
+
+function addClick() 
+{
+   var db1 = window.parent.$.zyUiDialog({
+         width: '75%',
+         height: 305,
+         title: '<%ejGetML(MLG_Security_ParentalControl_Str4)%>',
+
+         buttons: {
+            '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+            '<%ejGetML(MLG_Common_Apply)%>':function(){}
+         }
+   });
+   var link = 'pages/security/schedulerRule/schedulerRule_add.html';
+   db1.load(link);
+   db1.dialog('open');
+}
+
+function editClick(rulename)
+{
+	var loc = '/pages/tabFW/schedulerRule-cfg.cmd?action=view&lst=' + rulename;
+   loc += '&sessionKey=' + gblsessionKey;
+	
+	var db1 = window.parent.$.zyUiDialog({
+              width: '75%',
+              height: 305,
+              title: '<%ejGetML(MLG_Security_ParentalControl_Str59)%>',
+
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close');  },
+                 '<%ejGetML(MLG_Common_Apply)%>':function(){}
+              }
+             });
+    db1.load(loc);
+    db1.dialog('open');
+}
+
+function removeClick(rml) 
+{
+	var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 200,
+              title: '<%ejGetML(MLG_Security_ParentalControl_Str60)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_No)%>': function(){ db1.dialog('close'); },
+                 '<%ejGetML(MLG_Common_Yes)%>': function(){ db1.dialog('close'); deleteProcess(rml); }
+              }
+             });
+    db1.load('/pages/delete.html');
+    db1.dialog('open');
+}
+
+function deleteProcess(rml) {
+   with ( document.forms[0] ) {
+      action.value="remove";
+      sessionKey.value = gblsessionKey;
+      rmLst.value = rml;
+      $.openLoadingMask(1);
+      submit();
+   }
+}
+$(document).ready(function() {
+   if (NtpEnbl!='1')
+   {
+      hciAlert("<%ejGetML(MLG_Security_Scheduler_AlertMsg_Str11)%>",1);
+   }
+   if (errMsg != '')
+   {
+      hciAlert(errMsg, 2);
+   }
+});
+// done hiding -->
+</script>
+
+<form method="POST" action="/pages/tabFW/schedulerRule-cfg.cmd" target="mainFrame">
+<input type="hidden" name="action" id="action">
+<input type="hidden" name="sessionKey" id="sessionKey">
+<input type="hidden" name="rmLst" id="rmLst">
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Security_Scheduler_Str10)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1">
+  <div class="w_table"><input type='button' class='addRule'  value='<%ejGetML(MLG_Security_ParentalControl_Str4)%>' id="addRule" onclick="addClick();"></div></li>
+<li class="set1"> 
+<div class="w_table">
+<!--Table define start-->
+<table width="100%" cellpadding="0" cellspacing="0" style='table-layout:fixed;'class="table_frame" id="schedulerRulesTable">
+                <tr align="center">
+                  <td width="5%" class="top_font">#</td>
+                  <td width="25%" class="top_font"><%ejGetML(MLG_Security_Scheduler_Str3)%></td>
+                  <td width="20%" class="top_font"><%ejGetML(MLG_Common_Day)%></td>
+                  <td width="10%" class="top_font"><%ejGetML(MLG_Common_Time)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Security_FirewallProtocol_Str4)%></td>
+                  <td width="60" class="top_font" style="border-right:0px;"><%ejGetML(MLG_Security_FirewallProtocol_Str6)%></td>
+                </tr>
+<script>
+<!-- hide
+var strA = schList.split('@');
+var newStr = '';
+
+for (i=1; i<strA.length; i++)
+{
+	if (strA[i] == '' || strA[i] == undefined)
+		break;
+	var strB = strA[i].split('|');
+   
+   newStr += '<tr>\n';
+	newStr += '<td align=\'center\' class="table_font">'+i+'</td>\n';
+   newStr += '<td align=\'center\' class="table_font">'+getPartialString(strB[0],25)+'</td>\n';
+   newStr += "<td class=\"table_font\"><div class=\"weekBox\"><ul>";
+   if (strB[2]!=''){
+      if ((strB[2].indexOf("Sun"))!= -1)
+         newStr += "<li title=\"Sunday\">S</li>";
+      else
+         newStr += "<li title=\"Sunday\" class='off'>S</li>";
+         
+      if ((strB[2].indexOf("Mon"))!= -1)
+         newStr += "<li title=\"Monday\">M</li>";
+      else
+         newStr += "<li title=\"Monday\" class='off'>M</li>";
+         
+      if ((strB[2].indexOf("Tue"))!= -1)
+         newStr += "<li title=\"Tuesday\">T</li>";
+      else
+         newStr += "<li title=\"Tuesday\" class='off'>T</li>";
+     
+      if ((strB[2].indexOf("Wed"))!= -1)
+         newStr += "<li title=\"Wednesday\">W</li>";
+      else
+         newStr += "<li title=\"Wednesday\" class='off'>W</li>";
+         
+      if ((strB[2].indexOf("Thu"))!= -1)
+         newStr += "<li title=\"Thursday\">T</li>";
+      else
+         newStr += "<li title=\"Thursday\" class='off'>T</li>";
+         
+      if ((strB[2].indexOf("Fri"))!= -1)
+         newStr += "<li title=\"Friday\">F</li>";
+      else
+         newStr += "<li title=\"Friday\" class='off'>F</li>";
+         
+      if ((strB[2].indexOf("Sat"))!= -1)
+         newStr += "<li title=\"Saturday\">S</li>";
+      else
+         newStr += "<li title=\"Saturday\" class='off'>S</li>";
+         
+   }else{
+      newStr += "<li title=\"Sunday\" class='off'>S</li>";
+      newStr += "<li title=\"Monday\" class='off'>M</li>";
+      newStr += "<li title=\"Tuesday\" class='off'>T</li>";
+      newStr += "<li title=\"Wednesday\" class='off'>W</li>";
+      newStr += "<li title=\"Thursday\" class='off'>T</li>";
+      newStr += "<li title=\"Friday\" class='off'>F</li>";
+      newStr += "<li title=\"Saturday\" class='off'>S</li>";
+   }
+   newStr += "</ul></div></td>";	
+   newStr += '<td align=\'center\' class="table_font">'+strB[3]+' - '+strB[4]+'</td>\n'; //time	
+   newStr += '<td align=\'center\' class="table_font">'+getPartialString(strB[1],20)+'</td>\n';
+   newStr += "<td class='table_font'><div class='i_modify'><ul><li><a href='#' class='edit' id='editBtn' title='Edit' onclick=\"editClick('"+strB[0]+"')\"></a></li><li><a href='#' class='delete' id='deleteBtn' title='Delete' onclick=\"removeClick('"+strB[0]+"')\"></a></li></ul></div></td>\n";
+   newStr += '</tr>\n';
+}
+$('#schedulerRulesTable').append(newStr);
+$(function()
+{
+    $('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );  
+    $('.textOverflow').ellipsis(true);
+});
+// done hiding -->
+</script>
+              </table>
+</div>
+</li>
+</ul></div>
+<!--Set area end-->
+</div>
+<br/><br/>
+</form>

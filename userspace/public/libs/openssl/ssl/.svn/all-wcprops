@@ -1,0 +1,299 @@
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/TPDC/Broadcom/!svn/ver/8373/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl
+END
+s2_srvr.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s2_srvr.c
+END
+t1_meth.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/t1_meth.c
+END
+s3_meth.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s3_meth.c
+END
+install.com
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/install.com
+END
+s2_pkt.c
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s2_pkt.c
+END
+s3_pkt.c
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s3_pkt.c
+END
+t1_clnt.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/t1_clnt.c
+END
+s3_clnt.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s3_clnt.c
+END
+ssl.h
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl.h
+END
+ssl_algs.c
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl_algs.c
+END
+s2_enc.c
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s2_enc.c
+END
+ssl_err.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl_err.c
+END
+s3_enc.c
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s3_enc.c
+END
+t1_lib.c
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/t1_lib.c
+END
+kssl.c
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/kssl.c
+END
+kssl.h
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/kssl.h
+END
+s23_meth.c
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s23_meth.c
+END
+s23_pkt.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s23_pkt.c
+END
+s23_clnt.c
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s23_clnt.c
+END
+ssl_lib.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl_lib.c
+END
+bio_ssl.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/bio_ssl.c
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/Makefile
+END
+ssl_stat.c
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl_stat.c
+END
+ssl_sess.c
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl_sess.c
+END
+ssl_txt.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl_txt.c
+END
+t1_srvr.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/t1_srvr.c
+END
+ssl-lib.com
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl-lib.com
+END
+s3_srvr.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s3_srvr.c
+END
+s3_both.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s3_both.c
+END
+s2_meth.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s2_meth.c
+END
+ssltest.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssltest.c
+END
+s2_clnt.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s2_clnt.c
+END
+ssl_ciph.c
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl_ciph.c
+END
+ssl_rsa.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl_rsa.c
+END
+t1_enc.c
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/t1_enc.c
+END
+s2_lib.c
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s2_lib.c
+END
+ssl23.h
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl23.h
+END
+s3_lib.c
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s3_lib.c
+END
+kssl_lcl.h
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/kssl_lcl.h
+END
+ssl_cert.c
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl_cert.c
+END
+ssl_locl.h
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl_locl.h
+END
+ssl_asn1.c
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl_asn1.c
+END
+s23_srvr.c
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/8373/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s23_srvr.c
+END
+ssl_task.c
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl_task.c
+END
+ssl2.h
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl2.h
+END
+tls1.h
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/tls1.h
+END
+ssl3.h
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl3.h
+END
+ssl_err2.c
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/ssl_err2.c
+END
+s23_lib.c
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/ssl/s23_lib.c
+END

@@ -1,0 +1,295 @@
+<script language='javascript'>
+<!-- hide
+    var edIndex;
+    //get top db obj.
+    var db = $('#service_add_modify_root').parents('.dialogContener');
+    //get OK Button
+    var OkBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)')
+    //set the click handler for OK button
+
+    OkBtn.click(function(){ btnOK(); });
+
+function btnOK()
+{
+	f = document.parentalControlServiceAdd;
+	var SerProtocol = document.getElementById('serviceProtocol').value;
+	if (document.getElementById('ServiceNameTxt').value == "") {
+		hciAlert("<%ejGetML(MLG_Security_ParentalControl_AlertMsg_Str15)%>", {height: 180,type: 2, title: ''});
+     		return;
+	}
+
+	if(doCheckName(document.getElementById('ServiceNameTxt').value) == false){
+		hciAlert('<%ejGetML(MLG_Security_ParentalControl_AlertMsg_Str14)%>', {height: 180,type: 2, title: ''});
+		return;
+	}		
+	
+	if(SerProtocol == "TCP"){
+		document.getElementById('tcpPort').value = f.protocol.value;
+	}else if(SerProtocol == "UDP"){
+		document.getElementById('udpPort').value = f.protocol.value;
+	}else {
+		document.getElementById('tcpUdpPort').value = f.protocol.value;
+	}
+		
+	var tcpString = document.getElementById('tcpPort').value;
+	var udpString = document.getElementById('udpPort').value;
+	var tcpUdpString = document.getElementById('tcpUdpPort').value;
+	var portString = document.getElementById('protocol').value;
+	var tempString = "";
+
+	if(tcpUdpString.length != 0){
+		if(tempString.length != 0)
+			tempString = tempString.concat("/");
+		tempString = tempString.concat("TCPUDP:");
+		tempString = tempString.concat(tcpUdpString);
+	}
+		
+	if(tcpString.length != 0){
+		if(tempString.length != 0)
+			tempString = tempString.concat("/");
+		tempString = tempString.concat("TCP:");
+		tempString = tempString.concat(tcpString);
+	}
+		
+	if(udpString.length != 0){
+		if(tempString.length != 0)
+			tempString = tempString.concat("/");
+		tempString = tempString.concat("UDP:");
+		tempString = tempString.concat(udpString);
+	}
+		
+	if(tempString.length == 0){
+		hciAlert('<%ejGetML(MLG_Security_ParentalControl_AlertMsg_Str16)%>', {height: 180,type: 2, title: ''});
+		return;
+	}
+		
+	var tempSrvNameString = "ServiceName" + edIndex;
+	var tempSrvPortString = "ServicePort" + edIndex;
+			
+	document.getElementById(tempSrvNameString).innerHTML = document.getElementById("ServiceNameTxt").value;
+	document.getElementById(tempSrvPortString).innerHTML = tempString;
+		
+	 //$('.ui-dialog-titlebar-close:last').trigger('click');
+	 db.dialog('close');		     
+}
+
+
+function doServicePort()
+{
+	f = document.parentalControlServiceAdd;
+	var SerProtocol = document.getElementById('serviceProtocol').value;
+	if(SerProtocol == "TCP"){
+		f.protocol.value = document.getElementById('tcpPort').value;
+	}else if(SerProtocol == "UDP"){
+		f.protocol.value = document.getElementById('udpPort').value;
+	}else {
+		f.protocol.value = document.getElementById('tcpUdpPort').value;
+	}
+	
+	return;
+}
+
+function isValidPort(port) {   
+   if (isNaN(port))
+       return false;   
+   if ( port < 1 || port > 65535)
+       return false;   
+   return true;
+}
+
+function doCheckPort(obj){
+	var port = obj.value;
+	var SinglePort_Array = "";
+	var RangePort_Array = "";
+	var SerProtocol = document.getElementById('serviceProtocol').value;
+	var protocol_Array1;
+	var protocol_Array2;
+	
+	if(SerProtocol == "TCP"){
+		protocol_Array1 = (document.getElementById('udpPort').value).split(",") ;
+		protocol_Array2 = (document.getElementById('tcpUdpPort').value).split(",") ;	
+	}else if(SerProtocol == "UDP"){
+		protocol_Array1 = (document.getElementById('tcpPort').value).split(",") ;
+		protocol_Array2 = (document.getElementById('tcpUdpPort').value).split(",") ;
+	}else {
+		protocol_Array1 = (document.getElementById('tcpPort').value).split(",") ;
+		protocol_Array2 = (document.getElementById('udpPort').value).split(",") ;
+	}
+
+	if(protocol_Array1[0]=="")
+		length1 = 0;
+	else
+		length1 = protocol_Array1.length;
+
+	if(protocol_Array2[0]=="")
+		length2 = 0;
+	else
+		length2 = protocol_Array2.length;
+
+	SinglePort_Array = port.split(",");
+		
+	for(loop=0; loop< SinglePort_Array.length;loop++){
+		//alert(SinglePort_Array[loop]);
+		if(SinglePort_Array[loop].match("-")){
+			RangePort_Array = SinglePort_Array[loop].split("-");
+		}else{
+			//if((SinglePort_Array[loop] !="") && (SinglePort_Array[loop] <= 0 || SinglePort_Array[loop] > 65535)){
+			if(isValidPort(SinglePort_Array[loop]) == false && SinglePort_Array[0] !=""){
+				doServicePort();
+				hciAlert('<%ejGetML(MLG_Security_ParentalControl_AlertMsg_Str17)%>', {height: 180,type: 2, title: ''});
+				return;
+
+			}
+		}
+		for(loopRange=0; loopRange < RangePort_Array.length; loopRange++){
+			//alert(RangePort_Array[loopRange]);
+			//if(RangePort_Array[loopRange] <=0 || RangePort_Array[loopRange] > 65535){
+			if(isValidPort(RangePort_Array[loopRange]) == false && RangePort_Array[0] !=""){
+				doServicePort();
+				hciAlert('<%ejGetML(MLG_Security_ParentalControl_AlertMsg_Str17)%>', {height: 180,type: 2, title: ''});
+				return;
+			}
+
+			if((loopRange%2) && (parseInt(RangePort_Array[loopRange]) <= parseInt(RangePort_Array[loopRange-1]))){
+				doServicePort();
+				hciAlert('<%ejGetML(MLG_Security_ParentalControl_AlertMsg_Str18)%>', {height: 180,type: 2, title: ''});
+				return;
+			}
+		}	
+	}
+	
+	if((length1)+(length2)+(SinglePort_Array.length) > 8){
+		doServicePort();
+		hciAlert('<%ejGetML(MLG_Security_ParentalControl_AlertMsg_Str19)%>', {height: 180,type: 2, title: ''});
+	}
+
+}
+
+function doCheckName(name){
+	var check = true;
+	var index = edIndex; //##UserNo##;
+	var string = "";
+	$('#ServiceList td:nth-child(3)').each(function(i, item){
+		if(name.localeCompare($(item).text()) == 0){
+			string = $(item).attr('id');
+			string = string.slice(11);//length of ServiceName
+			if(string != index)
+				check = false;
+		}
+	})
+	return check;
+}
+
+function frmLoad()
+{
+	edIndex = document.getElementById("edidx").value;
+	var i;
+	if (edIndex.length != 0){
+		var tempStr = "ServiceName" + edIndex;
+		var serviceName = document.getElementById(tempStr).innerHTML;
+ 	
+		tempStr = "ServicePort" + edIndex;
+		var servicePort = document.getElementById(tempStr).innerHTML;
+		f = document.parentalControlServiceAdd;	
+		var opt = 0;
+	  	var info = servicePort.split('/');
+		if (info != '') {
+			for ( i = 0; i < info.length; i++ ) {
+				if (info[i].indexOf("TCPUDP") != -1){
+					//f.serviceProtocol.selectedIndex = 2;
+					opt = info[i].indexOf("TCPUDP") + 7;
+					if (f.tcpUdpPort.value != "")
+						f.tcpUdpPort.value += info[i].substring(opt);
+					else
+						f.tcpUdpPort.value = info[i].substring(opt);
+						
+				}else if (info[i].indexOf("UDP") !=-1){
+		  		//f.serviceProtocol.selectedIndex = 1;
+		  		opt = info[i].indexOf("UDP") + 4;
+		  		if (f.udpPort.value != "")
+		  			f.udpPort.value += info[i].substring(opt);
+		  		else
+		  			f.udpPort.value = info[i].substring(opt);
+				}else{
+					//f.serviceProtocol.selectedIndex = 0;
+					opt = info[i].indexOf("TCP") + 4;
+					if (f.tcpPort.value != "")
+						f.tcpPort.value += info[i].substring(opt);
+					else
+						f.tcpPort.value = info[i].substring(opt);
+				}
+			}
+		}
+
+		if (f.tcpUdpPort.value != ""){
+			f.serviceProtocol.selectedIndex = 2;
+			f.protocol.value = f.tcpUdpPort.value;
+		}else if (f.udpPort.value != ""){
+			f.serviceProtocol.selectedIndex = 1;
+			f.protocol.value = f.udpPort.value;
+		}else if (f.tcpPort.value != ""){
+			f.serviceProtocol.selectedIndex = 0;
+			f.protocol.value = f.tcpPort.value;
+		}
+		
+		f.ServiceNameTxt.value = serviceName;
+	}
+	return;
+}
+
+//$(document).ready(frmLoad);
+
+
+// done hiding -->    
+</script>
+<form id='parentalControlServiceAdd' name="parentalControlServiceAdd">
+<div class="popup_frame" id='service_add_modify_root'>
+<div class="data_frame2"><ul>
+<li class="set1">
+    <div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Security_FirewallProtocol_Str21)%> :</li>
+			<li class="right_table">
+				<input type="text" size="17" maxlength="17" name='ServiceNameTxt' id="ServiceNameTxt" />
+			</li>
+				
+				<!--
+                <a href="#" target="_blank" title="Service Reference">Service Reference</a>
+        -->
+		</ul>
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Security_FirewallACL_Str12)%> :</li>
+			<li class="right_table">
+				<select name='serviceProtocol' id="serviceProtocol" OnChange="doServicePort();">
+                    <option value='TCP'><%ejGetML(MLG_Security_FirewallProtocol_Str11)%></option>
+                    <option value='UDP'><%ejGetML(MLG_Security_FirewallProtocol_Str12)%></option>
+                    <option value='TCPUDP'><%ejGetML(MLG_Security_FirewallACL_Str31)%></option>
+				</select>
+			</li>
+		</ul>
+        <ul>
+			<li class="left_table"><%ejGetML(MLG_Security_ServiceControl_Str8)%> :</li>
+			<li class="right_table">
+				<input type="protocol" size="24" name='Port' id="protocol" OnChange="doCheckPort(this);" />
+			</li>
+		</ul>
+        <ul>
+			<li class="left_table">&nbsp;</li>
+			<li class="right_table">
+				(<%ejGetML(MLG_Security_ParentalControl_Str38)%>: 4091, 5091-6892)
+			</li>
+		</ul>
+    </div>
+</li>
+</ul>
+</div>
+</div>
+<input name="tcpPort" id="tcpPort" type="hidden" />
+<input name="udpPort" id="udpPort" type="hidden" />
+<input name="tcpUdpPort" id="tcpUdpPort" type="hidden" />
+</form>
+<script language="javascript">
+<!-- hide
+   frmLoad();
+// done hiding -->
+</script>

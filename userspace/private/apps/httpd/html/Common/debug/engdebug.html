@@ -1,0 +1,90 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+
+<script language="javascript">
+<!-- hide
+function applyClick(intfEnable) {
+    // lst format: monitor_interface|direction(1[out],0[in])|
+    // mirror_interface|status(1[enabled],0[disabled]),
+    with ( document.forms[0] ) {
+    var lst = '';
+    var loc = 'debug-engdebug.cmd?action=apply';
+    if (intfEnable.length > 0) {
+        for (i = 0; i < intfEnable.length; i++) {
+            lst = lst + intfEnable[i].value + '|' + mirrorIntf[i].value + '|';
+            if ( intfEnable[i].checked == true )
+                lst = lst + '1,';
+            else
+                lst = lst + '0,';
+        }
+    }
+
+    loc += '&mirrorLst=' + lst;
+    loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+    var code = 'location="' + loc + '"';
+    eval(code);
+    }
+}
+// done hiding -->
+</script>
+</head>
+<body>
+    <blockquote>
+        <form>
+        <b>Port Mirroring Setup</b><br><br>
+        <table border='1' cellpadding='6' cellspacing='0'>
+        <tr align='center'>
+            <td class='hd'>Monitor Interface</td>
+            <td class='hd'>Direction</td>
+            <td class='hd'>Mirror Interface</td>
+            <td class='hd'>Enable</td>
+        </tr>
+<script language="javascript">
+<!-- hide
+{
+   var i = 0;
+   var j = 0;
+   var monIntfInfo = '<%ejGetOther(wanInterfaceInfo, portMirror)%>';
+   var monIntfs = monIntfInfo.split('|');
+   var brIntfInfo = '<%ejGetOther(bridgeInterfaceInfo, all)%>';
+   var brIntfs = brIntfInfo.split('|');
+   
+   // Entry format: monitor_interface|direction(1[out],0[in])|
+   // mirror_interface|status(1[enabled],0[disabled])
+   for ( i = 0; i < monIntfs.length; i++ ) {
+      var monEntry = monIntfs[i].split('/');
+      document.write("<tr align='center'> ");
+      document.write("<td> " + monEntry[0] + "</td> ");
+      document.write("<td> " + monEntry[1] + "</td> ");
+
+      document.write("<td> <select name='mirrorIntf'> ");
+      for ( j = 0; j < brIntfs.length; j++ ) {
+        if ( monEntry[2] == brIntfs[j] )
+          document.write("<option value='" + brIntfs[j] + "' selected> " + brIntfs[j] + "</option>");
+        else
+          document.write("<option value='" + brIntfs[j] + "'> " + brIntfs[j] + "</option>");
+      }
+      document.write("</select></td> ");
+      if ( monEntry[3] == 1 )
+        document.write("<td align='center'><input type='checkbox' name='intfEnable' value='" + monEntry[0] + "|" + monEntry[1] + "' checked> </td> ");
+      else
+        document.write("<td align='center'><input type='checkbox' name='intfEnable' value='" + monEntry[0] + "|" + monEntry[1] + "'> </td> ");
+      document.write("</tr> ");
+   }
+}
+// done hiding -->
+</script>
+        </table>
+        <br>
+        <center>
+        <input type='button' onClick='applyClick(this.form.intfEnable)' value='Apply/Save'>
+        </center>
+        </form>
+    </blockquote>
+</body>
+</html>
+

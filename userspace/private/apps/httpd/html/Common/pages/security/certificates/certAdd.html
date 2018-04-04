@@ -1,0 +1,429 @@
+<script language="javascript">
+var gblsessionKey='<%ejGetOther(sessionKey)%>';
+mainFrame.gblsessionKey = gblsessionKey;
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnApply(); });	
+<!-- hide
+
+var country = "US";
+
+function loadCountryList() {
+	with ( document.addForm ) {
+		certCountry[0] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str1)%>", "AD");
+		certCountry[1] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str2)%>","AE");
+		certCountry[2] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str3)%>","AF");
+		certCountry[3] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str4)%>","AG");
+		certCountry[4] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str5)%>","AI");
+		certCountry[5] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str6)%>","AL");
+		certCountry[6] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str7)%>","AM");
+		certCountry[7] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str8)%>","AN");
+		certCountry[8] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str9)%>","AO");
+		certCountry[9] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str10)%>","AQ");
+		certCountry[10] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str11)%>","AR");
+		certCountry[11] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str12)%>","AS");
+		certCountry[12] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str13)%>","AT");
+		certCountry[13] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str14)%>","AU");
+		certCountry[14] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str15)%>","AW");
+		certCountry[15] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str16)%>","AZ");
+		certCountry[16] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str17)%>","BA");
+		certCountry[17] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str18)%>","BB");
+		certCountry[18] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str19)%>","BD");
+		certCountry[19] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str20)%>","BE");
+		certCountry[20] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str21)%>","BF");
+		certCountry[21] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str22)%>","BG");
+		certCountry[22] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str23)%>","BH");
+		certCountry[23] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str24)%>","BI");
+		certCountry[24] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str25)%>","BJ");
+		certCountry[25] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str26)%>)","BM");
+		certCountry[26] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str27)%>","BN");
+		certCountry[27] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str28)%>","BO");
+		certCountry[28] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str29)%>","BR");
+		certCountry[29] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str30)%>","BS");
+		certCountry[30] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str31)%>","BT");
+		certCountry[31] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str32)%>","BV");
+		certCountry[32] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str33)%>","BW");
+		certCountry[33] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str34)%>","BY");
+		certCountry[34] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str35)%>","CA");
+		certCountry[35] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str36)%>","CC");
+		certCountry[36] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str37)%>","CD");
+		certCountry[37] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str38)%>","CF");
+		certCountry[38] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str39)%>","CG");
+		certCountry[39] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str40)%>","CH");
+		certCountry[40] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str41)%>","CI");
+		certCountry[41] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str42)%>","CK");
+		certCountry[42] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str43)%>","CL");
+		certCountry[43] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str44)%>","CM");
+		certCountry[44] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str45)%>","CN");
+		certCountry[45] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str46)%>)","CO");
+		certCountry[46] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str47)%>","CR");
+		certCountry[47] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str48)%>","CU");
+		certCountry[48] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str49)%>","CV");
+		certCountry[49] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str50)%>","CX");
+		certCountry[50] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str51)%>","CY");
+		certCountry[51] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str52)%>","CZ");
+		certCountry[52] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str53)%>","DE");
+		certCountry[53] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str54)%>","DE");
+		certCountry[54] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str55)%>","DK");
+		certCountry[55] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str56)%>","DM");
+		certCountry[56] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str57)%>","DO");
+		certCountry[57] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str58)%>","DZ");
+		certCountry[58] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str59)%>","EC");
+		certCountry[59] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str60)%>","EE");
+		certCountry[60] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str61)%>","EG");
+		certCountry[61] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str62)%>","ER");
+		certCountry[62] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str63)%>","ES");
+		certCountry[63] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str64)%>","ET");
+		certCountry[64] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str65)%>","FI");
+		certCountry[65] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str66)%>","FJ");
+		certCountry[66] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str67)%>","FK");
+		certCountry[67] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str68)%>","FM");
+		certCountry[68] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str69)%>","FR");
+		certCountry[69] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str70)%>","FX");
+		certCountry[70] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str71)%>","GA");
+		certCountry[71] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str72)%>","GB");
+		certCountry[72] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str73)%>","GD");
+		certCountry[73] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str74)%>","GE");
+		certCountry[74] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str75)%>","GF");
+		certCountry[75] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str76)%>","GH");
+		certCountry[76] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str77)%>","GI");
+		certCountry[77] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str78)%>","GL");
+		certCountry[78] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str79)%>","GM");
+		certCountry[79] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str80)%>","GN");
+		certCountry[80] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str81)%>","GP");
+		certCountry[81] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str82)%>","GQ");
+		certCountry[82] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str83)%>","GR");
+		certCountry[83] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str84)%>","GS");
+		certCountry[84] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str85)%>","GT");
+		certCountry[85] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str86)%>","GU");
+		certCountry[86] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str87)%>","GW");
+		certCountry[87] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str88)%>","GY");
+		certCountry[88] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str89)%>","HK");
+		certCountry[89] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str90)%>","HM");
+		certCountry[90] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str91)%>","HN");
+		certCountry[91] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str92)%>","HR");
+		certCountry[92] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str93)%>","HT");
+		certCountry[93] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str94)%>","HU");
+		certCountry[94] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str95)%>","ID");
+		certCountry[95] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str96)%>","IE");
+		certCountry[96] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str97)%>","IL");
+		certCountry[97] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str98)%>","IN");
+		certCountry[98] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str99)%>","IO");
+		certCountry[99] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str100)%>","IQ");
+		certCountry[100] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str101)%>","IR");
+		certCountry[101] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str102)%>","IS");
+		certCountry[102] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str103)%>","IT");
+		certCountry[103] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str104)%>","JM");
+		certCountry[104] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str105)%>","JM");
+		certCountry[105] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str106)%>","JP");
+		certCountry[106] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str107)%>","KE");
+		certCountry[107] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str108)%>","KG");
+		certCountry[108] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str109)%>","KG");
+		certCountry[109] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str110)%>","KI");
+		certCountry[110] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str111)%>","KM");
+		certCountry[111] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str112)%>","KN");
+		certCountry[112] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str113)%>","KP");
+		certCountry[113] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str114)%>","KR");
+		certCountry[114] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str115)%>","KW");
+		certCountry[115] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str116)%>","KY");
+		certCountry[116] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str117)%>","KZ");
+		certCountry[117] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str118)%>","LA");
+		certCountry[118] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str119)%>","LB");
+		certCountry[119] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str120)%>","LC");
+		certCountry[120] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str121)%>","LI");
+		certCountry[121] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str122)%>","LK");
+		certCountry[122] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str123)%>","LR");
+		certCountry[123] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str124)%>","LS");
+		certCountry[124] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str125)%>","LT");
+		certCountry[125] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str126)%>","LU");
+		certCountry[126] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str127)%>","LV");
+		certCountry[127] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str128)%>","LY");
+		certCountry[128] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str129)%>","MA");
+		certCountry[129] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str130)%>","MC");
+		certCountry[130] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str131)%>","MD");
+		certCountry[131] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str132)%>","MG");
+		certCountry[132] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str133)%>","MH");
+		certCountry[133] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str134)%>","MK");
+		certCountry[134] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str135)%>","ML");
+		certCountry[135] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str136)%>","MM");
+		certCountry[136] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str137)%>","MN");
+		certCountry[137] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str138)%>","MO");
+		certCountry[138] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str139)%>","MP");
+		certCountry[139] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str140)%>","MQ");
+		certCountry[140] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str141)%>","MR");
+		certCountry[141] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str142)%>","MS");
+		certCountry[142] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str143)%>","MT");
+		certCountry[143] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str144)%>","MU");
+		certCountry[144] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str145)%>","MV");
+		certCountry[145] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str146)%>","MW");
+		certCountry[146] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str147)%>","MX");
+		certCountry[147] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str148)%>","MY");
+		certCountry[148] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str149)%>","MZ");
+		certCountry[149] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str150)%>","NA");
+		certCountry[150] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str151)%>","NC");
+		certCountry[151] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str152)%>","NE");
+		certCountry[152] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str153)%>","NF");
+		certCountry[153] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str154)%>","NG");
+		certCountry[154] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str155)%>","NI");
+		certCountry[155] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str156)%>","NL");
+		certCountry[156] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str157)%>","NO");
+		certCountry[157] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str158)%>","NP");
+		certCountry[158] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str159)%>","NR");
+		certCountry[159] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str160)%>","NU");
+		certCountry[160] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str161)%>","NZ");
+		certCountry[161] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str162)%>","OM");
+		certCountry[162] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str163)%>","PA");
+		certCountry[163] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str164)%>","PE");
+		certCountry[164] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str165)%>","PF");
+		certCountry[165] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str166)%>","PG");
+		certCountry[166] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str167)%>","PH");
+		certCountry[167] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str168)%>","PK");
+		certCountry[168] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str169)%>","PL");
+		certCountry[169] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str170)%>","PM");
+		certCountry[170] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str171)%>","PN");
+		certCountry[171] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str172)%>","PR");
+		certCountry[172] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str173)%>","PT");
+		certCountry[173] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str174)%>","PW");
+		certCountry[174] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str175)%>","PY");
+		certCountry[175] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str176)%>","QA");
+		certCountry[176] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str177)%>","RE");
+		certCountry[177] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str178)%>","RO");
+		certCountry[178] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str195)%>","RS");
+		certCountry[179] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str179)%>","RU");
+		certCountry[180] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str180)%>","RW");
+		certCountry[181] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str181)%>","SA");
+		certCountry[182] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str182)%>","SB");
+		certCountry[183] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str183)%>","SC");
+		certCountry[184] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str184)%>","SD");
+		certCountry[185] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str185)%>","SE");
+		certCountry[186] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str186)%>","SG");
+		certCountry[187] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str187)%>","SH");
+		certCountry[188] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str188)%>","SI");
+		certCountry[189] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str189)%>","SJ");
+		certCountry[190] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str190)%>","SK");
+		certCountry[191] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str191)%>","SL");
+		certCountry[192] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str192)%>","SM");
+		certCountry[193] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str193)%>","SN");
+		certCountry[194] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str194)%>","SO");
+		certCountry[195] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str238)%>","SS");
+		certCountry[196] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str196)%>","SR");
+		certCountry[197] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str197)%>","ST");
+		certCountry[198] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str198)%>","SV");
+		certCountry[199] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str199)%>","SY");
+		certCountry[200] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str200)%>","SZ");
+		certCountry[201] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str201)%>","TC");
+		certCountry[202] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str202)%>","TD");
+		certCountry[203] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str203)%>","TF");
+		certCountry[204] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str204)%>","TG");
+		certCountry[205] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str205)%>","TH");
+		certCountry[206] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str206)%>","TJ");
+		certCountry[207] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str207)%>","TK");
+		certCountry[208] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str208)%>","TM");
+		certCountry[209] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str209)%>","TN");
+		certCountry[210] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str210)%>","TO");
+		certCountry[211] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str211)%>","TP");
+		certCountry[212] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str212)%>","TR");
+		certCountry[213] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str213)%>","TT");
+		certCountry[214] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str214)%>","TV");
+		certCountry[215] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str215)%>","TW");
+		certCountry[216] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str216)%>","TZ");
+		certCountry[217] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str217)%>","UA");
+		certCountry[218] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str218)%>","UG");
+		certCountry[219] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str219)%>","UM");
+		certCountry[220] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str220)%>","US");
+		certCountry[221] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str221)%>","UY");
+		certCountry[222] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str222)%>","UZ");
+		certCountry[223] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str223)%>","VA");
+		certCountry[224] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str224)%>","VC");
+		certCountry[225] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str225)%>","VE");
+		certCountry[226] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str226)%>","VG");
+		certCountry[227] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str227)%>","VI");
+		certCountry[228] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str228)%>","VN");
+		certCountry[229] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str229)%>","VU");
+		certCountry[230] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str230)%>","WF");
+		certCountry[231] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str231)%>","WS");
+		certCountry[232] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str232)%>","YE");
+		certCountry[233] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str233)%>","YT");
+		certCountry[234] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str234)%>","YU");
+		certCountry[235] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str235)%>","ZA");
+		certCountry[236] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str236)%>","ZM");
+		certCountry[237] = new Option("<%ejGetML(MLG_Security_Certificates_Country_Str237)%>","ZW");
+ 
+		for (var i=0; i< document.forms[0].certCountry.options.length; i++) {
+			if (certCountry.options[i].value == country) {
+				certCountry.options[i].selected = true;
+				break;
+			}
+		}
+	}
+}
+
+function frmLoad() {
+	loadCountryList();
+	with ( document.addForm ) {
+    certName.value = '';
+    certCommonName.value = '';
+    certOrg.value = '';
+    certState.value = '';
+  }
+}
+
+function CommonNameModeClick() {
+   with ( document.forms[0] ) {
+      if (commonNameMode[0].checked == true) {
+         certCommonName.disabled = true;
+      }
+      if (commonNameMode[1].checked == true) {
+         certCommonName.disabled = false;
+      }
+   }
+}
+
+function btnApply() {
+	var loc, idx, type;
+	var msg;
+	loc = '/pages/tabFW/certificates-Add.cgi?certLocalAction=add&certViewType=reqShow';
+	with ( document.addForm ) {
+		if ( certName.value == '' ) {
+			msg = '<%ejGetML(MLG_Security_Certificate_AlertMsg_Str6)%>';
+  			hciAlert(msg, {height: 180,type: 2, title: ''});
+			return;
+		}
+
+		if ( isValidNameWSpace(certName.value) == false ) {
+			msg = '<%ejGetML(MLG_Security_Certificate_AlertMsg_Str1)%> "' + certName.value + '"';
+			hciAlert(msg, {height: 180,type: 2, title: ''});
+			return;
+		}
+		if (commonNameMode[1].checked == true) {
+		   if ( certCommonName.value == '' ) {
+			  msg = '<%ejGetML(MLG_Security_Certificate_AlertMsg_Str2)%>';
+  			  hciAlert(msg, {height: 180,type: 2, title: ''});
+			  return;
+		   }
+		   comNameMode.value = "1";
+    		}else
+    			comNameMode.value = "0";
+
+		if ( certOrg.value == '' ) {
+			msg = '<%ejGetML(MLG_Security_Certificate_AlertMsg_Str3)%>';
+  			hciAlert(msg, {height: 180,type: 2, title: ''});
+			return;
+		}
+		if ( certState.value == '' ) {
+			msg = '<%ejGetML(MLG_Security_Certificate_AlertMsg_Str4)%>';
+  			hciAlert(msg, {height: 180,type: 2, title: ''});
+			return;
+		}
+		loc += '&certViewName=' + certName.value;
+		loc += '&comNameMode=' + comNameMode.value;
+		loc += '&certCommonName=' + certCommonName.value;
+		loc += '&certOrg=' + certOrg.value;
+		loc += '&certState=' + certState.value;
+		idx = certCountry.selectedIndex;
+		loc += '&certCountry=' + certCountry.options[idx].value;
+	}
+
+  	loc += '&sessionKey='+ gblsessionKey; //mainFrame.gblsessionKey;
+
+	$('.ui-dialog-titlebar-close').trigger('click');
+  
+  
+	//*** Disable escape. closeOnEscape:false
+	var db1 = window.parent.$.zyUiDialog({
+	    width: '75%',
+	    height: 500,
+	    title: '<%ejGetML(MLG_Security_Certificates_Str33)%>',
+	    closeOnEscape: false,
+	    buttons: {
+	       '<%ejGetML(MLG_Common_Close)%>': function(){mainFrame.tabApi.refresh(); db1.dialog('close');},
+	       '<%ejGetML(MLG_Common_LoadSigned)%>': function(){}
+	    }
+			});
+	db1.load(loc);
+	db1.dialog('open');  
+	
+	$.openLoadingMask(1);
+	//mainFrame.tabApi.refresh();
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+// done hiding -->
+</script>
+
+
+<div class="popup_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">
+<%ejGetML(MLG_Security_Certificates_Str7)%>
+</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->	
+
+
+<form name="addForm" id="addForm" method="post" target="mainFrame" onSubmit="return false;">
+<input type="hidden" name="comNameMode" id="comNameMode" />
+
+<!--Set area start-->
+<div class="data_frame"><ul>
+
+
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_Certificates_Str8)%>:</li>
+    <li class="right_table">
+				<input type='text' name='certName' size='20' maxlength="63">
+    </li>
+  </ul>
+</div>
+</li>
+
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_Certificates_Str9)%>:</li>
+    <li class="right_table">
+                <input type='radio' name='commonNameMode' checked onClick="CommonNameModeClick()"><%ejGetML(MLG_Common_Auto)%>&nbsp;&nbsp;&nbsp;
+            	<input type='radio' name='commonNameMode' onClick="CommonNameModeClick()"><%ejGetML(MLG_Security_Certificates_Str13)%>&nbsp;&nbsp;&nbsp;
+				<input type='text' name='certCommonName' size='20' maxlength="63" disabled=ture>
+    </li>
+  </ul>
+</div>
+</li>
+
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_Certificates_Str10)%>:</li>
+    <li class="right_table">
+				<input type='text' name='certOrg' size='20' maxlength="63">
+    </li>
+  </ul>
+</div>
+</li>
+
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_Certificates_Str11)%>:</li>
+    <li class="right_table">
+				<input type='text' name='certState' size='20' maxlength="32">
+    </li>
+  </ul>
+</div>
+</li>
+
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_Certificates_Str12)%>:</li>
+    <li class="right_table">
+				<select name='certCountry' size="1"></select>
+    </li>
+  </ul>
+</div>
+</li>
+</ul></div>	
+<!--Set area end-->	
+</form>
+</div>

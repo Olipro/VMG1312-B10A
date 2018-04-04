@@ -1,0 +1,184 @@
+<script language="javascript">
+var ipAddress = '<%ejGet(ethIpAddress)%>';
+var subnetMask = '<%ejGet(ethSubnetMask)%>';
+var TrustDomainHttp = <%ejGet(TrustDomainHttpState)%>;
+var TrustDomainHttps = <%ejGet(TrustDomainHttpsState)%>;
+var TrustDomainFtp = '<%ejGet(TrustDomainFtpState)%>';
+var TrustDomainTelnet = '<%ejGet(TrustDomainTelnetState)%>';
+var TrustDomainSsh = '<%ejGet(TrustDomainSshState)%>';
+var TrustDomainSnmp = '<%ejGet(TrustDomainSnmpState)%>';
+var TrustDomainIcmp = '<%ejGet(TrustDomainIcmpState)%>';
+<!-- hide
+function btnSave()
+{
+   with (document.forms[0]) {
+      if (isValidIpAddress(TrustDomainIP.value) == false && isValidIpAddress6(TrustDomainIP.value)==false)
+      {
+		hciAlert(MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str29)%>", TrustDomainIP.value), 2);
+         return;
+      }
+      var tempStr ='<%ejGet(TrustDomainIP)%>';
+      var iplist = tempStr.split('@');
+	//  var lanAddress_exist=false;
+      for (i=0; i<iplist.length; i++)
+      {  //check the repeat IP address
+         if ((TrustDomainIP.value) == iplist[i])
+         {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_Maintenance_Trust_Domain_Alert_str1)%>", TrustDomainIP.value), 2);
+            return;
+         }		 
+	//	 if (ipAddress + '/' + subnetMask  == iplist[i]) { 
+	//	   lanAddress_exist=true;		 
+	//	 }
+      }
+	  
+      httpLan.value = (httpLan.value == 1 ? 2:0);
+      httpWan.value = (httpWan.value == 1 ? 2:0);
+
+      httpsLan.value = (httpsLan.value == 1 ? 2:0);
+      httpsWan.value = (httpsWan.value == 1 ? 2:0);
+
+      sshLan.value = (sshLan.value == 1 ? 2:0);
+      sshWan.value = (sshWan.value == 1 ? 2:0);
+
+      telnetLan.value = (telnetLan.value == 1 ? 2:0);
+      telnetWan.value = (telnetWan.value == 1 ? 2:0);
+
+      ftpLan.value = (ftpLan.value == 1 ? 2:0);
+      ftpWan.value = (ftpWan.value == 1 ? 2:0);
+
+      snmpLan.value = (snmpLan.value == 1 ? 2:0);
+      snmpWan.value = (snmpWan.value == 1 ? 2:0);
+
+      icmpLan.value = (icmpLan.value == 1 ? 2:0);
+      icmpWan.value = (icmpWan.value == 1 ? 2:0);
+	  
+      sessionKey.value = mainFrame.gblsessionKey;
+      TrustDomainIP.value = tempStr + TrustDomainIP.value + '@';
+	//  if(lanAddress_exist == false) {
+	//	TrustDomainIP.value = ipAddress + '/' + subnetMask + '@' + TrustDomainIP.value ;
+	//  }
+      /*__ZyXEL__, David, comply the checked value 2, i.e. when checked, set the input value to 2. 
+        See dalSec_getStatus() in dal_sec.c */
+      if (TrustDomainHttp == 1)
+      {
+         $("input[name='TrustDomainHttpState']").val('2');
+      }
+      else
+      {
+        	$("input[name='TrustDomainHttpState']").val('0');
+      }
+      if (TrustDomainHttps == 1)
+      {
+         $("input[name='TrustDomainHttpsState']").val('2');
+      }
+      else
+      {
+        	$("input[name='TrustDomainHttpsState']").val('0');
+      }
+      if (TrustDomainFtp == 1)
+      {
+         $("input[name='TrustDomainFtpState']").val('2');
+      }
+      else
+      {
+        	$("input[name='TrustDomainFtpState']").val('0');
+      }
+      if (TrustDomainTelnet == 1)
+      {
+         $("input[name='TrustDomainTelnetState']").val('2');
+      }
+      else
+      {
+        	$("input[name='TrustDomainTelnetState']").val('0');
+      }
+      if (TrustDomainSsh == 1)
+      {
+         $("input[name='TrustDomainSshState']").val('2');
+      }
+      else
+      {
+        	$("input[name='TrustDomainSshState']").val('0');
+      }
+      if (TrustDomainSnmp == 1)
+      {
+         $("input[name='TrustDomainSnmpState']").val('2');
+      }
+      else
+      {
+                $("input[name='TrustDomainSnmpState']").val('0');
+      }
+      if (TrustDomainIcmp == 1)
+      {
+         $("input[name='TrustDomainIcmpState']").val('2');
+      }
+      else
+      {
+                $("input[name='TrustDomainIcmpState']").val('0');
+      }
+      submit();
+
+      $('.ui-dialog-titlebar-close').trigger('click');
+      $.openLoadingMask(1);
+   }
+   return;
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var OkBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+OkBtn.click(function(){ btnSave(); });
+
+
+// done hiding -->
+</script>
+<form name="control" id="control" action="/pages/tabFW/remoteMGMT-remoteMGMT.cgi" method="post" target="mainFrame">
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value="" />
+<input name="httpLan" type="HIDDEN" id="httpLan" value="<%ejGet(httpLan)%>" />
+<input name="httpWan" type="HIDDEN" id="httpWan" value="<%ejGet(httpWan)%>" />
+<input name="httpPort" type="HIDDEN" id="httpPort" value="<%ejGet(httpPort)%>" />
+<input name="TrustDomainHttpState" type="HIDDEN" id="TrustDomainHttpState" />
+<input name="httpsLan" type="HIDDEN" id="httpsLan" value="<%ejGet(httpsLan)%>" />
+<input name="httpsWan" type="HIDDEN" id="httpsWan" value="<%ejGet(httpsWan)%>" />
+<input name="httpsPort" type="HIDDEN" id="httpsPort" value="<%ejGet(httpsPort)%>" />
+<input name="TrustDomainHttpsState" type="HIDDEN" id="TrustDomainHttpsState" />
+<input name="sshLan" type="HIDDEN" id="sshLan" value="<%ejGet(sshLan)%>" />
+<input name="sshWan" type="HIDDEN" id="sshWan" value="<%ejGet(sshWan)%>" />
+<input name="sshPort" type="HIDDEN" id="sshPort" value="<%ejGet(sshPort)%>" />
+<input name="TrustDomainSshState" type="HIDDEN" id="TrustDomainSshState" />
+<input name="telnetLan" type="HIDDEN" id="telnetLan" value="<%ejGet(telnetLan)%>" />
+<input name="telnetWan" type="HIDDEN" id="telnetWan" value="<%ejGet(telnetWan)%>" />
+<input name="telnetPort" type="HIDDEN" id="telnetPort" value="<%ejGet(telnetPort)%>" />
+<input name="TrustDomainTelnetState" type="HIDDEN" id="TrustDomainTelnetState" />
+<input name="ftpLan" type="HIDDEN" id="ftpLan" value="<%ejGet(ftpLan)%>" />
+<input name="ftpWan" type="HIDDEN" id="ftpWan" value="<%ejGet(ftpWan)%>" />
+<input name="ftpPort" type="HIDDEN" id="ftpPort" value="<%ejGet(ftpPort)%>" />
+<input name="TrustDomainFtpState" type="HIDDEN" id="TrustDomainFtpState" />
+<input name="snmpLan" type="HIDDEN" id="snmpLan" value="<%ejGet(snmpLan)%>" />
+<input name="snmpWan" type="HIDDEN" id="snmpWan" value="<%ejGet(snmpWan)%>" />
+<input name="snmpPort" type="HIDDEN" id="snmpPort" value="<%ejGet(snmpPort)%>" />
+<input name="TrustDomainSnmpState" type="HIDDEN" id="TrustDomainSnmpState" />
+<input name="icmpLan" type="HIDDEN" id="icmpLan" value="<%ejGet(icmpLan)%>" />
+<input name="icmpWan" type="HIDDEN" id="icmpWan" value="<%ejGet(icmpWan)%>" />
+<input name="TrustDomainIcmpState" type="HIDDEN" id="TrustDomainIcmpState" />
+<div class="popup_frame">
+	<tr>
+		<td align='center'> &nbsp;
+				<br> 
+			<table width="90%" border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td> <%ejGetML(MLG_Maintenance_Add_Trust_Domain_Explain)%> 	</td>
+				</tr><br>
+			</table> 
+			<table width="90%" border="0" cellpadding="0" cellspacing="0">
+				<tr> 
+					<!-- ZyXEL, cathy, for considering ipv6 address
+					<td width="80"><%ejGetML(MLG_Common_IPAddress)%>:</td> 
+					<td><input name="TrustDomainIP" type="text" size="40" />[/<%ejGetML(MLG_Maintenance_Remote_Str)%>]</td> -->
+					<td width="80"><%ejGetML(MLG_Network_StaticDHCP_Str6)%>:</td> 
+					<td><input name="TrustDomainIP" type="text" size="50" />[/<%ejGetML(MLG_Maintenance_Remote_Str)%>]
+				</tr><br>
+			</table>
+		</td>
+	</tr>
+</div>
+</form>

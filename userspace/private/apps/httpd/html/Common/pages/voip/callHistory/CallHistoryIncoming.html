@@ -1,0 +1,89 @@
+<script type="text/javascript">
+
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+var voiceRunning = '<%ejGetVoice(voiceInUse)%>';
+
+function btnDefaultSip(current_view) {
+
+	with ( document.forms[0] ) {
+		action.value = "setdefault";
+		sessionKey.value = glbSessionKey;
+		currentview.value = current_view;
+		
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+function btnClearCalls(current_view) {
+
+	with ( document.forms[0] ) {
+		action.value = "callsclearall";
+		sessionKey.value = glbSessionKey;
+		currentview.value = current_view;
+		
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+function frmLoad() {
+	with ( document.forms[0] ) {
+		enableButtons();
+	}
+}
+
+function enableButtons(){
+	var btnClearCalls = document.getElementById("ClearButton");
+	var buttonDefault = document.getElementById("DefaultButton");
+
+	if ( voiceRunning == 1 ) {
+		btnClearCalls.disabled = true;
+		buttonDefault.disabled = false;
+	} else {
+		btnClearCalls.disabled = false;
+		buttonDefault.disabled = false;
+	}
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+</script> 
+
+<form id="CallHistoryIncomingForm" name="CallHistoryIncomingForm" method="post" action="/pages/tabFW/callHistory-voicesipcfg.cmd">
+<input name="action" type="HIDDEN" id="action" value="view"; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""; />
+<input name="currentview" type="HIDDEN" id="currentview" value=""; />
+
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_VoIP_CallHistoryIncoming_Explain)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<li class="set1">
+<div class="w_table"><ul>
+<input id="DefaultButton" type='button' value='<%ejGetML(MLG_Network_Flow_Information_Str6)%>' onclick="btnDefaultSip('incoming_calls')">
+<input id="ClearButton" type='button' value='<%ejGetML(MLG_VoIP_CallHistoryIncoming_Str3)%>' onclick="btnClearCalls('incoming_calls')"></ul></div>
+<div class="w_table">
+  <!--Table define start-->
+  <table width="100%" cellpadding="0" cellspacing="0"  class="table_frame" id="testTable">
+    <tr align="center">
+      <td width="5%" class="top_font">#</td>
+      <td class="top_font"><%ejGetML(MLG_Common_Time)%></td>
+      <td class="top_font"><%ejGetML(MLG_VoIP_CallHistoryIncoming_Str1)%></td>
+      <td class="top_font"><%ejGetML(MLG_VoIP_CallHistoryIncoming_Str2)%></td>
+      <td class="top_font" style="border-right:0px;"><%ejGetML(MLG_ConnStatus_Status_Str128)%></td>
+    </tr>
+	<%ejGetCallHistory(CallHistoryInComingShow)%>
+  </table>
+</div>
+</li>
+</ul></div>
+</div><br /><br />
+</form>

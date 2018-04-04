@@ -1,0 +1,479 @@
+<html>
+   <head>
+      <meta http-equiv="Pragma" content="no-cache">
+      <LINK href="stylemain.css" type="text/css" rel="stylesheet">
+         <LINK href="colors.css" type="text/css" rel="stylesheet">
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+
+var chipId = '<%ejGetOther(sysInfo, chipId)%>';
+var upRate = parseInt('<%ejGetOther(lineRate, 0, 0)%>');
+var pcrMax = 255000;   // Assuming nitro: 255000 * 49 * 8 = 100Mbps  // SASHA: VDSL
+// var pcrMax = 1887;   // 1887 * 53 * 8 = 800000
+var serviceCat = '<%ejGet(atmServiceCategory)%>';
+var numQueue = parseInt('<%ejGetOther(memInfo, queueNum)%>');
+var numQueueMax = 8;
+var numPrioLevels = '<%ejGet(glbQosPrioLevel)%>';
+var buildvlm =  '<%ejGetOther(sysInfo, buildWanVlanMux)%>';
+var sessionKey='<%ejGetOther(sessionKey)%>';
+
+if (isNaN(upRate) == false)
+   pcrMax = Math.ceil((upRate * 1000) / (49 * 8));  // SASHA new value for VDSL
+
+var numPvcMax = 8;
+var numPvc = parseInt('<%ejGet(numPvc)%>');
+   
+function hideInfo(hide) {
+   if (hide == 3) {      // hide all 3
+      showhide('first1', 0);
+      showhide('2and3', 0);
+   }
+   else if (hide == 2) { // hide 2 and 3
+      showhide('first1', 1);
+      showhide('2and3', 0);
+   }
+   else if (hide == 0) { // hide none
+      showhide('first1', 1);
+      showhide('2and3', 1);
+   }
+}
+
+function encClick() {
+   with (document.forms[0]) {
+      if (linkType[1].checked == true) {
+         encSel.options[0].text = "VC/MUX";
+         encSel.options[1].text = "LLC/ENCAPSULATION";
+      } else if (linkType[2].checked == true) {
+         encSel.options[0].text = "LLC/SNAP-ROUTING";
+         encSel.options[1].text = "VC/MUX";
+      } else {
+         encSel.options[0].text = "LLC/SNAP-BRIDGING";
+         encSel.options[1].text = "VC/MUX";
+      }
+   }
+}
+
+function cbClick(obj) {
+   with (document.forms[0]) {
+      var idx = obj.selectedIndex;
+      var val = obj.options[idx].value;
+
+      if (val == 'UBR')
+         hideInfo(3);
+      else if (val == 'UBRWPCR' || val == 'CBR')
+         hideInfo(2);
+      else
+         hideInfo(0);
+         
+      if (chipId == '63268' || chipId == '6318') {
+         showhide("group_sched", 1);
+         showhide("queue_sched", 1);
+      }
+      else {
+         //6368, 6362, 6328
+         showhide("group_sched", 0);
+         if (val == 'UBR')
+            showhide("queue_sched", 1);
+         else
+            showhide("queue_sched", 0);
+      }
+   }
+}
+
+function frmLoad() {
+   with (document.forms[0]) {
+      atmVpi.value = '<%ejGet(atmVpi)%>';
+      atmVci.value = '<%ejGet(atmVci)%>';
+   
+	  linkType[0].checked = true;
+
+      if (serviceCat == 'UBR') {
+         serviceCategory[0].selected = true;
+         hideInfo(3);
+      }
+      else if (serviceCat == 'UBRWPCR') {
+         serviceCategory[1].selected = true;
+         hideInfo(2);
+      }
+      else if (serviceCat == 'CBR') {
+         serviceCategory[2].selected = true;
+         hideInfo(2);
+      }
+      else if (serviceCat == 'VBR-nrt') {
+         serviceCategory[3].selected = true;
+         hideInfo(0);
+      }
+      else if (serviceCat == 'VBR-rt') {
+         serviceCategory[4].selected = true;
+         hideInfo(0);
+      }
+      else {
+         serviceCategory[0].selected = true;
+         hideInfo(3);
+      }
+
+      grpPrec.value = numPrioLevels;
+      grpWght.value = '1';
+      prec.value = numPrioLevels;
+      wght.value = '1';
+
+      if (chipId == '63268' || chipId == '6318') {
+         showhide("group_sched", 1);
+         showhide("queue_sched", 1);
+      }
+      else {
+         //6368, 6362, 6328
+         showhide("group_sched", 0);
+         if (serviceCategory[0].selected == true)
+            showhide("queue_sched", 1);
+         else
+            showhide("queue_sched", 0);
+      }
+   }
+}
+
+function btnBack() {
+   var code = 'location="dslatm.cmd"';
+   eval(code);
+}
+
+function btnSave() {
+   var loc = 'dslatm.cmd?action=add';
+   var portId;
+
+   with (document.forms[0]) {
+      if (isNaN(parseInt(atmVpi.value)) == true) {
+         alert('VPI "' + atmVpi.value + '" is invalid.');
+         return;
+      }
+      if (isNaN(parseInt(atmVci.value)) == true) {
+         alert('VCI "' + atmVci.value + '" is invalid.');
+         return;
+      }
+      vpi = parseInt(atmVpi.value);
+      if (vpi < 0 || vpi > 255) {
+         alert('VPI "' + atmVpi.value + '" is out of range [0-255].');
+         return;
+      }
+      vci = parseInt(atmVci.value);
+      if (vci < 32 || vci > 65535) {
+         alert('VCI "' + atmVci.value + '" is out of range [32-65535].');
+         return;
+      }
+      loc += '&atmVpi=' + atmVpi.value;
+      loc += '&atmVci=' + atmVci.value;
+
+      if (path0.checked == true && path1.checked == true) {
+         portId = '4';
+      }
+      else if (path0.checked == true) {
+         portId = '0';
+      }
+      else if (path1.checked == true) {
+         portId = '1';
+      }
+      else {
+         alert('At least one latency needs be selected.');
+         return;
+      }
+      loc += '&portId=' + portId;
+
+      if (linkType[0].checked == true) {
+         loc +='&linkType=EoA';
+         if (buildvlm == 0)
+            loc += '&connMode=0';  //default mode
+         else
+            loc += '&connMode=1';  //vlanmux mode
+      }
+      else if (linkType[1].checked == true) {
+         loc +='&linkType=PPPoA';
+         loc += '&connMode=0';  //default mode
+      }
+      else if (linkType[2].checked == true) {
+         loc +='&linkType=IPoA';
+         loc += '&connMode=0';  //default mode
+      }
+      
+      loc += '&encapMode=' + encSel.options[encSel.selectedIndex].value;
+	  
+      loc += '&atmServiceCategory=' + serviceCategory.value;
+      if (serviceCategory.value != 'UBR') {
+         if (isNaN(parseInt(peakCell.value)) == true) {
+            alert('Peak Cell Rate "' + peakCell.value + '" is invalid.');
+            return;
+         }
+         peak = parseInt(peakCell.value);
+         if (peak <= 0 || peak > pcrMax) {
+            alert('Peak Cell Rate "' + peakCell.value + '" is out of range [1-' + pcrMax + '].');
+            return;
+         }
+         loc += '&atmPeakCellRate=' + peakCell.value;
+      } else
+         loc += '&atmPeakCellRate=0';
+	  
+      if (serviceCategory.value == 'VBR-nrt' || serviceCategory.value == 'VBR-rt') {
+         if (isNaN(parseInt(sustainableCell.value)) == true) {
+            alert('Sustainable Cell Rate "' + sustainableCell.value + '" is invalid.');
+            return;
+         }
+         sustainable = parseInt(sustainableCell.value);
+         if (sustainable <= 0 || sustainable > pcrMax) {
+            alert('Sustainable Cell Rate "' + sustainableCell.value + '" is out of range [1-' + pcrMax + '].');
+            return;
+         }
+         if (sustainable >= peak) {
+            alert('Sustainable Cell Rate "' + sustainableCell.value + '" has to be smaller than Peak Cell Rate');
+            return;
+         }
+         if (isNaN(parseInt(maximumBurst.value)) == true) {
+            alert('Maximum Burst Size "' + maximumBurst.value + '" is invalid.');
+            return;
+         }
+         maximum = parseInt(maximumBurst.value);
+         if (maximum <= 0 || maximum > 1000000) {
+            alert('Maximum Burst Size "' + maximumBurst.value + '" is out of range [1-1000000].');
+            return;
+         }
+         loc += '&atmSustainedCellRate=' + sustainableCell.value;
+         loc += '&atmMaxBurstSize=' + maximumBurst.value;
+      } else {
+         loc += '&atmSustainedCellRate=0';
+         loc += '&atmMaxBurstSize=0';
+      }
+
+      //IP QoS parameters
+      if (chipId == '63268' || chipId == '6318' || serviceCategory.value == 'UBR') {
+         loc += '&enblQos=1';
+
+         if (isNaN(parseInt(grpPrec.value)) == true) {
+            alert('VC Precedence "' + grpPrec.value + '" is invalid.');
+            return;
+         }
+         precval = parseInt(grpPrec.value);
+         if (precval < 1 || precval > parseInt(numPrioLevels)) {
+            alert('VC Precedence "' + grpPrec.value + '" is out of range.');
+            return;
+         }
+         if (isNaN(parseInt(grpWght.value)) == true) {
+            alert('VC Weight "' + grpWght.value + '" is invalid.');
+            return;
+         }
+         wghtval = parseInt(grpWght.value);
+         if (wghtval < 1 || wghtval > 63) {
+            alert('VC Weight "' + grpWght.value + '" is out of range.');
+            return;
+         }
+         loc += '&grpPrec=' + grpPrec.value;
+         loc += '&grpAlg=WRR&grpWght=' + grpWght.value;
+
+         if (isNaN(parseInt(prec.value)) == true) {
+            alert('Default Queue Precedence "' + prec.value + '" is invalid.');
+            return;
+         }
+         precval = parseInt(prec.value);
+         if (precval < 1 || precval > parseInt(numPrioLevels)) {
+            alert('Default Queue Precedence "' + prec.value + '" is out of range.');
+            return;
+         }
+         loc += '&prec=' + prec.value;
+
+         if (isNaN(parseInt(wght.value)) == true) {
+            alert('Default Queue Weight "' + wght.value + '" is invalid.');
+            return;
+         }
+         wghtval = parseInt(wght.value);
+         if (wghtval < 1 || wghtval > 63) {
+            alert('Default Queue Weight "' + wght.value + '" is out of range.');
+            return;
+         }
+         if (alg[0].checked == true) {
+            if (chipId == '63268' || chipId == '6318')
+               loc += '&alg=WRR&wght=' + wght.value;
+            else
+               loc += '&alg=WRR&wght=1';
+         }
+         else {
+            loc += '&alg=WFQ&wght=' + wght.value;
+         }
+      }
+      else
+         loc += '&enblQos=0';
+   }
+   loc += '&sessionKey=' + sessionKey;
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+
+// done hiding -->
+</script>
+   </head>
+   <body onload="frmLoad()">
+      <blockquote>
+         <form>
+            <b>ATM PVC Configuration</b><br><br>
+            This screen allows you to configure a ATM PVC.
+            <br>
+            <br>
+            <table cellSpacing='4' cellPadding='0' border='0'>
+               <tr>
+                  <td>VPI:</td>
+                  <td><input type='text' size='4' name='atmVpi'>&nbsp;[0-255]</td>
+               </tr>
+               <tr>
+                  <td>VCI:</td>
+                  <td><input type='text' size='4' name='atmVci'>&nbsp[32-65535]</td>
+               </tr>
+            </table><br>
+
+            <table cellSpacing='4' cellPadding='0' border='0'>
+               <td>Select DSL Latency</td>
+               <tr>
+                  <td colspan='2'><input type='checkbox' name='path0' checked>&nbsp;Path0 (Fast)</td>
+               </tr>
+               <tr>
+                  <td colspan='2'><input type='checkbox' name='path1'>&nbsp;Path1 (Interleaved)</td>
+               </tr>
+            </table><br>
+
+            <table border="0" cellpadding="0" cellspacing="0">
+           	   <td>Select DSL Link Type (EoA is for PPPoE, IPoE, and Bridge.)</td>
+               <tr>
+                  <td colspan="2"><input type='radio' name='linkType' onClick='encClick()'>&nbsp;EoA</td>
+               </tr>
+               <tr>
+                  <td colspan="2"><input type='radio' name='linkType' onClick='encClick()'>&nbsp;PPPoA</td>
+               </tr>
+               <tr>
+                  <td colspan="2"><input type='radio' name='linkType' onClick='encClick()'>&nbsp;IPoA</td>
+               </tr>
+            </table><br>
+
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width='200'>Encapsulation Mode:</td>
+                  <td><select name='encSel' id='encSel'>
+                        <option value="0">LLC/SNAP-BRIDGING</option>
+                        <option value="1">VC/MUX</option>
+                  </select></td>
+               </tr>
+            </table><br>
+
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width='200'>Service Category:</td>
+                  <td><select name="serviceCategory" size="1" onClick='cbClick(this)'>
+                        <option value="UBR" selected>
+                        UBR Without PCR
+                        <option value="UBRWPCR">
+                        UBR With PCR
+                        <option value="CBR">
+                        CBR
+                        <option value="VBR-nrt">
+                        Non Realtime VBR
+                        <option value="VBR-rt">
+                           Realtime VBR</option>
+                  </select></td>
+               </tr>
+            </table>
+
+            <div id='first1'>
+               <table border="0" cellpadding="0" cellspacing="0">
+                  <tr>
+                     <td width='200'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Peak Cell Rate:</td>
+                     <td><input type="text" size="6" name="peakCell">&nbsp;[cells/s]</td>
+                  </tr>
+               </table>
+            </div>
+
+            <div id='2and3'>
+               <table border="0" cellpadding="0" cellspacing="0">
+                  <tr>
+                     <td width='200'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sustainable Cell Rate:</td>
+                     <td><input id="Text5" type="text" size="6" name="sustainableCell">&nbsp;[cells/s]</td>
+                  </tr>
+                  <tr>
+                     <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Maximum Burst Size:</td>
+                     <td><input type="text" size="6" name="maximumBurst">&nbsp;[cells]</td>
+                  </tr>
+               </table>
+            </div>
+            <br>
+            <div id='queue_sched'>
+               <table border="0" cellpadding="0" cellspacing="0">
+                  <script language="javascript">
+                  <!-- hide
+                  if (chipId == '63268' || chipId == '6318') {
+                     document.write("<td colspan='2'>Select Scheduler for Queues of Equal Precedence as the Default Queue</td>");
+                     document.write("<tr>");
+                     document.write("<td colspan='2'><input type='radio' name='alg' checked>&nbsp;Weighted Round Robin</td>");
+                     document.write("</tr>");
+                     document.write("<tr>");
+                     document.write("<td colspan='2'><input type='radio' name='alg'>&nbsp;Weighted Fair Queuing</td>");
+                     document.write("</tr>");
+                     document.write("<tr>");
+                     document.write("<td>&nbsp;</td>");
+                     document.write("</tr>");
+                     document.write("<tr>");
+                     document.write("<td width='200'>Default Queue Weight:</td>");
+                     document.write("<td><input type='text' size='4' name='wght'>&nbsp;[1-63]</td>");
+                     document.write("</tr>");
+                     document.write("<tr>");
+                     document.write("<td width='200'>Default Queue Precedence:</td>");
+                     document.write("<td><input type='text' size='4' name='prec'>&nbsp;[1-" + numPrioLevels + "] (lower value, higher priority)</td>");
+                     document.write("</tr>");
+                  }
+                  else {
+                     document.write("<td colspan='2'>Select Scheduler for Queues of Equal Precedence</td>");
+                     document.write("<tr>");
+                     document.write("<td colspan='2'><input type='radio' name='alg' checked>&nbsp;Round Robin (weight=1)</td>");
+                     document.write("</tr>");
+                     document.write("<tr>");
+                     document.write("<td colspan='2'><input type='radio' name='alg'>&nbsp;Weighted Fair Queuing</td>");
+                     document.write("</tr>");
+                     document.write("<tr>");
+                     document.write("<td width='200'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Default Queue Weight:</td>");
+                     document.write("<td><input type='text' size='4' name='wght'>&nbsp;[1-63]</td>");
+                     document.write("</tr>");
+                     document.write("<tr>");
+                     document.write("<td>&nbsp;</td>");
+                     document.write("</tr>");
+                     document.write("<tr>");
+                     document.write("<td width='200'>Default Queue Precedence:</td>");
+                     document.write("<td><input type='text' size='4' name='prec'>&nbsp;[1-" + numPrioLevels + "] (lower value, higher priority)</td>");
+                     document.write("</tr>");
+                     document.write("<td colspan='2'>Note: For WFQ, the default queue precedence will be applied to all other queues in the VC.</td>");
+                  }
+                  // done hiding -->
+                  </script>
+               </table><br>
+            </div>
+
+            <div id='group_sched'>
+               <table border="0" cellpadding="0" cellspacing="0">
+                  <tr>
+                     <td width='200'>VC WRR Weight:</td>
+                     <td><input type='text' size='4' name='grpWght'>&nbsp;[1-63]</td>
+                  </tr>
+                  <tr>
+                     <td width='200'>VC Precedence:</td>
+                     <script language="javascript">
+                     <!-- hide
+                     document.write("<td><input type='text' size='4' name='grpPrec'>&nbsp;[1-" + numPrioLevels + "] (lower value, higher priority)</td>");
+                     // done hiding -->
+                  	 </script>
+                  </tr>
+               </table>
+               Note: VC scheduling will be SP among unequal precedence VC's and WRR among equal precedence VC's.<br>
+               For single queue VC, the default queue precedence and weight will be used for arbitration.<br>
+               For multi-queue VC, its VC precedence and weight will be used for arbitration.<br>
+            </div><br>
+
+            <center>
+               <input type='button' onClick='btnBack()' value='Back'> <input type='button' onClick='btnSave()' value='Apply/Save'>
+            </center>
+         </form>
+      </blockquote>
+   </body>
+</html>

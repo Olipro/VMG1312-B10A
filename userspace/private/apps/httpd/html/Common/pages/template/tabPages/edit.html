@@ -1,0 +1,83 @@
+<div class="popup_frame" >
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">Wireless Network Name (also known as SSID) is used to identify the wireless network. The Security Mode and Password are 
+for guarding the safety of the transferring data within the wireless network.</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame2"><ul>
+<li class="set1"> <div class="title"><%ejGetML(MLG_Security_FirewallProtocol_Str9)%></div>
+<div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_FirewallACL_Str12)%> :</li>
+    <li class="right_table">
+      <select name="power_level" id="power_level">
+        <option selected="selected"><%ejGetML(MLG_Common_TCP)%></option>
+        <option><%ejGetML(MLG_Common_UDP)%></option>
+        <option><%ejGetML(MLG_Common_ICMP)%></option>
+        <option><%ejGetML(MLG_Security_FirewallProtocol_Str14)%></option>
+      </select></li>
+  </ul>
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_FirewallProtocol_Str25)%> :</li>
+    <li class="right_table">
+      <input name="RN_EnterName3" size="20" maxlength="20" onblur="chkName(this)" type="text" />
+      (0-255)</li>
+  </ul>
+<ul>
+    <li class="left_table">&nbsp;</li>
+    <li class="right_table"><input type="button" name="sysAddUserBtn" value="Add" id='addnewshareBtn'/></li></ul></div>
+<div class="addline">&nbsp;</div>
+    </li>
+<li class="space"></li>
+<li class="set1">
+<div class="title"><%ejGetML(MLG_Common_General)%></div>
+<div class="w_text">
+  <ul>
+    <li class="left_table">Wireless Radio </li>
+    <li class="right_table">
+      <input name="ssid_state" id="radio" type="radio" value="enable" checked="checked" />
+      <%ejGetML(MLG_Common_Enabled)%>
+      <input name="ssid_state" id="radio2" type="radio" value="disable" />
+      <%ejGetML(MLG_Common_Disabled)%> </li>
+  </ul>
+</div> </li>
+<!--level 1 sample-1  end-->
+<li class="set1"><div class="title"><%ejGetML(MLG_WLAN_AdditionalWLANs_Str4)%></div></li>
+<li class="set2"><div class="title2"><span class="i_title2">Title2</span></div>
+ <div class="w_text">
+  <ul>
+    <li class="left_table">Wireless Power Level :</li>
+    <li class="right_table">
+      <select name="power_level" id="power_level">
+        <option selected="selected"><%ejGetML(MLG_Common_Full)%></option>
+        <option>75%</option>
+        <option>50%</option>
+        <option>25%</option>
+        <option>6%</option>
+      </select>
+    </li>
+  </ul>
+</div>
+</li>
+<li class="set2"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str18)%> :</li>
+    <li class="right_table">
+      <select name="80211bg_mode" id="80211bg_mode">
+        <option selected="selected">Mixed - 802.11b, 802.11g, 802.11n </option>
+        <option>802.11n </option>
+        <option>802.11g </option>
+        <option>802.11b </option>
+      </select>
+    </li>
+  </ul>
+</div>
+</li>
+<!--Please add this tag--><li class="space"> </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Common_Note)%>:</span></div><div class="note_text">&nbsp;&nbsp;Router: In this mode, the device is supported to connect to internet via ADSL/Cable Modem. PCs in LAN ports share the same IP to ISP through WAN Port. Access Point: In this mode, all Ethernet ports are bridged together. The device allows the wireless-equipped computer can communicate with a wired network. </div></li>
+<li class="space"> </li>
+</ul></div>
+<!--Set area end-->
+</div>

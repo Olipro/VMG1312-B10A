@@ -1,0 +1,888 @@
+<script language="javascript">
+<!-- hide
+
+var syncNvram = '<%ejGetWl(wlSyncNvram)%>';
+var enbl = '<%ejGetWl(wlEnbl_wl0v0)%>';
+var country = '<%ejGetWl(wlCountry)%>';
+var channel = '<%ejGetWl(wlChannel)%>';
+var rate = '<%ejGetWl(wlRate)%>';
+var frg = '<%ejGetWl(wlFrgThrshld)%>';
+var rts = '<%ejGetWl(wlRtsThrshld)%>';
+var dtm = '<%ejGetWl(wlDtmIntvl)%>';
+var bcn = '<%ejGetWl(wlBcnIntvl)%>';
+var phy = '<%ejGetWl(wlPhyType)%>';
+var brate = '<%ejGetWl(wlBasicRate)%>';
+var fburst = '<%ejGetWl(wlFrameBurst)%>';
+var gmode = '<%ejGetWl(wlgMode)%>';
+var pro = '<%ejGetWl(wlProtection)%>';
+var pre = '<%ejGetWl(wlPreambleType)%>';
+var band= '<%ejGetWl(wlBand)%>';
+var mcastrate = '<%ejGetWl(wlMCastRate)%>';
+var hasafterburner = '<%ejGetWl(wlHasAfterburner)%>';
+var afterburneren = '<%ejGetWl(wlAfterBurnerEn)%>';
+var bands = '<%ejGetWl(wlBands)%>';
+var mode = '<%ejGetWl(wlMode)%>';
+var wlRefresh = '<%ejGetWl(wlRefresh)%>';
+var TxPwrPcnt = '<%ejGetWl(wlTxPwrPcnt)%>';
+var reg_mode = '<%ejGetWl(wlRegMode)%>';
+var dfs_preism = '<%ejGetWl(wlDfsPreIsm)%>';
+var dfs_postism = '<%ejGetWl(wlDfsPostIsm)%>';
+var tpcDb = '<%ejGetWl(wlTpcDb)%>';
+var wme = '<%ejGetWl(wlWme)%>';
+var csscantimer = '<%ejGetWl(wlCsScanTimer)%>';
+var nctrlsb = '<%ejGetWl(wlNCtrlsb)%>';
+var corerev = '<%ejGetWl(wlCoreRev)%>';
+var npro = '<%ejGetWl(wlNProtection)%>';
+var nmcsidx = '<%ejGetWl(wlNMcsidx)%>';
+var chanspec = '<%ejGetWl(wlCurrentChSpec)%>';
+var nmode = '<%ejGetWl(wlNmode)%>'; 
+var nreqd = '<%ejGetWl(wlNReqd)%>'; 
+var wmenoack= '<%ejGetWl(wlWmeNoAck)%>';
+var wmeapsd= '<%ejGetWl(wlWmeApsd)%>';
+var nbwcap= '<%ejGetWl(wlNBwCap)%>'; 
+var haswme= '<%ejGetWl(wlHasWme)%>';
+var globalmaxassoc= '<%ejGetWl(wlGlobalMaxAssoc)%>';
+var wep = '<%ejGetWl(wlWep)%>';
+  /*Remove ACS policy menu from GUI. : Peter.Lee.MitraStar 2012-08-01*/
+//var acs_pol = '<%ejGetWl(acs_policy)%>';
+/* switch for WPS 1.0 and 2.0, __TELEFONICA__, MitraStar Curtis, 20120322 */
+var WscVer2    = '<%ejGetWl(wlWscVer2)%>';
+var authmode = '<%ejGetWl(wlAuthMode)%>';
+var hide = '<%ejGetWl(wlHide)%>';
+var WscMode = '<%ejGetWl(wlWscMode)%>';
+var rxchain_pwrsave_enable = '<%ejGetWl(wlRxChainPwrSaveEnable)%>';
+var fburst = '<%ejGetWl(wlFrameBurst)%>';
+var reg_mode = '<%ejGetWl(wlRegMode)%>';
+var dfs_preism = '<%ejGetWl(wlDfsPreIsm)%>';
+var dfs_postism = '<%ejGetWl(wlDfsPostIsm)%>';
+var tpcDb = '<%ejGetWl(wlTpcDb)%>';
+var obsscoex = '<%ejGetWl(wlObssCoex)%>';
+var rifsadvert = '<%ejGetWl(wlRifsAdvert)%>';
+var customizationFlag = '<%ejGetOther(customizationFlag)%>';
+var wpa = '<%ejGetWl(wlWpa)%>'; //cathy add 
+//ZyXEL, Ryan
+var title_str1 = "2.4GHz  "+ $($(".title")[0]).html();  //For 2.4G title
+var title_str2 = "5GHz  "+ $($(".title")[0]).html();    //For 5G title
+/*
+function loadMCastRateList(OnPageLoad) {
+   var sel_band;
+   var sel_rate;
+   var idx;
+   var sel_nmode;
+   var sel_gmode;
+   
+   // save selected
+   if (OnPageLoad) {
+      sel_band = band;
+      sel_rate = mcastrate;
+      sel_nmode = nmode;
+      sel_gmode = gmode;      
+   }
+   else {
+      sel_band = band;
+      sel_rate = document.forms[0].wlMCastRate.value;
+      if (phy == "n") {
+         
+         if (document.forms[0].wlMode.selectedIndex == 0) { // 11b
+            sel_gmode = 0;
+            sel_nmode = "off";
+         }
+         else if (document.forms[0].wlMode.selectedIndex == 1) { // 11g
+            sel_gmode = 4;
+            sel_nmode = "off";
+         }
+         else if (document.forms[0].wlMode.selectedIndex == 2) { // 11n
+            sel_gmode = gmode;
+            sel_nmode = "auto";
+         }
+         else if (document.forms[0].wlMode.selectedIndex == 3) { // 11 b/g
+            sel_gmode = 1;
+            sel_nmode = "off";
+         }
+         else if (document.forms[0].wlMode.selectedIndex == 4) { // 11 b/g/n
+            sel_gmode = gmode;
+            sel_nmode = "auto";
+         }
+      }
+      else {
+         sel_nmode = nmode;
+         sel_gmode = document.forms[0].wlMode.value;
+      }
+   }
+
+   if(phy != "n") sel_nmode = "off";
+
+   document.forms[0].wlMCastRate.length = 0;
+
+   if (sel_band == "2") { // 2.4G
+      if ((phy == "b") ||      
+         (country == "JP" && channel == '14') ||
+         (sel_nmode == "off" && sel_gmode == "0")) {
+         document.forms[0].wlMCastRate[0] = new Option("1 Mbps", "1000000");
+         document.forms[0].wlMCastRate[1] = new Option("2 Mbps", "2000000");
+         document.forms[0].wlMCastRate[2] = new Option("5.5 Mbps", "5500000");
+         document.forms[0].wlMCastRate[3] = new Option("11 Mbps", "11000000");
+      }
+      else {
+         document.forms[0].wlMCastRate[0] = new Option("1 Mbps", "1000000");
+         document.forms[0].wlMCastRate[1] = new Option("2 Mbps", "2000000");
+         document.forms[0].wlMCastRate[2] = new Option("5.5 Mbps", "5500000");
+         document.forms[0].wlMCastRate[3] = new Option("6 Mbps", "6000000");
+         document.forms[0].wlMCastRate[4] = new Option("9 Mbps", "9000000");
+         document.forms[0].wlMCastRate[5] = new Option("11 Mbps", "11000000");
+         document.forms[0].wlMCastRate[6] = new Option("12 Mbps", "12000000");
+         document.forms[0].wlMCastRate[7] = new Option("18 Mbps", "18000000");
+         document.forms[0].wlMCastRate[8] = new Option("24 Mbps", "24000000");
+         document.forms[0].wlMCastRate[9] = new Option("36 Mbps", "36000000");
+         document.forms[0].wlMCastRate[10] = new Option("48 Mbps", "48000000");
+         document.forms[0].wlMCastRate[11] = new Option("54 Mbps", "54000000");
+      }
+   }
+   else if (sel_band == "1") { // 5G
+      document.forms[0].wlMCastRate[0] = new Option("6 Mbps", "6000000");
+      document.forms[0].wlMCastRate[1] = new Option("9 Mbps", "9000000");
+      document.forms[0].wlMCastRate[2] = new Option("12 Mbps", "12000000");
+      document.forms[0].wlMCastRate[3] = new Option("18 Mbps", "18000000");
+      document.forms[0].wlMCastRate[4] = new Option("24 Mbps", "24000000");
+      document.forms[0].wlMCastRate[5] = new Option("36 Mbps", "36000000");
+      document.forms[0].wlMCastRate[6] = new Option("48 Mbps", "48000000");
+      document.forms[0].wlMCastRate[7] = new Option("54 Mbps", "54000000");
+   }
+   else {
+      document.forms[0].wlMCastRate[0] = new Option("Auto", "0");
+   }
+   // mark selected
+   for (idx=0; idx < document.forms[0].wlMCastRate.options.length; idx++) {
+      if (document.forms[0].wlMCastRate.options[idx].value == sel_rate) {
+         document.forms[0].wlMCastRate.options[idx].selected = true;
+         break;
+      }
+   }
+
+   // set to first(Auto) if not found
+   if( idx == document.forms[0].wlMCastRate.options.length) {
+      document.forms[0].wlMCastRate.options[0].selected = true;
+   }
+}
+*/
+function getTpcDbIndex(val) {
+   var ret;
+   
+   if ( val == "0" )
+      ret = 0;
+   else if ( val == "2" )
+      ret = 1;
+   else if ( val == "3" )
+      ret = 2;
+   else if ( val == "4" )
+      ret = 3;
+   else ret = 0;
+   return ret;
+}
+function RegModeChange(OnPageLoad) {
+   with ( document.forms[0] ) {
+      var sel_band;
+      
+      sel_band = band;
+     
+        
+                
+      if( wlRegMode.selectedIndex != 1 )
+         wlDfsPreIsm.disabled=wlDfsPostIsm.disabled=wlTpcDb.disabled=true;
+      else 
+         wlDfsPreIsm.disabled=wlDfsPostIsm.disabled=wlTpcDb.disabled=false;
+         
+     if (sel_band == "2") {
+        showhide("div_regMode", 0);   
+     }
+     else {
+        showhide("div_regMode", 1);     
+     }         
+   }         
+}
+
+function gModeChange(idx, OnPageLoad) {
+   with (document.forms[0]) {
+      if (idx == 1) { // 54g auto
+         wlPreamble.disabled = false;
+         wlProtect.disabled = false;
+      }
+      else if (idx == 4) { // 54g performance
+         wlPreamble.disabled = true;
+         wlPreamble.selectedIndex = 1;
+         wlProtect.disabled = false;
+      }
+      else if (idx == 0) { // b only
+         wlPreamble.disabled = false;
+         wlProtect.disabled = true;
+         if (!OnPageLoad)
+            wlProtect.selectedIndex = 0;
+      }
+   }
+}
+
+function nModeChange(idx, OnPageLoad) {
+   with (document.forms[0]) {
+      if (idx == 0) { // 54g b only
+         wlPreamble.disabled = false;
+         wlProtect.disabled = true;
+         if (!OnPageLoad)
+            wlProtect.selectedIndex = 0;
+      }
+      else if (idx == 1) { // 54g performance
+         wlPreamble.disabled = true;
+         wlPreamble.selectedIndex = 1;
+         wlProtect.disabled = false;
+      }
+      else if (idx == 3) { // 54g auto
+         wlPreamble.disabled = false;
+         wlProtect.disabled = false;
+      }
+      else if (idx == 2) { // 11n only
+         wlPreamble.disabled = true;
+         wlPreamble.selectedIndex = 0;
+         wlProtect.disabled = false;
+      }
+      else if (idx == 4) { // 11b/g/n
+         wlPreamble.disabled = true;
+         wlPreamble.selectedIndex = 0;
+         wlProtect.disabled = false;
+      }
+   }
+}
+
+function n_acModeChange(idx, OnPageLoad) {
+   with (document.forms[0]) {
+   	                              //document.forms[0].wlMode[0] = new Option("802.11 a only", "0");
+                              //document.forms[0].wlMode[1] = new Option("802.11 a/n mix", "1");
+                              //document.forms[0].wlMode[2] = new Option("802.11 n only", "2");
+                              //document.forms[0].wlMode[3] = new Option("802.11 a/n/ac", "3");
+								//document.forms[0].wlMode[3] = new Option("802.11 n/ac", "4");
+      if (idx == 0) { // a only
+         wlPreamble.disabled = true;
+         wlPreamble.selectedIndex = 1;
+         wlProtect.disabled = false;
+      }
+      else{ // 
+         wlPreamble.disabled = true;
+         wlPreamble.selectedIndex = 0;
+         wlProtect.disabled = false;
+      }
+
+   }
+}
+
+function wlModeChange(OnPageLoad) {
+   with (document.forms[0]) {
+      if (OnPageLoad) {
+
+         if (phy == 'n') {
+            if (nmode == 'off' && gmode == '0') { // 54g b only
+               wlMode.selectedIndex = 0;
+            }
+            else if (nmode == 'off' && gmode == '4') { // 54g performance
+               wlMode.selectedIndex = 1;
+            }
+            else if (nmode == 'off' && gmode == '1') { // 54g auto
+               wlMode.selectedIndex = 3;
+            }
+            else if (nmode == 'auto' && nreqd == '1') { // 11n only
+               wlMode.selectedIndex = 2;
+            }
+            else if (nmode == 'auto' && nreqd == '0') { // 11b/g/n
+               wlMode.selectedIndex = 4;
+            }
+
+            if (nmode == 'auto')
+               document.forms[0].wlProtect.value = npro;
+            else
+               document.forms[0].wlProtect.value = pro;
+
+            nModeChange(wlMode.selectedIndex, OnPageLoad);
+         }else if (phy == 'v'){
+           if (nmode == 'off') { //  a mode 
+                 wlMode.selectedIndex = 0;
+			  }else if( nmode == 'auto' && nreqd == '0' && nbwcap != '3'){
+			  	 wlMode.selectedIndex = 1;
+			  }else if( nmode == 'auto' && nreqd == '1' && nbwcap != '3'){
+			  	 wlMode.selectedIndex = 2;
+			  }else if( nmode == 'auto' && nreqd == '0'  && nbwcap == '3'){
+			  	 wlMode.selectedIndex = 3;
+			  }else if( nmode == 'auto' && nreqd == '1'  && nbwcap == '3'){
+				wlMode.selectedIndex = 4;
+			  }
+            if (nmode == 'auto')
+               document.forms[0].wlProtect.value = npro;
+            else
+               document.forms[0].wlProtect.value = pro;
+
+           n_acModeChange(wlMode.selectedIndex, OnPageLoad);
+         } else {
+            if (gmode == '0') {
+               wlMode.selectedIndex = 0;
+            }
+            else if (gmode == '1') {
+               wlMode.selectedIndex = 2;
+            }
+            else if (gmode == '4') {
+               wlMode.selectedIndex = 1;
+            }
+
+            document.forms[0].wlProtect.value = pro;
+            gModeChange(wlMode.options[wlMode.selectedIndex].value, OnPageLoad);
+         }
+      }
+      else {
+         var sel_mode;
+         sel_mode = wlMode.options[wlMode.selectedIndex].value;
+
+         if (phy == 'n') {
+            nModeChange(sel_mode, OnPageLoad);
+         }else if (phy == 'v'){
+            n_acModeChange(sel_mode, OnPageLoad);
+         }else {
+            gModeChange(sel_mode, OnPageLoad);
+         }
+      }
+
+      // loadMCastRateList(false);
+   }
+}
+function getFrameBurstIndex(frameburst) {
+   var ret;
+
+   if ( frameburst == "off" )
+      ret = 0;
+   else
+      ret = 1;
+   return ret;
+}
+function frmLoad() {
+//Show error message
+//ZyXEL, for cross-site scripting check, Albert
+    var errMsg = "<%ejGetOther(errMsg)%>";
+    if (errMsg != '') {
+      hciAlert(errMsg, {height: 180,type: 2, title: ''});
+    }
+if (band==2){
+	$(".title").html(title_str1);  //2.4G
+
+}else{
+	$(".title").html(title_str2); //5G
+}
+
+   if( !(customizationFlag & 0x00008000) ){
+      showhide("div_obssCoex", 1);   
+   }
+
+   with ( document.forms[0] ) {
+      wlFrgThrshld.value = frg;
+      wlRtsThrshld.value = rts;
+      wlCsScanTimer.value = csscantimer;
+      // wlGlobalMaxAssoc.value = globalmaxassoc;
+      wlTxPwrPcnt.selectedIndex = ((TxPwrPcnt/20) -1);
+      wlDtmIntvl.value = dtm;
+      wlBcnIntvl.value = bcn;
+	  wlFrameBurst.selectedIndex = getFrameBurstIndex(fburst);
+	  wlRxChainPwrSaveEnable.value = rxchain_pwrsave_enable;
+      wlRegMode.selectedIndex = reg_mode;
+      wlDfsPreIsm.value = dfs_preism;
+      wlDfsPostIsm.value = dfs_postism;
+      wlTpcDb.selectedIndex = getTpcDbIndex(tpcDb);
+      wlObssCoex.value = obsscoex;
+	  wlRifsAdvert.selectedIndex = (rifsadvert == "-1" ? 1 : 0);
+	  /*Remove ACS policy menu from GUI. : Peter.Lee.MitraStar 2012-08-01*/
+	  //acs_policy.selectedIndex = acs_pol;
+	  
+
+      if (WscVer2 == 'enabled') {
+         wlwscver2.checked = true;
+      } else {
+         wlwscver2.checked = false;
+      }	  
+
+/*button disable with WPS state : Peter.Lee.MitraStar 2012-07-25*/
+/*      if (WscMode == 'enabled') {
+         wlwscver2.disabled = false;
+      } else {
+         wlwscver2.disabled = true;
+      }	  
+*/
+	  
+      /* preamble */
+      if ( pre == 'short' ) {
+         wlPreamble.selectedIndex = 1;
+      }
+      else {
+         wlPreamble.selectedIndex = 0;    
+      }
+
+      wlModeChange(true);
+      RegModeChange(true);
+      // loadMCastRateList(true);
+      if (channel == '0')
+         wlCsScanTimer.disabled = false;
+      else
+         wlCsScanTimer.disabled = true;
+   }
+}
+
+function btnApply() {
+   with ( document.forms[0] ) {
+      sessionKey.value = '<%ejGetOther(sessionKey)%>';
+
+      var msg = "";
+      var rtsNum=parseInt(wlRtsThrshld.value);
+      //if ( isNaN(rtsNum) == true || rtsNum < 0 || rtsNum > 2347 ) { 
+	//Adam, add check non-digit character
+      if ( isNaN(wlRtsThrshld.value) || isNaN(rtsNum) == true || rtsNum < 0 || rtsNum > 2347 ) {
+         // alert('RTS threshold "' + wlRtsThrshld.value + '" should be between 0 and 2347.');
+         msg = MLG_Makestring("<%ejGetML(MLG_WLAN_Advanced_AlertMsg_Str1)%>", wlRtsThrshld.value);
+         hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_WLAN_AlertMsg_Alert)%>'});
+         return false;
+      }
+                
+      var frgNum = parseInt(wlFrgThrshld.value);
+      //if ( isNaN(frgNum) == true || frgNum < 256 || frgNum > 2346 ) {
+	//Adam add check non-digit character
+      if ( isNaN(wlFrgThrshld.value) || isNaN(frgNum) == true || frgNum < 256 || frgNum > 2346 ) {
+         // alert('Fragmentation threshold "' + wlFrgThrshld.value + '" should be between 256 and 2346.');
+         msg = MLG_Makestring("<%ejGetML(MLG_WLAN_Advanced_AlertMsg_Str2)%>", wlFrgThrshld.value);
+         hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_WLAN_AlertMsg_Alert)%>'});
+         return false;
+      }
+/*
+      var globalMaxAssocNum = parseInt(wlGlobalMaxAssoc.value);
+      if ( isNaN(globalMaxAssocNum) == true || globalMaxAssocNum < 1 || globalMaxAssocNum > 123 ) {
+         alert('Global Max Clients: "' + wlGlobalMaxAssoc.value + '" should be between 1 and 123.');
+         return false;
+      }
+
+      wlMaxAssoc_wl0v0.value = wlGlobalMaxAssoc.value;
+      wlMaxAssoc_wl0v1.value = wlGlobalMaxAssoc.value;
+      wlMaxAssoc_wl0v2.value = wlGlobalMaxAssoc.value;
+      wlMaxAssoc_wl0v3.value = wlGlobalMaxAssoc.value;
+*/
+      var dtmNum = parseInt(wlDtmIntvl.value);
+      //if ( isNaN(dtmNum) == true || dtmNum < 1 || dtmNum > 255 ) {
+	//Adam add check non-digit character
+      if ( isNaN(wlDtmIntvl.value) || isNaN(dtmNum) == true || dtmNum < 1 || dtmNum > 255 ) {
+         // alert('DTIM interval "' + wlDtmIntvl.value + '" should be between 1 and 255.');
+         msg = MLG_Makestring("<%ejGetML(MLG_WLAN_Advanced_AlertMsg_Str3)%>", wlDtmIntvl.value);
+         hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_WLAN_AlertMsg_Alert)%>'});
+         return false;
+      }
+
+      bcnNum = parseInt(wlBcnIntvl.value);
+      //if ( isNaN(bcnNum) == true || bcnNum < 50 || bcnNum > 1000 ) { // 1~65535 for valid range, 50~1000 for configuration range 
+	//Adam add check non-digit character
+      if ( isNaN(wlBcnIntvl.value) || isNaN(bcnNum) == true || bcnNum < 50 || bcnNum > 1000 ) { 
+         // alert('Beacon interval "' + wlBcnIntvl.value + '" should be between 1 and 65535.');
+         msg = MLG_Makestring("<%ejGetML(MLG_WLAN_Advanced_AlertMsg_Str4)%>",  wlBcnIntvl.value);
+         hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_WLAN_AlertMsg_Alert)%>'});
+         return;
+      }
+
+     if(wlRegMode.selectedIndex == 1) {
+        DfsPreIsmNum = parseInt(wlDfsPreIsm.value);
+        if ( isNaN(DfsPreIsmNum) == true || DfsPreIsmNum < -1 || DfsPreIsmNum > 99 ) {
+           //alert('Pre-Network Radar Check "' + wlDfsPreIsm.value + '" should be between 0 and 99.');
+         msg = MLG_Makestring("<%ejGetML(MLG_WLAN_Advanced_AlertMsg_11ac_Str1)%>",  wlDfsPreIsm.value);
+         hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_WLAN_AlertMsg_Alert)%>'});
+           return;
+        }
+      
+        DfsPostNum = parseInt(wlDfsPostIsm.value);
+        if ( isNaN(DfsPostNum) == true || DfsPostNum < -1 || DfsPostNum > 99 ) {
+          // alert('In-Network Radar Check: "' + wlDfsPostIsm.value + '" should be between 10 and 99.');
+         msg = MLG_Makestring("<%ejGetML(MLG_WLAN_Advanced_AlertMsg_11ac_Str2)%>",  wlDfsPostIsm.value);
+         hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_WLAN_AlertMsg_Alert)%>'});
+           return;
+        } 
+     }  
+	   if (wlMode.selectedIndex == 2){
+	   		if (wpa == 'tkip'){
+				hciAlert("802.11n only mode dosen't support tkip encryption mode. please set it in <a href=\"#\" onClick= \"$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('network-wireless', 0);\"><%ejGetML(MLG_Common_General)%></a> <%ejGetML(MLG_WLAN_WPS_AlertMsg_page)%>.", {height: 180, type: 2, title: ''});
+				return;
+			}
+	   }
+	 
+	 
+      if(wep == 'enabled' && wlMode.selectedIndex == 2){
+         hciAlert("<%ejGetML(MLG_WLAN_Advanced_AlertMsg_Str5)%> <a href=\"#\" onClick= \"$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('network-wireless', 0);\"><%ejGetML(MLG_Common_General)%></a> <%ejGetML(MLG_WLAN_WPS_AlertMsg_page)%>.", {height: 180, type: 2, title: ''});
+         return;
+      }
+
+      if (wlwscver2.checked == true) {
+		 	wlWscVer2.value = "enabled";
+      }else{
+		 	wlWscVer2.value = "disabled";
+      }	  
+	  /* Do not submit to httpd */
+	  wlwscver2.disabled = true;
+	  
+      var wl_mode = wlMode.selectedIndex;
+      if (phy == 'n' && (wl_mode == 2 || wl_mode == 4)) { // n or b/g/n
+         wlNmode.value = 'auto';
+         wlgMode.disabled = true;
+         wlProtection.disabled = true;
+         wlBasicRate.disabled = true;
+         wlPreambleType.disabled = true;
+
+         if (wl_mode == 2) {
+            wlNReqd.value = '1';
+         }
+         else {
+            wlNReqd.value = '0';
+         }
+
+         wlWme.value = '1';
+         wlNProtection.value = wlProtect.options[wlProtect.selectedIndex].value;
+      }else if(phy == 'v' && wl_mode != 0){
+         wlNmode.value = 'auto';
+         wlgMode.disabled = true;
+         wlProtection.disabled = true;
+         wlBasicRate.disabled = true;
+         wlPreambleType.disabled = true;
+
+         if (wl_mode == 2 || wl_mode == 4) {
+            wlNReqd.value = '1';
+         }
+         else {
+            wlNReqd.value = '0';
+         }
+
+		 if(wl_mode == 3 || wl_mode == 4){
+			wlNBwCap.value = '3'; //11ac bandwith=80M
+		 }
+
+         wlWme.value = '1';
+         wlNProtection.value = wlProtect.options[wlProtect.selectedIndex].value;
+      
+      }
+      else { // b/g, b, or g
+         wlNmode.value = 'off';
+	 wlNBwCap.value = '0'; //disable n_mode
+         wlNReqd.disabled = true;
+         wlNProtection.disabled = true;
+         wlWme.disabled = true;
+         if (phy == 'n') {
+            if (wl_mode == 0) { // 11b only
+               wlgMode.value = "0";
+               wl_mode = 0;
+            } 
+            else if (wl_mode == 1) { // 11g only
+               wlgMode.value = "4";
+               wl_mode = 1;
+            }
+            else if (wl_mode == 3) { // b/g
+               wlgMode.value = "1";
+               wl_mode = 2;
+            }
+         }else if(phy == 'v'){
+              if (wl_mode == 0) { // 11a only
+               wlgMode.value = "1";
+               wl_mode = 2;
+            } 
+         
+         }
+         else {
+            wlgMode.value = wlMode.options[wlMode.selectedIndex].value;
+         }
+         wlPreambleType.value = wlPreamble.options[wlPreamble.selectedIndex].value;
+
+         /* basic rate */
+         if (wl_mode == 2) // 54g auto
+            wlBasicRate.value = 'default';
+         else if (wl_mode == 1) // 54 performance
+            wlBasicRate.value = 'wifi2';
+         else if (wl_mode == 0) // 54g b only
+            wlBasicRate.value = '12';
+
+         if (band == '2') {//2.4
+            if (phy != 'b') {
+               wlProtection.value = wlProtect.options[wlProtect.selectedIndex].value;
+            } else
+               wlProtection.disabled = true;
+         }
+         else //5G
+            wlProtection.value = 'auto';
+      }
+
+      wlProtect.disabled = true;
+      wlPreamble.disabled = true;
+      wlMode.disabled = true;
+   }
+
+   return true;
+}
+
+
+/* Protection for WPS2.0 with WEP , __TELEFONICA__, MitraStar Curtis, 20120410 */
+function WPS2Check(onLoadPage) {
+   with (document.forms[0]) {		
+		 	if(wlwscver2.checked==true){
+				
+/*We place here for rapidly response : Peter.Lee.MitraStar 2012-07-25*/
+				if(authmode == "psk" && WscMode == "enabled")  	{
+		        	 hciAlert("WPA-PSK is not supported on WPS2.0. Change security setting on the <a href=\"#\" onClick= \"$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('network-wireless', 0);\">General</a> page.", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			       wlwscver2.checked=false;
+			  	}
+
+			  	if(hide == "1")  	{
+		        	 hciAlert("Hide SSID does not support on WPS 2.0. You should change configure in <a href=\"#\" onClick= \"$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('network-wireless', 0);\">General</a> page.", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			       wlwscver2.checked=false;
+			  	}		
+			}
+
+   }
+}
+
+function doSubmit() {
+   if (btnApply()) {
+      document.forms[0].submit();
+      $.openLoadingMask(1);
+   }
+}
+
+// done hiding -->
+</script>
+   <form action="/pages/tabFW/wireless-others.wl" method="post" onSubmit="return btnApply();">
+<div class="content_frame">
+<!--Unit Explain start-->
+         <div class="explain">
+            <div>
+               <b class="r1"></b>
+               <b class="r2"></b>
+               <b class="r3"></b>
+               <b class="r4"></b>
+               <b class="r4"></b>
+            </div>
+            <div class="explain_text"><%ejGetML(MLG_WLAN_Advanced_Str1)%></div>
+            <div>
+               <b class="r4"></b>
+               <b class="r4"></b>
+               <b class="r3"></b>
+               <b class="r2"></b>
+               <b class="r1"></b>
+            </div>
+         </div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<!--level 1 title start-->
+            <li class="title"><%ejGetML(MLG_WLAN_Advanced_Str2)%></li>
+<!--level 1 title end-->
+<li class="set1">
+    <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_Advanced_Str3)%> :</li>
+                     <li class="right_table">
+                        <input type='text' name='wlRtsThrshld' maxlength="5" size="5">
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_Advanced_Str4)%> :</li>
+                     <li class="right_table">
+                        <input type='text' name='wlFrgThrshld' maxlength="5" size="5">
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_Advanced_Str5)%> :</li>
+                     <li class="right_table">
+                        <input type='text' name='wlCsScanTimer' maxlength="5" size="5"> <%ejGetML(MLG_WLAN_Advanced_Str6)%> </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_Advanced_Str8)%> :</li>
+                     <li class="right_table">
+                        <select name="wlTxPwrPcnt" size="1">
+                           <option value="20">20%</option>
+                           <option value="40">40%</option>
+                           <option value="60">60%</option>
+                           <option value="80">80%</option>
+                           <option value="100">100%</option>
+                        </select>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_Advanced_Str9)%> :</li>
+                     <li class="right_table">
+                        <input type='text' name='wlBcnIntvl' maxlength="5" size="5">&nbsp;<%ejGetML(MLG_WLAN_Advanced_Str7)%> </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_Advanced_Str10)%> :</li>
+                     <li class="right_table">
+                        <input type='text' name='wlDtmIntvl' maxlength="5" size="5">&nbsp;<%ejGetML(MLG_WLAN_Advanced_Str7)%></li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str18)%> :</li>
+                     <li class="right_table">
+                        <select name="wlMode" size='1'onChange="wlModeChange(false);">
+                          <script language="javascript">
+                          <!-- hide
+                             if ( phy == 'n') {
+                                document.forms[0].wlMode[0] = new Option("<%ejGetML(MLG_Common_80211b)%>", "0");
+                                document.forms[0].wlMode[1] = new Option("<%ejGetML(MLG_Common_80211g)%>", "1");
+                                document.forms[0].wlMode[2] = new Option("<%ejGetML(MLG_Common_80211n)%>", "2");
+                                document.forms[0].wlMode[3] = new Option("<%ejGetML(MLG_Common_80211bg)%>", "3");
+                                document.forms[0].wlMode[4] = new Option("<%ejGetML(MLG_Common_80211bgn)%>", "4");
+                             }else if( phy == 'v' ){
+                                document.forms[0].wlMode[0] = new Option("<%ejGetML(MLG_Common_80211a)%>", "0");
+                                document.forms[0].wlMode[1] = new Option("<%ejGetML(MLG_Common_80211an)%>", "1");
+                                document.forms[0].wlMode[2] = new Option("<%ejGetML(MLG_Common_80211n)%>", "2");
+                                document.forms[0].wlMode[3] = new Option("<%ejGetML(MLG_Common_80211anac)%>", "3");
+                                document.forms[0].wlMode[4] = new Option("<%ejGetML(MLG_Common_80211nac)%>", "4");
+                             }
+                             else {
+                                document.forms[0].wlMode[0] = new Option("<%ejGetML(MLG_Common_80211b)%>", "0");
+                                document.forms[0].wlMode[1] = new Option("<%ejGetML(MLG_Common_80211g)%>", "4");
+                                document.forms[0].wlMode[2] = new Option("<%ejGetML(MLG_Common_80211bg)%>", "1");
+                             }
+                          // done hiding -->
+                          </script>
+                        </select>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str19)%> :</li>
+                     <li class="right_table">
+                        <select name="wlProtect" size="1">
+                           <option value="off"><%ejGetML(MLG_Common_Off)%></option>
+                           <option value="auto"><%ejGetML(MLG_Common_Auto)%></option>
+                        </select>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str20)%> :</li>
+                     <li class="right_table">
+                        <select name="wlPreamble" size="1">
+                           <option value="long"><%ejGetML(MLG_Common_Long)%></option>
+                           <option value="short"><%ejGetML(MLG_Common_Short)%></option>
+                        </select>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_rifs)%> :</li>
+                     <li class="right_table">
+                        <select name="wlRifsAdvert" size="1">
+                           <option value="0"><%ejGetML(MLG_Common_Off)%></option>
+                           <option value="-1"><%ejGetML(MLG_Common_Auto)%></option>
+                        </select>
+                     </li>
+                  </ul>
+			<!--   remove from GUI page, since we should not allow this function to end user
+                  <ul>                     
+                     <li class="left_table">Auto Channel Select(ACS) policy :</li>
+                     <li class="right_table">					 
+		             <select name='acs_policy' size="1" >
+			         <option value="0">Default</option>
+			         <option value="1">Legacy</option>					 
+					 <option value="2">Channel Interference</option>					 
+					 <option value="3">Channel Interference + Busy</option>
+					 <option value="4">Optimized</option>
+					 
+			         </select>
+					 </li>
+                  </ul>
+  -->
+                  <ul>                     
+                     <li class="left_table"><%ejGetML(MLG_WLAN_Other_WPSV2)%> :</li>
+                     <li class="right_table">		
+					   <tr>
+							<td><input type="checkbox" name="wlwscver2" id="wlwscver2" onClick="WPS2Check(0);" /></td>							
+					  </tr>
+					  <tr> <td>&nbsp;</td> <td>&nbsp;</td> </tr>
+					 </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_Other_power_save)%> :</li>
+                     <li class="right_table">
+                        <select name="wlRxChainPwrSaveEnable" size="1">
+                           <option value="0"><%ejGetML(MLG_Common_Disabled)%></option>
+                           <option value="1"><%ejGetML(MLG_Common_Enable)%></option>
+                        </select>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_Other_FrameBurst)%> :</li>
+                     <li class="right_table">
+                        <select name="wlFrameBurst" size="1">
+                           <option value="off"><%ejGetML(MLG_Common_Disabled)%></option>
+                           <option value="on"><%ejGetML(MLG_Common_Enable)%></option>
+                        </select>
+                     </li>
+                  </ul>
+		<div id="div_obssCoex" style="display:none;">
+		 <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_5g_str7)%>:</li>
+                     <li class="right_table">
+                        <select name="wlObssCoex" size="1">
+                           <option value="0"><%ejGetML(MLG_Common_Disabled)%></option>
+                           <option value="1"><%ejGetML(MLG_Common_Enable)%></option>
+                        </select>
+                     </li>
+                  </ul>
+		</div>
+		<div id="div_regMode">
+		  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_5g_str3)%>:</li>
+                     <li class="right_table">
+                        <select name="wlRegMode" size="1" onChange='RegModeChange(false)'>
+                           <option value="0"><%ejGetML(MLG_Common_Disabled)%></option>
+                           <option value="1"><%ejGetML(MLG_WLAN_BasicWirelessSetup_5g_str1)%></option>
+                           <option value="2"><%ejGetML(MLG_WLAN_BasicWirelessSetup_5g_str2)%></option>
+                        </select>
+                     </li>
+                  </ul>
+		<ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_5g_str4)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='wlDfsPreIsm' size="2">&nbsp;</li>
+                  </ul>
+				  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_5g_str5)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='wlDfsPostIsm' size="2">&nbsp;</li>
+                  </ul>
+		<ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_BasicWirelessSetup_5g_str6)%>:</li>
+                     <li class="right_table">
+                        <select name="wlTpcDb" size="1">
+                           <option value="0">0 (off)</option>
+                           <option value="2">2</option>
+			   <option value="3">3</option>
+                           <option value="4">4</option>
+                        </select>
+                     </li>
+                  </ul>
+	    </div>
+               </div>
+            </li>
+            <input size="15" type="hidden" name="sessionKey" />
+            <input size="15" type="hidden" name="wlProtection" />
+            <input size="15" type="hidden" name="wlPreambleType" />
+            <input size="15" type="hidden" name="wlNmode" />
+            <input size="15" type="hidden" name="wlNReqd" />
+            <input size="15" type="hidden" name="wlNProtection" />
+            <input size="15" type="hidden" name="wlgMode" />
+            <input size="15" type="hidden" name="wlBasicRate" />
+            <input size="15" type="hidden" name="wlWme" />
+            <input size="15" type="hidden" name="wlNBwCap" />
+            <input size="15" type="hidden" name="wlSyncNvram" value="1" />
+			<input size="15" type="hidden" name="wlWscVer2" />
+			
+            <li class="space"></li>
+            <li class="buttonframe">
+               <div class="button_position">
+                  <input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="doSubmit();" />
+                     &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                  <input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();' />
+</div>
+</li>
+         </ul></div>
+         </div>
+   </form>
+<script language="javascript">
+<!-- hide
+   frmLoad();
+// done hiding -->
+</script>

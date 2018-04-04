@@ -1,0 +1,521 @@
+<script language="javascript">
+var timeValue;
+var supporthpna = '<%ejGetOther(sysInfo, buildHPNA)%>';
+var supportMoca = '<%ejGetOther(sysInfo, buildSupportMoca)%>';
+var supportWlan = '<%ejGetOther(sysInfo, numWlAdaptor)%>';
+var supportWanToLan = '<%ejGetOther(sysInfo, enblEthWanToLan)%>';
+var sessionKey='<%ejGetOther(sessionKey)%>';
+
+
+$(document).ready(function() {
+
+	frmLoad();
+});
+
+function updateHPNAStatus (req)
+{
+	var HPNAStatus=req.responseText;
+	var hpnastatus = "off";
+	if ( HPNAStatus != "" && HPNAStatus != null ) {
+		HPNAStatusArray = HPNAStatus.split(':');
+		if ( HPNAStatusArray.length >= 3 ) {
+			hpnastatus = HPNAStatusArray[0];
+		}
+	}
+	
+	if ( HPNAStatusArray.length == 11) {
+		$("#lan5byteTx").html(HPNAStatusArray[3]);
+		$("#lan5byteRx").html(HPNAStatusArray[4]);
+		$("#lan5PacketsTx").html(HPNAStatusArray[5]);
+		$("#lan5PacketsTxEr").html(HPNAStatusArray[6]);
+		$("#lan5PacketsTxDr").html(HPNAStatusArray[7]);
+		$("#lan5PacketsRx").html(HPNAStatusArray[8]);
+		$("#lan5PacketsRxEr").html(HPNAStatusArray[9]);
+		$("#lan5PacketsRxDr").html(HPNAStatusArray[10]);
+	}
+}
+
+function checkHPNAStatus()
+{
+    if ( supporthpna != '1' ) {
+		return;
+	}
+
+	if (window.XMLHttpRequest)  {
+		objXMLHTTP=new XMLHttpRequest();
+	}// code for IE
+	else if (window.ActiveXObject)  {
+		objXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	else {
+		alert("<%ejGetML(MLG_Common_XMLHttp)%>");
+		return;
+	}
+	
+	if ( objXMLHTTP != null ) {
+		objXMLHTTP.open("POST","./trafficStatus-hpnaifstatus.cmd",true);
+		objXMLHTTP.onreadystatechange = function()
+		{
+			if(objXMLHTTP.readyState == 4)
+				updateHPNAStatus(objXMLHTTP);
+		}
+		objXMLHTTP.send(null);
+	}
+
+}
+
+function resetInterval() {
+	var selecting;
+	selecting = $('#dstLanIf').val();	
+	clearTimeout(timeValue);
+	
+	$.cookie("refreshLAN", selecting);
+	if (selecting == 1)
+		timeValue = setTimeout('trafficLanRefresh()', 15000);
+	else if (selecting == 2)
+		timeValue = setTimeout('trafficLanRefresh()', 30000);
+	else if (selecting == 3)
+		timeValue = setTimeout('trafficLanRefresh()', 60000);
+}
+
+function trafficLanRefresh() {
+   var reload = 'trafficStatus-lan.cgi?';
+   reload += 'sessionKey=' + sessionKey;
+   var reload = 'location.assign("' + reload + '")';
+   eval(reload);
+}
+
+
+function frmLoad(){
+   $('#btn_wepmore').toggle(
+   function(){
+     $(this).html('<%ejGetML(MLG_System__TrafficStatus_Str1)%>');
+     $('#detailedInfo').slideDown(200);
+   }, function(){
+     $(this).html('<%ejGetML(MLG_System_TrafficStatusWAN_Str12)%>...');
+      $('#detailedInfo').slideUp(200);
+   });
+	var VDdate = {
+		lan1: {status: '<%ejGetOther(ifStatus,LAN,eth0,status2)%>', msg:'LAN 1'},
+		lan2: {status: '<%ejGetOther(ifStatus,LAN,eth1,status2)%>', msg:'LAN 2'},
+		lan3: {status: '<%ejGetOther(ifStatus,LAN,eth2,status2)%>', msg:'LAN 3'},
+		lan4: {status: '<%ejGetOther(ifStatus,LAN,eth3,status2)%>', msg:'LAN 4'},
+		lan5: {status: '<%ejGetOther(ifStatus,LAN,eth10,status2)%>', msg:'LAN 5'}
+	};
+           
+	var $VDObj = $('#vd').VD({
+		loaded: function(){
+			$VDObj.setValue(VDdate);
+		}
+	});
+
+	if ( supportMoca == '1' ) {
+		var VDdate2 = {
+			moca: {status: '<%ejGetOther(ifStatus,moca,lan,status2)%>', msg:'MOCA'}
+		};
+		var $VDObj2 = $('#vd').VD({
+			portDef: '../../js/portDef.js',
+			loaded: function(){
+				$VDObj2.setValue(VDdate2);
+			}
+		});
+	}
+	
+	if ( supportWlan != '0' ) {
+		var VDdate3 = {
+			wifiSignal: {status: '<%ejGetOther(ifStatus,WLAN,wifiSignal,status2)%>', msg:'WLAN'}
+		};
+		var $VDObj3 = $('#vd').VD({
+			portDef: '../../js/portDef.js',
+			loaded: function(){
+				$VDObj3.setValue(VDdate3);
+			}
+		});
+	}
+	if ( supportWanToLan != '1' ) {
+		$('#WanToLanTitle').hide();
+		$('#WanToLanTitleb').hide();
+		$('#WanToLanPacketsTx').hide();
+		$('#WanToLanPacketsTxEr').hide();
+		$('#WanToLanPacketsTxDr').hide();
+		$('#WanToLanPacketsRx').hide();
+		$('#WanToLanPacketsRxEr').hide();
+		$('#WanToLanPacketsRxDr').hide();
+	}
+	else {
+		$('#WanToLanTitle').show();
+		$('#WanToLanTitleb').show();
+		$('#WanToLanPacketsTx').show();
+		$('#WanToLanPacketsTxEr').show();
+		$('#WanToLanPacketsTxDr').show();
+		$('#WanToLanPacketsRx').show();
+		$('#WanToLanPacketsRxEr').show();
+		$('#WanToLanPacketsRxDr').show();
+	}
+	if ( supporthpna != '1' ) {
+		$('.hpna_off').hide();
+		$('.hpna_on').hide();
+		$('.hpnaname').hide();
+		$('#lan5Title').hide();
+		$('#lan5Titleb').hide();
+		$('#lan5PacketsTx').hide();
+		$('#lan5PacketsTxEr').hide();
+		$('#lan5PacketsTxDr').hide();
+		$('#lan5PacketsRx').hide();
+		$('#lan5PacketsRxEr').hide();
+		$('#lan5PacketsRxDr').hide();
+	}
+	else {
+		$('.hpna_off').show();
+		$('.hpna_on').show();
+		$('.hpnaname').show();
+		$('#lan5Title').show();
+		$('#lan5Titleb').show();
+		$('#lan5PacketsTx').show();
+		$('#lan5PacketsTxEr').show();
+		$('#lan5PacketsTxDr').show();
+		$('#lan5PacketsRx').show();
+		$('#lan5PacketsRxEr').show();
+		$('#lan5PacketsRxDr').show();
+	}
+
+	if ( supportMoca != '1' ) {
+		$('.moca_offline').hide();
+		$('.moca_online').hide();
+		$('.mocaname').hide();
+		$('#mocaTitle').hide();
+		$('#mocaTitleb').hide();
+		$('#mocaPacketsTx').hide();
+		$('#mocaPacketsTxEr').hide();
+		$('#mocaPacketsTxDr').hide();
+		$('#mocaPacketsRx').hide();
+		$('#mocaPacketsRxEr').hide();
+		$('#mocaPacketsRxDr').hide();
+	}
+	else {
+		$('.moca_offline').show();
+		$('.moca_online').show();
+		$('.mocaname').show();
+		$('#mocaTitle').show();
+		$('#mocaTitleb').show();
+		$('#mocaPacketsTx').show();
+		$('#mocaPacketsTxEr').show();
+		$('#mocaPacketsTxDr').show();
+		$('#mocaPacketsRx').show();
+		$('#mocaPacketsRxEr').show();
+		$('#mocaPacketsRxDr').show();
+	}
+
+	if ( supportWlan == '0' ) {
+		$('.wifiSignalname').hide();
+		$('.wifiSignal_off').hide();
+		$('.wifiSignal_on').hide();
+		$('#wlanTitle').hide();
+		$('#wlanTitleb').hide();
+		$('#wlanPacketsTx').hide();
+		$('#wlanPacketsTxEr').hide();
+		$('#wlanPacketsTxDr').hide();
+		$('#wlanPacketsRx').hide();
+		$('#wlanPacketsRxEr').hide();
+		$('#wlanPacketsRxDr').hide();
+	}
+	else {
+		$('.wifiSignalname').show();
+		$('.wifiSignal_off').show();
+		$('.wifiSignal_on').show();
+		$('#wlanTitle').show();
+		$('#wlanTitleb').show();
+		$('#wlanPacketsTx').show();
+		$('#wlanPacketsTxEr').show();
+		$('#wlanPacketsTxDr').show();
+		$('#wlanPacketsRx').show();
+		$('#wlanPacketsRxEr').show();
+		$('#wlanPacketsRxDr').show();
+	}
+	
+	if ( supportWlan == '2' ) {
+		$('.wifi2Signalname').show();
+		$('.wifi2Signal_off').show();
+		$('.wifi2Signal_on').show();
+		$('#wlan2Title').show();
+		$('#wlan2Titleb').show();
+		$('#wlan2PacketsTx').show();
+		$('#wlan2PacketsTxEr').show();
+		$('#wlan2PacketsTxDr').show();
+		$('#wlan2PacketsRx').show();
+		$('#wlan2PacketsRxEr').show();
+		$('#wlan2PacketsRxDr').show();
+	}
+	else {
+		$('.wifi2Signalname').hide();
+		$('.wifi2Signal_off').hide();
+		$('.wifi2Signal_on').hide();
+		$('#wlan2Title').hide();
+		$('#wlan2Titleb').hide();
+		$('#wlan2PacketsTx').hide();
+		$('#wlan2PacketsTxEr').hide();
+		$('#wlan2PacketsTxDr').hide();
+		$('#wlan2PacketsRx').hide();
+		$('#wlan2PacketsRxEr').hide();
+		$('#wlan2PacketsRxDr').hide();
+	}
+	
+    checkHPNAStatus();
+
+	if ($.cookie("refreshLAN") == null) {
+		$('#dstLanIf').val(1);
+	} 
+	else {
+		$('#dstLanIf').val($.cookie("refreshLAN"));
+	}
+	resetInterval();
+}
+</script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+  <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+  <div class="explain_text"><%ejGetML(MLG_System_TrafficStatusHPNA_Str13)%></div>
+  <div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+</div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1">
+<div class="w_text">
+     <ul>
+         <li class="all_table"><%ejGetML(MLG_Common_RefreshInterval)%> : 
+           <select name='dstLanIf' id='dstLanIf' onchange='resetInterval()'>
+              <option value="1">15 <%ejGetML(MLG_Common_Seconds)%></option>
+              <option value="2">30 <%ejGetML(MLG_Common_Seconds)%></option>
+              <option value="3">60 <%ejGetML(MLG_Common_Seconds)%></option>
+            </select>
+         </li>
+     </ul>
+  </div>
+<div class="w_table">
+  <!--Table define start-->
+<table width="100%" cellpadding="0" cellspacing="0" class="table_frame"  style="table-layout:fixed;" id="lanTable1" >
+<script language="javascript">
+<!-- hide
+{
+	var tempStr = '';
+	var lan1 = "<%ejGetOther(getLanStats, lan, eth0, txByte)%>";
+	var lan2 = "<%ejGetOther(getLanStats, lan, eth1, txByte)%>";
+	var lan3 = "<%ejGetOther(getLanStats, lan, eth2, txByte)%>";
+	var lan4 = "<%ejGetOther(getLanStats, lan, eth3, txByte)%>";
+	var lan5 = "<%ejGetOther(getLanStats, lan, eth10, txByte)%>";
+	var moca = "<%ejGetOther(getLanStats, moca, moca, txByte)%>";
+	var wifi = "<%ejGetOther(getLanStats, wlan, wl0, txByte)%>";
+	var wifi2 = "<%ejGetOther(getLanStats, wlan, wl1, txByte)%>";
+	
+	tempStr += '<tr align="center">\n';
+	tempStr += '<td width="18%" align="left" valign="top" class="top_font"><%ejGetML(MLG_System_TrafficStatusLAN_Str2)%> </td>\n';
+	tempStr += '<td align="center" class="top_font"><%ejGetML(MLG_System_TrafficStatusLAN_Str7)%></td>\n';
+	tempStr += '<td align="center" class="top_font"><%ejGetML(MLG_System_TrafficStatusLAN_Str8)%></td>\n';
+	tempStr += '<td align="center" class="top_font"><%ejGetML(MLG_System_TrafficStatusLAN_Str9)%></td>\n';
+	tempStr += '<td align="center" class="top_font"><%ejGetML(MLG_System_TrafficStatusLAN_Str10)%></td>\n';
+	if ( supportWanToLan == '1' ){
+	tempStr += '<td align="center" class="top_font" id="WanToLanTitleb"><%ejGetML(MLG_System_TrafficStatusLAN_Str11)%></td>\n';
+	}
+	if (supporthpna == '1'){
+	tempStr += '<td align="center" class="top_font" id="lan5Titleb"><%ejGetML(MLG_System_TrafficStatusLAN_Str12)%></td>\n';
+	}
+	if ( supportMoca == '1' ){
+	tempStr += '<td align="center" class="top_font" id="mocaTitleb"><%ejGetML(MLG_Common_MoCA)%></td>\n';
+	}
+	if ( supportWlan != '2' ) {
+	  tempStr += '<td align="center" class="top_font" id="wlanTitleb" style="border-right:0px;"><%ejGetML(MLG_System__Log_Str4)%></td>\n';
+	 }else{
+	  tempStr += '<td align="center" class="top_font" id="wlanTitleb" style="border-right:0px;"><%ejGetML(MLG_System__Log_Str4_1)%></td>\n';
+	  tempStr += '<td align="center" class="top_font" id="wlanTitleb" style="border-right:0px;"><%ejGetML(MLG_System__Log_Str4_2)%></td>\n';
+	 }
+	  	
+	  tempStr += '</tr>\n';
+	  tempStr += '<tr align="center">\n';
+      tempStr += '<td align="left" class="table_font2"><%ejGetML(MLG_System_TrafficStatusLAN_Str3)%></td>\n';
+      tempStr += '<td align="center" class="table_font">'+formatThousandths(lan1)+'</td>\n';
+      tempStr += '<td align="center" class="table_font">'+formatThousandths(lan2)+'</td>\n';
+      tempStr += '<td align="center" class="table_font">'+formatThousandths(lan3)+'</td>\n';
+      tempStr += '<td align="center" class="table_font">'+formatThousandths(lan4)+'</td>\n';
+      if ( supportWanToLan == '1' ) {
+         tempStr += '<td align="center" class="table_font" id="WanToLanbyteTx">'+formatThousandths(lan5)+'</td>\n';
+      }
+      if (supporthpna == '1')
+      {
+	     tempStr += '<td align="center" class="table_font" id="lan5byteTx">0</td>\n';
+      }
+      if ( supportMoca == '1' ) {
+         tempStr += '<td align="center" class="table_font">'+formatThousandths(moca)+'</td>\n';
+      }
+      if ( supportWlan != '0' ) {
+         tempStr += '<td align="center" class="table_font">'+formatThousandths(wifi)+'</td>\n';
+      }
+      if ( supportWlan == '2' ) {
+         tempStr += '<td align="center" class="table_font">'+formatThousandths(wifi2)+'</td>\n';
+      }
+      tempStr += '</tr>\n';
+      $('#lanTable1').append(tempStr);
+}
+// done hiding -->
+</script>
+<script language="javascript">
+<!-- hide
+{
+	var tempStr = '';
+	var lan1 = "<%ejGetOther(getLanStats, lan, eth0, rxByte)%>";
+	var lan2 = "<%ejGetOther(getLanStats, lan, eth1, rxByte)%>";
+	var lan3 = "<%ejGetOther(getLanStats, lan, eth2, rxByte)%>";
+	var lan4 = "<%ejGetOther(getLanStats, lan, eth3, rxByte)%>";
+	var lan5 = "<%ejGetOther(getLanStats, lan, eth10, rxByte)%>";
+	var moca = "<%ejGetOther(getLanStats, moca, moca, rxByte)%>";
+	var wifi = "<%ejGetOther(getLanStats, wlan, wl0, rxByte)%>";
+	var wifi2 = "<%ejGetOther(getLanStats, wlan, wl1, rxByte)%>";
+
+      tempStr += '<tr align="center">\n';
+      tempStr += '<td align="left" class="table_font2"><%ejGetML(MLG_System_TrafficStatusLAN_Str4)%></td>\n';                  
+      tempStr += '<td align="center" class="table_font">'+formatThousandths(lan1)+'</td>\n';
+      tempStr += '<td align="center" class="table_font">'+formatThousandths(lan2)+'</td>\n';
+      tempStr += '<td align="center" class="table_font">'+formatThousandths(lan3)+'</td>\n';
+      tempStr += '<td align="center" class="table_font">'+formatThousandths(lan4)+'</td>\n';
+      if ( supportWanToLan == '1' ) {
+          tempStr += '<td align="center" class="table_font" id="WanToLanbyteRx">'+formatThousandths(lan5)+'</td>\n';
+      }
+      if (supporthpna == '1')
+      {
+	      tempStr += '<td align="center" class="table_font" id="lan5byteRx">0</td>\n';
+      }
+      if ( supportMoca == '1' ) {
+          tempStr += '<td align="center" class="table_font">'+formatThousandths(moca)+'</td>\n';
+      }
+      if ( supportWlan != '0' ) {
+          tempStr += '<td align="center" class="table_font">'+formatThousandths(wifi)+'</td>\n';
+      }
+      if ( supportWlan == '2' ) {
+          tempStr += '<td align="center" class="table_font">'+formatThousandths(wifi2)+'</td>\n';
+      }
+      tempStr += '</tr>\n';
+      $('#mainTbl').append(tempStr);
+}
+// done hiding -->
+</script>
+              </table>
+</div>
+<span class="linking moreBtn" id="btn_wepmore" style="float:right;"><%ejGetML(MLG_System_TrafficStatusWAN_Str12)%>...</span></li>
+<li class="space"> </li>
+<li class="set1" id='detailedInfo' style="display:none;"> 
+<div class="w_table">
+  <!--Table define start-->
+  <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="lanTable2">
+<script language="javascript">
+<!-- hide
+var tempStr = '';
+	  tempStr += '<tr align="center">\n';
+	  tempStr += '<td colspan="2" width="18%" align="left"class="top_font"><%ejGetML(MLG_System_TrafficStatusLAN_Str2)%> </td>\n';
+	  tempStr += '<td align="center" class="top_font"><%ejGetML(MLG_System_TrafficStatusLAN_Str7)%></td>\n';
+	  tempStr += '<td align="center" class="top_font"><%ejGetML(MLG_System_TrafficStatusLAN_Str8)%></td>\n';
+	  tempStr += '<td align="center" class="top_font"><%ejGetML(MLG_System_TrafficStatusLAN_Str9)%></td>\n';
+	  tempStr += '<td align="center" class="top_font"><%ejGetML(MLG_System_TrafficStatusLAN_Str10)%></td>\n';
+	  if ( supportWanToLan == '1' ) {
+		tempStr += '<td align="center" class="top_font" id="WanToLanTitle"><%ejGetML(MLG_System_TrafficStatusLAN_Str11)%></td>\n';
+	  }
+	  if (supporthpna == '1'){
+		tempStr += '<td align="center" class="top_font" id="lan5Title"><%ejGetML(MLG_System_TrafficStatusLAN_Str12)%></td>\n';
+	  }
+	  if ( supportMoca == '1' ){
+		tempStr += '<td align="center" class="top_font" id="mocaTitle"><%ejGetML(MLG_Common_MoCA)%></td>\n';
+	  }										  
+if ( supportWlan == '2' ) { // dual band or support 2 wifi cards
+	  tempStr += '<td align="center" class="top_font" id="wlanTitleb" style="border-right:0px;"><%ejGetML(MLG_System__Log_Str4_1)%></td>\n';
+	  tempStr += '<td align="center" class="top_font" id="wlanTitleb" style="border-right:0px;"><%ejGetML(MLG_System__Log_Str4_2)%></td>\n';
+
+}else{
+	  tempStr += '<td align="center" class="top_font" id="wlanTitleb" style="border-right:0px;"><%ejGetML(MLG_System__Log_Str4)%></td>\n';
+}
+
+	  tempStr += '</tr>\n';
+	  $('#lanTable2').prepend(tempStr);
+// done hiding -->
+</script>
+                <tr align="center">
+                  <td rowspan="3" align="left" class="table_font2" ><%ejGetML(MLG_System_TrafficStatusWAN_Str3)%> (<%ejGetML(MLG_System_TrafficStatusLAN_Str5)%>)</td>
+                  <td align="left" class="table_font2"><%ejGetML(MLG_System_TrafficStatusWAN_Str9)%></td>
+                  <td class="table_font"><%ejGetOther(getLanStats, lan, eth0, txData)%></td>
+                  <td class="table_font"><%ejGetOther(getLanStats, lan, eth1, txData)%></td>
+                  <td class="table_font"><%ejGetOther(getLanStats, lan, eth2, txData)%></td>
+                  <td class="table_font"><%ejGetOther(getLanStats, lan, eth3, txData)%></td>
+                  <td class="table_font" id="WanToLanPacketsTx"><%ejGetOther(getLanStats, lan, eth10, txData)%></td>
+                  <td class="table_font" id="lan5PacketsTx">0</td>
+                  <td align="center" class="table_font" id="mocaPacketsTx"><%ejGetOther(getLanStats, moca, moca, txData)%></td>
+                  <td align="center" class="table_font" id="wlanPacketsTx"><%ejGetOther(getLanStats, wlan, wl0, txData)%></td>
+                  <td align="center" class="table_font" id="wlan2PacketsTx"><%ejGetOther(getLanStats, wlan, wl1, txData)%></td>
+                  </tr>
+                <tr align="center">
+                  <td align="left" class="table_font2"><%ejGetML(MLG_System_SystemLog_Str7)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth0, txError)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth1, txError)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth2, txError)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth3, txError)%></td>
+                  <td align="center" class="table_font" id="WanToLanPacketsTxEr"><%ejGetOther(getLanStats, lan, eth10, txError)%></td>
+                  <td align="center" class="table_font" id="lan5PacketsTxEr">0</td>
+                  <td align="center" class="table_font" id="mocaPacketsTxEr"><%ejGetOther(getLanStats, moca, moca, txError)%></td>
+                  <td align="center" class="table_font" id="wlanPacketsTxEr"><%ejGetOther(getLanStats, wlan, wl0, txError)%></td>
+                  <td align="center" class="table_font" id="wlan2PacketsTxEr"><%ejGetOther(getLanStats, wlan, wl1, txError)%></td>
+                </tr>
+                <tr align="center">
+                  <td align="left" class="table_font2"><%ejGetML(MLG_System_TrafficStatusWAN_Str11)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth0, txDrop)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth1, txDrop)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth2, txDrop)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth3, txDrop)%></td>
+                  <td align="center" class="table_font" id="WanToLanPacketsTxDr"><%ejGetOther(getLanStats, lan, eth10, txDrop)%></td>
+                  <td align="center" class="table_font" id="lan5PacketsTxDr">0</td>
+                  <td align="center" class="table_font" id="mocaPacketsTxDr"><%ejGetOther(getLanStats, moca, moca, txDrop)%></td>
+                  <td align="center" class="table_font" id="wlanPacketsTxDr"><%ejGetOther(getLanStats, wlan, wl0, txDrop)%></td>
+                  <td align="center" class="table_font" id="wlan2PacketsTxDr"><%ejGetOther(getLanStats, wlan, wl1, txDrop)%></td>
+                </tr>
+                <tr align="center">
+                  <td rowspan="3" align="left" class="table_font2"><%ejGetML(MLG_System_TrafficStatusWAN_Str4)%> (<%ejGetML(MLG_System_TrafficStatusLAN_Str5)%>) </td>
+                  <td align="left" class="table_font2"><%ejGetML(MLG_System_TrafficStatusWAN_Str9)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth0, rxData)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth1, rxData)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth2, rxData)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth3, rxData)%></td>
+                  <td align="center" class="table_font" id="WanToLanPacketsRx"><%ejGetOther(getLanStats, lan, eth10, rxData)%></td>
+                  <td align="center" class="table_font" id="lan5PacketsRx">0</td>
+                  <td align="center" class="table_font" id="mocaPacketsRx"><%ejGetOther(getLanStats, moca, moca, rxData)%></td>
+                  <td align="center" class="table_font" id="wlanPacketsRx"><%ejGetOther(getLanStats, wlan, wl0, rxData)%></td>
+                  <td align="center" class="table_font" id="wlan2PacketsRx"><%ejGetOther(getLanStats, wlan, wl1, rxData)%></td>
+                </tr>
+                <tr align="center">
+                  <td align="left" class="table_font2"><%ejGetML(MLG_System_SystemLog_Str7)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth0, rxError)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth1, rxError)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth2, rxError)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth3, rxError)%></td>
+                  <td align="center" class="table_font" id="WanToLanPacketsRxEr"><%ejGetOther(getLanStats, lan, eth10, rxError)%></td>
+                  <td align="center" class="table_font" id="lan5PacketsRxEr">0</td>
+                  <td align="center" class="table_font" id="mocaPacketsRxEr"><%ejGetOther(getLanStats, moca, moca, rxError)%></td>
+                  <td align="center" class="table_font" id="wlanPacketsRxEr"><%ejGetOther(getLanStats, wlan, wl0, rxError)%></td>
+                  <td align="center" class="table_font" id="wlan2PacketsRxEr"><%ejGetOther(getLanStats, wlan, wl1, rxError)%></td>
+                </tr>
+                <tr align="center">
+                  <td align="left" class="table_font2"><%ejGetML(MLG_System_TrafficStatusWAN_Str11)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth0, rxDrop)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth1, rxDrop)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth2, rxDrop)%></td>
+                  <td align="center" class="table_font"><%ejGetOther(getLanStats, lan, eth3, rxDrop)%></td>
+                  <td align="center" class="table_font" id="WanToLanPacketsRxDr"><%ejGetOther(getLanStats, lan, eth10, rxDrop)%></td>
+                  <td align="center" class="table_font" id="lan5PacketsRxDr">0</td>
+                  <td align="center" class="table_font" id="mocaPacketsRxDr"><%ejGetOther(getLanStats, moca, moca, rxDrop)%></td>
+                  <td align="center" class="table_font" id="wlanPacketsRxDr"><%ejGetOther(getLanStats, wlan, wl0, rxDrop)%></td>
+                  <td align="center" class="table_font" id="wlan2PacketsRxDr"><%ejGetOther(getLanStats, wlan, wl1, rxDrop)%></td>
+                </tr>
+   </table>
+</div>
+</li>
+<li class="space"> </li>
+</ul>
+</div>
+<!--Set area end-->
+</div>
+<br/><br/>

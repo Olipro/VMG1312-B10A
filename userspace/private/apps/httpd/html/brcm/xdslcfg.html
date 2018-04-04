@@ -1,0 +1,271 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript">
+<!-- hide
+
+var chipId = <%ejGetOther(sysInfo, chipId)%>;
+
+function frmLoad() {
+
+   var adslFlag = '<%ejGet(adslFlag)%>';
+   
+   with ( document.forms[0] ) {
+      if (adslFlag & 0x00000001)
+         adslMod[0].checked = true;
+      if (adslFlag & 0x00000002)
+         adslMod[1].checked = true;
+      if (adslFlag & 0x00000004)
+         adslMod[2].checked = true;
+      if (adslFlag & 0x00000008)
+         adslMod[3].checked = true;
+      if (adslFlag & 0x00000010)
+         adslMod[4].checked = true;
+      if (adslFlag & 0x00000020)
+         adslMod[5].checked = true;
+      if (adslFlag & 0x00000040)
+         adslMod[6].checked = true;
+      if (adslFlag & 0x00000080)
+         adslMod[7].checked = true;
+   
+      if (adslFlag & 0x00000100)
+         vdslProfile[0].checked = true;
+      if (adslFlag & 0x00000200)
+         vdslProfile[1].checked = true;
+      if (adslFlag & 0x00000400)
+         vdslProfile[2].checked = true;
+      if (adslFlag & 0x00000800)
+         vdslProfile[3].checked = true;
+      if (adslFlag & 0x00001000)
+         vdslProfile[4].checked = true;
+      if (adslFlag & 0x00002000)
+         vdslProfile[5].checked = true;
+      if (adslFlag & 0x00004000)
+         vdslProfile[6].checked = true;
+      if (adslFlag & 0x00008000)
+         vdslProfile[7].checked = true;
+
+      if (adslFlag & 0x007f0000)	// VDSL_US0_8a - For now, indicating all enabled
+         us0Mask.checked = true;
+         
+      if (adslFlag & 0x00000080) {
+         vdslProfile[0].disabled = false;
+         vdslProfile[1].disabled = false;
+         vdslProfile[2].disabled = false;
+         vdslProfile[3].disabled = false;
+         vdslProfile[4].disabled = false;
+         vdslProfile[5].disabled = false;
+         vdslProfile[6].disabled = false;
+         vdslProfile[7].disabled = false;         
+         us0Mask.disabled = false;
+      }
+      else {
+            vdslProfile[0].disabled = true;
+            vdslProfile[1].disabled = true;
+            vdslProfile[2].disabled = true;
+            vdslProfile[3].disabled = true;
+            vdslProfile[4].disabled = true;
+            vdslProfile[5].disabled = true;
+            vdslProfile[6].disabled = true;
+            vdslProfile[7].disabled = true;            
+            us0Mask.disabled = true;
+      }
+
+      if (adslFlag & 0x01000000)
+         adslPair[1].checked = true;
+      else
+         adslPair[0].checked = true;
+         
+      if (adslFlag & 0x02000000)
+         adslBitswap.checked = false;
+      else
+         adslBitswap.checked = true;
+         
+      if (adslFlag & 0x08000000)
+         adslSra.checked = true;
+      else
+         adslSra.checked = false;
+   }
+}
+         
+function vdslCfgCbClick(cb) {
+   with ( document.forms[0] ) {
+      if ( cb.checked == true ) {
+            vdslProfile[0].disabled = false;
+            vdslProfile[1].disabled = false;
+            vdslProfile[2].disabled = false;
+            vdslProfile[3].disabled = false;
+            vdslProfile[4].disabled = false;
+            vdslProfile[5].disabled = false;
+            vdslProfile[6].disabled = false;
+            vdslProfile[7].disabled = false;         
+            us0Mask.disabled = false;
+         }
+         else {
+            vdslProfile[0].disabled = true;
+            vdslProfile[1].disabled = true;
+            vdslProfile[2].disabled = true;
+            vdslProfile[3].disabled = true;
+            vdslProfile[4].disabled = true;
+            vdslProfile[5].disabled = true;
+            vdslProfile[6].disabled = true;
+            vdslProfile[7].disabled = true;
+            us0Mask.disabled = true;
+      }
+   }
+}
+
+function applyClick() {
+   var loc = 'xdslcfg.cgi?adslFlag=';
+   var adslFlag = 0;
+   
+   with ( document.forms[0] ) {
+      if (adslMod[0].checked)
+         adslFlag |= 0x00000001;
+      if (adslMod[1].checked)
+         adslFlag |= 0x00000002;
+      if (adslMod[2].checked)
+         adslFlag |= 0x00000004;
+      if (adslMod[3].checked)
+         adslFlag |= 0x00000008;
+      if (adslMod[4].checked)
+         adslFlag |= (0x00000010);
+      if (adslMod[5].checked)
+         adslFlag |= 0x00000020;
+      if (adslMod[6].checked)
+         adslFlag |= 0x00000040;
+      if (adslMod[7].checked)
+         adslFlag |= 0x00000080;
+      if ((adslFlag & 0x000000ff) == 0)
+         alert("Need to select at least one modulation mode.");
+
+      if (vdslProfile[0].checked)
+         adslFlag |= 0x00000100;
+      if (vdslProfile[1].checked)
+         adslFlag |= 0x00000200;
+      if (vdslProfile[2].checked)
+         adslFlag |= 0x00000400;
+      if (vdslProfile[3].checked)
+         adslFlag |= 0x00000800;
+      if (vdslProfile[4].checked)
+         adslFlag |= 0x00001000;
+      if (vdslProfile[5].checked)
+         adslFlag |= 0x00002000;
+      if (vdslProfile[6].checked)
+         adslFlag |= 0x00004000;
+      if (vdslProfile[7].checked)
+         adslFlag |= 0x00008000;
+      if (((adslFlag & 0x00000080) != 0) && ((adslFlag & 0x000FF00) == 0))
+         alert("Need to select at least one profile.");
+	  
+      if (us0Mask.checked)
+         adslFlag |= 0x007F0000;
+
+      if ( adslPair[1].checked)
+         adslFlag |=  0x01000000;
+
+      if (!adslBitswap.checked)
+         adslFlag |= 0x02000000;
+  
+      if (adslSra.checked)
+         adslFlag |= 0x08000000;
+   }
+   loc += adslFlag;
+   loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+// done hiding -->
+</script>
+   </head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <form>
+            <b>DSL Settings</b><br>
+            <br>
+            <table border="0" cellpadding="4" cellspacing="0" width="100%">
+               <tr>
+                  <td width="50%">Select the modulation below.</td>
+                  <td>Select the profile below.</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;<input type="checkbox" name="adslMod"> G.Dmt Enabled</td>
+                  <td><input type="checkbox" name="vdslProfile"> 8a Enabled</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;<input type="checkbox" name="adslMod"> G.lite Enabled</td>               
+                  <td><input type="checkbox" name="vdslProfile"> 8b Enabled</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;<input type="checkbox" name="adslMod"> T1.413 Enabled</td>               
+                  <td><input type="checkbox" name="vdslProfile"> 8c Enabled</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;<input type="checkbox" name="adslMod"> ADSL2 Enabled</td>
+                  <td><input type="checkbox" name="vdslProfile"> 8d Enabled</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;<input type="checkbox" name="adslMod"> AnnexL Enabled</td>               
+                  <td><input type="checkbox" name="vdslProfile"> 12a Enabled</td>
+                </tr>
+                  <td>&nbsp;<input type="checkbox" name="adslMod"> ADSL2+ Enabled</td>
+                  <td><input type="checkbox" name="vdslProfile"> 12b Enabled</td>
+               </tr>
+               <tr>
+                    <td>&nbsp;<input type="checkbox" name="adslMod"> AnnexM Enabled</td>
+                    <td><input type="checkbox" name="vdslProfile"> 17a Enabled</td>
+               </tr>
+               <tr>
+                    <td>&nbsp;<input type="checkbox" name="adslMod" onClick='vdslCfgCbClick(this)'> VDSL2 Enabled</td>
+                    <td><input type="checkbox" name="vdslProfile"> 30a Enabled</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+                    <td>US0</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+                    <td><input type="checkbox" name="us0Mask"> Enabled</td>
+               </tr>
+            </table>
+            <br>
+            Select the phone line pair below.<br>
+            <table border="0" cellpadding="4" cellspacing="0">
+               <tr>
+                  <td width='20'>&nbsp;</td>
+                  <td><input type="radio" name="adslPair"> Inner pair</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+                  <td><input type="radio" name="adslPair"> Outer pair</td>
+               </tr>
+            </table>
+            <br>
+            Capability
+            <table border="0" cellpadding="4" cellspacing="0">
+               <tr>
+                  <td width='20'>&nbsp;</td>
+                  <td><input type="checkbox" name="adslBitswap"> Bitswap Enable</td>
+               </tr>
+               <tr>
+                  <td width='20'>&nbsp;</td>
+                  <td><input type="checkbox" name="adslSra"> SRA Enable</td>
+               </tr>
+            </table>
+            <br>
+            <center>
+               <input type='button' onClick='applyClick()' value='Apply/Save'> <input type='button' onClick='location.href="adslcfgadv.html"' value='Advanced Settings'>
+            </center>
+         </form>
+      </blockquote>
+   </body>
+</html>

@@ -1,0 +1,251 @@
+<script src="../../../js/jquery.tooltip.min.js" type="text/javascript"></script>
+<script src="../../../js/jquery.watermarkinput.js" type="text/javascript"></script>
+<script language='javascript'>
+<!-- hide
+
+var gblsessionKey='<%ejGetOther(sessionKey)%>';
+var certCount;
+
+var errMsg='<%ejGetOther(errMsg)%>';
+if(errMsg!=''){
+	hciAlert(errMsg, {height: 180,type: 2, title: ''});
+}
+
+function addClick() {
+	if(certCount>='4'){
+		hciAlert('<%ejGetML(MLG_Security_Certificates_Str6)%>', {height: 180,type: 2, title: ''});
+	return;
+}
+
+	var loc ='/pages/tabFW/certificates-Add.cgi?certLocalAction=preadd&certCategory=local';
+	loc += '&sessionKey=' + gblsessionKey;
+	var db1 = window.parent.$.zyUiDialog({
+			width: '75%',
+			height: 390,
+			title: '<%ejGetML(MLG_Security_Certificates_Str2)%>',
+			buttons: {
+				'<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close');},
+				'<%ejGetML(MLG_Common_Apply)%>':function(){}
+			}
+			});
+	db1.load(loc);
+	db1.dialog('open');
+
+}
+
+function importClick() {
+	if(certCount>='4'){
+		hciAlert('<%ejGetML(MLG_Security_Certificates_Str6)%>', {height: 180,type: 2, title: ''});
+		return;
+	}
+	if(document.localform.certImportFileName.value == '' ) {
+		hciAlert('<%ejGetML(MLG_Security_Certificates_Str46)%>', {height: 180,type: 2, title: ''});
+		return;
+	}
+	if(document.localform.enblPrivKeyPwd.checked== true)
+	{
+		if(document.localform.certPrivPassword.value=='')
+		{
+			hciAlert('<%ejGetML(MLG_Security_Certificates_Str61)%>', {height: 180,type: 2, title: ''});
+			return;
+		}
+	}
+	with ( document.localform ) 
+	{
+		sessionKey.value = gblsessionKey;
+		certLocalAction.value = "import";
+		//action = '/pages/tabFW/certificates-Import.cgi';
+		//encoding='multipart/form-data';
+		submit();
+	}
+
+	('.ui-dialog-titlebar-close').trigger('click');
+	$.openLoadingMask(1);
+}
+
+
+function viewClick(name, certViewCerType) {
+	var loc ='/pages/security/certificates/certificates-View.cgi?certViewName=' + name +'&certViewType=certDetail&certViewCerType='+ certViewCerType;
+	loc += '&sessionKey=' + gblsessionKey;
+  
+	if(certViewCerType =='request'){
+		var db1 = window.parent.$.zyUiDialog({
+				width: '75%',
+				height: 500,
+				title: '<%ejGetML(MLG_Security_Certificates_Str33)%>',
+				
+				buttons: {
+					'<%ejGetML(MLG_Common_Back)%>': function(){ db1.dialog('close');},
+					'<%ejGetML(MLG_Common_LoadSigned)%>':function(){}
+				}
+				});
+		db1.load(loc);
+		db1.dialog('open');
+	}else{
+		var db1 = window.parent.$.zyUiDialog({
+				width: '75%',
+				height: 500,
+				title: '<%ejGetML(MLG_Security_Certificates_Str33)%>',
+				
+				buttons: {
+				'<%ejGetML(MLG_Common_Back)%>': function(){ db1.dialog('close');}
+				}
+				});
+		db1.load(loc);
+		db1.dialog('open');
+	}
+}
+
+function removeClick(certname, refCount) {
+	var rem = true;
+	if (refCount > 0) {
+		hciAlert('<%ejGetML(MLG_Security_Certificate_AlertMsg_Str20)%>', {height: 180,type: 2, title: ''});
+		return;
+	}   
+	if (rem) {
+		var cert = window.parent.$.zyUiDialog({
+								width: 450,
+								height: 190,
+								title: '<%ejGetML(MLG_Security_Certificates_Str34)%>',
+								buttons: {
+									'<%ejGetML(MLG_Common_No)%>': function(){ cert.dialog('close'); },
+									'<%ejGetML(MLG_Common_Yes)%>': function(){ cert.dialog('close'); $.openLoadingMask(1); rmlClick(certname); }
+								}
+								});
+		cert.load('/pages/delete.html');
+		cert.dialog('open');
+	}
+}
+
+function rmlClick(certname)
+{
+	var loc = '/pages/tabFW/certificates-Local.cgi?certLocalAction=remove&certViewName=' + certname;
+	loc += '&sessionKey=' + gblsessionKey;
+	var code = 'location="' + loc + '"';
+	eval(code);
+}
+
+function exportClick(name)
+{
+	var loc = "/pages/security/certificates/certificates-Export.log?certViewName=" + name;
+	loc += '&sessionKey=' + gblsessionKey;
+	var code = 'location="' + loc + '"';
+	eval(code);
+}
+
+function enablePrivateKeyPwd()
+{
+	if(document.localform.enblPrivKeyPwd.checked== true)
+		document.localform.certPrivPassword.disabled = false;
+	else
+		document.localform.certPrivPassword.disabled = true;
+}
+//$(function()
+//{
+$(document).ready(function() {
+	enablePrivateKeyPwd();
+	$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );  
+	$('.textOverflow').ellipsis(true); //...
+});
+
+// done hiding -->
+</script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">
+<%ejGetML(MLG_Security_Certificates_Str1)%> <%ejGetML(MLG_Security_Certificates_Str6)%> </div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->	
+<!--<form name="localform" id="localform" method="post" action="/pages/tabFW/certificates-Local.cgi">-->
+<form name="localform" id="localform" method="post" action="/pages/tabFW/certificates-Import.cgi" ENCTYPE='multipart/form-data'>
+<input type="hidden" name="sessionKey" id="sessionKey">	
+<input type="hidden" name="certLocalAction" id="certLocalAction">	
+<div class="data_frame"><ul>
+<li class="set1"> 
+<div class="title2"><%ejGetML(MLG_Security_Certificates_Str45)%></div>
+<div class="w_text">
+  <ul>
+    <li class="left_table"><input type='checkbox' name='enblPrivKeyPwd' onClick="enablePrivateKeyPwd()">&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Security_Certificates_Str29)%></li>
+    <li class="right_table">
+                <input type='password' name='certPrivPassword' size='20' maxlength="63" autocomplete="new-password">
+    </li>
+  </ul>
+</div>
+<div class="w_table">
+  <input type='file' name='certImportFileName' size='20'>
+  <input type='button' onClick='importClick()' value='<%ejGetML(MLG_Security_Certificates_Str3)%>'>
+  <input type='button' onClick='addClick()' value='<%ejGetML(MLG_Security_Certificates_Str2)%>'>
+</div>
+<div class="w_table">
+<!--Table define start-->
+   <table id="WebServerTable" width="100%" cellpadding="0" cellspacing="0"  class="table_frame">
+                <tr align="center">
+                  <td class="top_font" width="12%"><%ejGetML(MLG_Security_Certificates_Str41)%></td>
+                  <td class="top_font" width="23%"><%ejGetML(MLG_Security_Certificates_Str5)%></td>
+                  <td class="top_font" width="25%"><%ejGetML(MLG_Security_Certificates_Str42)%></td>
+                  <td class="top_font" width="15%"><%ejGetML(MLG_Security_Certificates_Str43)%></td>
+                  <td class="top_font" width="15%"><%ejGetML(MLG_Security_Certificates_Str44)%></td>
+                  <td class="top_font" width="10%" style="border-right:0px;"><%ejGetML(MLG_Security_FirewallProtocol_Str6)%></td>
+                </tr>
+   <%ejGetOther(certLocalList)%>
+<script language="javascript">
+certCount=<%ejGet(certCount)%>;
+</script>
+              </table>
+</div>
+</li>
+<li class="space"> </li>
+<!--
+<li class="set1">
+  <div class="w_text">SIP TLS <input type="file" />
+</div>
+<div class="w_table">
+   <table id="sipTlsTable" width="100%" cellpadding="0" cellspacing="0" class="table_frame">
+                <tr align="center">
+                  <td class="top_font"><%ejGetML(MLG_Security_Certificates_Str41)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Security_Certificates_Str5)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Security_Certificates_Str42)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Security_Certificates_Str43)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Security_Certificates_Str44)%></td>
+                  <td class="top_font" width="60" style="border-right:0px;">Cert</td>
+                </tr>
+                 <tr align="center">
+                   <td class="table_font"></td>
+                   <td class="table_font"></td>
+                   <td class="table_font"></td>
+                   <td class="table_font"></td>
+                   <td class="table_font"></td>
+                  <td class="table_font"><div class="i_modify"><ul><li ><a href="#"  id='certBtn' class="cert" title="Cert"></a></li></ul></div></td>
+                </tr>
+              </table>
+</div>
+</li>
+<li class="space"> </li>
+<li class="set1">
+  <div class="w_text">SSH/SCP/SFTP <input type="file" />
+</div>
+<div class="w_table">
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="SSHSCPSFTPTable">
+                <tr align="center">
+                  <td class="top_font"><%ejGetML(MLG_Security_Certificates_Str41)%></td>
+                  <td class="top_font">Key Type</td>
+                  </tr>
+                 <tr align="center">
+                   <td class="table_font"></td>
+                   <td class="table_font"></td>
+                   </tr>
+              </table>
+</div>
+</li>
+<li class="space"> </li>
+-->
+<!--Note define start-->
+<!--
+<li class="noteframe"> <div class="w_text"><span class="i_note">Note:</span></div><div class="note_text">&nbsp;&nbsp;SSH/SCP/SFTP  Maximum key length supported is up to 4096 bits (default is 2048 bits), and the initialization time is proportional to key length. You need to adjust your application timeout settings to adapt this variation.</div></li>
+-->
+<li class="space"> </li>
+</ul></div>	
+</form>
+</div><br /><br />

@@ -1,0 +1,276 @@
+<script language='javascript'>
+<!-- hide
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+var errMsg = "<%ejGetOther(errMsg)%>";
+var userlist = "";
+var curUserName = "<%ejGet(curUserName)%>";
+var passexpired = '<%ejGetOther(sysInfo, pass_expired)%>';
+var loginrandom = '<%ejGetOther(sysInfo, login_pass_random_len)%>';
+var usernamesecurity = '<%ejGetOther(sysInfo, username_security)%>';
+var passrecord = '<%ejGetOther(sysInfo, pass_record)%>';
+var advancedaccountsecurity = '<%ejGetOther(sysInfo, advanced_account_security)%>';
+var currentGroup = '<%ejGet(currentGroup)%>'; //ZyXEL, ShuYing, user group only allow to create/edit user in its own group.
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; //ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+
+function errorAlert()
+{
+	if(errMsg)
+	{
+		//AlertOpen(errMsg,2);
+		hciAlert(errMsg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		return;
+	}
+}
+
+function editClick(username)
+{
+	var loc = 'userAccount-cfg.cmd?action=view&userName=' + username;
+    loc += '&sessionKey=' + gblsessionKey;
+    loc += '&currentGroup=' + currentGroup; //ZyXEL, ShuYing, user group only allow to create/edit user in its own group.
+	var db1 = window.parent.$.zyUiDialog({
+              width: '75%',
+              height: 420,
+              title: '<%ejGetML(MLG_Maintenance_User_Account_Str1)%>',
+
+              buttons: {
+                 '<%ejGetML(MLG_Maintenance_User_Account_Str14)%>': function(){ db1.dialog('close');  },
+                 '<%ejGetML(MLG_Maintenance_User_Account_Str13)%>':function(){}
+              }
+             });
+    db1.load(loc);
+    db1.dialog('open');
+}
+
+function removeClick(rml) 
+{
+	 var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 200,
+              title: '<%ejGetML(MLG_Maintenance_User_Account_Str36)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_No)%>': function(){ db1.dialog('close'); },
+                 '<%ejGetML(MLG_Common_Yes)%>': function(){ db1.dialog('close'); deleteProcess(rml); }
+              }
+             });
+    db1.load('/pages/delete.html');
+    db1.dialog('open');
+}
+
+function deleteProcess(username) {
+    with ( document.forms[0] ) {
+      action.value="remove";
+      sessionKey.value = gblsessionKey;
+      userName.value = username;
+      $.openLoadingMask(1);
+      submit();
+   }
+}
+function addList()
+{
+   if (userCtlData_count < 64) {
+   	  var db1 = window.parent.$.zyUiDialog({
+                 width: '75%',
+                 height: 400,
+                 title: '<%ejGetML(MLG_Maintenance_User_Account_Str15)%>',
+
+                 buttons: {
+                    '<%ejGetML(MLG_Maintenance_User_Account_Str14)%>': function(){ db1.dialog('close'); },
+                    '<%ejGetML(MLG_Maintenance_User_Account_Str13)%>':function(){}
+                 }
+                });
+      db1.load("/pages/maintenance/userAccount/userAdd.html");
+      db1.dialog('open');
+   } else {
+      //AlertOpen("The number of list records is limited to 64.",1);
+      hciAlert('<%ejGetML(MLG_Maintenance_User_Account_Str20)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+      return;
+   }
+}
+
+function btnApply(){
+    with ( document.forms[0] ) {
+      action.value="advanced";
+      sessionKey.value = gblsessionKey;
+      $.openLoadingMask(1);
+      submit();
+   }
+}
+
+function createTable () {
+   var i = 0;
+   var j = 0;
+   var passexpiredstatus = passexpired;
+   var userCtlData = '<%ejGetOther(userlist)%>';
+   var info = userCtlData.split('|');
+   var str = '<tr align="center">' +
+             '<td width="5%" class="top_font">#</td>' +
+             '<td class="top_font"><%ejGetML(MLG_Common_User_Name)%></td>';
+   if ( advancedaccountsecurity == '0' ) {
+      passexpiredstatus = '0';
+   }
+   if ( passexpiredstatus == '1' ) {
+     str += '<td class="top_font">Expire Time</td>' +
+            '<td class="top_font">Expire Period</td>';
+   }
+   str += '<td class="top_font"><%ejGetML(MLG_Maintenance_UserAccount_Str3)%></td>' +
+          '<td class="top_font"><%ejGetML(MLG_Maintenance_UserAccount_Str4)%></td>' +
+          '<td class="top_font"><%ejGetML(MLG_Maintenance_UserAccount_Str5)%></td>' +
+          '<td class="top_font"><%ejGetML(MLG_Common_Group)%></td>' +
+          '<td width="60" class="top_font" style="border-right:0px;"><%ejGetML(MLG_Common_Modify)%></td>' +
+          '</tr>';
+
+   userCtlData_count = 0;
+   if (info != '') {
+	  for ( i = 0; i < info.length; i++ ) {
+	       var names = info[i].split('/');
+
+               //ZyXEL, ShuYing, user group only allow to create/edit user in its own group.
+               if( currentGroup != 2 || (currentGroup == 2 && names[6] == "User") ){
+                  
+		 str += "<tr align=\"center\" >";
+
+                 //ZyXEL, ShuYing, user group only allow to create/edit user in its own group.
+		 str += "<td class=\"table_font\">" + (userCtlData_count + 1) + "</td>";
+
+		 str += "<td class=\"table_font\">" + names[0] + "</td>";
+		 if(i == 0)
+		 	userlist += names[0];
+		 else
+			userlist += "," + names[0];
+		 var expire_time = 0;
+		 if ( parseInt(names[1]) == 0 ) {
+				expire_time = 'Not Available';
+		 }
+		 else {
+				expire_time = timestampToFullStr( parseInt(names[1]));
+		 }
+		 if ( passexpiredstatus == '1' ) {
+				str += "<td class=\"table_font\">" + expire_time + "</td>";
+				str += "<td class=\"table_font\">" + timestampToDayStr ( parseInt(names[2])) + "</td>";
+		 }
+		 str += "<td class=\"table_font\">" + names[3] + "</td>";
+		 str += "<td class=\"table_font\">" + ( parseInt(names[4])/60) + " <%ejGetML(MLG_Maintenance_UserAccount_Str6)%></td>";
+		 str += "<td class=\"table_font\">" + ( parseInt(names[5])/60) + " <%ejGetML(MLG_Maintenance_UserAccount_Str6)%></td>";
+		 str += "<td class=\"table_font\">" + names[6] + "</td>";
+		 if(curUserName == names[0])
+ 				 	str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editClick('" + names[0] + "')\" class=\"edit\" id='editBtn' title=\"<%ejGetML(MLG_Common_Edit)%>\"></a></li></ul></div></td>";
+		 else
+ 				 	str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editClick('" + names[0] + "')\" class=\"edit\" id='editBtn' title=\"<%ejGetML(MLG_Common_Edit)%>\"></a></li><li><a href=\"#\" onclick=\"removeClick('"+ names[0] + "')\" class=\"delete\" id='deleteBtn' title=\"<%ejGetML(MLG_Common_Delete)%>\"></a></li></ul></div></td>";
+		 str += "</tr>";
+
+		 userCtlData_count++;
+               }
+	  }
+   }
+   $('#UserList').append(str);
+}
+
+function frmLoad()
+{
+
+//ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+	if((customizationFlag & 0x00080000) && (currentGroup == 2)){
+    	$("#button_other").hide();
+	}
+
+   if ( passexpired == '1' || loginrandom == '1' || usernamesecurity == '1' || passrecord == '1' ) {
+      $("#advancedaccountsecurityid").show();
+      $(".adv_note_text").show();
+      if ( passexpired == '1' )
+      	$("#passexpiredid").show();
+      else
+      	$("#passexpiredid").hide();
+      if ( loginrandom == '1' )
+      	$("#loginrandomid").show();
+      else
+      	$("#loginrandomid").hide();
+      if ( usernamesecurity == '1' )
+      	$("#usernamesecurityid").show();
+      else
+      	$("#usernamesecurityid").hide();
+      if ( passrecord == '1' )
+      	$("#passrecordid").show();
+      else
+      	$("#passrecordid").hide();
+   }
+   else {
+      $("#advancedaccountsecurityid").hide();
+      $(".adv_note_text").hide();
+   }
+   
+   if ( advancedaccountsecurity == '1' ) {
+      $('input[name=active]:radio').get(0).checked = true;
+   }
+   else {
+      $('input[name=active]:radio').get(1).checked = true;
+   }
+}
+
+$(document).ready(function() {
+	errorAlert();
+	createTable();
+	frmLoad();
+});
+// done hiding -->
+</script>
+<form method="post" action="/pages/tabFW/userAccount-cfg.cmd">
+<input type="hidden" name="action" id="action">
+<input type="hidden" name="userName" id="userName">
+<input name="sessionKey" type="hidden" id="sessionKey"/>
+<div class="content_frame" >
+
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Maintenance_UserAccount_Str1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+
+<!--Set area start-->
+<div class="data_frame"><ul>
+<div id="advancedaccountsecurityid">
+<li class="title">Advanced Account Security </li>
+<li class="set1">
+   <div class="w_text">
+      <ul>
+         <li class="left_table">State</li>
+         <li class="right_table">
+            <input name="active" type="radio" value = "1" />Enable
+            <input name="active" type="radio" value = "0" />Disable
+         </li>
+      </ul>
+   </div>
+</li>
+<li class="space"> </li>
+<li class="title">User Account List </li>
+</div>
+<li class="set1"> 
+<div class="button_other" id ="button_other">
+    <input type='button' onclick="addList()" value='<%ejGetML(MLG_Network_USBService_Str15)%>'>
+</div>
+</li>
+<li class="set1"> 
+<div class="w_table">
+<!--Table define start-->
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="UserList">
+</table>
+</div>
+</li>
+<li class="space"> </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Common_Note)%>:</span></div>
+<div class="adv_note_text">&nbsp;&nbsp;Advanced account security support following feature(s).</div>
+<div class="adv_note_text" id="usernamesecurityid">&nbsp;&nbsp;* User Name must require a minimum length of 6 characters(mixed alphabetic and numeric).</div>
+<div class="adv_note_text" id="loginrandomid">&nbsp;&nbsp;* Password field in login page shows random length when key in password.</div>
+<div class="adv_note_text" id="passexpiredid">&nbsp;&nbsp;* Password expired notification and require modify password when login.</div>
+<div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_Maintenance_UserAccount_Str2)%></div>
+</li>
+<!--Note define end-->
+<li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick='btnApply()' />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();'/></div></li>
+<!--Button define end-->
+</ul></div>
+<!--Set area end-->
+</div>
+</form>

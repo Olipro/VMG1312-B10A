@@ -1,0 +1,19 @@
+# Broadcom Wireless Networking Device Driver Configuration file
+# 
+# THIS SOFTWARE IS OFFERED "AS IS", AND BROADCOM GRANTS NO WARRANTIES OF ANY
+# KIND, EXPRESS OR IMPLIED, BY STATUTE, COMMUNICATION OR OTHERWISE. BROADCOM
+# SPECIFICALLY DISCLAIMS ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A SPECIFIC PURPOSE OR NONINFRINGEMENT CONCERNING THIS SOFTWARE.
+#
+
+#this config file builds single band 11g and 11n chips
+
+include $(WLCFGDIR)/wlconfig_lx_wl_dslcpeusbcfg
+include $(WLCFGDIR)/wlconfig_lx_wl_dslcpe
+
+#$(warning Copy $(WLTUNEFILE))
+#$(shell cp -f $(WLCFGDIR)/$(WLTUNEFILE) $(WLCFGDIR)/../sys/wlconf.h)
+
+#supported chips 4318B0 4321(x) 4322(x)
+SUPPORTED_CHIPS := 4318 4321 4322
+

@@ -1,0 +1,87 @@
+<script language="javascript">
+<!-- hide
+var glbSessionKey = '<%ejGetOther(sessionKey)%>';
+var sHostname = '<%ejGet(fileSharingHostname)%>';
+
+function btnSave() {
+var tempHostname;
+   with ( document.forms[0] ) {
+	
+   sessionKey.value = glbSessionKey;
+   if(fileSharing_Enable[0].checked)
+   	enblFileSharing.value=1;
+   else
+   	enblFileSharing.value=0;
+
+	tempHostname=aHostName.value;	
+	
+	fileSharingHostname.value=tempHostname;
+   $.openLoadingMask(1);
+   submit();
+
+   }
+}
+
+function frmLoad()
+{
+   var enblFile = '<%ejGet(enblFileSharing)%>';
+   with ( document.forms[0] ) {
+   		aHostName.value=sHostname;
+            if (enblFile == 1)
+                fileSharing_Enable[0].checked = true;
+            else
+                fileSharing_Enable[1].checked = true;
+    }
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+// done hiding -->
+</script>
+<form action="/pages/tabFW/homeNetworking-filesharing.cgi" method="post">
+<input name="enblFileSharing" type="HIDDEN" id="enblFileSharing" value=""; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""; />
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">The device can share files from your USB flash drive or disk when you attach it to the USB port. You may start from deciding which folders in the USB disks to share and which users can access the shared folders.</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1">
+   <div class="w_text">
+    <ul>
+      <li class="left_table"><%ejGetML(MLG_Network_USBService_Str2)%></li>
+      <li class="right_table">
+        <input name="fileSharing_Enable" type="radio" value="0" />
+        <%ejGetML(MLG_Common_Enable)%>
+        <input name="fileSharing_Enable" type="radio" value="1" />
+        <%ejGetML(MLG_Common_Disabled)%> </li>
+    </ul>
+</div>
+<li class="space"> </li>
+<tr> 
+    <td>&nbsp;</td><td>&nbsp;</td>
+	<td><%ejGetML(MLG_Security_MACFilter_HostName)%></td>
+	<td><input type="text" name='aHostName'></td>
+</tr>
+<input type="hidden" name="fileSharingHostname" id="fileSharingHostname" value="">
+
+<!--Button define start-->
+<li class="buttonframe">
+<div class="button_position">
+<input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="btnSave();"/>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick="frmLoad();"/>
+</div>
+</li>
+<!--Button define end-->
+</ul>
+</div>
+</div>
+<br/><br/>
+</form>
+

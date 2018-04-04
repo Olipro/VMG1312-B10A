@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ripemd
+END
+rmdconst.h
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ripemd/rmdconst.h
+END
+rmd_locl.h
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ripemd/rmd_locl.h
+END
+rmdtest.c
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ripemd/rmdtest.c
+END
+rmd_dgst.c
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ripemd/rmd_dgst.c
+END
+rmd_one.c
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ripemd/rmd_one.c
+END
+ripemd.h
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ripemd/ripemd.h
+END
+rmd160.c
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ripemd/rmd160.c
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ripemd/Makefile
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/ripemd/README
+END

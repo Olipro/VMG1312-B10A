@@ -1,0 +1,192 @@
+<script language="javascript">
+<!-- hide
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+var ruleinfo = '<%ejGetOtherBig(portMapRule)%>';
+var errMsg = "<%ejGetOther(errMsg)%>";
+var enableAddressMapping  = '<%ejGetOther(sysInfo, enblAddressMapping)%>';
+//ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; 
+
+function frmLoad () {
+	var info = ruleinfo.split('|');
+	var found = 0;
+	 
+	if ( info != '' ) {
+		for ( i = 0; i < info.length ; i ++ ) {
+			found = 0;
+			if (info[i] == '')
+				break;
+			var names = info[i].split('/');
+			for ( j = 0 ; c[6][j] != null; j ++ ) {
+				if ( c[6][j].name == names[0] ) {
+					found = 1;
+					c[6][j].eNum++;
+					c[6][j].e[c[6][j].eNum-1] = new iVe(names[2], names[3], names[1], names[4]);
+					break;
+				}
+			}
+			if ( found == 0 ) {
+				c[6][j] = new cV(names[0], names[0], 1);
+				c[6][j].e[0] = new iVe(names[2], names[3], names[1], names[4]);
+			}
+		}
+	}
+
+	var i = 0, j = 0;
+	var appinfo = '<%ejGetOtherBig(portMap,app)%>';
+	var ainfo = appinfo.split('|');
+	var found = 0;
+	var str = '';
+
+	if (ainfo != '') {
+		for ( i = 0, j = 0; i < ainfo.length; i++ ) {
+			if (ainfo[i] == '')
+				break;
+			var names = ainfo[i].split('/');
+			
+			found = 0;
+			if (i > 0){
+				var tempname = ainfo[i-1].split('/');
+				if (tempname[1] == names[1]){
+					found = 1;
+				}
+			}
+
+			if ( found ) {
+				continue;
+			}
+			j++;
+			str += "<tr align=\"center\">";
+			str += "<td class=\"table_font\">" + j + "</td>";
+			str += "<td class=\"table_font\">"+names[1]+"</td>";
+if (enableAddressMapping == '1' )
+{
+			str += "<td class=\"table_font\">"+names[10]+"</td>";
+} else
+{
+			str += "<td class=\"table_font\">"+names[9]+"</td>";
+}
+			str += "<td class=\"table_font\">"+names[5]+"</td>";
+			str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onclick=\"removeClick('"+names[1]+"','"+names[5]+"');\" class=\"delete\" title=\"<%ejGetML(MLG_Common_Delete)%> .\" id='deleteBtn'></a></li></ul></div></td>";
+			str += "</tr>";
+		}
+	}
+
+	$('#applicationsTable').append(str);
+	
+//ZyXEL, 20150528, Albert, customer request, hide DOS/traffic(WAN)/USER ACCOUNT(create by user)/status
+     if((customizationFlag & 0x00080000)){
+ 	     $('#portfwrd_txt').hide();
+     }
+	 
+	if(errMsg != ""){
+		hciAlert (errMsg, {height: 180, type: 2, title: ''});
+		return;
+	}
+}
+ 
+function addClick() {
+  
+      var db1 = window.parent.$.zyUiDialog({
+                 width: 500,
+                 height: 250,
+                 title: '<%ejGetML(MLG_NAT_Applications_Str151)%>',
+
+                 buttons: {
+                    '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+                    '<%ejGetML(MLG_Common_OK)%>':function(){}
+                 }
+                });
+	  var link = 'pages/network/nat/applications_add.html';
+      if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+      link='../../'+link;
+      db1.load(link);
+      db1.dialog('open');
+}
+
+function editClick(index) {
+ 
+	var loc = 'nat-application.cmd?action=view&tempNatIndex=' + index;
+       loc += '&sessionKey=' + glbSessionKey;
+
+	var db1 = window.parent.$.zyUiDialog({
+                 width: 500,
+                 height: 250,
+                 title: '<%ejGetML(MLG_NAT_Applications_Str152)%>',
+
+                 buttons: {
+                    '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+                    '<%ejGetML(MLG_Common_OK)%>':function(){}
+                 }
+                });
+      db1.load(loc);
+      db1.dialog('open');
+}
+
+function removeClick(sName, sAddr) {
+   var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 190,
+              title: '<%ejGetML(MLG_Common_Delete)%> .',
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+                 '<%ejGetML(MLG_Common_OK)%>': function(){ db1.dialog('close'); deleteProcess(sName, sAddr); }
+              }
+             });
+		var link = 'pages/delete.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+}
+ 
+function deleteProcess(sName, sAddr) {
+	with ( document.forms[0] ) {
+		sessionKey.value = glbSessionKey;
+		srvName.value =sName;
+		srvAddr.value = sAddr;
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+// done hiding -->
+</script>
+<form action="/pages/tabFW/nat-application.cmd" method="post">
+<input type=hidden name="sessionKey" id="sessionKey" value="">
+<input type=hidden name="action" id="action" value="remove">
+<input type=hidden name="srvName" id="srvName" value="">
+<input type=hidden name="srvAddr" id="srvAddr" value="">
+</form>
+<div class="content_frame">
+<!--Unit Explain start-->
+    <div class="explain"><div><b class="r1"></b><b class="r2"></b> <b class="r3"></b> <b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_NAT_Applications_Explain)%></div><div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame">
+		 <ul>
+		 <li class="set1"> <div class="w_table"><input type="button" value="<%ejGetML(MLG_NAT_Applications_Str151)%>" id='addnewshareBtn' onclick="addClick();"/></div></li>
+            <li class="set1">
+              <div class="w_table">
+   <table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame" id="applicationsTable">
+                <tr align="center" valign="top">
+                  <td width="5%" class="top_font ">#</td>
+                  <td class="top_font "><%ejGetML(MLG_NAT_Applications_Str7)%></td>
+                  <td class="top_font "><%ejGetML(MLG_NAT_PortTriggering_Str4)%></td>
+                  <td class="top_font "><%ejGetML(MLG_NAT_PortForwarding_Str8)%></td>
+                  <td width="60"  class="top_font " style="border-right:0px;"><%ejGetML(MLG_Network_StaticRoute_Str9)%></td>
+                </tr>
+              </table>
+</div>
+</li>
+<li class="space"> </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_NAT_Sessions_Str3)%>:</span></div>
+<div class="note_text" id ="portfwrd_txt">&nbsp;&nbsp;<%ejGetML(MLG_NAT_PortForwarding_Str19)%> .</div></li>  
+<li class="space"> </li>      
+</ul>
+</div><br /><br />

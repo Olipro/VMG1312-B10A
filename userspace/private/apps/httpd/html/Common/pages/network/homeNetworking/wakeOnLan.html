@@ -1,0 +1,157 @@
+<script language="javascript">
+<!-- hide
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+var lanHostList = '<%ejGetOther(lanHostEntry)%>';
+var info = lanHostList.split('|');
+var errMsg = '<%ejGetOther(errMsg)%>';
+var wolMacAddr = '<%ejGetOther(wakeOnLanMACAddr)%>';
+function frmLoad() {
+   var i = 0;
+	with ( document.forms[0] ) {
+		var str = '';
+		if (info != '') {
+			for ( i = 0; i < info.length; i++ ) {
+				var names = info[i].split(',');
+				if (names.length>2 && names[2]!="(null)"){
+					str += "  <option value='" + names[2] + "'>" + names[2] + "</option>";
+				}
+			}
+		}
+		$('#selIPAddr').append(str);  
+   }
+}
+
+
+function changeIPAddr(){
+   with ( document.forms[0] ) {
+		if(selIPAddr.value =='manual'){
+			wakeOnLanIPAddr.value = '';
+			//cathy add start for [Lan] In the Wake on Lan page, the IP address column is redundant. 20130603
+			showhide("wakeOnLanIPAddrInfo", 1);
+			//cathy add end for [Lan] In the Wake on Lan page, the IP address column is redundant. 20130603
+		}
+		else{
+		//cathy add start for [Lan] In the Wake on Lan page, the IP address column is redundant. 20130603
+		 showhide("wakeOnLanIPAddrInfo", 0);
+		//cathy add end for [Lan] In the Wake on Lan page, the IP address column is redundant. 20130603
+		if (info != '') {
+			for ( i = 0; i < info.length; i++ ) {
+				var names = info[i].split(',');
+				if (names.length>2 && names[2]==selIPAddr.value){
+					var mac = names[1].split(':');
+					$("#str1").val(mac[0]);
+					$("#str2").val(mac[1]);
+					$("#str3").val(mac[2]);
+					$("#str4").val(mac[3]);
+					$("#str5").val(mac[4]);
+					$("#str6").val(mac[5]);
+				}
+			}
+		}
+		wakeOnLanIPAddr.value = selIPAddr.value;
+		}
+	}
+}
+
+function sendWakeUp(){
+	with ( document.forms[0] ) {
+		sessionKey.value = glbSessionKey;
+		wakeOnLanMacAddr.value = str1.value + ":" + str2.value + ":" + str3.value + ":" + str4.value + ":" + str5.value + ":" +str6.value;
+		
+		if (isValidIpAddress(wakeOnLanIPAddr.value) == false) {
+			//msg = 'IP Address "' + wakeOnLanIPAddr.value + '" is invalid IP address.';
+			//hciAlert(msg, {height: 180,type: 2, title: ''});
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str9)%>", wakeOnLanIPAddr.value), {height: 180,type: 2, title: ''});
+			return;
+		}
+		else if (isValidMacAddress(wakeOnLanMacAddr.value) == false) {
+			//msg = 'MAC Address "' + wakeOnLanMacAddr.value + '" is invalid MAC address.';
+			//hciAlert(msg, {height: 180,type: 2, title: ''});
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_Wake_on_Lan_Str6)%>", wakeOnLanMacAddr.value), {height: 180,type: 2, title: ''});
+			return;
+		}
+		
+		window.parent.$.openLoadingMask(1);
+		submit();
+		
+	}
+}
+$(document).ready(function() {
+	if (errMsg != '')
+	{
+		hciAlert(errMsg, 2);
+	}
+	frmLoad();
+});
+
+// done hiding -->
+</script>
+<form action="/pages/tabFW/homeNetworking-wakeOnLan.cgi" method="post" onSubmit="$.openLoadingMask(1);return true;">
+  <input type=hidden name="sessionKey" id="sessionKey" value="">
+  <input type="hidden" name="wakeOnLanMacAddr" id="wakeOnLanMacAddr" size="17" maxlength="17" />
+  <div class="content_frame">
+    <!--Unit Explain start -->
+    <div class="explain">
+      <div>
+        <b class="r1"></b>
+        <b class="r2"></b>
+        <b class="r3"></b>
+        <b class="r4"></b>
+        <b class="r4"></b>
+      </div>
+      <div class="explain_text"><%ejGetML(MLG_Network_Wake_on_Lan_Str1)%></div>
+      <div>
+        <b class="r4"></b>
+        <b class="r4"></b>
+        <b class="r3"></b>
+        <b class="r2"></b>
+        <b class="r1"></b>
+      </div>
+    </div>
+    <!--Unit Explain end -->
+
+    <!-- Data Frame start -->
+    <div class="data_frame"><ul>
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_Wake_on_Lan_Str2)%>:</li>
+            <li class="right_table">
+              <select name='selIPAddr' id='selIPAddr' onChange='changeIPAddr()'>
+                <option value='manual'><%ejGetML(MLG_Common_Manual)%></option>
+              </select>
+            </li>
+          </ul>
+        </div>
+          <!--div id wakeOnLanIPAddrInfo start-->
+          <div id="wakeOnLanIPAddrInfo">
+          <div class="w_text">
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_Network_Wake_on_Lan_Str3)%>:</li>
+              <li class="right_table">
+                <input name="wakeOnLanIPAddr" id="wakeOnLanIPAddr" size="17" maxlength="15" type="text" />
+              </li>
+            </ul>
+          </div>
+          </div>
+          <!--div id wakeOnLanIPAddrInfo end-->
+          <div class="w_text">
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_Network_Wake_on_Lan_Str4)%>:</li>
+              <li class="right_table">
+                <input name="str1" id="str1" type="text" size="2" maxlength="2" onFocus="nextfield = 'str2'; prevfield = 'str1';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)" /> :
+                <input name="str2" id="str2" type="text" size="2" maxlength="2" onFocus="nextfield = 'str3'; prevfield = 'str1';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)" /> :
+                <input name="str3" id="str3" type="text" size="2" maxlength="2" onFocus="nextfield = 'str4'; prevfield = 'str2';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)" /> :
+                <input name="str4" id="str4" type="text" size="2" maxlength="2" onFocus="nextfield = 'str5'; prevfield = 'str3';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)" /> :
+                <input name="str5" id="str5" type="text" size="2" maxlength="2" onFocus="nextfield = 'str6'; prevfield = 'str4';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)" /> :
+                <input name="str6" id="str6" type="text" size="2" maxlength="2" onFocus="nextfield = 'static_ip';prevfield = 'str5';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)" onKeyPress="return disableEnterKey(event)" />
+                <span class="none_right"><input type="button" name="wakeUpBtn" value="<%ejGetML(MLG_Network_Wake_on_Lan_Str5)%>" id="wakeUpBtn" onClick='sendWakeUp()'/></span>
+              </li>
+            </ul>
+          </div>
+       </li>
+    </ul></div>
+    <!-- Data Frame end -->
+    <br/><br/>
+  </div>
+</form>

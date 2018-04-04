@@ -1,0 +1,155 @@
+<script language="javascript">
+var timeValue;
+var sessionKey='<%ejGetOther(sessionKey)%>';
+
+
+function resetInterval() {
+	var selecting;
+	selecting = $('#dstNatIf').val();	
+	clearTimeout(timeValue);
+	
+	$.cookie("refreshNAT", selecting);
+	if (selecting == 1)
+		timeValue = setTimeout('trafficNatRefresh()', 15000);
+	else if (selecting == 2)
+		timeValue = setTimeout('trafficNatRefresh()', 30000);
+	else if (selecting == 3)
+		timeValue = setTimeout('trafficNatRefresh()', 60000);
+}
+
+function trafficNatRefresh() {
+   var natloc = 'trafficStatus-nat.cgi?';
+   natloc += 'sessionKey=' + sessionKey;
+   var natloc = 'location.assign("' + natloc + '")';
+   eval(natloc);
+}
+
+function showNatSessionUsg(){
+   var natStr = '';
+   natStr += '<table width="' + NatSessionUsgInfo + '%" border="0" cellspacing="0" cellpadding="0">';
+   natStr += '  <tr>';
+   natStr += '    <td height="18" background="../../images/i_percentage_blue.gif">&nbsp;</td>';
+   natStr += '  </tr>';
+   natStr += '</table>';
+
+   /*Memory Usage Information.*/
+   document.getElementById("natSessionUsgID").innerHTML =natStr;
+   document.getElementById("natSessionInfo").innerHTML = NatSessionUsgInfo;
+}
+function frmLoad()
+{
+ 
+	
+var i = 0;
+var wlActiveUsers = '<%ejGetOtherBig(wlactiveusers)%>';
+var wiredActiveUsers = '<%ejGetOtherBig(wiredactiveusers)%>';
+NatSessionUsgInfo = '<%ejGetOther(NatSessionUsgInfo)%>';
+
+   var wlinfo = wlActiveUsers.split('|');
+   var wiredinfo = wiredActiveUsers.split('|');
+   var str = '';
+   var info = wlinfo.concat(wiredinfo);
+   
+   info.sort();
+   
+   var agt = navigator.userAgent.toLowerCase();
+   if (info != '') {
+      for ( i = 0; i < info.length; i++ ) {
+         if (info[i] != '') {
+         var names = info[i].split('/');
+         str += '<tr >\n';
+         str += '<td  class="table_font">'+names[1]+'</td>';
+         str += '<td  class="table_font">'+names[5]+'</td>';
+         str += '<td  class="table_font">'+names[3]+'</td>';
+         str += '<td  class="table_font">'+names[7]+'</td>';
+         str += '</tr>\n';
+         }
+     }
+  }
+
+   $('#natTable').append(str);
+   
+   showNatSessionUsg();
+   	if ($.cookie("refreshNAT") == null) {
+		$('#dstNatIf').val(1);
+	} 
+	else {
+		$('#dstNatIf').val($.cookie("refreshNAT"));
+	}
+	resetInterval();
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+</script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+  <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+  <div class="explain_text"><%ejGetML(MLG_System_TrafficStatistic4)%></div>
+  <div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+</div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1">
+<div class="w_text">
+     <ul>
+         <li class="all_table"><%ejGetML(MLG_Common_RefreshInterval)%> : 
+           <select name='dstNatIf' id='dstNatIf' onchange='resetInterval()'>
+              <option value="1">15 <%ejGetML(MLG_Common_Seconds)%></option>
+              <option value="2">30 <%ejGetML(MLG_Common_Seconds)%></option>
+              <option value="3">60 <%ejGetML(MLG_Common_Seconds)%></option>
+            </select>
+         </li>
+     </ul>
+  </div>
+  <div class="w_table">
+  <!--Table define start-->
+<table width="100%" cellpadding="0" cellspacing="0" class="table_frame"  style="table-layout:fixed;" id="natTable" >
+                <tr >
+                  <td width="18%"  valign="top" class="top_font" id="DeviceTable"><%ejGetML(MLG_System_TrafficStatistic2)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Common_IPAddress)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Common_MACAddress)%></td>
+                  <td class="top_font" ><%ejGetML(MLG_System_TrafficStatistic3)%></td>
+                  </tr>
+
+              </table>
+</div>
+<div class="space"></div>
+<li class="w_text">
+  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+      <td><table width="100%" border="0" cellpadding="0" cellspacing="0">
+          <tr>
+            <td><table width="100%" cellpadding="0" cellspacing="0"  >
+                <tr >
+                  <td width="10%" >&nbsp;&nbsp;<%ejGetML(MLG_System_TrafficStatistic5)%> :</td>
+                  <td  width="50%"><table width="100%" border="1" cellpadding="0" cellspacing="0" bordercolor="#7895c8" style=" line-height:18px;">
+  <tr>
+    <td background="../../images/i_percentage_center.gif">
+	<span id='natSessionUsgID'>
+	<table width="50%"  border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td background="../../images/i_percentage_blue.gif" >&nbsp;</td>
+      </tr>
+    </table>
+	  </span>
+	</td>
+  </tr>
+</table></td>
+                  <td >&nbsp;<span id='natSessionInfo'></span>%</td>
+                </tr>
+            </table></td>
+          </tr>
+      </table></td>
+    </tr>
+  </table>
+</li>
+</li>
+<li class="space"> </li>
+</ul>
+</div>
+<!--Set area end-->
+</div>
+<br/><br/>

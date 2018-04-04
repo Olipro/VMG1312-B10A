@@ -1,0 +1,219 @@
+<link rel="stylesheet" type="text/css" href="css/quickstart.css"></link>
+<script type="text/javascript">
+$(function(){
+  
+  function updateCheckRadio(){
+	var infoCheck = $('input[name=r1]:checked').val();
+	if (infoCheck == 'yes') {
+		$("#yesinfo").show();
+		$("#noinfo").hide();
+	} else if (infoCheck == 'no') {
+		$("#yesinfo").hide();
+		$("#noinfo").show();
+	}
+  }
+  
+  updateCheckRadio();
+  
+  $("input[name='r1']").click(function(){
+	updateCheckRadio();
+  });
+  
+  function checkSip2(){
+    $("#sip2").hide();
+	var sip2Select = $("#sip2Check").attr('checked');
+	if(sip2Select==true){
+	  $("#sip2").show();
+	} else {
+	  $("#sip2").hide();
+	}
+  }
+
+  checkSip2();
+  
+  $("#sip2Check").click(function() {
+	checkSip2();
+  });
+	 
+  $('#cancelBtn').click(function() {
+	 window.location='index.html';
+  });
+  
+  $('#closeBtn').click(function() {
+	 window.location='index.html';
+  });
+
+});
+-->
+</script>
+<div class="wrap">
+   <!-- Internet Setting Beginning -->
+   <div id="internetsetting" class='state'>
+     <div class="qs_headline"><%ejGetML(MLG_ConnStatus_QuickStart_Str24)%><div class="step"><%ejGetML(MLG_ConnStatus_QuickStart_Str38)%></div></div>
+     <div class="qs_content">
+       <div id="pppoe">
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str57)%><span class="blod"><%ejGetML(MLG_ConnStatus_QuickStart_Str56)%><!--(detect connection type by SW)--></span> and needs a user name and password to get online.</p>
+         <table width="100%" border="0" cellspacing="0" cellpadding="0">
+           <tr>
+             <td width="40%"><%ejGetML(MLG_Common_User_Name)%>:</td>
+             <td><input type="text" name="textfield" id="textfield" /></td>
+           </tr>
+           <tr>
+             <td><%ejGetML(MLG_Common_Password)%>:</td>
+             <td><input type="password" autocomplete="new-password" name="textfield2" id="textfield2" /></td>
+           </tr>
+           <tr>
+             <td><%ejGetML(MLG_Common_VerifyPassword)%>:</td>
+             <td><input type="password" autocomplete="new-password" name="textfield3" id="textfield3" /></td>
+           </tr>
+         </table>
+         <p>&nbsp;</p>
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str3)%></p>
+       </div>
+       <div id="ethernet" style="display:none;">
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str50)%></p>
+       </div>
+       <p>
+         <input name="r1" type="radio" id="radio" value="yes" />
+         <%ejGetML(MLG_Common_Yes)%> &nbsp;&nbsp;&nbsp;&nbsp;
+         <input name="r1" type="radio" id="radio2" value="no" checked="checked" />
+         <%ejGetML(MLG_Common_No)%></p>
+       <table width="100%" border="0" cellspacing="0" cellpadding="0" id="yesinfo">
+         <tr>
+           <td width="40%" class="indent"><%ejGetML(MLG_Common_IPAddress)%>:</td>
+           <td><input type="text" name="textfield4" id="textfield4" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_Common_SubnetMask)%>:</td>
+           <td><input type="password" autocomplete="new-password" name="textfield4" id="textfield5" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str1)%></td>
+           <td><input type="password" autocomplete="new-password" name="textfield4" id="textfield6" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_Common_Primary_DNS_server)%>:</td>
+           <td><input type="password" autocomplete="new-password" name="textfield5" id="textfield7" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str9)%></td>
+           <td><input type="password" autocomplete="new-password" name="textfield6" id="textfield8" /></td>
+         </tr>
+       </table>
+       <p class="indent" id="noinfo"><%ejGetML(MLG_ConnStatus_QuickStart_Str15)%></p>
+     </div>
+   </div>
+   <!-- Internet Setting Ending -->
+   <!-- Wireless Setting Beginning -->
+   <div id="wirelesssetting" style="display:none;" class='state'>
+     <div class="qs_headline"><%ejGetML(MLG_ConnStatus_QuickStart_Str27)%><div class="step"><%ejGetML(MLG_ConnStatus_QuickStart_Str31)%></div></div>
+     <div class="qs_content">
+       <p><%ejGetML(MLG_ConnStatus_QuickStart_Str80)%></p>
+       <table width="100%" border="0" cellspacing="0" cellpadding="0">
+         <tr>
+           <td width="40%"><%ejGetML(MLG_ConnStatus_QuickStart_Str82)%></td>
+           <td><input name="r2" type="radio" id="radio3" value="radio3" checked="checked" />
+             <%ejGetML(MLG_Common_Enable)%> &nbsp;&nbsp;&nbsp;&nbsp;
+              <input type="radio" name="r2" id="radio4" value="radio3" />
+              <%ejGetML(MLG_Common_Disable)%></td>
+         </tr>
+         <tr>
+           <td><%ejGetML(MLG_WLAN_BasicWirelessSetup_Str23)%> (<%ejGetML(MLG_WLAN_AdditionalWLANs_Str4)%>):</td>
+           <td><%ejGetML(MLG_Common_zyxel)%></td>
+         </tr>
+         <tr>
+           <td><%ejGetML(MLG_Common_Security)%>:</td>
+           <td><%ejGetML(MLG_Common_WPA2)%></td>
+         </tr>
+         <tr>
+           <td><%ejGetML(MLG_Common_Password)%>:</td>
+           <td>1234567</td>
+         </tr>
+       </table>
+     </div>
+   </div>
+   <!-- Wireless Setting Ending -->
+   <!-- VoIP Beginning -->
+   <div id="voipsetting" style="display:none;" class='state'>
+     <div class="qs_headline">Internet Phone Call (VoIP)<div class="step"><%ejGetML(MLG_ConnStatus_QuickStart_Str36)%></div></div>
+     <div class="qs_content">
+       <p><%ejGetML(MLG_ConnStatus_QuickStart_Str62)%></p>
+       <p class="item"><%ejGetML(MLG_ConnStatus_QuickStart_Str64)%></p>
+       <table width="100%" border="0" cellspacing="0" cellpadding="0">
+         <tr>
+           <td width="40%" class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str65)%></td>
+           <td><input name="textfield9" type="text" id="textfield9" value="070123456789" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str66)%></td>
+           <td><input name="textfield7" type="text" id="textfield10" value="0.0.0.0" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str67)%></td>
+           <td><input name="textfield8" type="text" id="textfield11" value="sip.aaa.ocm" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_Common_User_Name)%>:</td>
+           <td><input name="textfield10" type="text" id="textfield12" value="zyxel" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_Common_Password)%>:</td>
+           <td><input name="textfield11" autocomplete="new-password" type="password" id="textfield13" value="1234" /></td>
+         </tr>
+       </table>
+       <p>&nbsp;</p>
+       <p class="item">
+         <input type="checkbox" name="checkbox" id="sip2Check" />
+         <%ejGetML(MLG_ConnStatus_QuickStart_Str69)%></p>
+       <table width="100%" border="0" cellspacing="0" cellpadding="0" id="sip2">
+         <tr>
+           <td width="40%" class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str65)%></td>
+           <td><input name="textfield12" type="text" id="textfield14" value="070123456789" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str66)%></td>
+           <td><input name="textfield12" type="text" id="textfield15" value="0.0.0.0" disabled="disabled" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str67)%></td>
+           <td><input name="textfield12" type="text" id="textfield16" value="sip.aaa.ocm" disabled="disabled" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_Common_User_Name)%>:</td>
+           <td><input name="textfield12" type="text" id="textfield17" value="zyxel" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_Common_Password)%>:</td>
+           <td><input name="textfield12" autocomplete="new-password" type="password" id="textfield18" value="1234" /></td>
+         </tr>
+       </table>
+       <p>&nbsp;</p>
+     </div>
+   </div>
+   <!-- VoIP Ending -->
+   <!-- waiting Beginning -->
+   <div id="waiting" style="display:none;" class='state'>
+     <div class="qs_content">
+       <p style="display:block;height:110px;">&nbsp;</p>
+       <div class="waiting"></div>
+       <p style="font-weight:bold;text-align:center;"><%ejGetML(MLG_ConnStatus_QuickStart_Str70)%></p>
+     </div>
+   </div>
+   <!-- waiting Ending -->
+   <!-- result Beginning -->
+   <div id="result" class='state' style="display:none;" >
+     <div class="qs_headline"><%ejGetML(MLG_ConnStatus_QuickStart_Str7)%></div>
+     <div class="qs_content">
+       <div id="success" style="display:none;">
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str23)%></p>
+       </div>
+       <div id="fail">
+         <p><%ejGetML(MLG_ConnStatus_QuickStart_Str61)%></p>
+         <p class="fail"><%ejGetML(MLG_ConnStatus_QuickStart_Str58)%></p>
+         <p class="fail"><%ejGetML(MLG_ConnStatus_QuickStart_Str59)%></p>
+       </div>
+       <p>&nbsp;</p>
+     </div>
+   </div>
+   <!-- result Ending -->
+</div>

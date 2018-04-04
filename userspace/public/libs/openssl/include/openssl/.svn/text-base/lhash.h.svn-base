@@ -1,0 +1,1 @@
+link ../../crypto/lhash/lhash.h

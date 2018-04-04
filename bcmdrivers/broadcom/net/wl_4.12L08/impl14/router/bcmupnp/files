@@ -1,0 +1,17 @@
+FILES = linux_main.c
+FILES += linux_osl.c
+FILES += device_init.c
+FILES += upnp.c
+FILES += upnp_device.c
+FILES += upnp_description.c
+FILES += upnp_http.c
+FILES += upnp_req.c
+FILES += upnp_util.c
+FILES += gena.c
+FILES += ssdp.c
+FILES += soap.c
+FILES += soap_x_wfawlanconfig.c
+FILES += WFADevice_table.c
+FILES += WFADevice.c
+FILES += xml_WFADevice.c
+FILES += xml_x_wfawlanconfig.c

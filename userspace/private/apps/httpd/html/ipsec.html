@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+
+  <link rel="stylesheet" href="stylemain.css" type="text/css">
+  <link rel="stylesheet" href="colors.css" type="text/css">
+  <meta http-equiv="Pragma" content="no-cache">
+  <title> IPSec Tunnel Mode Connections</title>
+ 
+  <script language="javascript" src="util.js"></script>
+  <script language="javascript">
+<!-- hide  
+
+var sessionKey='<%ejGetOther(sessionKey)%>';
+
+function addClick() {
+   var loc = 'ipsec.cmd?action=add';
+   loc += '&sessionKey=' + sessionKey;
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function editClick(index) {
+   var loc = 'ipsec.cmd?action=edit&index=' + index;
+   loc += '&sessionKey=' + sessionKey;
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function removeClick(index) {
+   var loc = 'ipsec.cmd?action=delete&index=' + index;
+   loc += '&sessionKey=' + sessionKey;
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function enClick(index, item) {
+   var cv;
+   if (item.checked) {
+   	  cv = "1";
+   }
+   else {
+      cv = "0";
+   }
+   item.checked = !item.checked;
+   var loc = 'ipsec.cmd?action=enchange&index=' + index +'&en=' + cv;
+   loc += '&sessionKey=' + sessionKey;
+   var code = 'location="' + loc + '"';
+   eval(code);	
+}
+
+// done hiding -->
+</script>
+  
+</head>
+
+<body>
+<blockquote>
+<form>
+  <b>IPSec Tunnel Mode Connections</b><br><br>
+  Add, edit or remove IPSec tunnel mode connections from this page.
+  <br><br>
+  <center>
+  <table border="1" cellpadding="4" cellspacing="0">
+    <tr>
+      <td class="hd">Enable</td>
+      <td class="hd">Connection Name</td>
+      <td class="hd">Remote Gateway</td>     
+      <td class="hd">Local Addresses</td>
+      <td class="hd">Remote Addresses</td>
+      <td class="hd"> &nbsp </td>
+    </tr>
+    <%ejGet(ipsecTable)%>
+    </table>
+    <br>
+  <input value="Add New Connection" type="button" onclick="addClick();"> &nbsp
+  </center>
+</form>
+</blockquote>
+</body>
+
+</html>

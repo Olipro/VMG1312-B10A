@@ -1,0 +1,303 @@
+<script language="javascript">
+var usernamesecurity = '<%ejGetOther(sysInfo, username_security)%>';
+var groupstr = '<%ejGetOther(sysInfo, group_str)%>';
+var passexpired = '<%ejGetOther(sysInfo, pass_expired)%>';
+var advancedaccountsecurity = '<%ejGetOther(sysInfo, advanced_account_security)%>';
+var currentGroup = '<%ejGet(currentGroup)%>'; //ZyXEL, ShuYing, user group only allow to create/edit user in its own group.
+   
+<!-- hide
+function isPassFormat(value, msg){
+   var alphaExp = /^(?=^.{6,}$)((?=.*[0-9])(?=.*[a-zA-Z]))^[0-9a-zA-Z_#@!=+-.]+$/;
+   if (value.match(alphaExp)) {
+       return true;
+   } else {
+       //AlertOpen(msg,2);
+       hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+       return false;
+   }
+}
+
+function isUsernameFormat(value, msg){
+   var alphaExp = /^[0-9a-zA-Z]+$/;
+   if (value.match(alphaExp)) {
+       return true;
+   } else {
+       //AlertOpen(msg,2);
+       hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+       return false;
+   }
+}
+
+function isNumberKey(evt)
+{
+	var charCode = (evt.which) ? evt.which : event.keyCode
+    if (charCode > 31 && (charCode < 48 || charCode > 57))
+    	return false;
+    return true;
+}
+
+function writeGroupList() {
+	var str = '';
+	var group;
+	var i = 0;
+
+        if(currentGroup == 2){ //ZyXEL, ShuYing, 20130401, user group only allow to create/edit user in its own group.
+            str += "<option value=User selected>User</option>";
+            $('#groupName').append(str); 
+        }else{
+	  if ( groupstr != '' ) {
+		group = groupstr.split('|');
+		for ( i = 0 ; i < group.length ; i ++ ) {
+			if ( group[i] != '' ) {
+				if ( i == 0 ) {
+					str += "<option value=\""+ group[i] +"\" selected>"+ group[i] +"</option>";
+				}
+				else {
+					str += "<option value=\""+ group[i] +"\">"+ group[i] +"</option>";
+				}
+			}
+		}
+		$('#groupName').append(str);
+	  }
+        }
+}
+
+function btnApply() {
+  var i = 0;
+  var info = mainFrame.userlist.split(',');
+
+  // __ZyXEL__, Wood, supervisor already in used.
+  if (document.forms[0].userName.value == 'supervisor')
+  {
+	hciAlert('<%ejGetML(MLG_Maintenance_User_Account_Str21)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+	return;
+  }
+
+  for ( i = 0; i < info.length; i++ ) 
+  {
+  	if(document.forms[0].userName.value == info[i])
+	{
+		//AlertOpen("This User Name is been used.",2);
+		hciAlert('<%ejGetML(MLG_Maintenance_User_Account_Str21)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		return;
+	}
+  }
+
+  if(document.forms[0].userName.value == "root")
+  {
+	//AlertOpen("This User Name is reserved by system.",2);
+	hciAlert('<%ejGetML(MLG_Maintenance_User_Account_Str22)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+	return;
+  }
+	
+  with ( document.forms[0] ) {
+	action.value="add";
+	
+	if ( usernamesecurity == '1' ) {
+		if(isPassFormat(userName.value, "<%ejGetML(MLG_Maintenance_User_Account_Str23)%>") == false)
+			return;
+	}
+	else {
+		if(isUsernameFormat(userName.value, "<%ejGetML(MLG_Maintenance_User_Account_Str24)%>") == false)
+			return;
+	}
+	
+	if(isPassFormat(NewPasswd.value, "<%ejGetML(MLG_Maintenance_User_Account_Str25)%>") == false)
+		return;
+
+ 	if(NewPasswd.value == userName.value)
+	{
+		//AlertOpen("New Password can't be the same with User Name",2);
+		hciAlert("<%ejGetML(MLG_Maintenance_User_Account_Str26)%>", {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		return;
+	}
+
+	// ZyXEL, ShuYing, ignore that the characters in password cannot contain username
+	/*if(NewPasswd.value.indexOf(userName.value) != -1)
+	{
+		//AlertOpen("The characters in Password cannot contain User Name",2);
+		hciAlert("The characters in Password cannot contain User Name.", {height: 180,type: 2, title: 'Error'});
+		return;
+	}*/
+	
+	if(NewPasswd.value != VerifyNewPasswd.value)
+	{
+		//AlertOpen("Verify Password fail",2);
+		hciAlert('<%ejGetML(MLG_Maintenance_User_Account_Str27)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		return;
+	}
+
+	if ( passexpired == '1' ) {
+		if(expPeriod.value > 180)
+		{
+			//AlertOpen("Max expire period time is 180 days",2);
+			hciAlert('<%ejGetML(MLG_Maintenance_User_Account_Str28)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}
+		else if(expPeriod.value < 30)
+		{
+			//AlertOpen("Min expire period time is 30 days",2);
+			hciAlert('<%ejGetML(MLG_Maintenance_User_Account_Str29)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}
+	}
+
+	if(retryTime.value > 5)
+	{
+		//AlertOpen("Max retry times is 5",2);
+		hciAlert('<%ejGetML(MLG_Maintenance_User_Account_Str30)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		return;
+	}
+	else if(retryTime.value < 0)
+	{
+		//AlertOpen("Min retry times is 0",2);
+		hciAlert('<%ejGetML(MLG_Maintenance_User_Account_Str31)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		return;
+	}
+
+	if(idleTime.value > 60)
+	{
+		//AlertOpen("Max idle timeout is 60 minutes",2);
+		hciAlert('<%ejGetML(MLG_Maintenance_User_Account_Str32)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		return;
+	}
+	else if(idleTime.value < 1)
+	{
+		//AlertOpen("Min idle timeout is 1",2);
+		hciAlert('<%ejGetML(MLG_Maintenance_User_Account_Str33)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		return;
+	}
+
+	if(lockTime.value > 90)
+	{
+		//AlertOpen("Max locked time period is 90 minutes",2);
+		hciAlert('<%ejGetML(MLG_Maintenance_User_Account_Str34)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		return;
+	}
+	else if(lockTime.value < 15)
+	{
+		//AlertOpen("Min locked time period is 15 minutes",2);
+		hciAlert('<%ejGetML(MLG_Maintenance_User_Account_Str35)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+		return;
+	}
+	
+	sessionKey.value = mainFrame.gblsessionKey;
+    submit();
+    $('.ui-dialog-titlebar-close').trigger('click');
+    $.openLoadingMask(1);
+    return;
+  }
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnApply(); });
+
+$(document).ready(function() {
+	writeGroupList();
+	if ( advancedaccountsecurity == '0' ) {
+		usernamesecurity = '0';
+		passexpired = '0';
+	}
+
+	if ( passexpired != '1' ) {
+		$("#passexpiredli").hide();
+	}
+
+});
+
+// done hiding -->
+</script>
+
+<form method=POST action="/pages/tabFW/userAccount-cfg.cmd" id="userAdd" target="mainFrame">
+<input type="hidden" name="action" id="action">
+<input type="hidden" name="sessionKey" id="sessionKey">
+<div class="popup_frame" >
+<div class="data_frame"><ul>
+<li class="set1">
+    <div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_User_Account_Str2)%>   :</li>
+			<li class="right_table">
+				<input type="text" name="userName" size="15" maxlength="15" />
+			</li>
+		</ul>
+	</div>
+</li>
+<li class="set1">
+    <div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_User_Account_Str16)%>   :</li>
+			<li class="right_table">
+				<input name="NewPasswd" type="password" id="NewPasswd"  class="text" size="15" maxlength="20" autocomplete="new-password"/>
+			</li>
+		</ul>
+	</div>
+</li>
+<li class="set1">
+    <div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_User_Account_Str17)%>   :</li>
+			<li class="right_table">
+				<input name="VerifyNewPasswd" type="password" id="VerifyNewPasswd"  class="text" size="15" maxlength="20" autocomplete="new-password"/>
+			</li>
+		</ul>
+	</div>
+</li>
+<li class="set1" id="passexpiredli">
+	<div class="w_text">
+		<ul>
+			<li class="left_table">Expire Period  :</li>
+			<li class="right_table">
+				<input type="text" name="expPeriod" size="3" maxlength="3" onkeypress="return isNumberKey(event)" value="30"/>&nbsp;(30~180 Days)
+			</li>
+		</ul>
+	</div>
+</li>
+<li class="set1">
+    <div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_User_Account_Str6)%>  :</li>
+			<li class="right_table">
+				<input type="text" name="retryTime" size="1" maxlength="1" onkeypress="return isNumberKey(event)" value="0"/>&nbsp;<%ejGetML(MLG_Maintenance_User_Account_Str10)%>
+			</li>
+		</ul>
+	</div>
+</li>
+<li class="set1">
+    <div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_User_Account_Str7)%>  :</li>
+			<li class="right_table">
+				<input type="text" name="idleTime" size="2" maxlength="2" value="10" onkeypress="return isNumberKey(event)"/>&nbsp;<%ejGetML(MLG_Maintenance_User_Account_Str11)%>
+			</li>
+		</ul>
+	</div>
+</li>
+<li class="set1">
+	<div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_User_Account_Str8)%>  :</li>
+			<li class="right_table">
+				<input type="text" name="lockTime" size="2" maxlength="2" onkeypress="return isNumberKey(event)" value="15"/>&nbsp;<%ejGetML(MLG_Maintenance_User_Account_Str12)%>
+			</li>
+		</ul>
+	</div>
+</li>
+<li class="set1">
+	<div class="w_text">
+		<ul>
+			<li class="left_table"><%ejGetML(MLG_Maintenance_User_Account_Str9)%>   :
+			</li>
+			<li class="right_table">
+				<select name="groupName" id="groupName">
+				</select>
+			</li>
+		</ul>
+	</div>
+</li>
+
+</ul>
+</div>
+</div>
+</form>

@@ -1,0 +1,9 @@
+FILES = bcmutils.c
+FILES += bcmwpa.c
+FILES += linux_timer.c
+FILES += nvparse.c
+FILES += shutils.c
+FILES += UdpLib.c
+FILES += wl.c
+FILES += wl_linux.c
+FILES += wlif_utils.c

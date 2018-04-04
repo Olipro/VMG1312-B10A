@@ -1,0 +1,8 @@
+# EPI_VERSION_STR is automatically generated from three files:
+# (1) version.make,
+# (2) include/epivers.h, and
+# (3) dslcpe_wlan_minor_version (this file).
+# For debugging purpose, ensure the line below match the automatic one.
+# EPI_VERSION_STR=6.30.163.23
+
+DSLCPE_WLAN_MINOR_VERSION=1

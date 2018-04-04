@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa
+END
+fips186a.txt
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa/fips186a.txt
+END
+dsa_err.c
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa/dsa_err.c
+END
+dsa_key.c
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa/dsa_key.c
+END
+dsa_gen.c
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa/dsa_gen.c
+END
+dsagen.c
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa/dsagen.c
+END
+dsa_vrf.c
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa/dsa_vrf.c
+END
+dsa_ossl.c
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa/dsa_ossl.c
+END
+dsa_sign.c
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa/dsa_sign.c
+END
+dsatest.c
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa/dsatest.c
+END
+dsa_asn1.c
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa/dsa_asn1.c
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa/Makefile
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa/README
+END
+dsa.h
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa/dsa.h
+END
+dsa_lib.c
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/crypto/dsa/dsa_lib.c
+END

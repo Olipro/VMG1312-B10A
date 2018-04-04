@@ -1,0 +1,41 @@
+<html>
+<head>
+<meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+<link rel=stylesheet href='stylemain.css' type='text/css'>
+<link rel=stylesheet href='colors.css' type='text/css'>
+<script language="javascript">
+<!-- hide
+
+function btnNext() {
+   var loc = 'main.html';
+
+   var code = 'parent.location="' + loc + '"';
+   eval(code);
+}
+
+// done hiding -->
+</script>
+</head>
+
+<body>
+<blockquote>
+<b>Quick Setup Successful</b><br><br>
+<script language="javascript">
+<!-- hide
+var outOfPvc = '<%ejGetOther(memInfo, isOutOfVcc)%>';
+var msg = '';
+   msg = 'The Quick Setup has configured your WAN and wireless LAN connections ';
+   document.writeln(msg);
+   msg = '<br><br>\n';
+   msg += 'Click on "Next" button to see device info.\n';
+   msg += '<br><br><br>';
+   document.writeln(msg);
+   msg = '<center>\n';
+   msg += '<input type="button" onClick="btnNext()" value="Next">\n';
+   msg += '</center>';
+   document.writeln(msg);
+// done hiding -->
+</script>
+</blockquote>
+</body>
+</html>

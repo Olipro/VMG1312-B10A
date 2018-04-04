@@ -1,0 +1,133 @@
+<script language="javascript">
+<!-- hide
+var db = $('.popup_frame').parents('.dialogContener'); 
+var OkBtn = db.getBtnByIndex('2');
+var errMsg = "<%ejGetOther(errMsg)%>";
+OkBtn.click(function(){ btnSave(); });
+var usedWanName;
+
+function btnSave()
+{
+   with ( document.forms[0] ) {
+      if (domainName.value == '') {
+		 hciAlert('<%ejGetML(MLG_Network_DnsRoute_AlertMsg_DomainName)%>', {height: 180, type: 2, title: ''});
+         return false;
+      }
+		  
+	  if (isValidSubnetMask(subnetMask.value) == false ) {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_Network_DnsRoute_AlertMsg_Subnetmask)%>",subnetMask.value), {height: 180, type: 2, title: ''});
+			return false;
+	  }
+	  
+   	  sessionKey.value = mainFrame.gblsessionKey;
+   }
+   document.forms[0].submit();
+   $('.ui-dialog-titlebar-close').trigger('click');
+   $.openLoadingMask(1);
+
+}
+
+function frmLoad()
+{//var str = '|NA/1/140.138.148.144/255.255.255.255/124.219.31.190/|'
+
+}
+$(document).ready(function() {
+	var i=0;
+	var interfaceInfo = '<%ejGetOther(wanInterfaceInfo, route)%>';
+	var interfaces = interfaceInfo.split('|');
+	var found = false;
+	var oriName = '<%ejGet(lst)%>'
+	var str = '<%ejGetOther(getDnsRtEntry)%>'
+	var str2 = str.split('|');
+
+	$('#usedWanIf').empty();
+
+	for (i=1; i<str2[i].length; i++)
+	{
+		var entry = str2[i].split('/');	
+		if (entry[0] == undefined)
+			break;
+		if (entry[0] == oriName)
+		{
+			$("#domainName").attr("value",entry[0]);	
+			$("#oldDomainName").attr("value",entry[0]);			
+			if (entry[2] != '&nbsp;'){
+				$("#subnetMask").attr("value",entry[2]);
+			}
+			
+			usedWanName = entry[1];
+			break;
+		}
+	}
+
+	if(interfaces.length>0){  
+		for ( i = 0; i < interfaces.length; i++ ) {
+			var names = interfaces[i].split('/');
+			if(names[0] != "(null)"){
+	             	if(usedWanName == names[0]){
+					$('#usedWanIf').append('<option value="'+names[0]+'" selected>'+interfaces[i]+'</option>');
+				}else{
+					$('#usedWanIf').append('<option value="'+names[0]+'">'+interfaces[i]+'</option>'); 
+				}			
+			}
+		}
+	} 
+	
+	if (errMsg != '') {
+        hciAlert(errMsg, {height: 180,type: 2, title: ''});
+    }
+	
+	frmLoad();
+});
+// done hiding -->
+</script>
+
+<form action="/pages/tabFW/routing-dnsRoute.cmd" method="post" target="mainFrame">
+<input name="action" type="HIDDEN" id="action" value="edit"; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""/>
+<input name="oldDomainName" type="HIDDEN" id="oldDomainName" value=""/>
+<div class="popup_frame" >
+<!--Set area start-->
+<div class="data_frame"><ul>
+<!--level 1 title start-->
+	<li class="title"><%ejGetML(MLG_Common_General)%></li><!--level 1 title end-->
+<!--level 1 start-->
+	<li class="set1"> 
+		<div class="w_text">
+		  <ul>
+			<li class="left_table"><%ejGetML(MLG_Network_DnsRoute_DomainName)%> :</li>
+			<li class="right_table">
+			  <input name="domainName" id="domainName" size="32" maxlength="127" disabled type="text"/>
+			</li>
+		  </ul>
+		</div>
+		<div class="w_text" id="SubnetMask">
+		 <ul>
+		   <li class="left_table"> <%ejGetML(MLG_Network_DnsRoute_Subnetmask)%> :</li>
+		   <li class="right_table"><input name="subnetMask" id="subnetMask" size="16" maxlength="15" value="255.255.255.255"  type="text" /></li>
+		 </ul>
+		</div>
+		<div class="w_text">
+		 <ul>
+		   <li class="left_table"><%ejGetML(MLG_Network_DnsRoute_Interface)%> :</li>
+		   <li class="right_table">
+			<select name="usedWanIf" id="usedWanIf" size="1">
+			</select>		   
+		   </li>
+		 </ul>
+		</div>
+
+<!--level 1 end-->
+
+<!--Note define start-->
+<!--
+<li class="noteframe"> <div class="w_text"><span class="i_note">Note:</span></div><div class="note_text">&nbsp;&nbsp;</div></li>
+-->
+<!--Note define end-->
+	</li>
+<li class="space"> </li>
+</ul></div>
+</div>
+<!--Set area end-->
+</form>
+

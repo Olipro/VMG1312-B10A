@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+    <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+
+var sessionKey='<%ejGetOther(sessionKey)%>';
+
+function btnApply() {
+    var loc = 'cbtremoteAccess.cgi?';
+
+	
+	if( document.forms[0].RemoteAccessEnabled.checked==true ) 
+	{
+       loc += 'httpRemoteAccess=1';
+    }
+	else
+	{
+		loc += 'httpRemoteAccess=0';
+	}
+	if( document.forms[0].httpTimeoutDisableCb.checked==true ) 
+	{
+       loc += '&httpTimeoutDisable=1';
+    }
+	else
+	{
+		loc += '&httpTimeoutDisable=0';
+	}
+	
+  loc += '&httpTimeout=' + document.forms[0].httpTimeout.value;
+  loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+  var code = 'location="' + loc + '"';
+  eval(code);
+}
+
+function RemoteAccessEnblChange() {
+  if( document.forms[0].RemoteAccessEnabled.checked )
+    hideRAConfig(0);
+  else
+    hideRAConfig(1);
+}
+
+function hideRAConfig(hide) {
+  var status = 'visible';
+                                                                                
+  if(hide)
+    status = 'hidden';
+                                                                                
+  if( document.getElementById )
+  {
+    document.getElementById('RACfg').style.visibility = status;
+  }
+  else
+  {
+    if(!document.layers)
+    {
+      document.all.RACfg.style.visibility = status;
+    }
+  }
+}
+
+function frmLoad() 
+{
+  var i = 0;
+  //var enable = '<%ejGetOther(sysInfo, buildCBT_Remote_Access)%>';
+ var enable = "<%ejGet(httpRemoteAccess)%>"; 
+ var disablehttpTimeoutDisable="<%ejGet(httpTimeoutDisable)%>";
+
+  
+    	if (enable == "1" )
+    	{
+    	
+			document.forms[0].RemoteAccessEnabled.checked= true;
+    	}
+		else
+		{   
+			document.forms[0].RemoteAccessEnabled.checked=false;
+		}
+		if (disablehttpTimeoutDisable == "1" )
+    	{
+			document.forms[0].httpTimeoutDisableCb.checked=true;
+		}
+		else
+		{
+			document.forms[0].httpTimeoutDisableCb.checked=false;
+		}
+		
+		document.forms[0].httpTimeout.value = "<%ejGet(httpTimeout)%>";
+		
+  		RemoteAccessEnblChange();
+}
+
+    </script>
+  </head>
+  
+  <body onLoad='frmLoad()'>
+    <blockquote>
+      <form>
+        <b>RemoteAccess</b><br><br>
+        This page allows you to enable / disable remote access support.
+        <br> <br>
+        <input type='checkbox' name='RemoteAccessEnabled' onClick='RemoteAccessEnblChange()'> Enable Remote Access
+       <div id='RACfg'>      
+               <table>
+               <tr>
+                   <td><input type="checkbox" name="httpTimeoutDisableCb"/>
+                        Disable Timeout</td>
+			  </tr>
+               <tr>
+                  <td>Timeout:</td>
+                  <td><input type='text' name='httpTimeout'>Minutes</td>
+               </tr>
+               <tr>
+                  <td>URL:</td>
+                  <td><%ejGetOther(httpWanUrl)%></td>        	
+               </tr>
+               </table>
+            </div>
+                 
+        <br><br>
+        <center>
+        <input type="button" value="Apply/Save" onClick='btnApply()'>
+        </center>
+      </form>
+    </blockquote>
+  </body>
+</html>

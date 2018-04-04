@@ -1,0 +1,95 @@
+<script language="javascript">
+mainFrame.glbSessionKey = "<%ejGetOther(sessionKey)%>";
+
+function btnSave() {
+	with ( document.forms[0] ) {
+		PUKCode.value = PUK_Code.value;
+		PINCode.value = PIN_Code.value;
+		sessionKey.value = mainFrame.glbSessionKey;
+	      	submit();
+         	$('.ui-dialog-titlebar-close').trigger('click');
+        	$.openLoadingMask(1);
+			return;	
+	}
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnSave(); });
+
+
+</script>
+   <form action="/pages/connectionStatus/connectionStatus-status.cmd" method="post" target="mainFrame">
+   <input type="hidden" name="sessionKey" id="sessionKey" value="">
+   <input type="hidden" name="action" id="action" value="puk">
+    <input type="hidden" name="PINCode" id="PINCode" value="">
+    <input type="hidden" name="PUKCode" id="PUKCode" value="">
+     <div class="popup_frame" >
+         <div class="data_frame"><ul>
+<!--level 1 start-->
+            <li class="title"><%ejGetML(MLG_ConnStatus_Status_IS_PIN_str1)%></li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li><font color="#FF0000"><%ejGetML(MLG_ConnStatus_Status_IS_PUK_str1)%></font></li>
+                  </ul>
+               </div>
+            </li>            
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li><%ejGetML(MLG_ConnStatus_Status_IS_PUK_str2)%></li>
+                  </ul>
+               </div>
+            </li>            
+             <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_ConnStatus_Status_IS_PUK_str3)%>:</li>
+                     <li class="right_table">
+	                  <input type="text" name="PUK_Code" size="15" maxlength="15" />
+                     </li>
+                  </ul>
+               </div>
+            </li>
+           <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_ConnStatus_Status_IS_PUK_str4)%>:</li>
+                     <li class="right_table">
+	                  <input type="text" name="PIN_Code" size="15" maxlength="15" />
+                     </li>
+                  </ul>
+               </div>
+            </li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_ConnStatus_Status_IS_PUK_str5)%> :</li>
+                     <li class="right_table"><%ejGet(wwanPukErrorTimes)%>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+             <li class="set1">
+               <div class="w_text">
+                  <ul>
+                       <li class="left_table"></li>
+                </ul>
+               </div>
+            </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><font color="#FF0000"><%ejGetML(MLG_Common_Note)%>:</font></span></div>
+<div class="note_text"><font color="#FF0000">&nbsp;&nbsp;<%ejGetML(MLG_ConnStatus_Status_IS_PUK_str6)%></font></div>
+<div class="note_text"><font color="#FF0000">&nbsp;&nbsp;<%ejGetML(MLG_ConnStatus_Status_IS_PUK_str7)%></font></div>
+</li>
+<!--Note define end-->
+        </ul></div>
+      </div>
+</form>
+<script language="JavaScript">
+with ( document.forms[0] ) {
+   str1.focus();
+}
+</script> 
+

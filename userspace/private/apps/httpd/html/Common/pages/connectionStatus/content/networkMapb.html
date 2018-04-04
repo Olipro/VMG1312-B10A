@@ -1,0 +1,56 @@
+
+ <script type="text/javascript">    
+        
+  $('.iinternet').toggle(function(e){
+                    connection(false);
+                }, function(){ 
+                    connection(true);
+                });
+                     
+//initial
+ connection(true);
+</script>
+<div id="content">
+                        <ul>
+                            <li class="content_word_e">
+                            </li>
+                            <li style="position:relative; margin-top:50px;">
+                                <div class='disconnect'>
+                                    <div class="dc_line">
+                                    </div>
+                                    <div class="errorstatus">
+                                    </div>
+                                    <div class="t_dconnected" id='tDConnected'>
+                                        <%ejGetML(MLG_ConnStatus_NetworkMap_Str34)%>   </div>
+                                    <div class="dc_word" id='dcWord'>
+                                        <%ejGetML(MLG_ConnStatus_NetworkMap_Str35)%> </div>
+									<div class="c_line" style="left:415px;"> </div>
+									<div class="rightstatus" style="left:509px;">  </div>
+									 <div class="t_connected"  style="left:482px;"><%ejGetML(MLG_ConnStatus_NetworkMap_Str36)%>    </div>
+                                    <div class="c_word" style="left:432px;">  <%ejGetML(MLG_ConnStatus_NetworkMap_Str37)%>  </div>
+                                </div>
+                                <div class='connect'>
+                                   
+                                    <div class="rightstatus" id = 'rightStatus'>  </div>
+                                    <div class="t_connected" id='tConnected'><%ejGetML(MLG_ConnStatus_NetworkMap_Str36)%>    </div>
+                                    <div class="c_word" id='cWord'>  <%ejGetML(MLG_ConnStatus_NetworkMap_Str37)%>  </div>
+									 <div class="c_line" id = 'cline'> </div><div class="c_line" style="left:415px;"> </div>
+									<div class="rightstatus" style="left:509px;">  </div>
+									 <div class="t_connected"  style="left:482px;"><%ejGetML(MLG_ConnStatus_NetworkMap_Str36)%>    </div>
+                                    <div class="c_word" style="left:432px;">  <%ejGetML(MLG_ConnStatus_NetworkMap_Str37)%>  </div>
+                                </div>
+                                <div class="iinternet"><img src="../../images/network/i_router.gif" />
+                                    <!-- <span class="modelName_map" sysVar='model-name' style="margin-top:-20px;"></span> </div> -->
+                                    <span class="modelName_map" style="margin-top:-20px;"><%ejGet(modelName)%></span> </div>
+                                <div class="g"><img src="../../images/network/i_internet.gif" /><span  class="internetword"><%ejGetML(MLG_ConnStatus_NetworkMap_Str2)%>
+</span></div>
+								 <div class="g" style="left:610px;"><img src="../../images/network/i_pc.gif" /><span class="internetword"><%ejGetML(MLG_ConnStatus_NetworkMap_Str38)%></span> </div>
+                            </li>
+                            <li style="height:22px;">
+                            </li>
+                            <li>
+                            </li>
+                        </ul>
+                    </div>
+
+<!--List view end-->

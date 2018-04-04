@@ -1,0 +1,11 @@
+# List of source files containing translatable strings.
+
+src/wput.c
+src/netrc.c
+src/ftp.c
+src/socketlib.c
+src/ftplib.c
+src/utils.c
+src/queue.c
+src/progress.c
+src/ftp-ls.c

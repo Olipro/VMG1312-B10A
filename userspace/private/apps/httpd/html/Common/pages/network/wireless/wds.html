@@ -1,0 +1,344 @@
+<script language="javascript">
+<!-- hide
+//var enbls = new Array('<%ejGetWl(wlEnbl_wl0v0)%>','<%ejGetWl(wlEnbl_wl0v1)%>','<%ejGetWl(wlEnbl_wl0v2)%>','<%ejGetWl(wlEnbl_wl0v3)%>');
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+var apMode = '<%ejGetWl(wlMode)%>';
+var lazywds = '<%ejGetWl(wlLazyWds)%>';
+var enbl = '<%ejGetWl(wlEnbl_wl0v0)%>';
+var forNorwayGUI  = '<%ejGetOther(sysInfo, forNorwayGUI)%>';
+var forMLD = '<%ejGetOther(sysInfo, forMLD)%>';
+var band = '<%ejGetWl(wlBand)%>';
+//ZyXEL, Ryan
+var title_str1 = "2.4GHz  "+ $($(".title")[0]).html(); //For 2.4G title
+var title_str2 = "5GHz  "+ $($(".title")[0]).html(); //For 5G title
+
+function btnApply() {
+   with ( document.forms[0] ) {	
+      var msg = "";
+ 
+      sessionKey.value = glbSessionKey;
+	  wl_Mode.disabled = true;
+	  wlMode.value = wl_Mode.options[wl_Mode.selectedIndex].value;
+
+	  wl_Lazywds.disabled = true;
+	  wl_Lazywds[0].disabled = true;
+	  wl_Lazywds[1].disabled = true;
+	  if(wl_Lazywds[0].checked == true){
+	     wlLazyWds.value = "0";
+	  } else {
+	     wlLazyWds.value = "1";
+	  }
+   }
+
+   return true;
+}
+
+function doSubmit() {
+   if (btnApply()) {
+      document.forms[0].submit();
+      $.openLoadingMask(1);
+   }
+}
+
+function wlLazyChange() {
+   with (document.forms[0]) {
+   	  if (wl_Lazywds[1].checked == true) {
+         showhide("MACTABLE", 0);
+      } else {
+         showhide("MACTABLE", 1);
+      }
+   }
+}
+
+function frmLoad() {
+//Show error message
+//ZyXEL, for cross-site scripting check, Albert
+    var errMsg = "<%ejGetOther(errMsg)%>";
+    if (errMsg != '') {
+      hciAlert(errMsg, {height: 180,type: 2, title: ''});
+    }
+	var t = $(".title");
+
+	if (band==2){
+		$(t[0]).html(title_str1);  //2.4G
+	}else{
+		$(t[0]).html(title_str2); //5G 
+	}
+
+   with ( document.forms[0] ) {
+      if (apMode == 'ap') {
+	     wl_Mode.selectedIndex = 0;
+	  } else {
+	  	 wl_Mode.selectedIndex = 1;
+	  }
+	  if (lazywds == '0') {
+	  	 wl_Lazywds[0].checked = true;
+		 showhide("MACTABLE", 1);
+	  } else {
+		 wl_Lazywds[1].checked = true;
+		 showhide("MACTABLE", 0);
+	  }
+	  
+	  	if(forNorwayGUI == '1')
+		{
+		  $('#explain_text').html('<%ejGetML(MLG_WLAN_WDS_Str19)%>'); 
+		}
+		else if(forMLD == '1')
+		{
+		  $('#explain_text').html('<%ejGetML(MLG_WLAN_WDS_Str20)%>'); 
+		}
+		else
+		{
+		  $('#explain_text').html('<%ejGetML(MLG_WLAN_WDS_Str1)%>'); 
+		}
+
+     wlWds0.disabled = true;
+     wlWds1.disabled = true;
+     wlWds2.disabled = true;
+     wlWds3.disabled = true;
+   }
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+function editClick(Idx) {
+   var msg = "";
+
+   //var loc = '/pages/networkSettings/wireless/wireless-wds_edit_load.wl?wlSsidIdx=' + Idx;
+   var loc = '/pages/tabFW/wireless-wds_edit_load.wl?wdsIdx=' + Idx;
+   var db1 = window.parent.$.zyUiDialog({
+             width: 500,
+             height: 240,
+             title: '<%ejGetML(MLG_WLAN_WDS_Str13)%>',
+
+             buttons: {
+                    '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+                    '<%ejGetML(MLG_Common_Apply)%>':function(){}
+             }
+   });
+   db1.load(loc);
+   db1.dialog('open');
+}
+
+function scanClick(Idx) {
+   if(enbl == '0'){
+	  hciAlert("<%ejGetML(MLG_WLAN_WDS_AlertMsg_Str11)%> <a href=\"#\" onClick= \"$('.ui-dialog-titlebar-close').trigger('click'); window.parent.document.activePage('network-wireless', 0);\"><%ejGetML(MLG_Common_General)%></a> <%ejGetML(MLG_WLAN_WPS_AlertMsg_page)%>.", {height: 180, type: 2, title: ''});
+      return;
+   }
+
+   
+   var msg = "";
+
+   //var loc = '/pages/networkSettings/wireless/wireless-wds_edit_load.wl?wlSsidIdx=' + Idx;
+   var loc = '/pages/tabFW/wireless-wds_scan_load.wl?wdsIdx=' + Idx;
+   var db1 = window.parent.$.zyUiDialog({
+             width: '75%',
+             height: 400,
+             title: '<%ejGetML(MLG_WLAN_WDS_Str16)%>',
+
+             buttons: {
+                    '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+                    '<%ejGetML(MLG_Common_Apply)%>':function(){}
+             }
+   });
+   db1.load(loc);
+   db1.dialog('open');
+}
+
+
+function deleteClick(Idx,mac) {
+
+   if(mac == ""){
+	  hciAlert("<%ejGetML(MLG_WLAN_WDS_AlertMsg_Str2)%>", {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+      return;
+   }   
+   
+   var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 200,
+              title: '<%ejGetML(MLG_WLAN_WDS_Str18)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_No)%>': function(){ db1.dialog('close'); },
+                 '<%ejGetML(MLG_Common_Yes)%>': function(){ db1.dialog('close'); deleteClickProcess(Idx,mac); }
+              }
+             });
+   db1.load('/pages/delete.html');
+   db1.dialog('open');
+}
+
+function deleteClickProcess(Idx,mac) {
+
+   with ( document.forms[0] ) {
+      switch(Idx){
+         case 1:
+            wlWds0.disabled = false;
+            wlWds0.value = "";
+            break;
+         case 2:
+            wlWds1.disabled = false;
+            wlWds1.value = "";
+            break;
+         case 3:
+            wlWds2.disabled = false;
+            wlWds2.value = "";
+            break;
+         case 4:
+            wlWds3.disabled = false;
+            wlWds3.value = "";
+            break;
+      }
+   }
+   $.openLoadingMask(1);
+   doSubmit();
+}
+
+// done hiding -->
+</script>
+   <form action="/pages/tabFW/wireless-wds.wl" method="post" onSubmit="return btnApply();">
+   	  <input size="15" type="hidden" name="sessionKey" />
+      <input size="15" type="hidden" name="wlMode" />
+      <input size="15" type="hidden" name="wlLazyWds" />
+      <input size="15" type="hidden" name="wlWds0" />
+      <input size="15" type="hidden" name="wlWds1" />
+      <input size="15" type="hidden" name="wlWds2" />
+      <input size="15" type="hidden" name="wlWds3" />
+      <div class="content_frame">
+<!--Unit Explain start-->
+         <div class="explain">
+            <div>
+               <b class="r1"></b>
+               <b class="r2"></b>
+               <b class="r3"></b>
+               <b class="r4"></b>
+               <b class="r4"></b>
+            </div>
+            <div class="explain_text"><span id="explain_text"></span></div>
+            <div>
+               <b class="r4"></b>
+               <b class="r4"></b>
+               <b class="r3"></b>
+               <b class="r2"></b>
+               <b class="r1"></b>
+            </div>
+         </div>
+<!--Unit Explain End-->
+         <div class="data_frame"><ul>
+<!--level 1 title start-->
+            <li class="title"><%ejGetML(MLG_WLAN_WDS_Str4)%></li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table" ><%ejGetML(MLG_WLAN_WDS_Str5)%>:</li>
+                     <li class="right_table">
+                        <select name="wl_Mode" >
+                           <option value="ap"><%ejGetML(MLG_WLAN_WDS_Str6)%></option>
+                           <option value="wds"><%ejGetML(MLG_WLAN_WDS_Str7)%></option>
+                        </select>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table" ><%ejGetML(MLG_WLAN_WDS_Str9)%>:</li>
+                     <li class="right_table">
+                        <input name="wl_Lazywds" type="radio" value="0" onClick="wlLazyChange()" /> <%ejGetML(MLG_Common_Enabled)%>&nbsp;
+                        <input name="wl_Lazywds" type="radio" value="1" onClick="wlLazyChange()" /> <%ejGetML(MLG_Common_Disabled)%>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+<!--level 1 title end-->
+<!--level 1 title start-->
+            <li class="title"><%ejGetML(MLG_WLAN_WDS_Str8)%></li>
+<!--level 1 title end-->
+            <li class="set1">
+               <div id="MACTABLE" class="w_table" >
+                  <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="macTable">
+
+                                       <tr align="center" >
+                                          <td width="5%" class="top_font">#</td>
+                                          <td class="top_font"><%ejGetML(MLG_WLAN_MACAuthentication_Str4)%></td>
+                                          <td width="60"  class="top_font"><%ejGetML(MLG_Network_StaticRoute_Str9)%></td>
+                                          <td width="60"  class="top_font"><%ejGetML(MLG_WLAN_WDS_Str12)%></td>
+                                       </tr>
+
+<script language="javascript">
+<!-- hide
+   var str = '';
+   
+   str += "<tr align=\"center\" >";
+   str += "<td class=\"table_font\">1</td>";
+   str += "<td class=\"table_font\"><%ejGetWl(wlWds0)%></td>";
+   str += "<td class=\"table_font\">";
+   str += "<div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editClick('1')\" class=\"edit\" title=\"<%ejGetML(MLG_Common_Edit)%>\" id='editBtn'></li>";
+   str += "<li><a href=\"#\" onClick=\"deleteClick(1,'<%ejGetWl(wlWds0)%>')\" class=\"delete\" title=\"<%ejGetML(MLG_Common_Delete)%>\" id='deleteBtn'></a></li></ul></div></div>";
+   str += "</td>";
+   str += "<td class=\"table_font\">";
+   str += "<div class=\"i_modify\"><ul><li><a href=\"#\" name=\"scanBtnA\" onClick=\"scanClick('1')\" class=\"scan\" title=\"<%ejGetML(MLG_WLAN_WDS_Str12)%>\" id='scanBtn'></a></ul></div></div>";
+   str += "</td>";
+   str += "</tr>";
+
+   str += "<tr align=\"center\" >";
+   str += "<td class=\"table_font\">2</td>";
+   str += "<td class=\"table_font\"><%ejGetWl(wlWds1)%></td>";
+   str += "<td class=\"table_font\">";
+   str += "<div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editClick('2')\" class=\"edit\" title=\"<%ejGetML(MLG_Common_Edit)%>\" id='editBtn'></li>";
+   str += "<li><a href=\"#\" onClick=\"deleteClick(2,'<%ejGetWl(wlWds1)%>')\" class=\"delete\" title=\"<%ejGetML(MLG_Common_Delete)%>\" id='deleteBtn'></a></li></ul></div></div>";
+   str += "</td>";
+   str += "<td class=\"table_font\">";
+   str += "<div class=\"i_modify\"><ul><li><a href=\"#\" name=\"scanBtnA\" onClick=\"scanClick('2')\" class=\"scan\" title=\"<%ejGetML(MLG_WLAN_WDS_Str12)%>\" id='scanBtn'></a></ul></div></div>";
+   str += "</td>";
+   str += "</tr>";
+
+   str += "<tr align=\"center\" >";
+   str += "<td class=\"table_font\">3</td>";
+   str += "<td class=\"table_font\"><%ejGetWl(wlWds2)%></td>";
+   str += "<td class=\"table_font\">";
+   str += "<div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editClick('3')\" class=\"edit\" title=\"<%ejGetML(MLG_Common_Edit)%>\" id='editBtn'></li>";
+   str += "<li><a href=\"#\" onClick=\"deleteClick(3,'<%ejGetWl(wlWds2)%>')\" class=\"delete\" title=\"<%ejGetML(MLG_Common_Delete)%>\" id='deleteBtn'></a></li></ul></div></div>";
+   str += "</td>";
+   str += "<td class=\"table_font\">";
+   str += "<div class=\"i_modify\"><ul><li><a href=\"#\" name=\"scanBtnA\" onClick=\"scanClick('3')\" class=\"scan\" title=\"<%ejGetML(MLG_WLAN_WDS_Str12)%>\" id='scanBtn'></a></ul></div></div>";
+   str += "</td>";
+   str += "</tr>";
+   
+   str += "<tr align=\"center\" >";
+   str += "<td class=\"table_font\">4</td>";
+   str += "<td class=\"table_font\"><%ejGetWl(wlWds3)%></td>";
+   str += "<td class=\"table_font\">";
+   str += "<div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editClick('4')\" class=\"edit\" title=\"<%ejGetML(MLG_Common_Edit)%>\" id='editBtn'></li>";
+   str += "<li><a href=\"#\" onClick=\"deleteClick(4,'<%ejGetWl(wlWds3)%>')\" class=\"delete\" title=\"<%ejGetML(MLG_Common_Delete)%>\" id='deleteBtn'></a></li></ul></div></div>";
+   str += "</td>";
+   str += "<td class=\"table_font\">";
+   str += "<div class=\"i_modify\"><ul><li><a href=\"#\" name=\"scanBtnA\" onClick=\"scanClick('4')\" class=\"scan\" title=\"<%ejGetML(MLG_WLAN_WDS_Str12)%>\" id='scanBtn'></a></ul></div></div>";
+   str += "</td>";
+   str += "</tr>";
+
+$('#macTable').append(str);
+// done hiding -->
+</script>
+                  </table>
+               </div>
+            </li>
+            <li class="space"></li>
+<!--Note define start--> 
+            <li class="noteframe"> 
+               <div class="w_text"> 
+                  <span class="i_note"><%ejGetML(MLG_Common_Notes)%>:</span> 
+               </div> 
+               <div class="note_text"><%ejGetML(MLG_WLAN_WDS_Str11)%>
+               </div> 
+    
+        </li> 
+<!--Note define end--> 
+            <li class="space"></li>                  
+            <li class="buttonframe">
+               <div class="button_position">
+                  <input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="doSubmit();" />
+                     &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                  <input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();' />
+               </div>
+            </li>
+         </ul></div>
+      </div>
+   </form>

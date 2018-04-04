@@ -1,0 +1,261 @@
+<script language="javascript">
+<!-- hide
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+var customer = '<%ejGetOther(customer)%>'; //ZyXEL, cathy add for Etisalat, hide DSL 20131008
+/*
+//if (customer == "Fullrate")
+if ((customer == "Fullrate") || (customer == "Euronet"))
+{
+	var maxNumOfWan = 9;
+}
+else{
+	var maxNumOfWan = "<%ejGetOther(sysInfo, maxNumOfWan)%>";
+}
+*/
+var maxNumOfWan = 9;
+var numOfWan = "<%ejGetOther(sysInfo, numOfWan)%>";
+//__ZyXEL__, Tresia: for Iskon customization. Iskon's 3G will occupy 2 numOfWan, need to reduce one.
+if (customer != "Fullrate")
+{
+    numOfWan = (parseInt(numOfWan) -1);
+}
+
+//IPv6 start
+var buildMstcIPv6 = '<%ejGetOther(sysInfo, buildMstcIPv6)%>';
+//IPv6 end
+
+function addClick() {
+   var loc = 'pages/network/broadband/broadband_add.html';
+
+   
+   if ((parseInt(numOfWan) >= parseInt(maxNumOfWan)) && (parseInt(maxNumOfWan) != 0))
+   {
+        var tmpStr = '<%ejGetML(MLG_WAN_Broadband_AlertMsg_Str1)%>';
+        hciAlert(MLG_Makestring(tmpStr, maxNumOfWan), 1);
+        return;
+   }
+
+   var internet_add_dialog = window.parent.$.zyUiDialog({
+                 width: '75%',
+                 height: 500,
+                 title: '<%ejGetML(MLG_WAN_Broadband_Str92)%>',
+
+                 buttons: {
+                    '<%ejGetML(MLG_Common_Cancel)%>': function(){ internet_add_dialog.dialog('close') },
+                    '<%ejGetML(MLG_Common_Apply)%>':function(){}
+                 }
+   });
+   internet_add_dialog.load(loc);
+   internet_add_dialog.dialog('open');
+}
+
+function editClick(ifName, name) {
+   var loc = '/pages/tabFW/broadband-internetEdit.cmd?serviceId=1&enblZyGUI=1&wanIfName=' + ifName;
+   loc += '&srvName=' + name;
+   loc += '&sessionKey=' + gblsessionKey;
+
+   var internet_edit_dialog = window.parent.$.zyUiDialog({
+              width: '75%',
+              height: 500,
+              title: '<%ejGetML(MLG_WAN_Broadband_Str90)%>',
+
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ internet_edit_dialog.dialog('close') },
+                 '<%ejGetML(MLG_Common_Apply)%>':function(){}
+              }
+   });
+   internet_edit_dialog.load(loc);
+   internet_edit_dialog.dialog('open');
+}
+
+function rmlClick(ifName, name)
+{   
+   var loc = '/pages/tabFW/broadband-internetRemove.cmd?action=remove&enblZyGUI=1&rmLst=' + ifName;
+   loc += '&srvName=' + name;
+   loc += '&sessionKey=' + gblsessionKey;
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function removeClick(ifName, name) {
+   var internet_remove_dialog = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 190,
+              title: '<%ejGetML(MLG_WAN_Broadband_Str93)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_No)%>': function(){ internet_remove_dialog.dialog('close'); },
+                 '<%ejGetML(MLG_Common_Yes)%>': function(){ internet_remove_dialog.dialog('close'); $.openLoadingMask(1); rmlClick(ifName, name); }
+              }
+   });
+   internet_remove_dialog.load('/pages/delete.html');
+   internet_remove_dialog.dialog('open');
+}
+
+function frmLoad() {
+   var errMsg = "<%ejGetOther(errMsg)%>";
+   if (errMsg != '')
+   {
+      //AlertOpen(errMsg, 2);
+	  hciAlert(errMsg, {height: 180,type: 2, title: ''});
+   }
+}
+
+$(document).ready(function() {
+   frmLoad(); 
+});
+
+// done hiding -->
+</script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_WAN_Broadband_Str1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1"><div class="w_table"> <input type="button" value="<%ejGetML(MLG_WAN_Broadband_Str81)%>" id='addnewshareBtn' onclick="addClick()" ></div></li>
+<li class="set1">
+<div class="w_table">
+<table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame" id="boradbandTable">
+                <tr align="center" valign="top">
+                  <td width="5%" class="top_font">#</td>
+                  <td class="top_font"><%ejGetML(MLG_WAN_Broadband_Str7)%></td>
+                  <td class="top_font"><%ejGetML(MLG_WAN_Broadband_Str8)%></td>
+                  <td class="top_font"><%ejGetML(MLG_WAN_Broadband_Str23)%></td>
+                  <td class="top_font textOverflow"><%ejGetML(MLG_WAN_Broadband_Str9)%></td>
+                  <td class="top_font"><%ejGetML(MLG_WAN_Broadband_Str57)%></td>
+                  <td  class="top_font"><%ejGetML(MLG_WAN_Broadband_Str58)%></td>
+                  <td  class="top_font"><%ejGetML(MLG_WAN_Broadband_Str94)%></td>
+                  <td  class="top_font"><%ejGetML(MLG_WAN_Broadband_Str13)%></td>
+                  <td  class="top_font"><%ejGetML(MLG_WAN_Broadband_Str14)%></td>
+<!--IPv6 start-->
+                  <%ejGetOtherBig(wan6Show)%>
+<!-- debug
+                  <td class="top_font">IPv6</td>
+                  <td class="top_font"><%ejGetML(MLG_Network_MLDProxy)%></td>
+-->
+<!--IPv6 end-->
+                  <td width="60"  class="top_font" style="border-right:0px;"><%ejGetML(MLG_Network_StaticRoute_Str9)%></td>
+                </tr>
+<script language="javascript">
+<!-- hide
+{
+   // #|Name|Type|Mode|Encapsulation|802.1p|802.1q|IGMP Proxy|NAT|Default Gateway|IfName@
+   var i = 0;
+   var wanList = '<%ejGetOther(wanShow)%>';
+   var wan = wanList.split('@');
+   var str = '';
+   var connWanTag = 0;
+
+   for ( i = 0; i < wan.length; i++ ) {
+      if (wan[i] != '') {
+		  
+		connWanTag = 0;
+		
+		if(wan[i].search("ConcurrentWAN.") != -1){
+			connWanTag = 1;
+		}
+		
+         var fields = wan[i].split('|');
+
+         if (fields != '') {
+            str += '<tr align="center">'; // #
+            str += '<td class="table_font textOverflow">' + fields[0] + '</td>'; // #
+            str += '<td class="table_font textOverflow">' + fields[1] + '</td>'; // Name
+            str += '<td class="table_font textOverflow">' + fields[2] + '</td>'; // Type
+            str += '<td class="table_font textOverflow">' + fields[3] + '</td>'; // Mode
+            str += '<td class="table_font textOverflow">' + fields[4] + '</td>'; // Encapsulation
+            str += '<td class="table_font textOverflow">' + fields[5] + '</td>'; // 802.1p
+            str += '<td class="table_font textOverflow">' + fields[6] + '</td>'; // 802.1q
+            str += '<td class="table_font textOverflow">' + fields[7] + '</td>'; // IGMP Proxy
+            str += '<td class="table_font textOverflow">' + fields[8] + '</td>'; // NAT
+            str += '<td class="table_font textOverflow">' + fields[9] + '</td>'; // Default Gateway
+//IPv6 start
+            if (buildMstcIPv6 == '1')
+            {
+               str += '<td class="table_font textOverflow">' + fields[11] + '</td>'; // IPv6
+               str += '<td class="table_font textOverflow">' + fields[12] + '</td>'; // MLD Proxy
+            }
+//IPv6 end
+
+            str += '<td class="table_font"><div class="i_modify"><ul>';
+			
+			if(connWanTag == 0){
+            str += '<li><a href="#" class="edit" id="editBtn" title="<%ejGetML(MLG_Common_Edit)%>" onclick="editClick(\'' + fields[10] + '\', \'' + fields[1] + '\')"></a></li>';
+			str += '<li ><a href="#" id="deleteBtn" class="delete" title="<%ejGetML(MLG_Common_Delete)%>" onclick="removeClick(\'' + fields[10] + '\', \'' + fields[1] + '\')" ></a></li>';
+			}
+			
+            str += '</ul></div></td>';
+            str += '</tr>';
+         }
+      }
+   }
+
+   $('#boradbandTable').append(str)
+
+   $('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );    
+   $('.textOverflow').ellipsis(true);
+}
+// done hiding -->
+</script>
+                <!--<tr align="center">
+                  <td class="table_font">1</td>
+                  <td class="table_font">WAN1</td>
+                  <td class="table_font">VDSL</td>
+                  <td class="table_font">Routing</td>
+                  <td class="table_font">ENET ENCAP</td>
+                  <td class="table_font">N/A</td>
+                  <td class="table_font">N/A</td>
+                  <td class="table_font">Enabled</td>
+                  <td class="table_font">Enabled</td>
+                  <td class="table_font">Y</td>
+                  <td class="table_font"><div class="i_modify">
+                    <ul>
+                      <li><a href="#" class="edit" id='editBtn' title="<%ejGetML(MLG_Common_Edit)%>"></a></li>
+                      <li ><a href="#"  id='deleteBtn' class="delete" title="<%ejGetML(MLG_Common_Delete)%>"></a></li>
+                    </ul>
+                  </div></td>
+                </tr>
+                <tr align="center">
+                  <td class="table_font">2</td>
+                  <td class="table_font">WAN2</td>
+                  <td class="table_font">ADSL</td>
+                  <td class="table_font"><%ejGetML(MLG_WAN_Broadband_Str28)%></td>
+                  <td class="table_font"><%ejGetML(MLG_WAN_Broadband_Str28)%></td>
+                  <td class="table_font">N/A</td>
+                  <td class="table_font">N/A</td>
+                  <td class="table_font">Enabled</td>
+                  <td class="table_font">Enabled</td>
+                  <td class="table_font">N</td>
+                  <td class="table_font"><div class="i_modify">
+                    <ul>
+                      <li><a href="#" class="edit" id='editBtn' title="<%ejGetML(MLG_Common_Edit)%>"></a></li>
+                      <li ><a href="#"  id='deleteBtn' class="delete" title="<%ejGetML(MLG_Common_Delete)%>"></a></li>
+                    </ul>
+                  </div></td>
+                </tr>
+                <tr align="center">
+                  <td class="table_font">3</td>
+                  <td class="table_font">WAN3</td>
+                  <td class="table_font textOverflow">EtherWAN</td>
+                  <td class="table_font">Routing</td>
+                  <td class="table_font"><%ejGetML(MLG_WAN_Broadband_Str29)%></td>
+                  <td class="table_font">N/A</td>
+                  <td class="table_font">N/A</td>
+                  <td class="table_font">Enabled</td>
+                  <td class="table_font">Enabled</td>
+                  <td class="table_font">N</td>
+                  <td class="table_font"><div class="i_modify"><ul><li><a href="#" class="edit" id='editBtn' title="<%ejGetML(MLG_Common_Edit)%>"></a></li><li ><a href="#"  id='deleteBtn' class="delete" title="<%ejGetML(MLG_Common_Delete)%>"></a></li></ul></div></td>
+                  </tr> -->
+                
+              </table>
+</div></li>
+<li class="space"> </li>
+<!--level 2 start--><!--Please add this tag--><!--Note define start-->
+
+</ul>
+</div>
+<!--Set area end-->
+</div>
+<br/><br/>

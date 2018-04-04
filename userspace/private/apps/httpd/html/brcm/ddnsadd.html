@@ -1,0 +1,241 @@
+<html>
+  <head>
+    <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+    <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+
+function ddnsChange() {
+  with ( document.forms[0] ) {
+    var ddns = ddnsMode[ddnsMode.selectedIndex].value;
+
+    switch( ddns ) {
+    case "dyndns":
+      hideDDNSInfo( 0 );
+      hideTZOInfo( 1 );
+      hideDynDNSInfo( 0 );
+      break;
+    case "tzo":
+      hideDDNSInfo( 0 );
+      hideTZOInfo( 0 );
+      hideDynDNSInfo( 1 );
+      break;
+    }
+  }
+}
+
+function hideDDNSInfo(hide) {
+  var status = 'visible';
+  if ( hide == 1 )
+    status = 'hidden';
+  if (document.getElementById) // DOM3 = IE5, NS6
+    document.getElementById('ddnsInfo').style.visibility = status;
+  else {
+    if (document.layers) { // NS4
+      with ( document.forms[0] ) {
+        if ( hide == 1 ) {
+          ddnsHostname.value = '';
+        } else {
+          ddnsHostname.value = 'Hostname';
+        }
+      }
+    } else {
+      document.all.ddnsInfo.style.visibility = status;
+    }
+  }
+}
+
+function hideDynDNSInfo(hide) {
+  var status = 'visible';
+  if ( hide == 1 )
+    status = 'hidden';
+  if (document.getElementById) // DOM3 = IE5, NS6
+    document.getElementById('dyndnsInfo').style.visibility = status;
+  else {
+    if (document.layers) { // NS4
+      with ( document.forms[0] ) {
+        if ( hide == 1 ) {
+          dyndnsHostname.value = '';
+        } else {
+          dyndnsHostname.value = 'Hostname';
+        }
+      }
+    } else {
+      document.all.ddnsInfo.style.visibility = status;
+    }
+  }
+}
+
+function hideTZOInfo(hide) {
+  var status = 'visible';
+  if ( hide == 1 )
+    status = 'hidden';
+  if (document.getElementById) // DOM3 = IE5, NS6
+    document.getElementById('tzoInfo').style.visibility = status;
+  else {
+    if (document.layers) { // NS4
+      with ( document.forms[0] ) {
+        if ( hide == 1 ) {
+          tzoEmail.value = '';
+          tzoKey.value = '';
+        } else {
+          tzoEmail.value = 'Name';
+          tzoKey.value = 'Password';
+        }
+      }
+    } else {
+      document.all.ddnsInfo.style.visibility = status;
+    }
+  }
+}
+
+function frmLoad() {
+  with (document.forms[0]) {
+    ddnsMode.selectedIndex = 0;
+  }
+
+  ddnsChange();
+}
+
+function btnApply(place) {
+  var loc = place + '?action=add&service=';
+
+  if ( place == "ddnsmngr.cmd" ) {
+    with ( document.forms[0] ) {
+      switch( ddnsMode[ddnsMode.selectedIndex].value ) {
+      case 'dyndns':
+        loc += '1';
+        break;
+      case 'tzo':
+        loc += '0';
+        break;
+      }
+
+      switch( ddnsMode[ddnsMode.selectedIndex].value ) {
+      case "dyndns":
+        update_username = dyndnsUsername.value;
+        update_password = dyndnsPassword.value;
+        break;
+      case "tzo":
+        update_username = tzoEmail.value;
+        update_password = tzoKey.value;
+        break;
+      }
+
+      if ( update_username.length == 0 ) {
+        if ( ddnsMode[ddnsMode.selectedIndex].value == 'dyndns' )
+          alert('Empty username.' );
+        else
+          alert('Invalid Email address.' );
+        return;
+      }
+      loc += '&username=' + update_username;
+
+      if ( update_password.length == 0 ) {
+        if ( ddnsMode[ddnsMode.selectedIndex].value == 'dyndns' )
+          alert('Empty password.' );
+        else
+          alert('Invalid key.' );
+        return;
+      }
+      loc += '&password=' + update_password;
+
+      if ( ddnsHostname.value.length == 0 ) {
+        alert('Empty hostname.');
+        return;
+      }
+      loc += '&hostname=' + ddnsHostname.value;
+
+      loc += '&iface=' + ddnsInterface[ddnsInterface.selectedIndex].value;
+    }
+    loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+    var code = 'location="' + loc + '"';
+    eval(code);
+  }
+}
+
+// done hiding -->
+    </script>
+  </head>
+  <body onLoad='frmLoad()'>
+    <blockquote>
+      <form>
+        <b>Add Dynamic DNS</b><br><br>
+        <br>
+        This page allows you to add a Dynamic DNS address from
+        DynDNS.org or TZO.
+        <br><br>
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr>
+            <td width='180'>D-DNS provider</td>
+            <td><select name='ddnsMode' size="1" onChange='ddnsChange()'>
+                  <option value="dyndns">DynDNS.org</option>
+                  <option value="tzo">TZO</option>
+                </select>
+            </td>
+          </tr>
+        </table>
+        <br>
+        <div id="ddnsInfo">
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width='180'>Hostname</td>
+              <td><input type="text" name="ddnsHostname"></td>
+            </tr>
+            <tr>
+              <td>Interface</td>
+              <td><select name='ddnsInterface'>
+                        <script language="javascript">
+<!-- hide
+{
+   var i = 0;
+   var interfaceInfo = '<%ejGetOther(wanInterfaceInfo, route)%>';
+   var interfaces = interfaceInfo.split('|');
+ 
+   for ( i = 0; i < interfaces.length; i++ ) {
+      var names = interfaces[i].split('/');
+      document.write("  <option value='" + names[1] + "'>");
+      document.writeln(interfaces[i]);
+   }
+}
+// done hiding -->
+</script>
+              </select></td>
+            </tr>
+          </table><br>
+        </div>
+        <div id="dyndnsInfo">
+          <b>DynDNS Settings<b><br>
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width='180'>Username</td>
+              <td><input type='text' name='dyndnsUsername' size='20' maxlen='64'></td>
+            </tr>
+            <tr>
+              <td>Password</td>
+              <td><input type="password" name="dyndnsPassword"></td>
+            </tr>
+          </table>
+        </div>
+        <div id="tzoInfo">
+          <b>TZO Settings</b><br>
+          <table border="0" cellpadding="0" cellspacing"0">
+            <tr>
+              <td width='180'>Email</td>
+              <td><input type="text" name="tzoEmail"></td>
+            </tr>
+            <tr>
+              <td>Key</td>
+              <td><input type="password" name="tzoKey"></td>
+            </tr>
+          </table>
+        </div>
+        <center>
+          <input type='button' value="Apply/Save" onClick='btnApply("ddnsmngr.cmd")'>
+        </center>
+      </form>
+    </blockquote>
+  </body>
+</html>

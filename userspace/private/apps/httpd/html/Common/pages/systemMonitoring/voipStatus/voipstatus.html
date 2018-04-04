@@ -1,0 +1,464 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="../../../css/brick.css" rel="stylesheet" type="text/css" />
+<title>Untitled Document</title>
+
+<script language="javascript">
+<!-- hide
+
+var lineCountArray = new Array(); 
+var maxSp = '<%ejGetVoice(maxSp)%>';                    // MaxProfileCount
+var maxLines = '<%ejGetVoice(maxLines)%>';              // MaxLineCount
+if ( maxLines.search("ejGetVoice") >= 0 ) {
+   maxLines = 2;                                        // if not provided by provisioning, hard-code maxLines
+}
+var currentSp = '<%ejGetVoice(numSp)%>';                // current Profile count
+var currentAcnt = '<%ejGetVoice(numLines)%>';           // current sip accounts
+var tmpvpn = '<%ejGetVoice(VPName)%>';
+var tmplc = '<%ejGetVoice(linesPerVP)%>';               // number of lines per profile
+
+var tmpsipStatus = '<%ejGetVoice(sipStatus)%>';         // SIP Status
+var tmpphoneselect = '<%ejGetVoice(phoneSelect)%>';
+var tmpphonenum   = '<%ejGetVoice(extension)%>';
+var tmpacntNum = '<%ejGetVoice(linecmaNum)%>';
+
+var tmpcallStatus = '<%ejGetOther(SipCallStatusShow)%>' // Call Status
+
+for (var i = 0; i < currentSp; i++) {
+	eval( "var vpn" + i + " \= \"\" " );                // vpName
+	eval( "var lc" + i + " \= \"\" " );                 // line count per profile
+	eval(tmplc);   
+	eval("lineCountArray[" + i + "] = lc" + i);
+
+	for (var m = 0; m < lineCountArray[i]; m++) {
+		eval( "var ss" + i + "_" + m + " \= \"\" " );   // sip status
+		eval( "var ps" + i + "_" + m + " \= \"\" " );   // phone select
+		eval( "var ex" + i + "_" + m + " \= \"\" " );   // phone number
+		eval( "var lcma" + i + "_" + m + " \= \"\" ");  // linecmaNum 		   
+	}
+}
+for (var i = 0; i < maxLines; i++) {
+	eval( "var cs" + i + " \= \"\" " );                 // Call status
+}
+
+if ( tmpvpn.search("ejGetVoice") < 0 ) {
+	eval( tmpvpn );
+}
+if ( tmplc.search("ejGetVoice") < 0 ) {
+	eval( tmplc );
+}
+if ( tmpsipStatus.search("ejGetVoice") < 0 ) {
+	eval( tmpsipStatus );
+}
+if ( tmpphoneselect.search("ejGetVoice") < 0 ) {
+	eval( tmpphoneselect );
+}
+if ( tmpphonenum.search("ejGetVoice") < 0 ) {
+	eval( tmpphonenum );
+}
+if ( tmpacntNum.search("ejGetVoice") < 0 ) {
+	eval( tmpacntNum );
+}
+if ( tmpcallStatus.search("ejGetVoice") < 0 ) {
+	eval( tmpcallStatus );
+}
+
+// Create rows for Sip Status
+function createSipStatusList() {
+	var str = '';
+	for (var i = 0; i < currentSp; i++) {
+		for(var j = 0; j < eval("lc"+i); j++){
+			var acntNum = eval("lcma"+ i + "_" + j);	
+			str += "<tr align='center'>";
+			str += "<td class='table_font' id='sipStatus"+acntNum+"'></td>";
+			for(var m=0 ; m<6 ;m++){
+				str += "<td class='table_font' id='sipStatus"+acntNum+"_"+m+"'></td>";
+			}
+			str += "</tr>";
+		}
+	}
+	$('#sipstatusTable').append(str);
+}
+
+// Create rows for Call Status
+function createCallStatusList() {
+	var str = '';
+	for (var i = 0; i < currentAcnt; i++) {
+		str += "<tr align='center'>";
+		for(var m=0 ; m<5 ;m++){
+			str += "<td class='table_font' id='callStatus"+i+"_"+m+"'></td>";
+		}
+		str += "</tr>";
+	}
+	$('#callstatusTable').append(str);
+}
+
+function refreshCallStatusList() {
+
+	var callStatus_Num = eval("csnum");
+	/*Clean All Rows*/
+	while(document.getElementById('callstatusTable').rows[1]){
+		document.getElementById('callstatusTable').deleteRow(1);
+	}
+/*	for (var i = 3; i >= 0; i--) {
+		document.getElementById('sipstatusTable').deleteRow(i);
+	}
+*/
+	
+	/*Add Rows*/
+	var str = '';
+	for (var i = 0; i < callStatus_Num; i++) {
+		str += "<tr align='center'>";
+		for(var m=0 ; m<5 ;m++){
+			str += "<td class='table_font' id='callStatus"+i+"_"+m+"'></td>";
+		}
+		str += "</tr>";
+	}
+	$('#callstatusTable').append(str);
+}
+
+// Check SIP Status Table
+function checkSipStatusTable() {
+	
+	// Check # row in sipstatusTable
+	var count = 0;
+	for (var i = 0; document.getElementById('sipstatusTable').rows[i]; i++) {
+		count ++;
+	}
+	
+	if ( currentAcnt == (count-1) ) {
+		// # Sip Account is unchanged, do nothing
+	} else {
+		// # Sip Account is changed, delete rows and create them
+		for (var i = (count-1); i > 0; i--) {
+			document.getElementById('sipstatusTable').deleteRow(i);
+		}
+		createSipStatusList();
+	}
+}
+
+// Check Call Status Table
+function checkCallStatusTable() {
+	
+	// Check # row in callstatusTable
+	var count = 0;
+	for (var i = 0; document.getElementById('callstatusTable').rows[i]; i++) {
+		count ++;
+	}
+	
+	if ( currentAcnt == (count-1) ) {
+		// # Sip Account is unchanged, do nothing
+	} else {
+		// # Sip Account is changed, delete rows and create them
+		for (var i = (count-1); i > 0; i--) {
+			document.getElementById('callstatusTable').deleteRow(i);
+		}
+		createCallStatusList();
+	}
+}
+
+// Update SIP Status
+function updateSipStatusInfo() {
+	for (var i = 0; i < currentSp; i++) {
+		for(var j = 0; j < eval("lc"+i); j++){
+			var acntNum = eval("lcma"+ i + "_" + j);	
+			var acntNum_new = parseInt(acntNum) + 1;	// from SIP1, SIP2, ...
+			var sstmp = eval("ss"+ i +"_"+j);
+			var sipstatustmp = sstmp.split(';');	
+			document.getElementById('sipStatus'+acntNum).innerHTML = "SIP"+acntNum_new;
+			for(var m=0 ; m<6 ;m++){
+				document.getElementById('sipStatus'+acntNum+'_'+m).innerHTML = sipstatustmp[m];
+			}
+		}
+	}
+}
+
+// Update Call Status
+function updateCallStatusInfo() {
+	var callStatus_Num = eval("csnum");
+	refreshCallStatusList();
+	for (var i = 0; i < callStatus_Num; i++) {
+		var cstmp = eval("cs"+ i);
+		var callstatustmp = cstmp.split(';');	
+		for(var m=0 ; m<5 ;m++){
+			document.getElementById('callStatus'+i+'_'+m).innerHTML = callstatustmp[m];
+		}
+	}
+}
+
+// Update Phone Status
+function updatePhoneStatusInfo() {
+	// only support 2 fxs
+	for(var i=0;i<2;i++){
+		var OutNumStr = "";
+		var InNumStr = "";			
+		for (sp = 0; sp < currentSp; sp++) {
+			for(lineitr = 0; lineitr < eval("lc"+sp); lineitr++){
+				var pstmp = eval("ps"+sp+"_"+lineitr);
+				var acntNum = eval("lcma"+ sp + "_" + lineitr);
+				var acntNum_new = parseInt(acntNum) + 1;	// from SIP1, SIP2, ...
+				
+				if(pstmp & (1<<i)){
+					OutNumStr += 'SIP'+ acntNum_new +'-'+ eval("ex"+ sp +"_"+lineitr) + ","; 
+					InNumStr += 'SIP'+ acntNum_new +'-'+ eval("ex"+ sp +"_"+lineitr)+ "," ;
+				}			
+			}
+		}	
+		document.getElementById('phoneOutNum'+i).innerHTML	= OutNumStr;
+		document.getElementById('phoneInNum'+i).innerHTML	= InNumStr;	
+	}
+}
+
+function frmLoad() {
+
+	updateSipStatusInfo();
+	updateCallStatusInfo();
+	updatePhoneStatusInfo();
+}
+
+// ***** Update Values START *****
+
+if (window.XMLHttpRequest) {
+	objInfoXMLHTTP=new XMLHttpRequest();
+}// code for IE
+else if (window.ActiveXObject) {
+	objInfoXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+}
+
+function updateVoipStatusInfo (req)
+{
+	var voipStatusInfo=req.responseText;
+	if ( voipStatusInfo != "" && voipStatusInfo != null ) {
+		voipStatusInfos = voipStatusInfo.split('@@');
+		//alert("voipStatusInfos.length="+voipStatusInfos.length);
+		
+		var i = 0;
+		maxSp = voipStatusInfos[i++];
+		maxLines = voipStatusInfos[i++];
+		currentSp = voipStatusInfos[i++];
+		currentAcnt = voipStatusInfos[i++];
+		tmpvpn = voipStatusInfos[i++];
+		tmplc = voipStatusInfos[i++];
+		tmpsipStatus = voipStatusInfos[i++];
+		tmpphoneselect = voipStatusInfos[i++];
+		tmpphonenum = voipStatusInfos[i++];
+		tmpacntNum = voipStatusInfos[i++];
+		tmpcallStatus = voipStatusInfos[i++];
+
+		if ( tmpvpn.search("ejGetVoice") < 0 ) {
+			eval( tmpvpn );
+		}
+		if ( tmplc.search("ejGetVoice") < 0 ) {
+			eval( tmplc );
+		}
+		if ( tmpsipStatus.search("ejGetVoice") < 0 ) {
+			eval( tmpsipStatus );
+		}
+		if ( tmpphoneselect.search("ejGetVoice") < 0 ) {
+			eval( tmpphoneselect );
+		}
+		if ( tmpphonenum.search("ejGetVoice") < 0 ) {
+			eval( tmpphonenum );
+		}
+		if ( tmpacntNum.search("ejGetVoice") < 0 ) {
+			eval( tmpacntNum );
+		}
+		if ( tmpcallStatus.search("ejGetVoice") < 0 ) {
+			eval( tmpcallStatus );
+		}
+		
+		checkSipStatusTable();
+		//checkCallStatusTable();
+		
+		updateSipStatusInfo();
+		updateCallStatusInfo();
+		updatePhoneStatusInfo();
+	}
+}
+
+function updateValue_take()
+{
+	if ( objInfoXMLHTTP != null ) {
+		objInfoXMLHTTP.open("POST","/pages/systemMonitoring/voipStatus/GetvoipStatusInfo.html",true);
+		objInfoXMLHTTP.onreadystatechange = function() 
+		{
+			if(objInfoXMLHTTP.readyState == 4)
+				updateVoipStatusInfo(objInfoXMLHTTP);
+		}
+		objInfoXMLHTTP.send(null);
+	}
+}
+
+// ***** Update Values END *****
+
+// ***** Poll Interval START *****
+
+var defaultInterval = 10
+var interval = 10
+
+intervalId = setInterval("updateValue_take()", interval * 1000)
+intervalId2 = setInterval("setDefaultInterval()", 20)
+
+function setDefaultInterval()
+{
+	document.SetIntervalForm.interval.value = defaultInterval
+	clearInterval(intervalId2)
+}
+
+function resetInterval(newInterval)
+{
+	interval = parseInt(newInterval)
+	if ( isNaN(interval) )
+	{
+		interval = defaultInterval
+	}
+	document.SetIntervalForm.interval.value = interval
+	clearInterval(intervalId)
+	intervalId = setInterval("updateValue_take()", interval * 1000)
+}
+
+function stopInterval() 
+{
+	clearInterval(intervalId)
+	document.SetIntervalForm.interval.value = ""
+}
+
+// ***** Poll Interval END *****
+
+/*
+$(document).ready(function() {
+	frmLoad();
+});
+*/
+
+// done hiding -->
+</script>
+
+</head>
+
+<body>
+<!--
+<div class="unit_title" >VOIP Status</div>
+<ul class="tabline"></ul>
+-->
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_ConnStatus_Status_Explain)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame">
+	<ul>
+		<!--Poll Interval START-->
+<li class="set1">
+			<div class="w_table">
+				<form method="post" action="/Forms/SysSetVoIP_Interval_1" name="SetIntervalForm">
+					<table width="100%" class="table_frame">
+<tr >
+                  <td  class="table_font3"><%ejGetML(MLG_ConnStatus_Status_Str121)%> : </b>
+								<input type="text" name="interval" maxlength="4" size="4" value="10" /><%ejGetML(MLG_Common_Sec)%>&nbsp;&nbsp;&nbsp;
+								<input type="button" value='<%ejGetML(MLG_ConnStatus_Status_Str122)%>' onClick="resetInterval(document.SetIntervalForm.interval.value)"/>&nbsp;&nbsp;&nbsp;&nbsp;
+								<input type="button" value='<%ejGetML(MLG_Common_Stop)%>' name="stopIntvl" onClick="return stopInterval()"/>
+			</td>
+						</tr>
+					</table>
+				</form>
+                      </div>
+</li>
+		<!--Poll Interval END-->
+		
+		<li class="space"></li>
+		<form method="post" action="/Forms/SysSetVoIP_Interval_1" name="aircheng">
+		<!--SIP Status START-->
+<li class="set1">
+<div class="title"><%ejGetML(MLG_ConnStatus_Status_Str123)%></div>
+<div class="w_table">
+  <!--Table define start-->
+<table width="100%" cellpadding="0" cellspacing="0" class="table_frame" id="sipstatusTable">
+					<tr align="center">
+						<td class="top_font" width="15%"><%ejGetML(MLG_ConnStatus_Status_Str56)%></td>
+                  <td class="top_font"><%ejGetML(MLG_ConnStatus_Status_VOIP_Registration)%></td> 
+						<td class="top_font"><%ejGetML(MLG_ConnStatus_Status_VOIP_Registration_Time)%></td> 
+				  <td class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str60)%></td>
+                <td class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str124)%></td>
+                <td class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str125)%></td>
+                <td class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str126)%></td>
+                </tr>
+					<script TYPE="text/javascript">
+						createSipStatusList();
+					</script>	
+              </table>
+</div>
+</li>
+		<!--SIP Status END-->
+
+            <li class="space"></li>
+		
+		<!--Call Status END-->
+			<li class="set1">
+<div class="title"><%ejGetML(MLG_ConnStatus_Status_Str127)%></div>
+<div class="w_table">
+  <!--Table define start-->
+<table width="100%" cellpadding="0" cellspacing="0" class="table_frame" id="callstatusTable">
+					<tr align="center">
+						<td class="top_font" width="15%"><%ejGetML(MLG_ConnStatus_Status_Str56)%></td>
+                   <td  class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str128)%></td>
+                <td  class="top_font"><%ejGetML(MLG_Common_Status)%></td>
+                <td  class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str129)%></td>
+                <td  class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str130)%></td>
+                </tr>
+					<!--
+					<%ejGetOther(SipCallStatusShow)%>
+					-->
+					<script TYPE="text/javascript">
+						createCallStatusList();
+					</script>	
+              </table>
+</div>
+</li>
+		<!--Call Status END-->
+
+ <li class="space"></li>
+ 
+		<!--Phone Status START-->
+<li class="set1">
+<div class="title"><%ejGetML(MLG_ConnStatus_Status_Str131)%></div>
+<div class="w_table">
+  <!--Table define start-->
+<table width="100%" cellpadding="0" cellspacing="0"  class="table_frame" id="phoneStatusTable">
+					<tr align="center">
+						<td class="top_font" width="15%"><%ejGetML(MLG_Menu_voipPhone)%></td>
+                   <td  class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str132)%> </td>
+                   <td  class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str133)%> </td>
+                   </tr>
+					<tr align="center">
+				 <td class="table_font"><%ejGetML(MLG_Menu_voipPhone)%> 1</td>
+						<td class="table_font" id="phoneOutNum0"></td>
+						<td class="table_font" id="phoneInNum0"></td>
+                </tr>
+					<tr align="center">
+                  <td class="table_font"><%ejGetML(MLG_Menu_voipPhone)%> 2</td>
+						<td class="table_font" id="phoneOutNum1"></td>
+						<td class="table_font" id="phoneInNum1"></td>
+                  </tr>
+              </table>
+</div>
+</li>
+		<!--Phone Status END-->
+		</form>
+ <li class="space"></li>
+         </ul>
+  </div>
+<!--Set area end-->
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(document).ready(function() {
+	frmLoad();
+});
+</script>

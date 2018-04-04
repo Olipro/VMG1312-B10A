@@ -1,0 +1,121 @@
+<script language="javascript">
+<!-- hide
+var glbSessionKey = '<%ejGetOther(sessionKey)%>';
+
+function btnSave() {
+  with ( document.forms[0] ) {
+    if ( (dmsMediaPath.value.length == 0)  ||  (dmsMediaPath.value.length > 80) ) {
+      hciAlert('<%ejGetML(MLG_Network_USBService_AlertMsg_Str11)%>', {height: 180,type: 2, title: <%ejGetML(MLG_Common_Error)%>});
+      return;
+    }
+
+    sessionKey.value = glbSessionKey;
+    $.openLoadingMask(1);
+    submit();
+  }
+}
+
+function dmsEnblChange() {
+  if( document.forms[0].dmsEnabled[0].checked )
+    hideDmsConfig(0);
+  else
+    hideDmsConfig(1);
+}
+
+function hideDmsConfig(hide) {
+  var status = 'visible';
+                                                                                
+  if(hide)
+    status = 'hidden';
+                                                                                
+  if( document.getElementById )
+  {
+    document.getElementById('dmsConfigBr').style.visibility = status;
+    document.getElementById('dmsConfig').style.visibility = status;
+  }
+  else
+  {
+    if(!document.layers)
+    {
+      document.all.dmsConfigBr.style.visibility = status;
+      document.all.dmsConfig.style.visibility = status;
+    }
+  }
+}
+
+function frmLoad()
+{
+  var enblMediaServer = '<%ejGetOther(sysInfo, dmsEnabled)%>';
+
+  with ( document.forms[0] ) {
+//Show error message
+//ZyXEL, for cross-site scripting check, Albert
+    var errMsg = "<%ejGetOther(errMsg)%>";
+    if (errMsg != '') {
+      hciAlert(errMsg, {height: 180,type: 2, title: ''});
+    }
+    dmsMediaPath.value = "<%ejGetOther(sysInfo, dmsMediaPath)%>";
+    brName.value = "<%ejGetOther(sysInfo, dmsBrName)%>";
+    if (enblMediaServer == 1)
+      dmsEnabled[0].checked = true;
+    else
+      dmsEnabled[1].checked = true;
+  }
+  dmsEnblChange();
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+// done hiding -->
+</script>
+<form action="usbService-dlnacfg.cmd" method="post">
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""; />
+<input name="action" type="HIDDEN"  id="action" value="savapply">
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Network_USBService_Str3)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1"> 
+<div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Network_USBService_Str4)%></li>
+    <li class="right_table">
+      <input name="dmsEnabled" type="radio" value="1" onClick="dmsEnblChange()"/> <%ejGetML(MLG_Common_Enable)%>
+      <input name="dmsEnabled" type="radio" value="0" onClick="dmsEnblChange()"/> <%ejGetML(MLG_Common_Disable)%>
+    </li>
+  </ul>
+</div>
+<div id="dmsConfigBr" class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Network_StaticRoute_Str8)%> :</li>
+    <li class="right_table"><%ejGet(groupList)%></li>
+  </ul>
+</div>
+<div id="dmsConfig" class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Network_USBService_Str5)%></li>
+    <li class="right_table"><input type='text' name='dmsMediaPath'></li>
+  </ul>
+</div>
+<li class="space"></li>
+<!--Button define start-->
+<li class="buttonframe">
+<div class="button_position">
+<input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="btnSave();"/>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick="frmLoad();"/>
+</div>
+</li>
+<!--Button define end-->
+</ul>
+</div>
+<!--Set area end-->
+</div>
+<br/><br/>
+</form>

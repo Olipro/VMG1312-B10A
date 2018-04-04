@@ -1,0 +1,510 @@
+<script language="javascript">
+<!-- hide
+var enbl = '<%ejGetWl(wlEnblAll)%>';
+var wlCurrentChannel = '<%ejGetWl(wlCurrentChannel)%>';
+var band = '<%ejGetWl(wlBand)%>';
+var nbwcap = '<%ejGetWl(wlNBwCap)%>';
+var channel = '<%ejGetWl(wlChannel)%>';
+
+function setChartWidth(){
+	var a = $(".line").length;
+	var charWidth = (a*40)+55;
+	$('#columnChart').css('width',charWidth);
+}  
+
+var objChScanXMLHTTP = null;
+var objChScanTimeXMLHTTP = null;
+
+
+function enblScanBtn()
+{
+	with (document.forms[0]) {
+		Scan.disabled = false;
+		Scan.value = "<%ejGetML(MLG_WLAN_WDS_Str12)%>";
+	}
+}
+
+
+/*****************************************************************************/
+/*  Paul Ho: The function getChScanResult() will query wlan_chs_result.html  */
+/*  and obtain the result such as 31 22 9 23 100 ......, the first number    */
+/*  means the noise of 1st channel and the second number means the noise of  */
+/*  2nd channel, etc..                                                       */
+/*  Then it parse the result and transform these numbers into the pixel of   */
+/*  vertical color bar height (i.e., multiply with 3)                        */
+/*****************************************************************************/
+function getChScanResult()
+{
+   if (window.XMLHttpRequest) {
+      objChScanXMLHTTP=new XMLHttpRequest();
+	  requestScanResult();
+   } else if (window.ActiveXObject) {
+      // code for IE
+      objChScanXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+      requestScanResult();
+   }
+
+   function requestScanResult()
+   {
+	  if ( objChScanXMLHTTP != null ) {
+	      objChScanXMLHTTP.open("GET","/pages/network/wireless/wlan_chs_result.html", true);
+	      objChScanXMLHTTP.onreadystatechange = function() 
+	      {
+	         if(objChScanXMLHTTP.readyState == 4) {
+	            var result = objChScanXMLHTTP.responseText;
+				var ch_score = result.split(" ");
+
+				var chlist = '<%ejGetOther(chScanDec)%>';
+				chlist = chlist.split(" ");
+				
+				/* to avoid sometimes the obtained result only ten/twelve numbers (the channel 1/13 is INVALID in /var/wlchscan, I don't know why) 
+				if (ch_score.length-1 < 11 || ch_score.length-1 == 12)
+				{
+					$('#Scan_img').html("<i><font color=\"red\">Retrieve data failed, please press \"Scan\" to try again.</font></i>");
+					enblScanBtn();
+					return;
+				}
+				*/
+
+				var chanNumber = $("#chartBlock");
+				var spechtml = ""; 
+				for(var i=0; i<ch_score.length-1; i++) {
+					var ch=i+1;
+					spechtml += "<div class=\"chartWidth\">";
+					spechtml += "<div class=\"line\">";
+					spechtml += "<div id=\"val_ch"+ch+"\" class=\"value\">";
+					spechtml += "</div><div id=\"bar_ch"+ch+"\" class=\"colorBar\" style=\"height:0px;\"></div>";
+					spechtml += "</div></div>";
+				}
+				chanNumber.html(spechtml);
+				
+
+				var cSpec = $("#channelSpec");
+				var spechtml = ""; 
+				for(var i=0; i<chlist.length-1; i++) {
+					var ch=i+1;
+           	        var chnu = chlist[i];
+					spechtml += "<div id=\"x_bar"+ch+"\" class=\"chartWidth\"><span>"+chnu+"</span></div>";
+				}
+				cSpec.html(spechtml);
+
+				/* assign the correspond attributes to each colorbar */
+				for(var i=0; i<ch_score.length-1; i++) {
+					  var ch = i + 1;
+					  var div_bar_ch = document.getElementById('bar_ch'+ch);
+					  var div_x_bar = document.getElementById('x_bar'+ch);
+					  /* give the height to each vertical bar */
+					  if (ch_score[i])
+					  {
+					     div_bar_ch.style.height = ch_score[i]*3 + 'px';
+						 if(channel == 0){
+							  if (ch == wlCurrentChannel)
+							  {
+								 div_bar_ch.className = 'colorBar used';
+								 div_x_bar.className = 'chartWidth used';
+							  }
+							  else
+							  {
+								 div_bar_ch.className = 'colorBar';
+								 div_x_bar.className = 'chartWidth';
+							  }
+						 }else{
+							  if (ch == channel)
+							  {
+								 div_bar_ch.className = 'colorBar used';
+								 div_x_bar.className = 'chartWidth used';
+							  }
+							  else
+							  {
+								 div_bar_ch.className = 'colorBar';
+								 div_x_bar.className = 'chartWidth';
+							  }
+						 }
+						  
+					  }
+					  /* give the value to each vertical bar */
+					  $('#val_ch'+ch).html(ch_score[i]);
+				}
+				
+				
+				/* hide the vertical bar which its value is 'N/A' (usually for eleven channels scenario)
+				$('.chartWidth').each(function(index) {
+				    var chartValue = $(this).children('.line').children('.value').text();
+				    if(chartValue == 'N/A') {
+				        $(this).hide();
+				    } else {
+				        $(this).show();
+				    }
+				});
+				*/
+				enblScanBtn();				
+				TimeUpdate();
+				
+				/*
+				with (document.forms[0]) {
+					// hide the horizon bar which the number of channels is eleven 
+					if (ch_score.length <= 16)
+					{
+					
+						for(var i=ch_score.length; i<=16; i++){
+							var ch=i;
+						    var div_bar_ch = document.getElementById('bar_ch'+ch);
+					  		var div_x_bar = document.getElementById('x_bar'+ch);
+
+							div_bar_ch.remove();
+							div_x_bar.remove();
+						}
+					
+					}
+				}
+				*/		
+					
+				$('#Scan_img').html("");
+				//$('#Scan_img').html(result); //debug msg
+	         }
+	      }
+	      objChScanXMLHTTP.send(null);
+	  }
+   }
+}
+
+
+function get5GChScanResult()
+{
+   if (window.XMLHttpRequest) {
+      objChScanXMLHTTP=new XMLHttpRequest();
+	  request5GScanResult();
+   } else if (window.ActiveXObject) {
+      // code for IE
+      objChScanXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+      request5GScanResult();
+   }
+
+   function request5GScanResult()
+   {
+	  if ( objChScanXMLHTTP != null ) {
+	      objChScanXMLHTTP.open("POST","/pages/network/wireless/wlan_5Gchs_result.html", true);
+	      objChScanXMLHTTP.onreadystatechange = function() 
+	      {
+	         if(objChScanXMLHTTP.readyState == 4) {
+	            var result = objChScanXMLHTTP.responseText;
+				var ch_score = result.split(" ");
+
+				var chlist = '<%ejGetOther(5GchScanDec)%>';
+				chlist = chlist.split(" ");
+				
+				var chanNumber = $("#chartBlock");
+				var spechtml = ""; 
+				for(var i=0; i<ch_score.length-1; i++) {
+					var ch=i+1;
+					spechtml += "<div class=\"chartWidth\">";
+					spechtml += "<div class=\"line\">";
+					spechtml += "<div id=\"val_ch"+ch+"\" class=\"value\">";
+					spechtml += "</div><div id=\"bar_ch"+ch+"\" class=\"colorBar\" style=\"height:0px;\"></div>";
+					spechtml += "</div></div>";
+				}
+				chanNumber.html(spechtml);
+
+				
+				var cSpec = $("#channelSpec");
+				var spechtml = ""; 
+				for(var i=0; i<chlist.length-1; i++) {
+					var ch=i+1;
+           	        var chnu = chlist[i];
+					spechtml += "<div id=\"x_bar"+ch+"\" class=\"chartWidth\"><span>"+chnu+"</span></div>";
+				}
+				cSpec.html(spechtml);
+				
+				/* assign the correspond attributes to each colorbar */
+				for(var i=0; i<ch_score.length-1; i++) {
+					  var ch = i + 1;
+					  var chnu = chlist[i];
+					  var div_bar_ch = document.getElementById('bar_ch'+ch);
+					  var div_x_bar = document.getElementById('x_bar'+ch);
+					  /* give the height to each vertical bar */
+					  if (ch_score[i])
+					  {
+					     div_bar_ch.style.height = ch_score[i]*3 + 'px';
+						 if(channel == 0){
+							  if (chnu == wlCurrentChannel)
+							  {
+								 if( div_bar_ch != null)div_bar_ch.className = 'colorBar used';
+								 if( div_x_bar != null)div_x_bar.className = 'chartWidth used';
+							  }
+							  else
+							  {
+								 if( div_bar_ch != null)div_bar_ch.className = 'colorBar';
+								 if( div_x_bar != null)div_x_bar.className = 'chartWidth';
+							  }
+						 }else{
+							  if (chnu == channel)
+							  {
+								 if( div_bar_ch != null)div_bar_ch.className = 'colorBar used';
+								 if( div_x_bar != null)div_x_bar.className = 'chartWidth used';
+							  }
+							  else
+							  {
+								 if( div_bar_ch != null)div_bar_ch.className = 'colorBar';
+								 if( div_x_bar != null)div_x_bar.className = 'chartWidth';
+							  }
+						 }
+					  }
+					  /* give the value to each vertical bar */
+					  $('#val_ch'+ch).html(ch_score[i]);
+				}
+				
+				enblScanBtn();				
+				TimeUpdate();
+
+				$('#Scan_img').html("");
+				//$('#Scan_img').html(result); //debug msg
+	         }
+	      }
+	      objChScanXMLHTTP.send(null);
+	  }
+   }
+}	
+function TimeUpdate()
+{
+     if (window.XMLHttpRequest) {
+      objChScanTimeXMLHTTP=new XMLHttpRequest();
+	  time();
+   } else if (window.ActiveXObject) {
+      // code for IE
+      objChScanTimeXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+	  time();
+   }
+
+   function time()
+   	{
+		
+		if ( objChScanTimeXMLHTTP != null ) {			
+	      objChScanTimeXMLHTTP.open("POST","/pages/network/wireless/wlan_time_result.html", true);
+		  objChScanTimeXMLHTTP.onreadystatechange = function() 
+		  {		  
+		  	if(objChScanTimeXMLHTTP.readyState == 4) {
+		 		 var x = objChScanTimeXMLHTTP.responseText;		  			
+		  		$('#time').html(x);
+		  }	
+		 }
+		objChScanTimeXMLHTTP.send(null);
+	   }		  
+	}  
+}
+
+
+
+function ScanClick()
+{
+    delay = 1000;
+	with (document.forms[0]) {
+		$('#Scan_img').html("&nbsp;<img src=\"../../images/grid-loading.gif\" width=\"16\" height=\"16\"/>");
+		Scan.disabled = true;
+		Scan.value = "<%ejGetML(MLG_WLAN_WDS_Str12_1)%>";
+
+		setTimeout(function(){
+
+		   if (window.XMLHttpRequest) {
+		      objChScanXMLHTTP=new XMLHttpRequest();
+			  postChScanCmd();
+		   } else if (window.ActiveXObject) {
+		      // code for IE
+		      objChScanXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+		      postChScanCmd();
+		   }
+
+		   function postChScanCmd()
+		   {
+			  if ( objChScanXMLHTTP != null ) {
+			      objChScanXMLHTTP.open("POST","wireless-chscan.cmd", true);
+			      objChScanXMLHTTP.onreadystatechange = function() 
+			      {
+			         if(objChScanXMLHTTP.readyState == 4) {
+			            var result = objChScanXMLHTTP.responseText;
+			            if (result == "Success") {
+                              delay = 0;
+						   if(band=='2')	  
+				              getChScanResult();
+						   else
+						   	  get5GChScanResult();
+			            }
+			         }
+			      }
+			      objChScanXMLHTTP.send(null);
+			  }
+		   }
+		}, delay);
+	}
+	return;
+}
+
+function frmLoad()
+{
+
+	var t = $(".title");
+
+	if (band==2){
+		$(t[0]).html("2.4GHz  "+ $(t[0]).html());
+	}else{
+		$(t[0]).html("5GHz  "+ $(t[0]).html());
+	}
+
+	//setChartWidth();
+	with (document.forms[0]) {
+	    Scan.disabled = true;
+
+		if (enbl == '0')
+		{
+			$('#note1').html("<i><font color=\"red\">&nbsp;&nbsp;<%ejGetML(MLG_WLAN_ChannelStatus_Str11)%></font></i>");
+			return;
+		}
+		if ((band == '1') ||(band =='2'))
+		{
+/* channel status can not work in 40/80 MHz case */
+			if (nbwcap == '0' || nbwcap == '2')
+			{
+				Scan.disabled = false;
+			}
+		}
+
+	    if (Scan.disabled == false)
+						   if(band=='2')	  
+				              getChScanResult();
+						   else
+						   	  get5GChScanResult();
+		else
+/* TODO:  why disable 40 MHz BW ? */		
+		//	$('#note1').html("<i><font color=\"red\">&nbsp;&nbsp;This channel scan function only works in 2.4G Band with 20HMZ Bandwidth.</font></i>");
+			$('#note1').html("<i><font color=\"red\">&nbsp;&nbsp;<%ejGetML(MLG_WLAN_CHNNEL_STATUS_Str1)%></font></i>");
+	}		
+}
+
+// done hiding -->
+</script>
+<form action="/pages/tabFW/wireless-channelstatus.wl" method="post">
+<div class="content_frame">
+    <!--Unit Explain start-->
+    <div class="explain">
+        <div>
+            <b class="r1"></b>
+            <b class="r2"></b>
+            <b class="r3"></b>
+            <b class="r4"></b>
+            <b class="r4"></b>
+        </div>
+        <div class="explain_text">
+           <%ejGetML(MLG_WLAN_ChannelStatus_Str1)%>
+        </div>
+        <div>
+            <b class="r4"></b>
+            <b class="r4"></b>
+            <b class="r3"></b>
+            <b class="r2"></b>
+            <b class="r1"></b>
+        </div>
+    </div>
+    <!--Unit Explain End-->
+    <div class="data_frame">
+        <ul>
+            <li class="set1">
+                <div class="title">
+                    <%ejGetML(MLG_WLAN_ChannelStatus_Str2)%>
+                </div>
+                <div class="w_text2"><span class="button_position" style="float:left; margin-left:13px;">
+                    <%ejGetML(MLG_WLAN_ChannelStatus_Str3)%>
+					&nbsp;&nbsp;<input type="button" value="<%ejGetML(MLG_WLAN_WDS_Str12)%>" name="Scan" onClick="ScanClick();" />
+					<span id="Scan_img"></span>
+                </span></div>
+            </li>
+            <li class="space">
+            </li>
+            <!--Note define start-->
+            <li class="noteframe">
+                <div class="w_text">
+                    <span class="i_note"><%ejGetML(MLG_Network_Note)%>:</span>
+                </div>
+                <div class="note_text">
+                    <span id="note1">&nbsp;&nbsp;<%ejGetML(MLG_WLAN_ChannelStatus_Str4)%></span>
+                </div>
+            </li>
+            <!--Note define end-->
+            <li class="space">
+            </li>
+            <li class="set1">
+                <div class="title">
+                    <%ejGetML(MLG_WLAN_ChannelStatus_Str5)%>
+                </div>
+                <div id="columnChart">
+                	<table cellpadding="0" cellspacing="0" border="0">
+						<tr>
+                			<td colspan="2">
+            					<ul class="indicate">
+            						<li class="channel"><%ejGetML(MLG_WLAN_ChannelStatus_Str6)%></li>
+									<li class="current"><%ejGetML(MLG_WLAN_ChannelStatus_Str7)%></li>
+            					</ul>
+							</td>
+                		</tr>
+						<tr>
+                			<td colspan="2"><div class="y-text"><%ejGetML(MLG_WLAN_ChannelStatus_Str6)%></div></td>
+                		</tr>
+                		<tr>
+                			<td class="y-value" valign="bottom">
+                				<div class="y-line"></div>
+                				<div class="y-line"></div>
+                				<div class="y-line"></div>
+                				<div class="y-line"></div>
+                				<div class="y-line"></div>
+                				<div class="y-line"></div>
+                				<div class="y-line"></div>
+                				<div class="y-line"></div>
+                				<div class="y-line"></div>
+                				<div class="y-line"></div>
+                			</td>
+							<td id="chartBlock">
+						
+							</td>
+							</tr>
+                		<tr>
+                			<td>&nbsp;</td>
+                			<td id="channelSpec" class="x-value">
+
+							</td>
+                		</tr>
+						<tr>
+                			<td>&nbsp;</td>
+							<td><div class="x-text"><%ejGetML(MLG_WLAN_ChannelStatus_Str8)%></div></td>
+                		</tr>
+                	</table>
+                </div>
+            </li>
+            <li class="space">
+            </li>
+        </ul>
+<!-- #BEGINZONE ScanTime_note_wlan_channel_zone -->
+			<li class="noteframe">
+                <div class="w_text">
+                    <span class="i_note"><%ejGetML(MLG_WLAN_ChannelStatus_Str10)%>: <span id="time"><%ejGetWl(wlScanTimeInterval)%></span></span> 
+                </div>
+            </li>
+<!-- #ENDZONE ScanTime_note_wlan_channel_zone -->
+            <li class="noteframe">
+                <div class="w_text">
+                    <span class="i_note"><%ejGetML(MLG_Common_Notes)%>:</span>
+                </div>
+               <div class="note_text">
+               <%ejGetML(MLG_WLAN_ChannelStatus_Str9)%><br>
+               <!--
+               &nbsp;&nbsp;To avoid wireless channel compatibility issue, Auto Channel Select will exclude channel 12 and channel 13, but user can choose channel 12 and channel 13 manually.
+               -->
+               </div>                
+            </li>
+    </div>
+</div>
+<br/>
+<br/>
+</form>
+<script language="javascript">
+<!-- hide
+   frmLoad();
+// done hiding -->
+</script>

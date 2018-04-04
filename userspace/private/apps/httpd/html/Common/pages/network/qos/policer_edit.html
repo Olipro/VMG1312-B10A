@@ -1,0 +1,807 @@
+<script language="javascript">
+<!-- hide
+var qosPolicerName =  '<%ejGet(qosPolicerName)%>';
+var qosPolicerAllName =  '<%ejGetOther(qosPolicerName, all)%>';
+var qosPolicerEnable =  '<%ejGet(qosPolicerEnable)%>';
+var qosMeterType =  '<%ejGet(qosMeterType)%>';
+var qosCommittedRate =  '<%ejGet(qosCommittedRate)%>';
+var qosCommittedBurstSize = '<%ejGet(qosCommittedBurstSize)%>';
+var qosExcessBurstSize = '<%ejGet(qosExcessBurstSize)%>';
+var qosPeakRate = '<%ejGet(qosPeakRate)%>';
+var qosPeakBurstSize = '<%ejGet(qosPeakBurstSize)%>';
+var qosConformingAction = '<%ejGet(qosConformingAction)%>';
+var qosPartialConformingAction = '<%ejGet(qosPartialConformingAction)%>';
+var qosNonConformingAction = '<%ejGet(qosNonConformingAction)%>';
+var avaliableList = '<%ejGetOther(qosAvailableCls)%>';
+var selectedList = '<%ejGet(qosClsList)%>';
+
+function setSelect(item, value) {
+	for (i=0; i<item.options.length; i++) {
+		if (item.options[i].value == value) {
+			item.selectedIndex = i;
+			break;
+		}
+	}
+}
+
+function getSelect(item) {
+	var idx;
+	if (item.options.length > 0) {
+		idx = item.selectedIndex;
+		return item.options[idx].value;
+	}
+	else {
+		return '';
+	}
+}
+
+function addRow(id, val, ClassName, tbl)
+{
+	var str = '';
+	str += '<tr align="center">';
+	if (tbl.indexOf('availableClass') != -1)
+		str += '<td class="table_font"><input type="checkbox" name="available_'+id+'" id="available_'+id+'" value="'+val+'" /></td>';
+	else
+		str += '<td class="table_font"><input type="checkbox" name="selected_'+id+'" id="selected_'+id+'" value="'+val+'" /></td>';
+	str += '<td class="table_font">'+ClassName+'</td>';
+	str += '</tr>';   
+	$('#'+tbl).append(str)
+}
+
+function writeAvailableTable()
+{	
+	var i = 0;
+	var info = avaliableList.split('|');
+
+	if (info.length > 0) {
+		for ( i = 0; i < info.length-1; i++ ) {
+			if ( info[i] != '' ) {
+				var cls = info[i].split(':');
+				if (cls[1]!="(null)") {  
+					var names = "Class " + cls[2] +  ": " + cls[0];
+					addRow(i, cls[1], names, 'availableClass');
+				}
+			}
+		}
+	}
+}
+
+function writeSelectedTable()
+{
+	var i = 0;
+	var info = selectedList.split('|');
+
+	if (info.length > 0) {
+		for ( i = 0; i < info.length; i++ ) {
+			if ( info[i] != '' ) {
+				var cls = info[i].split(':');
+				if (cls[1]!="(null)") {
+					var names = "Class " + cls[2] +  ": " + cls[0];
+					addRow(i, cls[1], names, 'selectedClass');
+				}
+			}
+		}
+	}
+}
+
+function btnMoveToSelected()
+{
+	var i = 0;
+	var tempStr = avaliableList.split('|');
+	var tempStr2 = '';
+	if (tempStr.length > 0) {
+		for (i = 0; i < tempStr.length; i++)
+		{
+			if (tempStr[i] != '' && tempStr[i] != undefined)
+			{
+				if (document.getElementById('available_'+i).checked == true){
+					 var j = document.getElementById("selectedClass").rows.length;
+					 var cls = tempStr[i].split(':');
+					 if (cls[1]!="(null)") {
+						 var names = "Class " + cls[2] +  ": " + cls[0];
+						 addRow(j-1, cls[1], names, 'selectedClass');
+						 selectedList += tempStr[i]+'|';
+						 continue;
+					}
+				}
+				tempStr2 += tempStr[i]+'|';
+			}
+		}
+	}
+
+	for (i = 1 ; i < document.getElementById("availableClass").rows.length; )
+	{
+		document.getElementById("availableClass").deleteRow(i);
+	}
+	avaliableList = tempStr2;
+	writeAvailableTable();
+}
+
+function btnMoveToAvailable()
+{
+	var i = 0;
+	var tempStr = selectedList.split('|');
+	var tempStr2 = '';
+
+	if (tempStr.length > 0) {
+		for (i = 0; i < tempStr.length; i++)
+		{
+			if (tempStr[i] != '' && tempStr[i] != undefined)
+			{
+				if (document.getElementById('selected_'+i).checked == true){
+					 var j = document.getElementById("availableClass").rows.length;
+					 var cls = tempStr[i].split(':');
+					 if (cls[1]!="(null)") {
+						 var names = "Class " + cls[2] +  ": " + cls[0];
+						 addRow(j-1, cls[1], names, 'availableClass');
+						 avaliableList += tempStr[i]+'|';
+						 continue;
+					}
+				}
+				tempStr2 += tempStr[i]+'|';
+			}
+		}
+	}
+
+	for (i = 1 ; i < document.getElementById("selectedClass").rows.length; )
+	{
+		document.getElementById("selectedClass").deleteRow(i);
+	}
+	selectedList = tempStr2;	
+	writeSelectedTable();
+}
+
+function meterTypeChange(){
+  with (document.forms[0]) {
+    var meterT = getSelect(meterType);
+		switch (meterT) {
+		case "SimpleTokenBucket":
+			showhide("srtcm", "0");
+			showhide("trtcm", "0");
+			showhide("CAction", "1");
+			showhide("PCAction", "0");
+			showhide("NCAction", "1");
+			break;
+			
+		case "SingleRateThreeColor":
+			showhide("srtcm", "1");
+			showhide("trtcm", "0");
+			showhide("CAction", "1");
+			showhide("PCAction", "1");
+			showhide("NCAction", "1");
+			break;
+		
+		case "TwoRateThreeColor":
+			showhide("srtcm", "0");
+			showhide("trtcm", "1");
+			showhide("CAction", "1");
+			showhide("PCAction", "1");
+			showhide("NCAction", "1");
+			break;
+			
+		default:
+		}
+  }
+}
+
+function CActionChange() {
+	with (document.forms[0]) {
+		var CA = getSelect(conformActionShow);
+		switch (CA) {
+		case "Null":			
+			showhide("CAMark", "0");
+			break;
+			
+		case "Drop":
+			showhide("CAMark", "0");
+			break;
+		
+		case "DSCPMark":
+			showhide("CAMark", "1");
+			break;
+			
+		default:
+		}
+	}
+}
+
+function PCActionChange() {
+	with (document.forms[0]) {
+		var PCA = getSelect(partialConformActionShow);
+		switch (PCA) {
+		case "Null":			
+			showhide("PCAMark", "0");
+			break;
+			
+		case "Drop":
+			showhide("PCAMark", "0");
+			break;
+		
+		case "DSCPMark":
+			showhide("PCAMark", "1");
+			break;
+			
+		default:
+		}
+	}
+}
+
+function NCActionChange() {
+	with (document.forms[0]) {
+		var NCA = getSelect(nonConformActionShow);
+		switch (NCA) {
+		case "Null":			
+			showhide("NCAMark", "0");
+			break;
+			
+		case "Drop":
+			showhide("NCAMark", "0");
+			break;
+		
+		case "DSCPMark":
+			showhide("NCAMark", "1");
+			break;
+			
+		default:
+		}
+	}
+}
+
+
+function btnApply(){
+	with ( document.forms[0] ){
+	var clslist = '';
+	var msg;
+	var i;
+         	
+		if(policerName.value == ""){
+			msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str1)%>';
+         	hciAlert(msg, {height: 180, type: 2, title: ''});
+         	return;
+		}
+    if ( isValidName(policerName.value) == false ) {
+       msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str2)%>';
+       hciAlert(msg, {height: 180, type: 2, title: ''});
+       return;
+    }
+    if (policerName.value.length > 15) {
+       msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str3)%>';
+       hciAlert(msg, {height: 180, type: 2, title: ''});
+       return;
+    }
+
+    var existPolicerName = qosPolicerAllName.split('|');
+    for ( i = 0; i < existPolicerName.length; i++ ) {
+      if (existPolicerName[i] != '' && existPolicerName[i] != qosPolicerName)
+      {
+        if (existPolicerName[i] == policerName.value)
+        {
+          msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str4)%>';
+          hciAlert(msg, {height: 180, type: 2, title: ''});
+          return;
+        }
+      }
+    }
+
+		if (getSelect(meterType) == "SimpleTokenBucket") {
+			if (cmitRate.value == "") {
+				msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str5)%>';
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if (cmitBurstSize.value == "") {
+				msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str6)%>';
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if ((cmitRate.value <= 0) || (cmitRate.value > 1000000)) {
+				msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str7)%>",cmitRate.value);
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if ((cmitBurstSize.value <= 1) || (cmitBurstSize.value > 1000)) {
+				msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str8)%>",cmitBurstSize.value);
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if (getSelect(conformActionShow) == "DSCPMark") {
+				if (markCAValue.value == "") {
+					msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str9)%>';
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				if ((markCAValue.value < 0) || (markCAValue.value > 63)) {
+					msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str10)%>",markCAValue.value);
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				conformAction.value = markCAValue.value;
+			}
+			else
+			  conformAction.value = getSelect(conformActionShow);
+			if (getSelect(nonConformActionShow) == "DSCPMark") {
+				if (markNCAValue.value == "") {
+					msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str11)%>';
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				if ((markNCAValue.value < 0) || (markNCAValue.value > 63)) {
+					msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str12)%>",markNCAValue.value);
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				nonConformAction.value = markNCAValue.value;
+			}
+			else
+			  nonConformAction.value = getSelect(nonConformActionShow);
+		}
+		else if (getSelect(meterType) == "SingleRateThreeColor") {
+			if (cmitRate.value == "") {
+				msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str13)%>';
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if (cmitBurstSize.value == "") {
+				msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str14)%>';
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if (excessBurstSize.value == ""){
+				msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str15)%>';
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if ((cmitRate.value <= 0) || (cmitRate.value > 1000000)) {
+				msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str16)%>",cmitRate.value);
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if ((cmitBurstSize.value <= 1) || (cmitBurstSize.value > 1000)) {
+				msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str17)%>",cmitBurstSize.value);
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if ((excessBurstSize.value <= 1) || (excessBurstSize.value > 1000)) {
+				msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str18)%>",excessBurstSize.value);
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if (getSelect(conformActionShow) == "DSCPMark") {
+				if (markCAValue.value == "") {
+					msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str19)%>';
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				if ((markCAValue.value < 0) || (markCAValue.value > 63)) {
+					msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str20)%>",markCAValue.value);
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				conformAction.value = markCAValue.value;
+			}
+			else
+			  conformAction.value = getSelect(conformActionShow);
+			if (getSelect(partialConformActionShow) == "DSCPMark") {
+				if (markPCAValue.value == "") {
+					msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str21)%>';
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				if ((markPCAValue.value < 0) || (markPCAValue.value > 63)) {
+					msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str22)%>",markPCAValue.value);
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				partialConformAction.value = markPCAValue.value;
+			}
+			else
+			  partialConformAction.value = getSelect(partialConformActionShow);
+			if (getSelect(nonConformActionShow) == "DSCPMark") {
+				if (markNCAValue.value == "") {
+					msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str23)%>';
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				if ((markNCAValue.value < 0) || (markNCAValue.value > 63)) {
+					msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str24)%>",markNCAValue.value);
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				nonConformAction.value = markNCAValue.value;
+			}
+			else
+			  nonConformAction.value = getSelect(nonConformActionShow);
+		}
+		else if (getSelect(meterType) == "TwoRateThreeColor") {
+			if (cmitRate.value == "") {
+				msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str25)%>';
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if (cmitBurstSize.value == "") {
+				msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str26)%>';
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if (peakRate.value == ""){
+				msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str27)%>';
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if (peakBurstSize.value == ""){
+				msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str28)%>';
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if ((cmitRate.value <= 0) || (cmitRate.value > 1000000)) {
+				msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str29)%>",cmitRate.value);
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if ((cmitBurstSize.value <= 1) || (cmitBurstSize.value > 1000)) {
+				msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str30)%>",cmitBurstSize.value)
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if ((peakRate.value <= 0) || (peakRate.value > 1000000)) {
+				msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str31)%>",peakRate.value);
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if ((peakBurstSize.value <= 1) || (peakBurstSize.value > 1000)) {
+				msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str32)%>",peakBurstSize.value);
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if (parseInt(peakRate.value) < parseInt(cmitRate.value)) {
+				msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str33)%>';
+				hciAlert(msg, {height: 180, type: 2, title: ''});
+				return;
+			}
+			if (getSelect(conformActionShow) == "DSCPMark") {
+				if (markCAValue.value == "") {
+					msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str34)%>';
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				if ((markCAValue.value < 0) || (markCAValue.value > 63)) {
+					msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str35)%>",markCAValue.value);
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				conformAction.value = markCAValue.value;
+			}
+			else
+			  conformAction.value = getSelect(conformActionShow);
+			if (getSelect(partialConformActionShow) == "DSCPMark") {
+				if (markPCAValue.value == "") {
+					msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str36)%>';
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				if ((markPCAValue.value < 0) || (markPCAValue.value > 63)) {
+					msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str37)%>",markPCAValue.value);
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				partialConformAction.value = markPCAValue.value;
+			}
+			else
+			  partialConformAction.value = getSelect(partialConformActionShow);
+			if (getSelect(nonConformActionShow) == "DSCPMark") {
+				if (markNCAValue.value == "") {
+					msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str38)%>';
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				if ((markNCAValue.value < 0) || (markNCAValue.value > 63)) {
+					msg = MLG_Makestring("<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str39)%>",markNCAValue.value);
+					hciAlert(msg, {height: 180, type: 2, title: ''});
+					return;
+				}
+				nonConformAction.value = markNCAValue.value;
+			}
+			else
+			  nonConformAction.value = getSelect(nonConformActionShow);
+		}		
+    
+
+		if(document.getElementById("selectedClass").rows.length == 1){
+			msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str40)%>';
+         	hciAlert(msg, {height: 180, type: 2, title: ''});
+         	return;
+		}
+
+      var qosClassifierCIRCBR = "<%ejGetOther(qosClassifierCIRCBR, all)%>";
+      var existClassifierCIRCBR = qosClassifierCIRCBR.split('|');
+      for ( i = 0; i < existClassifierCIRCBR.length ; i++ ) {
+        if (existClassifierCIRCBR[i] != '')
+        {
+          if (existClassifierCIRCBR[i].indexOf('/') != -1) {
+            var temp = existClassifierCIRCBR[i];
+            var CIRCBR = temp.split('/');
+            if ((CIRCBR[0] == cmitRate.value)&&(cmitRate.value!=qosCommittedRate))
+            {
+              if ((CIRCBR[1] == cmitBurstSize.value)&&(cmitBurstSize.value!=qosCommittedBurstSize))
+              {
+                msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str41)%>';
+                hciAlert(msg, {height: 180, type: 2, title: ''});
+                return;
+              }
+            }
+          }
+        }
+      }
+      //active
+      if(policerEnbl.checked == true)
+        policerEnblValue.value = 1;
+      else
+        policerEnblValue.value = 0;
+        
+		//selected class
+	for(i = 0; i < document.getElementById("selectedClass").rows.length-1; i++){
+		clslist += document.getElementById("selected_"+i).value + ','
+	}
+	
+	var clslistnumber = clslist.split(',')
+  if(clslistnumber.length > 4)
+  {
+    msg = '<%ejGetML(MLG_QOS_QOSPolicerSetup_AlertMsg_Str42)%>';
+    hciAlert(msg, {height: 180, type: 2, title: ''});
+    return;
+  }
+	clsList.value = clslist;
+	
+		sessionKey.value = mainFrame.gblsessionKey;
+		submit();
+		$('.ui-dialog-titlebar-close').trigger('click');
+		$.openLoadingMask(1);
+		return;  
+	}
+}
+
+function frmLoad()
+{ 
+	with(document.forms[0]){
+	  var oldclslist = "";
+	    
+		if (qosPolicerEnable == 1)
+			policerEnbl.checked = true;
+		else
+			policerEnbl.checked = false;
+		
+		cmitRate.value = qosCommittedRate;
+		cmitBurstSize.value = qosCommittedBurstSize;
+		policerName.value = qosPolicerName;
+		setSelect(meterType, qosMeterType);
+		if(getSelect(meterType) == "SingleRateThreeColor") {
+		  excessBurstSize.value = qosExcessBurstSize;
+    }
+    else if(getSelect(meterType) == "TwoRateThreeColor") {
+		  peakRate.value = qosPeakRate;
+		  peakBurstSize.value = qosPeakBurstSize;
+    }
+		if (qosConformingAction == "Null" || qosConformingAction == "Drop") {
+		  setSelect(conformActionShow, qosConformingAction);
+		}
+		else {
+		  setSelect(conformActionShow, 'DSCPMark');
+		  markCAValue.value = qosConformingAction;
+    }
+		if (qosNonConformingAction == "Null" || qosNonConformingAction == "Drop") {
+		  setSelect(nonConformActionShow, qosNonConformingAction);
+		}
+		else {
+		  setSelect(nonConformActionShow, 'DSCPMark');
+		  markNCAValue.value = qosNonConformingAction;
+    }
+		if (getSelect(meterType) == "SingleRateThreeColor" || getSelect(meterType) == "TwoRateThreeColor") {
+			if (qosPartialConformingAction == "Null" || qosPartialConformingAction == "Drop") {
+				setSelect(partialConformActionShow, qosPartialConformingAction);
+			}
+			else {
+				setSelect(partialConformActionShow, 'DSCPMark');
+				markPCAValue.value = qosPartialConformingAction;
+			}
+		}
+		writeAvailableTable();
+		writeSelectedTable();
+		
+    for(i = 0; i < document.getElementById("selectedClass").rows.length-1; i++){
+		oldclslist += document.getElementById("selected_"+i).value + ','
+    }
+    oldClsList.value = oldclslist;
+    
+	  meterTypeChange();
+	  CActionChange();
+	  PCActionChange();
+	  NCActionChange();
+		return;
+	}
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnApply(); });
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+// done hiding -->
+</script>
+<form action="/pages/tabFW/qos-qospolicer.cmd" method="post" target="mainFrame">
+   <input type="hidden" name="action" id="action" value="edit">
+   <input type="hidden" name="sessionKey" id="sessionKey" >
+   <input type="hidden" name="clsList" id="clsList" value="">
+   <input type="hidden" name="oldClsList" id="oldClsList" value="">
+   <input type="hidden" name="policerEnblValue" id="policerEnblValue" value="">
+   <input type="hidden" name="conformAction" id="conformAction" value="">
+   <input type="hidden" name="partialConformAction" id="partialConformAction" value="">
+   <input type="hidden" name="nonConformAction" id="nonConformAction" value="">
+<div class="popup_frame" >
+<!--Unit Explain start-->
+<!--Unit Explain End-->
+<!--Set area start-->
+    <div class="data_frame">
+      <ul>
+<!--level 1 title start-->
+        <li class="title"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str32)%></li>
+<!--level 1 title end-->
+<!--level 1 start-->
+        <li class="set1">
+          <div class="w_text">
+            <ul>
+              <li class="left_table"><input type="checkbox" name="policerEnbl" id="policerEnbl" />&nbsp;<%ejGetML(MLG_QOS_QOSPolicerSetup_Str12)%></li>
+              <li class="right_table">
+              </li>
+            </ul>
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_Common_Name)%>  :</li>
+              <li class="right_table">
+                <input type="text" name="policerName" id="policerName" size="30">
+              </li>
+            </ul>
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str7)%>  :</li>
+              <li class="right_table">
+                <select name="meterType" id="meterType" SIZE="1" onchange="meterTypeChange();">
+                  <option value="SimpleTokenBucket" selected><%ejGetML(MLG_QOS_QOSPolicerSetup_Str14)%></option>
+                  <option value="SingleRateThreeColor"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str15)%></option>
+                  <option value="TwoRateThreeColor"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str16)%></option>
+                </select>
+              </li>
+            </ul>
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str17)%></li>
+              <li class="right_table">
+                <input type="text" name="cmitRate" id="cmitRate" size="30">&nbsp;(<%ejGetML(MLG_Common_Kbps)%>)
+              </li>
+            </ul>
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str18)%></li>
+              <li class="right_table">
+                <input type="text" name="cmitBurstSize" id="cmitBurstSize" size="30">&nbsp;(<%ejGetML(MLG_Common_Kbps)%>)
+              </li>
+            </ul>
+            <div id="srtcm" class="w_text">
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str33)%> :</li>
+                <li class="right_table">
+                  <input type="text" name="excessBurstSize" id="excessBurstSize" size="30">&nbsp;(<%ejGetML(MLG_Common_Kbps)%>)
+                </li>
+              </ul>
+            </div>
+            <div id="trtcm">
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str19)%></li>
+                <li class="right_table">
+                  <input type="text" name="peakRate" id="peakRate" size="30">&nbsp;(<%ejGetML(MLG_Common_Kbps)%>)
+                </li>
+                <li class="left_table"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str20)%></li>
+                <li class="right_table">
+                  <input type="text" name="peakBurstSize" id="peakBurstSize" size="30">&nbsp;(kbyte)
+                </li>
+              </ul>
+            </div>
+            <div id="CAction">
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str21)%></li>
+                <li class="right_table">
+                  <select name="conformActionShow" onchange="CActionChange();">
+                    <option value="Null" selected><%ejGetML(MLG_QOS_QOSPolicerSetup_Str22)%></option>
+                    <option value="DSCPMark"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str23)%></option>
+                  </select>
+                  <div id="CAMark">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="markCAValue" id="markCAValue" size="3" maxlength="3">(0~63)
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div id="PCAction">
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str25)%></li>
+                <li class="right_table">
+                  <select name="partialConformActionShow" onchange="PCActionChange();">
+                    <option value="Null" selected><%ejGetML(MLG_QOS_QOSPolicerSetup_Str22)%></option>
+                    <option value="Drop"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str24)%></option>
+                    <option value="DSCPMark"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str23)%></option>
+                  </select>
+                  <div id="PCAMark">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name="markPCAValue" id="markPCAValue" type="text" size="3" maxlength="3">(0~63)
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div id="NCAction">
+              <ul>
+                <li class="left_table"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str26)%></li>
+                <li class="right_table">
+                  <select name="nonConformActionShow" onchange="NCActionChange();">
+                    <option value="Drop" selected><%ejGetML(MLG_QOS_QOSPolicerSetup_Str24)%></option>
+                    <option value="DSCPMark"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str23)%></option>
+                  </select>
+                  <div id="NCAMark">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="markNCAValue" id="markNCAValue" size="3" maxlength="3">(0~63)
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </li>
+<!--level 1 end-->
+<div class="space"></div>
+<li class="title"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str27)%></li>
+<li class="set2"> 
+<div class="w_text"><table width="98%" border="0" cellpadding="0" cellspacing="2" >
+<tr >
+<td width="35%" ><table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="365" class="title3"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str28)%></td>
+</tr>
+</table></td>
+<td width="10%"  align="center"  ></td>
+<td width="35%"  ><table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="366" class="title3"><%ejGetML(MLG_QOS_QOSPolicerSetup_Str30)%></td>
+</tr>
+</table></td>
+</tr>
+<tr >
+<td valign="top" ><ul>
+<div class="w_text3">
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id='availableClass'>
+<tr align="center" >
+<td width="5%" class="top_font">#</td>
+<td class="top_font"><%ejGetML(MLG_QOS_QOSClassSetup_Str6)%></td>
+</tr>
+</table>
+</div>
+</ul></td>
+
+<td  align="center" class="blod" >
+<input type='button' style="background:url(images/i_right_bn.gif) no-repeat; width:32px; height:27px;border:none; display:block; cursor:pointer;" onClick='btnMoveToSelected()'>
+<input type='button' style="background:url(images/i_left_bn.gif) no-repeat; width:32px; height:27px;border:none; display:block; cursor:pointer;" onClick='btnMoveToAvailable()'>
+</td>
+
+<td valign="top" ><ul>
+<div class="w_text3">
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id='selectedClass'>
+<tr align="center" >
+<td width="5%" class="top_font">#</td>
+<td class="top_font"><%ejGetML(MLG_QOS_QOSClassSetup_Str6)%></td>
+</tr>
+</table>
+</div>
+</ul>
+</td>
+</tr>
+</table></div>
+</li>
+<!--Note define start-->
+<!--Note define end-->
+      </ul>
+    </div>
+<!--Set area end-->
+  </div>
+</form>

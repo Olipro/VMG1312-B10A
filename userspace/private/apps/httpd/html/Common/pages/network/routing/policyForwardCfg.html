@@ -1,0 +1,159 @@
+<script language='JavaScript'>
+<!-- Hide
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+var errMsg = "<%ejGetOther(errMsg)%>";
+var interfaceInfo = '<%ejGetOther(wanInterfaceInfo, route)%>';
+
+function btnAdd()
+{
+       if( interfaceInfo == '' )
+       {
+            hciAlert('<%ejGetML(MLG_Network_PolicyForwarding_Str11_1)%> <a href=\'#\' onClick="$(\'.ui-dialog-titlebar-close\').trigger(\'click\'); window.parent.document.activePage(\'network-broadband\');" target="mainFrame"><%ejGetML(MLG_Network_PolicyForwarding_Str11_2)%></a> <%ejGetML(MLG_Network_PolicyForwarding_Str11_3)%>', {height: 180, type: 2, title: ''});
+		    return;
+       }
+       var db1 = window.parent.$.zyUiDialog({
+             width: '75%',
+             height: 360,
+            title: '<%ejGetML(MLG_Network_PolicyForwarding_Str13)%>',
+            buttons: {
+                '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+                '<%ejGetML(MLG_Common_Apply)%>': function(){}
+            }
+	  });
+        db1.load('/pages/network/routing/policyForwardAdd.html');
+        db1.dialog('open');
+}
+
+function removeClick(rml) {
+   var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 190,
+              title: '<%ejGetML(MLG_Network_PolicyForwarding_Str16)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_No)%>': function(){ db1.dialog('close'); },              	
+                 '<%ejGetML(MLG_Common_Yes)%>': function(){ db1.dialog('close'); $.openLoadingMask(1); deleteProcess(rml);}
+              }
+             });
+	   db1.load('/pages/delete.html');
+	   db1.dialog('open');
+}
+
+function deleteProcess(rml)
+{
+	document.forms[0].rmLst.value = rml;
+	document.forms[0].action.value = 'remove';	
+	document.forms[0].sessionKey.value = gblsessionKey;	
+	document.forms[0].submit();
+}
+
+function editClick(rml) {
+    var loc = 'routing-policyForwarding.cmd?lst='+rml+'&action=view&sessionKey='+gblsessionKey;
+    var db1 = window.parent.$.zyUiDialog({
+          width: '75%',
+          height: 360,
+         title: '<%ejGetML(MLG_Network_PolicyForwarding_Str14)%>',
+         buttons: {
+             '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+             '<%ejGetML(MLG_Common_Apply)%>': function(){}
+         }
+   });
+     db1.load(loc);
+     db1.dialog('open');
+
+}
+
+$(document).ready(function() {
+	if (errMsg != '')
+	{
+		hciAlert(errMsg, {height: 180, type: 2, title: ''});
+	}
+});
+
+// done hiding -->
+</script>
+
+<form action="/pages/tabFW/routing-policyForwarding.cmd" method="post">
+<input name="rmLst" type="HIDDEN" id="rmLst" value=""; />
+<input name="action" type="HIDDEN" id="action" value="add"; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""/>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Network_PolicyForwarding_Str1_1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<!--level 1 start-->
+<li class="set1">
+<div class="button_other">
+  <span class="none_right"><input type="button" id="addBtn" name="addBtn" value="<%ejGetML(MLG_Network_PolicyForwarding_Str13_1)%>" onclick="btnAdd();" /></span>
+</div>
+</li>
+<li class="set1"> 
+<div class="w_table">
+  <!--Table define start--><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame">
+<tbody id='rtEntry'><tr align="center">
+<td width="5%" class="top_font"><center>#</center></td>
+<td class="top_font"><center><%ejGetML(MLG_Network_PolicyForwarding_Str2)%></center></td>
+<td class="top_font"><center><%ejGetML(MLG_Network_PolicyForwarding_Str3)%></center></td>
+<td class="top_font"><center><%ejGetML(MLG_Network_PolicyForwarding_Str4)%></center></td>
+<td class="top_font"><center><%ejGetML(MLG_Network_PolicyForwarding_Str5)%></center></td>
+<td class="top_font"><center><%ejGetML(MLG_Network_PolicyForwarding_Str6)%></center></td>
+<td class="top_font"><center><%ejGetML(MLG_Network_PolicyForwarding_Str7)%></center></td>
+<td class="top_font"><center><%ejGetML(MLG_Network_PolicyForwarding_Str8)%></center></td>
+<td width="60" class="top_font" style="border-right:0px;"><center><%ejGetML(MLG_Network_PolicyForwarding_Str9)%></center></td>
+</tr>
+<script language='JavaScript'>
+<!-- Hide
+var str ='<%ejGetOtherBig(getPrEntry)%>';
+var str2 = str.split('|');
+var finalStr = '';
+entryNum = '<%ejGet(entryNum)%>';
+$(function(){
+    $('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );  
+    $('.textOverflow').ellipsis(true); //...
+});
+if (parseInt(entryNum) >= 32){
+	$("#addBtn").attr("disabled",true);
+}
+
+for (i=1; i<str2.length; i++)
+{
+	var entry = str2[i].split('/');	
+	if (entry[2] == undefined)
+		break;
+	finalStr += "<tr align='center'>";
+	finalStr += "<td  class=\"table_font\">"+i+"</td>";
+	finalStr += "<td  class=\"table_font textOverflow\">"+entry[0]+"</td>"; //name
+	finalStr += "<td  class=\"table_font textOverflow\">"+entry[1]+"</td>"; //source ip
+	finalStr += "<td  class=\"table_font textOverflow\">"+entry[2]+"</td>"; //source subnet mask
+	finalStr += "<td  class=\"table_font textOverflow\">"+entry[3]+"</td>"; //portocol
+	finalStr += "<td  class=\"table_font textOverflow\">"+entry[4]+"</td>"; //source port
+	finalStr += "<td  class=\"table_font textOverflow\">"+entry[5]+"</td>"; //source mac
+	finalStr += "<td  class=\"table_font textOverflow\">"+entry[6]+"</td>"; //WAN interface
+  finalStr += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" class=\"edit\" title=\"<%ejGetML(MLG_Common_Edit)%>\" id='editBtn' onClick = editClick('"+entry[0]+"')></a></li><li><a href=\"#\" class=\"delete\" title=\"Delete\" id='deleteBtn' onClick = removeClick('"+entry[0]+"') ></a></li></ul></div></td>";
+  finalStr += "</tr>";
+}
+
+$('#rtEntry').append(finalStr);
+//done -->
+</script>
+
+<!-- generate the table -->
+
+</tbody>
+  </table>
+</div><!--Table define end-->
+</li>
+<!--level 1 end-->
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Network_Note)%>:</span></div>
+<div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_Network_PolicyForwarding_Str11_1)%> <a href='#' onClick= "window.parent.document.activePage('network-broadband');"><%ejGetML(MLG_Network_PolicyForwarding_Str11_2)%></a> <%ejGetML(MLG_Network_PolicyForwarding_Str11_3)%> </div>
+</li>
+<!--Note define end-->
+<!--Set area end-->
+</ul></div>
+</div>
+</form>

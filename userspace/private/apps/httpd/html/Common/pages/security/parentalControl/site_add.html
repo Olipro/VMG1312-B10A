@@ -1,0 +1,273 @@
+<script language='javascript'>
+/*
+$(function(){
+    //select all
+    $("#selectAll").click(function() {
+       if($("#selectAll").attr("checked")){
+         $("input[name='website_col[]']").each(function() {
+             $(this).attr("checked", true);
+         });
+       }else{
+         $("input[name='website_col[]']").each(function() {
+             $(this).attr("checked", false);
+         });          
+       }
+    });
+   
+    $("#addselect").change(function(){
+        var method = $(this).val();
+        if(method == 'manual') {
+            $('#addManually').show();
+            $('#addWebsiteList').hide();
+        } else {
+            $('#addManually').hide();
+            $('#addWebsiteList').show();
+        }        
+    });
+});
+*/
+
+function checkMatch(String_Array,string){
+	for(loop = 0; loop < String_Array.length; loop++){
+		if(String_Array[loop].match(string) && String_Array[loop].length ==  string.length){
+			return 1;
+		}
+	}
+	return 0;
+}
+
+function checkinjection(str)
+{
+        var len = str.length;
+        for (var i =0; i<str.length; i++) {
+                if (str.charAt(i) == '`' || str.charAt(i) == '$' ||
+                    str.charAt(i) == '<' || str.charAt(i) == '>' ||
+                    str.charAt(i) == '-' || str.charAt(i) == '\\' ||
+                    str.charAt(i) == '#' || str.charAt(i) == '&' ||
+                    str.charAt(i) == '|' || str.charAt(i) == "'" ||
+                    str.charAt(i) == '"' || str.charAt(i) == ',' || str.charAt(i) == ':') {
+                        return false;
+                }else{
+                        continue;
+                }
+        }
+        return true;
+}
+
+function btnOK()
+{
+	var tempString = "";
+	var siteAddForm = $('#siteAddForm');
+	var urlstring = document.getElementById("urlString").value;
+	var error = 0;
+	var duplicateStrFlag = 0;
+	if (urlstring == " ")	
+		urlstring.replace(" ", "");
+
+	urlstring_Array = "";
+        if (!(checkinjection(siteAddForm[0].SiteNameTxt0.value)) || !(checkinjection(siteAddForm[0].SiteNameTxt1.value)) || 
+	    !(checkinjection(siteAddForm[0].SiteNameTxt2.value)) || !(checkinjection(siteAddForm[0].SiteNameTxt3.value)) || 
+            !(checkinjection(siteAddForm[0].SiteNameTxt4.value)))
+        {
+                msg = 'Blocked Site/URL Keyword is invalid.';
+                hciAlert(msg, {height: 180, type: 2, title: ''});
+                return;
+        }
+	for (var i = 0; i < 5; i++) {
+		var opt = $('<option></option>')
+		switch (i) {
+		 	case 0:
+					if(siteAddForm[0].SiteNameTxt0.value != ""){
+						opt.html(siteAddForm[0].SiteNameTxt0.value);
+						tempString = siteAddForm[0].SiteNameTxt0.value;
+					}
+					break;
+			case 1:
+					if(siteAddForm[0].SiteNameTxt1.value != ""){
+						opt.html(siteAddForm[0].SiteNameTxt1.value);
+						tempString = siteAddForm[0].SiteNameTxt1.value;
+					}
+					break;	
+			case 2:
+					if(siteAddForm[0].SiteNameTxt2.value != ""){
+						opt.html(siteAddForm[0].SiteNameTxt2.value);
+						tempString = siteAddForm[0].SiteNameTxt2.value;
+					}
+					break;	
+			case 3:
+					if(siteAddForm[0].SiteNameTxt3.value != ""){
+						opt.html(siteAddForm[0].SiteNameTxt3.value);
+						tempString = siteAddForm[0].SiteNameTxt3.value;
+					}
+					break;							
+			case 4:
+					if(siteAddForm[0].SiteNameTxt4.value != ""){
+						opt.html(siteAddForm[0].SiteNameTxt4.value);
+						tempString = siteAddForm[0].SiteNameTxt4.value;
+					}
+					break;
+    		}
+    		urlstring_Array = urlstring.split(",");
+		if(tempString != ""){
+			if (checkMatch(urlstring_Array,tempString) == 0){			
+				if(urlstring != "")
+					urlstring = urlstring.concat(",");
+		
+				if((urlstring.length + tempString.length) > 580){
+					hciAlert('<%ejGetML(MLG_Security_ParentalControl_AlertMsg_Str20)%>', {height: 180,type: 2, title: ''});
+					return;
+				}
+				urlstring = urlstring.concat(tempString);
+				if($('#websiteList option:last-child').html() != null){
+					$('#websiteList option:last-child').after(opt);
+				}else{
+					//$('#websiteList option:last-child').after(opt);
+					$("select[name='websiteList']").append(opt);
+				}
+				tempString = "";			
+			}else{
+				duplicateStrFlag = 1;
+			}
+		}
+	}
+/*	
+	$("input[name='website_col[]']").each(function() {
+		if($(this).attr("checked") && error == 0){
+			var row = $(this).parent().next();
+			if((urlstring.match(row.html()) == null)){
+				if(weblogstring.length + row.html().length < 580){
+					if(weblogstring != "")
+						weblogstring = weblogstring.concat(",");
+							
+					var opt = $('<option></option>')
+					opt.html(row.html());
+					if($('#websiteList option:last-child').html() != null){
+						$('#websiteList option:last-child').after(opt);
+					}else{
+						$("select[name='websiteList']").append(opt);
+					}
+					weblogstring = weblogstring.concat(row.html());
+				}
+			}
+		}
+  });
+*/
+	if(error == 1){
+		hciAlert('<%ejGetML(MLG_Security_ParentalControl_AlertMsg_Str20)%>', {height: 180,type: 2, title: ''});
+		return;
+	}
+	/*update urlstring*/
+	if(urlstring.length > 580){
+		hciAlert('<%ejGetML(MLG_Security_ParentalControl_AlertMsg_Str20)%>', {height: 180,type: 2, title: ''});
+		return;
+	}
+	if(duplicateStrFlag == 1){
+		hciAlert('<%ejGetML(MLG_Security_ParentalControl_AlertMsg_Str21)%>', {height: 180,type: 2, title: ''});
+	}
+	document.getElementById("urlString").value = urlstring;
+	db.dialog('close');		
+}
+
+var db = $('#site_add_root').parents('.dialogContener'); 
+var OKBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+//var OKBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children("button:contains('OK')");
+OKBtn.click(function(){ btnOK(); });
+
+</script>
+<form id='siteAddForm'>
+<div class="popup_frame" id='site_add_root'>
+  <div class="data_frame2">
+    <ul>
+<!--
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+	        <li class="all_table">
+              <span style="font-weight:bold">Method :</span>
+              <select id="addselect">
+                <option value="manual">Add manually</option>
+                <option value="sitelist">Add from visited website list</option>
+              </select>
+            </li>
+          </ul>
+        </div>
+      </li>
+-->
+      <li class="space"> </li>
+      <li class="set1" id="addManually">
+        <div class="w_text">
+		  <ul>
+	        <li class="left_table"><%ejGetML(MLG_Security_ParentalControl_Str37)%> :</li>
+		    <li class="right_table">
+		    <input name="SiteNameTxt0" id="SiteNameTxt0" type="text" size="36" maxlength="31" value=""/>
+		    </li>
+		  </ul>
+          <ul>
+	        <li class="left_table"><%ejGetML(MLG_Security_ParentalControl_Str37)%> :</li>
+		    <li class="right_table">
+			  <input name="SiteNameTxt1" id="SiteNameTxt1" type="text" size="36" maxlength="31" value=""/>
+		    </li>
+		  </ul>
+          <ul>
+	        <li class="left_table"><%ejGetML(MLG_Security_ParentalControl_Str37)%> :</li>
+		    <li class="right_table">
+			  <input name="SiteNameTxt2" id="SiteNameTxt2" type="text" size="36" maxlength="31" value=""/>
+		    </li>
+		  </ul>
+          <ul>
+	        <li class="left_table"><%ejGetML(MLG_Security_ParentalControl_Str37)%> :</li>
+		    <li class="right_table">
+			  <input name="SiteNameTxt3" id="SiteNameTxt3" type="text" size="36" maxlength="31" value=""/>
+		    </li>
+		  </ul>
+          <ul>
+	        <li class="left_table"><%ejGetML(MLG_Security_ParentalControl_Str37)%> :</li>
+		    <li class="right_table">
+			  <input name="SiteNameTxt4" id="SiteNameTxt4" type="text" size="36" maxlength="31" value=""/>
+		    </li>
+		  </ul>
+        </div>
+      </li>
+<!--
+      <li class="set1" id="addWebsiteList" style="display:none;">
+        <div class="w_table">
+          <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame">
+            <tr>
+              <td>
+                <table id="WebList" width="100%" cellpadding="0" cellspacing="0">
+                  <tr align="center">
+                    <td width="30" class="top_font">#</td>
+                    <td class="top_font" width="30"><input type="checkbox" name="selectAll" id="selectAll" /></td>
+                    <td class="top_font">Websites</td>
+                  </tr>
+                  <tr align="center">
+                    <td class="table_font">1</td>
+                    <td class="table_font"><input type="checkbox" name="website_col[]" /></td>
+                    <td class="table_font">ad.au.doubleclick.net</td>
+                  </tr>
+                  <tr align="center" class="defaultitem">
+                    <td class="table_font">2</td>
+                    <td class="table_font"><input type="checkbox" name="website_col[]" /></td>
+                    <td class="table_font">ad.z5x.net</td>
+                  </tr>
+                  <tr align="center" class="defaultitem">
+                    <td class="table_font">3</td>
+                    <td class="table_font"><input type="checkbox" name="website_col[]" /></td>
+                    <td class="table_font">blog.fbxfaq.com</td>
+                  </tr>
+                  <tr align="center" class="defaultitem">
+                    <td class="table_font">4</td>
+                    <td class="table_font"><input type="checkbox" name="website_col[]" /></td>
+                    <td class="table_font">www.johniewalker.com.tw</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </li>
+-->
+    </ul>
+  </div>
+</div>
+</form>

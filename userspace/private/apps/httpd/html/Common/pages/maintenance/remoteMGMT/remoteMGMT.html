@@ -1,0 +1,660 @@
+<script language="javascript">
+<!-- hide
+
+var portArray = new Array('<%ejGet(httpPort)%>','<%ejGet(httpsPort)%>','<%ejGet(sshPort)%>','<%ejGet(telnetPort)%>','<%ejGet(ftpPort)%>','<%ejGet(snmpPort)%>', '<%ejGet(tr69cConnReqPort)%>');
+var portArrayTmp; 
+var buildIPv6 = '<%ejGetOther(sysInfo, buildIPv6)%>';
+
+var clientCertInfo = '<%ejGetOther(clientCertList)%>';
+var clientCerts = clientCertInfo.split('|');
+var httpsCertName = '<%ejGet(httpsCertName)%>';
+var enblServiceRoute  = '<%ejGetOther(sysInfo, enblServiceRoute)%>';
+var interfaceInfo = '<%ejGetOther(routedWanNameList)%>';
+var interfaces = interfaceInfo.split('|');
+var interfacesLength = interfaces.length;
+var boundIfList = '<%ejGet(remoteMgmtBoundIfList)%>';
+var boundInterfaces = boundIfList.split('|');
+var boundIfName = '<%ejGet(remoteMgmtBoundIfName)%>';
+function frmLoad()
+{
+	with (document.forms[0])
+	{
+		httpLan.checked = <%ejGet(httpLan)%>;
+		httpWan.checked = <%ejGet(httpWan)%>;
+		httpPort.value = '<%ejGet(httpPort)%>';
+
+		httpsLan.checked = <%ejGet(httpsLan)%>;
+		httpsWan.checked = <%ejGet(httpsWan)%>;
+		httpsPort.value = '<%ejGet(httpsPort)%>';
+
+		sshLan.checked = <%ejGet(sshLan)%>;
+		sshWan.checked = <%ejGet(sshWan)%>;
+		sshPort.value = '<%ejGet(sshPort)%>';
+		
+		telnetLan.checked = <%ejGet(telnetLan)%>;
+		telnetWan.checked = <%ejGet(telnetWan)%>;
+		telnetPort.value = '<%ejGet(telnetPort)%>';
+		
+		ftpLan.checked = <%ejGet(ftpLan)%>;
+		ftpWan.checked = <%ejGet(ftpWan)%>;
+		ftpPort.value = '<%ejGet(ftpPort)%>';
+
+		snmpLan.checked = <%ejGet(snmpLan)%>;
+		snmpWan.checked = <%ejGet(snmpWan)%>;
+		snmpPort.value = '<%ejGet(snmpPort)%>';
+
+		icmpLan.checked = <%ejGet(icmpLan)%>;
+		icmpWan.checked = <%ejGet(icmpWan)%>;
+
+		TrustDomainHttpState.checked = <%ejGet(TrustDomainHttpState)%>;
+		TrustDomainHttpsState.checked = <%ejGet(TrustDomainHttpsState)%>;
+		TrustDomainSshState.checked = <%ejGet(TrustDomainSshState)%>;
+		TrustDomainTelnetState.checked = <%ejGet(TrustDomainTelnetState)%>;
+		TrustDomainFtpState.checked = <%ejGet(TrustDomainFtpState)%>;
+		TrustDomainSnmpState.checked = <%ejGet(TrustDomainSnmpState)%>;
+		TrustDomainIcmpState.checked = <%ejGet(TrustDomainIcmpState)%>;
+		/*TrustDomainIP.value = '<%ejGet(TrustDomainIP)%>'; */
+
+	}
+
+	if(enblServiceRoute == '1'){
+		if(boundIfList != ''){
+			var inBoundIfList = 0;
+			var i = 0, j = 0;
+			$('.selectWANIf').empty();
+			$('.selectWANIf').append("<input type='hidden' name='remoteMgmtBoundIfList' value='' size='1' maxlength='256'>");
+			for ( i = 1; i < interfacesLength; i++ ) {	// skip Any_WAN interface
+				inBoundIfList = 0;
+				for(j = 0; j < boundInterfaces.length; j++)
+				{
+					if( interfaces[i] == boundInterfaces[j] ) {
+						inBoundIfList = 1;
+						break;
+					}
+				}
+				if(inBoundIfList == 1) {
+					$('.selectWANIf').append(" <input type='checkbox' name='multiIf' checked value='" + interfaces[i] + "'>" + interfaces[i] );
+				} else {
+					$('.selectWANIf').append(" <input type='checkbox' name='multiIf' value='" + interfaces[i] + "'>" + interfaces[i] );
+				}
+			}
+			if(boundIfName == 'Any_WAN'){
+				$("input[name='wanIf']").get(0).checked = true;
+				hideMultiIf();
+			} else{
+				$("input[name='wanIf']").get(1).checked = true;
+				showMultiIf();
+			}
+			showhide("multi_wan", "1");
+			showhide("single_wan", "0");
+		}
+		else{
+			$("select[name=remoteMgmtBoundIfName]").empty();
+	
+			for ( i = 0; i < interfaces.length; i++ ) {
+				/* Steven */
+				if (interfaces[i] == 'LAN' || interfaces[i] == 'Loopback')
+					continue;
+				
+				if ( interfaces[i] == boundIfName )
+					$("select[name=remoteMgmtBoundIfName]").append("<option value='"+ interfaces[i]+ "' selected>" + interfaces[i] + "</option>");
+				else
+					$("select[name=remoteMgmtBoundIfName]").append("<option value='"+ interfaces[i]+ "'>" + interfaces[i] + "</option>");
+			}
+			showhide("multi_wan", "0");
+			showhide("single_wan", "1");
+		}
+	}
+	else{
+		showhide("multi_wan", "0");
+		showhide("single_wan", "0");
+	}
+	ServiceChange();
+
+	$("select[name=httpsCertName]").empty();
+	for ( i = 0; i < clientCerts.length; i++ ) {
+	if ( clientCerts[i] == httpsCertName )  
+		$("select[name=httpsCertName]").append("<option value='"+ clientCerts[i]+ "' selected>" + clientCerts[i] + "</option>");
+	else
+		$("select[name=httpsCertName]").append("<option value='"+ clientCerts[i]+ "'>" + clientCerts[i] + "</option>");
+	}
+	var errMsg = "<%ejGetOther(errMsg)%>";
+
+	if (errMsg != '')
+	{
+		hciAlert(errMsg, 2);
+	}
+}
+
+function hideMultiIf(){
+	
+	if(interfacesLength < 2) {	// ignore Any_WAN interface
+	} else if(interfacesLength == 2) {	// ignore Any_WAN interface
+		document.forms[0].multiIf.disabled = true;
+	} else {
+		for (i = 1; i < interfacesLength; i++) {	// skip Any_WAN interface
+			document.forms[0].multiIf[i-1].disabled = true;
+		}
+	}
+}
+
+
+function showMultiIf(){
+	if(interfacesLength < 2) {	// ignore Any_WAN interface
+	} else if(interfacesLength == 2) {	// ignore Any_WAN interface
+		document.forms[0].multiIf.disabled = false;
+	} else {
+		for (i = 1; i < interfacesLength; i++) {	// skip Any_WAN interface
+			document.forms[0].multiIf[i-1].disabled = false;
+		}
+	}
+}
+
+function isPortUsed(idx, port)
+{
+	for(i=0; i<portArray.length; i++)
+	{
+		if (i == idx)
+			continue;
+		else if (port == portArray[i]){
+			return false;
+		}
+	}
+
+	/* Steven, duplicate checking */
+	for(i=0; i<portArrayTmp.length; i++)
+	{
+		if (i == idx)
+			continue;
+		else if (port == portArrayTmp[i]){
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+function isValidServicePort(port) 
+{
+	var validport = 0;
+	
+	if ( isNaN(port) )
+		return false;
+	
+	validport = parseInt(port);
+	
+	if ( isNaN(validport) )
+		return false;
+	
+	if ( validport < 1 || validport > 65535 )
+		return false;
+	
+	return true;
+}
+function ServiceChange()
+{
+	with (document.forms[0]){
+
+		if(httpWan.checked)
+		{
+			TrustDomainHttpState.disabled = true;
+		}else{
+			TrustDomainHttpState.disabled = false;
+		}
+
+		if(httpsWan.checked)
+		{
+			TrustDomainHttpsState.disabled = true;
+		}else{
+			TrustDomainHttpsState.disabled = false;
+		}
+
+		if(sshWan.checked)
+		{
+
+			TrustDomainSshState.disabled = true;
+		}else{
+
+			TrustDomainSshState.disabled = false;
+		}
+
+		if(telnetWan.checked)
+		{
+
+			TrustDomainTelnetState.disabled = true;
+		}else{
+
+			TrustDomainTelnetState.disabled = false;
+		}
+		
+		if(ftpWan.checked)
+		{
+			TrustDomainFtpState.disabled = true;
+		}else{
+			TrustDomainFtpState.disabled = false;
+		}
+
+		if(snmpWan.checked)
+		{
+			TrustDomainSnmpState.disabled = true;
+		}else{
+			TrustDomainSnmpState.disabled = false;
+		}
+		
+		if(icmpWan.checked)
+		{
+			TrustDomainIcmpState.disabled = true;
+		}else{
+			TrustDomainIcmpState.disabled = false;
+		}
+		
+		if(TrustDomainHttpState.disabled==false)
+		{
+			if(TrustDomainHttpState.checked==true)
+			{
+				httpWan.disabled=true;
+			}else{
+				httpWan.disabled=false;
+			}
+		}
+
+		if(TrustDomainHttpsState.disabled==false)
+		{
+			if(TrustDomainHttpsState.checked==true)
+			{
+				httpsWan.disabled=true;
+			}else{
+				httpsWan.disabled=false;
+			}
+		}
+
+		if(TrustDomainSshState.disabled==false)
+		{
+			if(TrustDomainSshState.checked==true)
+			{
+				sshWan.disabled=true;
+			}else{
+				sshWan.disabled=false;
+			}
+		}
+
+		if(TrustDomainTelnetState.disabled==false)
+		{
+			if(TrustDomainTelnetState.checked==true)
+			{
+				telnetWan.disabled=true;
+			}else{
+				telnetWan.disabled=false;
+			}
+		}
+
+		if(TrustDomainFtpState.disabled==false)
+		{
+			if(TrustDomainFtpState.checked==true)
+			{
+				ftpWan.disabled=true;
+			}else{
+				ftpWan.disabled=false;
+			}
+		}
+
+		if(TrustDomainSnmpState.disabled==false)
+		{
+			if(TrustDomainSnmpState.checked==true)
+			{
+				snmpWan.disabled=true;
+			}else{
+				snmpWan.disabled=false;
+			}
+		}
+
+		if(TrustDomainIcmpState.disabled==false)
+		{
+			if(TrustDomainIcmpState.checked==true)
+			{
+				icmpWan.disabled=true;
+			}else{
+				icmpWan.disabled=false;
+			}
+		}
+
+		/*if(TrustDomainHttpState.checked==true ||
+		TrustDomainHttpsState.checked==true ||
+		TrustDomainSshState.checked==true ||
+		TrustDomainTelnetState.checked==true ||
+		TrustDomainFtpState.checked==true )
+		{
+			TrustDomainIP.disabled = false;
+			$('#TrustDomain').html('<%ejGetML(MLG_Common_Enable)%>');
+		}else{
+			TrustDomainIP.disabled = true;
+			$('#TrustDomain').html('<%ejGetML(MLG_Common_Disable)%>');
+		}*/
+	}
+}
+function btnApply()
+{
+	with (document.forms[0]){
+		var msg = "";
+
+		/* Steven, store new port for duplicate checking */
+		portArrayTmp = new Array(httpPort.value, httpsPort.value, sshPort.value, telnetPort.value, ftpPort.value, snmpPort.value);
+
+		if (isPortUsed(0, httpPort.value) == false)
+		{
+			msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str19)%>", httpPort.value);
+			hciAlert(msg, 2);
+			return;
+		}
+
+		if (isPortUsed(1,httpsPort.value) == false)
+		{
+			msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str20)%>", httpsPort.value);
+			hciAlert(msg, 2);
+			return;
+		}
+
+		if (isPortUsed(2, sshPort.value) == false)
+		{
+			msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str21)%>", sshPort.value);
+			hciAlert(msg, 2);
+			return;
+		}
+
+		if (isPortUsed(3, telnetPort.value) == false)
+		{
+			msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str22)%>", telnetPort.value);
+			hciAlert(msg, 2);
+			return;
+		}
+
+		if (isPortUsed(4, ftpPort.value) == false)
+		{
+			msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str23)%>", ftpPort.value);
+			hciAlert(msg, 2);
+			return;
+		}
+
+		if (isPortUsed(5, snmpPort.value) == false)
+		{
+			msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str34)%>", snmpPort.value);
+			hciAlert(msg, 2);
+			return;
+		}
+
+		if (isValidServicePort(httpPort.value) == false)
+		{
+			msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str24)%>", httpPort.value);
+			hciAlert(msg, 2);
+			return;
+		}
+
+		if (isValidServicePort(httpsPort.value) == false)
+		{
+			msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str25)%>", httpsPort.value);
+			hciAlert(msg, 2);
+			return;
+		}
+
+		if (isValidServicePort(sshPort.value) == false)
+		{
+			msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str26)%>", sshPort.value);
+			hciAlert(msg, 2);
+			return;
+		}
+
+		if (isValidServicePort(telnetPort.value) == false)
+		{
+			msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str27)%>", telnetPort.value);
+			hciAlert(msg, 2);
+			return;
+		}
+
+		if (isValidServicePort(ftpPort.value) == false)
+		{
+			msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str28)%>", ftpPort.value);
+			hciAlert(msg, 2);
+			return;
+		}
+
+		if (isValidServicePort(snmpPort.value) == false)
+		{
+			msg = MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str35)%>", snmpPort.value);
+			hciAlert(msg, 2);
+			return;
+		}
+
+	
+	/*	if ((TrustDomainIP.disabled == false ) )
+		{
+         if (isValidIpAddress(TrustDomainIP.value) == false && isValidIpAddress6(TrustDomainIP.value)==false)
+         {
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str29)%>", TrustDomainIP.value), 2);
+            return;
+         }
+      }*/
+
+		if(enblServiceRoute == '1'){
+			if(boundIfList != ''){
+				if(wanIf[0].checked == true) {
+					$("input[name='remoteMgmtBoundIfName']").val('Any_WAN');
+					$("input[name='remoteMgmtBoundIfList']").val('SUPPORT_MULTI_WAN');
+				}
+				else{
+					$("input[name='remoteMgmtBoundIfName']").val('Multi_WAN');
+					var first = true;
+					var loc = '';
+					if(interfacesLength < 2) {	// ignore Any_WAN interface
+					} else if(interfacesLength == 2) {	// ignore Any_WAN interface
+						if (multiIf.checked) {
+							$("input[name='remoteMgmtBoundIfList']").val(multiIf.value.replace(/['" ]/g,''));
+							first = false;
+						}
+					} else {
+						for (i = 1; i < interfacesLength; i++) {	// skip Any_WAN interface
+							if (multiIf[i-1].checked) {
+								if (!first) {
+									loc += '|';
+								}
+								loc += multiIf[i-1].value.replace(/['" ]/g,'');
+								first = false;
+							}
+						}
+						$("input[name='remoteMgmtBoundIfList']").val(loc);
+					}
+					if(first) {
+						hciAlert ('<%ejGetML(MLG_Maintenance_TR069_AlertMsg_Str9)%>');
+						$("input[name='remoteMgmtBoundIfList']").val('SUPPORT_MULTI_WAN');
+						return;
+					}
+				}
+			}
+		}
+		$.openLoadingMask(1);
+		submit();
+	}
+	return true;
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+// done hiding -->
+</script>
+<form name="control" id="control" action="/pages/tabFW/remoteMGMT-remoteMGMT.cgi" method="post">
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value="<%ejGetOther(sessionKey)%>" />
+<div class="content_frame" >
+  <!--Unit Explain start-->
+  <div class="explain">
+    <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+    <div class="explain_text"><%ejGetML(MLG_Maintenance_Remote_Explain)%></div>
+    <div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+  </div>
+  <!--Unit Explain End-->
+  <!--Set area start-->
+  <div class="data_frame">
+    <ul>
+    <li class="set1">
+      <li class="title"><%ejGetML(MLG_Security_ServiceControl_Str1)%></li>
+			<!--<li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Common_Status)%> :</li>
+                     <li class="right_table">
+                        <div id="TrustDomain"/>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+			<li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Common_IPAddress)%> :</li>
+                     <li class="right_table">
+                        <input name="TrustDomainIP" type="text" size="40" />[/<%ejGetML(MLG_Maintenance_Remote_Str)%>]
+                     </li>
+                  </ul>
+               </div>
+            </li>-->
+      <div id="multi_wan">
+        <li class="set1"> <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Maintenance_Remote_Str2)%>:</li>
+            <li class="right_table">
+              <input name='wanIf' type='radio' onClick='hideMultiIf()'>Any_WAN
+              <input name='wanIf' type='radio' onClick='showMultiIf()'>Multi_WAN
+              <input type='hidden' name='remoteMgmtBoundIfName' value='' size="1" maxlength="256">
+            </li>
+            <li class="selectWANIf">
+            </li>
+          </ul>
+        </div>
+        </li>
+      </div>
+      <div id="single_wan">
+      <li class="set1"> <div class="w_text">
+        <ul>
+          <li class="left_table">WAN Interface used by services:</li>
+          <li class="right_table">
+            <select name='remoteMgmtBoundIfName'>
+            </select>
+          </li>
+        </ul>
+      </div>
+      </li>
+      </div>
+      <li class="space"> </li>
+        <li class="set1">
+          <div class="w_table">
+            <table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame">
+              <tr valign="top">
+                <td class="top_font "><%ejGetML(MLG_Maintenance_Remote_Services_Str)%></td>
+                <td class="top_font "><%ejGetML(MLG_Common_LAN)%>/<%ejGetML(MLG_Common_WLAN)%></td>
+                <td class="top_font "><%ejGetML(MLG_Common_WAN)%></td>
+                <td class="top_font"><%ejGetML(MLG_Maintenance_Remote_Title)%></td>
+                <td class="top_font "><span class="tableTitle style1"><%ejGetML(MLG_Common_Port)%></span></td>
+              </tr>
+              <tr>
+                <td class="table_font "><%ejGetML(MLG_Maintenance_Remote_HTTPS_Str)%></td>
+                <td class="table_font "><input type="checkbox" checked="checked" value="2" name="httpsLan" />
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input type="checkbox" checked="checked" value="2" onclick="ServiceChange()" name="httpsWan" />
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input type="checkbox" name="TrustDomainHttpsState" value="2" onclick="ServiceChange()"/>
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input maxlength="5" size="5" value="443" 
+                  name="httpsPort" /></td>
+              </tr>
+              <tr>
+                <td class="table_font "><%ejGetML(MLG_Maintenance_Remote_HTTP_Str)%></td>
+                <td class="table_font "><input type="checkbox" checked="checked" value="2" name="httpLan" />
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input type="checkbox" checked="checked" value="2" onclick="ServiceChange()" name="httpWan" />
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font"><input type="checkbox" name="TrustDomainHttpState" value="2" onclick="ServiceChange()"/>
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input maxlength="5" size="5" value="80" 
+                  name="httpPort" /></td>
+              </tr>
+              <tr>
+                <td class="table_font "><%ejGetML(MLG_Maintenance_Remote_TELNET_Str)%></td>
+                <td class="table_font "><input type="checkbox" checked="checked" value="2" name="telnetLan" />
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input type="checkbox" checked="checked" value="2" onclick="ServiceChange()" name="telnetWan" />
+                   &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font"><input type="checkbox" name="TrustDomainTelnetState" value="2" onclick="ServiceChange()"/>
+                   &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input maxlength="5" size="5" value="23" 
+                  name="telnetPort" /></td>
+              </tr>
+              <tr>
+                <td class="table_font "><%ejGetML(MLG_Maintenance_Remote_FTP_Str)%></td>
+                <td class="table_font "><input type="checkbox" checked="checked" value="2" name="ftpLan" />
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input type="checkbox" checked="checked" value="2" onclick="ServiceChange()" name="ftpWan" />
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                  <td class="table_font"><input type="checkbox" name="TrustDomainFtpState" value="2" onclick="ServiceChange()"/>
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input maxlength="5" size="5" value="21" 
+                  name="ftpPort" /></td>
+              </tr>
+              <tr>
+                <td class="table_font "><%ejGetML(MLG_Maintenance_Remote_SSH_Str)%></td>
+                <td class="table_font "><input type="checkbox" checked="checked" value="2" name="sshLan" />
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input type="checkbox" checked="checked" value="2" name="sshWan" onclick="ServiceChange()" />
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font"><input type="checkbox" name="TrustDomainSshState" value="2" onclick="ServiceChange()"/>
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input maxlength="5" size="5" value="22" 
+                  name="sshPort" /></td>
+              </tr>
+              <tr>
+                <td class="table_font "><%ejGetML(MLG_Maintenance_Remote_SNMP_Str)%></td>
+                <td class="table_font "><input type="checkbox" checked="checked" value="2" name="snmpLan" />
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input type="checkbox" checked="checked" value="2" name="snmpWan" onclick="ServiceChange()" />
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font"><input type="checkbox" name="TrustDomainSnmpState" value="2" onclick="ServiceChange()"/>
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input maxlength="5" size="5" value="161"
+                  name="snmpPort" /></td>
+              </tr>
+              <tr>
+                <td class="table_font "><%ejGetML(MLG_Maintenance_Remote_ICMP_Str)%></td>
+                <td class="table_font "><input type="checkbox" checked="checked" value="2" name="icmpLan" />
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input type="checkbox" checked="checked" value="2" name="icmpWan" onclick="ServiceChange()" />
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font"><input type="checkbox" name="TrustDomainIcmpState" value="2" onclick="ServiceChange()"/>
+                  &nbsp;&nbsp;<%ejGetML(MLG_Common_Enable)%></td>
+                <td class="table_font "><input maxlength="5" size="5"
+                  name="icmpPort" disabled /></td>
+              </tr>
+            </table>
+          </div>
+        </li>
+      <li class="space"> </li>
+      <li class="title"><%ejGetML(MLG_Maintenance_Remote_Title_Certificate)%></li>
+      <li class="set1"> <div class="w_text">
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_Maintenance_Remote_Title_Certificate_Str)%>:</li>
+          <li class="right_table">
+               <select name="httpsCertName">
+            </select>
+          </li>
+        </ul>
+      </div></li>
+      <li class="space"></li>
+      <li class="buttonframe">
+        <div class="button_position">
+          <input name="sysSubmit" value='<%ejGetML(MLG_Common_Apply)%>' type="button" onclick="btnApply();" />
+          &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+          <input name="Cancel" value='<%ejGetML(MLG_Common_Cancel)%>' type="button" onclick='frmLoad();' />
+        </div>
+      </li>
+    </ul>
+  </div>
+  <!--Set area end-->
+</div>
+</form>

@@ -1,0 +1,152 @@
+<script language="javascript">
+<!-- hide
+var xdslValue;
+var objXDSKInfoXMLHTTP = null;
+var lineid = '<%ejGet(XDSLLineId)%>';
+var isSupportbonding = '<%ejGet(supportBonding)%>';
+
+if (window.XMLHttpRequest) {
+	objXDSKInfoXMLHTTP=new XMLHttpRequest();
+}// code for IE
+else if (window.ActiveXObject) {
+	objXDSKInfoXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+}
+
+function updatexdslStatisticsInfo (req)
+{
+	var xdslstatusInfo=req.responseText;
+	if ( xdslstatusInfo != "" && xdslstatusInfo != null ) {
+		$("#VdslInfoDisplay").val(xdslstatusInfo);
+	}
+	$("#loading").removeClass("loading");
+
+	resetInterval();
+}
+
+function AutoRefresh()
+{
+	if ( objXDSKInfoXMLHTTP != null ) {
+		$("#loading").addClass("loading");
+		objXDSKInfoXMLHTTP.open("POST","/pages/systemMonitoring/xdslStatistics/GetxdslStatistics.html",true);
+		objXDSKInfoXMLHTTP.onreadystatechange = function() 
+		{
+			if(objXDSKInfoXMLHTTP.readyState == 4)
+				updatexdslStatisticsInfo(objXDSKInfoXMLHTTP);
+		}
+		objXDSKInfoXMLHTTP.send(null);
+	}
+}
+function btnApply()
+{
+   document.forms[0].submit();
+}
+
+function resetInterval() {
+	var selecting;
+	//clearTimeout(xdslValue);
+	
+	selecting = $('#XDSL_RefreshList').val();
+	$.cookie("xdslrefresh", selecting);
+    
+	if (selecting == 1)
+		xdslValue = setTimeout('AutoRefresh()', 10000);
+	else if (selecting == 2)
+		xdslValue = setTimeout('AutoRefresh()', 20000);
+	else if (selecting == 3)
+		xdslValue = setTimeout('AutoRefresh()', 30000);
+	else if (selecting == 4)
+		xdslValue = setTimeout('AutoRefresh()', 60000);
+}
+function frmLoad()
+{
+	with ( document.forms[0] ) 
+	{
+		if(isSupportbonding=='1' && '<%ejGet(dslBonding)%>' == '1' )
+		{
+			$("select[name=XDSLLineId]").append("<option value='1'>Line 1</option>");
+		}else{
+			lineid = 0;
+		}
+		setSelect(XDSLLineId,lineid);
+	}
+}
+
+$(document).ready(function() {
+	if ( $.cookie("xdslrefresh") != null ) {
+		$('#XDSL_RefreshList').val($.cookie("xdslrefresh"));
+	}
+	else {
+		$('#XDSL_RefreshList').val(0);
+	}
+	resetInterval();
+	frmLoad();
+});
+// done hiding -->
+</script>
+
+   <form name="loadForm" action="/pages/tabFW/xdslStatistics-xdslStatistics.cgi" method="post" >
+   <input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">
+      <div class="content_frame">
+<!--Unit Explain start-->
+         <div class="explain">
+            <div>
+               <b class="r1"></b>
+               <b class="r2"></b>
+               <b class="r3"></b>
+               <b class="r4"></b>
+               <b class="r4"></b>
+            </div>
+            <div class="explain_text"><%ejGetML(MLG_System_Monitor_xDSLStatistics_Str1)%></div>
+            <div>
+               <b class="r4"></b>
+               <b class="r4"></b>
+               <b class="r3"></b>
+               <b class="r2"></b>
+               <b class="r1"></b>
+            </div>
+         </div>
+<!--Unit Explain End-->
+         <div class="data_frame"><ul>
+<!--level 1 title start-->
+      <li class="title"><%ejGetML(MLG_Common_Monitor)%></li>
+<!--level 1 title end-->
+<!--level 1 start-->
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Common_RefreshInterval)%>  :</li>
+            <li class="right_table">
+              <select id="XDSL_RefreshList" name="XDSL_RefreshList" size="1" onchange="resetInterval()">
+                <option value="0" selected="selected" ><%ejGetML(MLG_System_xdslStatistic)%></option>
+                <option value="1">10 <%ejGetML(MLG_Common_Seconds)%> </option>
+                <option value="2">20 <%ejGetML(MLG_Common_Seconds)%> </option>
+                <option value="3">30 <%ejGetML(MLG_Common_Seconds)%> </option>
+                <option value="4">60 <%ejGetML(MLG_Common_Seconds)%> </option>
+              </select><span id="loading"></span>
+            </li>
+          </ul>  
+          <ul>          
+            <li class="left_table"><%ejGetML(MLG_System_Monitor_xDSLStatistics_Str2)%>  :</li>
+            <li class="right_table">
+              <select id="XDSLLineId" name="XDSLLineId" size="1" onchange="btnApply()">
+                <option value="0"><%ejGetML(MLG_System_Monitor_xDSLStatistics_Str2)%> 0</option>
+
+              </select>
+            </li>			
+          </ul>
+        </div>
+      </li>
+      <li class="space"> </li>
+<!--level 1 end-->
+<!--level 1 title start-->
+<li class="title"><%ejGetML(MLG_System_TrafficStatusWAN_Str2)%> :</li>
+<!--level 1 title end-->
+<!--level 1 start-->
+                  <TEXTAREA NAME="VdslInfoDisplay" ID="VdslInfoDisplay" ROWS="95" COLS="90" READONLY style="overflow:hidden; border:0; font-family:COURIER NEW, Arial, Helvetica, sans-serif;" >
+					<%ejGetOtherBig(vdslStatus, 0, 0)%>
+                  </TEXTAREA>
+<!--level 1 end-->
+
+         </ul></div>
+      </div>
+   </form>

@@ -1,0 +1,31 @@
+  
+<script type="text/javascript">            
+var wizardResult;
+
+wizardObj.dbObj.bind('wizardInit', function(){
+    wizardObj.api.onClick(function(){
+        if ($('#waiting').parents('.pane').css('display') != 'none') 
+            doWaitViewInit();
+    });
+});
+
+function doWaitViewInit(){
+    setTimeout(function(){
+        //send ajax request, and get result
+        wizardResult = true;
+        wizardObj.api.next();
+    }, 2000);
+}
+
+</script>
+ 
+ 
+  <!-- waiting Beginning -->
+   <div id="waiting" class='state'>
+     <div class="qs_content">
+       <p style="display:block;height:110px;">&nbsp;</p>
+       <div class="waiting"></div>
+       <p style="font-weight:bold;text-align:center;"><%ejGetML(MLG_ConnStatus_QuickStart_Str70)%></p>
+     </div>
+   </div>
+   <!-- waiting Ending -->

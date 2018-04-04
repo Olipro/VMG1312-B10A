@@ -1,0 +1,117 @@
+<script language="javascript">
+<!-- hide
+function frmLoad() {
+	with ( document.forms[0] ) {
+		userName.value = '<%ejGet(accountName)%>';
+	}
+}
+
+function submitchk(){
+    pass1 = document.getElementById("userPassword");
+    pass2 = document.getElementById("reuserPassword");
+    chreg =  /[^A-Za-z0-9]/i ;
+	var msg = "";
+		
+	if (pass1.value == "") {
+		msg = "<%ejGetML(MLG_Common_AlertMsg_Str2)%>";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        pass1.focus();
+        return false;
+	}
+	if (pass1.value.search(chreg) >= 0) {
+		msg = "<%ejGetML(MLG_Common_Password)%> must be English alphabet or digit.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        pass1.focus();
+        return false;
+	}
+	if (pass1.value.length < 5 || pass1.value.length > 15) {
+		msg = "<%ejGetML(MLG_Common_Password)%> must be 5 to 15 characters in length.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        pass1.focus();
+        return false;
+	}
+
+	if (pass2.value == "") {
+		msg = "Please retype password.";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        pass2.focus();
+        return false;
+	}
+	
+	if (pass1.value != pass2.value) {
+		msg = "<%ejGetML(MLG_Common_Login_AlertMsg_Str4)%>";
+        hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        pass1.focus();
+        return false;
+	}
+
+	return true;
+}
+
+function btnSave() {
+	if(submitchk() == false){
+		return false;
+	}
+
+	with ( document.forms[0] ) {
+		modifyName.value = userName.value;
+		sessionKey.value = mainFrame.glbSessionKey;
+		submit();
+
+		$('.ui-dialog-titlebar-close').trigger('click');
+		$.openLoadingMask(1);
+		return;
+	}
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ btnSave(); });
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+// done hiding -->
+</script>
+
+<form action="/pages/tabFW/usbService-fileuser_add.cmd" method="post" target="mainFrame">
+  <input type="hidden" name="action" id="action" value="editUser" />
+  <input type="hidden" name="modifyName" id="modifyName" value="" />
+  <input type="hidden" name="sessionKey" id="sessionKey" value="" />
+
+  <div class="popup_frame" >
+    <div class="data_frame2"><ul>
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+<li class="left_table"> <%ejGetML(MLG_Common_User_Name)%>  :</li>
+<li class="right_table"><input type="text" name="userName" id="userName" size="30" maxlength="30" disabled /></li>
+          </ul>
+          <ul>
+<li class="left_table"><%ejGetML(MLG_Common_Loginsum_Str3)%> :</li>
+<li class="right_table"><input type="password" autocomplete="new-password" name="userPassword" id="userPassword" size="30" maxlength="30" /></li>
+          </ul>
+          <ul>
+<li class="left_table">Retype New Password :</li>
+<li class="right_table">
+	<span class="cfig_word">
+		<input type="password" autocomplete="new-password" name="reuserPassword" id="reuserPassword" size="30" maxlength="30" />
+	</span>
+</li>
+          </ul>
+        </div>
+<!--Note define start-->
+<li class="space"> </li>
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Security_FirewallProtocol_Str7)%>:</span></div><div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_Network_USBService_Str19)%></div></li>
+<li class="space"> </li>
+      </li>
+    </ul></div>
+  </div>
+</form>
+
+<script language="JavaScript">
+with ( document.forms[0] ) {
+   userPassword.focus();
+}
+</script> 

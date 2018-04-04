@@ -1,0 +1,407 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+var syncNvram = '<%ejGetWl(wlSyncNvram)%>';
+var unitNum = '<%ejGetWl(wlInstance_id)%>';
+/*LegacyGuest*/
+var ssid_2 = '<%ejGetWl(wlSsid_2)%>';
+var enbl_2 = '<%ejGetWl(wlEnbl_2)%>';
+
+var ssid = '<%ejGetWl(wlSsid_wl0v0)%>';
+var enbl = '<%ejGetWl(wlEnbl_wl0v0)%>';
+var hide = '<%ejGetWl(wlHide_wl0v0)%>';
+var apIsolation= '<%ejGetWl(wlAPIsolation_wl0v0)%>';
+var maxAssoc = '<%ejGetWl(wlMaxAssoc_wl0v0)%>';
+var disableWme = '<%ejGetWl(wlDisableWme_wl0v0)%>';
+var enableWmf = '<%ejGetWl(wlEnableWmf_wl0v0)%>';
+var country = '<%ejGetWl(wlCountry)%>';
+var wlRefresh = '<%ejGetWl(wlRefresh)%>';
+var band = '<%ejGetWl(wlBand)%>';
+var supportMbss = '<%ejGetWl(wlSupportMbss)%>'
+var wme = '<%ejGetWl(wlWme)%>';
+var wmf = '<%ejGetWl(wlHasWmf)%>';
+var wlInfo = '<%ejGetWl(wlInfo)%>';
+var pattern_1ssid = /1ssid/i;
+var globalmaxassoc= '<%ejGetWl(wlGlobalMaxAssoc)%>';
+var WscMode = '<%ejGetWl(wlWscMode)%>';
+var WscVer2 = '<%ejGetWl(wlWscVer2)%>';
+
+var enableUre = '<%ejGetWl(wlEnableUre)%>';
+
+if ( wlRefresh == '1' ) {
+   var code = 'location="wlcfgrefresh.wl?wlRefresh=0"';
+   eval(code);   
+}
+
+function hideWlSecInfo(hidden) {
+
+   with ( document.forms[0] ) {        
+      if ( hidden == 1 ) {
+         wlHide.disabled = 1;
+         wlSsid.disabled = 1;
+         wlCountry.disabled = 1;
+         wlAPIsolation.disabled = 1;         
+      } else {
+         wlHide.disabled = 0;
+         wlSsid.disabled = 0;
+         wlCountry.disabled = 0;
+         wlAPIsolation.disabled = 0;           
+      }
+      showhide("wlSecInfo", (!hidden));
+      showhide("wlLegacyGuestInfo", ((!hidden)&&((supportMbss==0)&&!(pattern_1ssid.test(wlInfo)))));
+      showhide("wlMBSSInfo", ((!hidden)&&(supportMbss!=0)));
+   } 
+}
+
+function wlSecCbClick(cb) {
+   if ( cb.checked == true )
+      hideWlSecInfo(0);
+   else
+      hideWlSecInfo(1);
+}
+
+function wlLoadCountryList()
+{
+   var phytype = "b";
+   var cur = 0;
+   var sel = 0;
+   var i = 0;
+
+   if (band == "1") { // 5G
+      <%ejGetWl(wlCountryList, a)%>
+   } else {
+      <%ejGetWl(wlCountryList, b)%>
+   }
+
+   for (i=0; i< document.forms[0].wlCountry.options.length; i++) {
+      if (document.forms[0].wlCountry.options[i].value == country) {
+         document.forms[0].wlCountry.options[i].selected = true;
+         break;
+      }
+   }
+
+   /* set to all(the last one) if not found */
+   if( i == document.forms[0].wlCountry.options.length)   
+      document.forms[0].wlCountry.options[i-1].selected = true;
+   
+}
+
+function frmLoad() {
+  
+   wlLoadCountryList();
+
+   with ( document.forms[0] ) {
+      setCheck(wlEnbl, enbl);
+      if ( enbl == '1' ) {
+         hideWlSecInfo(0);
+      } else {
+         hideWlSecInfo(1);
+      }
+      setCheck(wlHide, hide);
+      setCheck(wlAPIsolation, apIsolation);
+      setCheck(wlDisableWme, disableWme);
+      setCheck(wlEnableWmf, enableWmf);
+      wlMaxAssoc.value = maxAssoc;
+      
+      //remove wlDisableWme (Disable WMM Advertise) from webui if the product does not use MBSS driver</td>
+      wlDisableWme.disabled=1;
+      if(supportMbss == '1' && wme != '0' )
+           wlDisableWme.disabled=0;   
+
+      wlEnableWmf.disabled=1;
+      if(wmf != '0' )
+           wlEnableWmf.disabled=0;   
+                               
+      wlSsid.value = ssid;
+      setCheck(wlEnbl_2, enbl_2);
+      wlSsid_2.value = ssid_2;
+   }
+}
+
+function invalidCheck()
+{
+   var duplicated = false;
+   var invalid = false;
+   var ssidArray = new Array();
+   var idx=0;
+
+   with ( document.forms[0] ) {
+      ssidArray[idx++]=wlSsid.value;
+         
+      if(supportMbss==0) {	 
+         /*LegacyGuest*/
+         if (wlSsid.value == wlSsid_2.value)
+            invalid = duplicated = true;
+            
+      } else {
+         /* MBSS */         
+         for (var i=0; i < document.forms[0].elements.length; i++){      
+            /* SSID check */
+            if(document.forms[0].elements[i].name.search('wlSsid_wl'+unitNum+'v') != -1) {
+               ssidArray[idx]=document.forms[0].elements[i].value;
+               if(ssidArray[idx] == ''|| ssidArray[idx].length > 32) {
+                  alert('SSID should not be empty or longer than 32 characters');
+                  invalid = true;
+                  break;               
+               }
+               for(var j = 0; j < idx; j++) {
+                  if (ssidArray[idx] == ssidArray[j]) { 
+                     invalid = duplicated = true;
+                     break;
+                  }                     
+               }
+               idx++;
+            }
+            if (duplicated)
+               break;
+            
+            /* end of SSID check */   
+            /* max assoc check */
+            if(document.forms[0].elements[i].name.search('wlMaxAssoc_wl'+unitNum+'v') != -1) {
+               var assocNum = parseInt(document.forms[0].elements[i].value);
+               if ( isNaN(assocNum) == true || assocNum <= 0 || assocNum > globalmaxassoc ) {
+                  alert('Max Clients "' + wlMaxAssoc.value + '" should be between 1 and "' + globalmaxassoc);
+                  invalid = true;
+                  break;
+               }
+            }
+            /* end of  max assoc check */
+         }
+      }
+
+      if ((enableUre == '0') && duplicated) {
+         alert('Duplicated SSID found, each SSID must be unique\nPlease correct it before clicking Apply/Save again');
+      } else
+         invalid = false; /* URE (Range Extender) allows duplicated SSID */
+      
+      return invalid;
+   }
+}
+
+function btnApply() {
+   var loc = 'wlcfg.wl?';
+   var hide_checked = false;
+    
+   if(invalidCheck())
+      return;
+   
+   with ( document.forms[0] ) {
+      loc += 'wlSsidIdx=0';
+      
+      if ( wlEnbl.checked == false ) {
+         loc += '&wlEnbl=0';
+         loc += '&wlHide=' + hide;
+         loc += '&wlAPIsolation=' + apIsolation;         
+         loc += '&wlSsid=' + ssid;
+         loc += '&wlCountry=' + country;
+      } else {
+         if ( wlSsid.value == '' ) {
+            alert('SSID should not be empty.');
+            return;
+         }
+
+         var str = new String();
+         str = wlSsid.value;
+         if ( str.length > 32 ) {
+            alert('SSID "' + wlSsid.value + '" should not be longer than 32 characters.');
+            return;
+         }
+
+         var assocNum = parseInt(wlMaxAssoc.value);
+         if ( isNaN(assocNum) == true || assocNum <= 0 || assocNum > globalmaxassoc ) {
+            alert('Max Clients "' + wlMaxAssoc.value + '" should be between 1 and "' + globalmaxassoc);
+            return;
+         }
+               
+         loc += '&wlEnbl=1';
+         loc += submitCheck(wlHide);
+         hide_checked = wlHide.checked;
+         loc += submitCheck(wlAPIsolation);         
+         loc += '&wlSsid=' + encodeUrl(wlSsid.value);
+         loc += submitSelect(wlCountry);
+         loc += '&wlMaxAssoc=' + encodeUrl(wlMaxAssoc.value);
+         loc += submitCheck(wlDisableWme);
+         loc += submitCheck(wlEnableWmf);
+
+	 if(supportMbss==0 && !(pattern_1ssid.test(wlInfo))) {	 
+	    /*LegacyGuest*/
+	    if ( wlSsid_2.value == '' ) {
+               alert('Guest SSID should not be empty.');
+               return;
+            }            
+            loc += submitCheck(wlEnbl_2);
+            loc += '&wlSsid_2=' + encodeUrl(wlSsid_2.value);
+         } else {
+            /* MBSS */           
+            for (var i=0; i < document.forms[0].elements.length; i++){
+               if(document.forms[0].elements[i].name.search('_wl'+unitNum+'v') != -1) {
+                  if (document.forms[0].elements[i].type == 'checkbox') {
+                     loc += submitCheck(document.forms[0].elements[i]);
+                     //alert(submitCheck(document.forms[0].elements[i]));
+                     /* Find checked Hidden box */
+                     if (hide_checked == false)	{
+                         //alert(document.forms[0].elements[i].name);
+                         if ((document.forms[0].elements[i].name.search('wlEnbl_wl'+unitNum+'v') != -1)	&&
+                             (document.forms[0].elements[i].checked == true)) {
+                             /* Get hidden box */
+                             for (var j=i+1; j < document.forms[0].elements.length; j++) {
+                                if((document.forms[0].elements[j].name.search('wlHide_wl'+unitNum+'v') != -1) &&				
+                                   (document.forms[0].elements[j].checked == true)) {
+                                   hide_checked = document.forms[0].elements[j].checked;
+                                   //alert(document.forms[0].elements[j].checked);
+                                   break;
+                                }
+                             }						
+                         }
+                     }
+                  }
+                  if (document.forms[0].elements[i].type == 'text') {
+                     loc += '&'+document.forms[0].elements[i].name + '=' + encodeUrl(document.forms[0].elements[i].value);
+                     //alert('&'+document.forms[0].elements[i].name + '=' + encodeUrl(document.forms[0].elements[i].value));
+                  }
+               }            
+            }
+         }
+      }
+   }
+
+   if ((hide_checked == true) && (WscVer2 == 'enabled') && (WscMode == 'enabled')) {
+      if (confirm("WPS will be disabled if you choose to Hide Access Point") == false )
+         return;
+      else
+         loc += '&wl_wsc_mode=disabled';
+   }
+
+   loc += '&wlSyncNvram=1';
+
+   loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+// done hiding -->
+      </script>
+   </head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <form onSubmit='return false'>
+            <b>Wireless -- Basic</b><br>
+            <br>
+            This page allows you to configure basic features of the wireless LAN interface. 
+            You can enable or disable the wireless LAN interface, hide the network from 
+            active scans, set the wireless network name (also known as SSID) and restrict 
+            the channel set based on country requirements.<br>
+            Click "Apply/Save" to configure the basic wireless options.<br>
+            <br>
+            <table border="0" cellpadding="4" cellspacing="0">
+               <tr>
+                  <td valign="middle" align="center" width="30" height="30">
+                     <input type='checkbox' name='wlEnbl' onClick='wlSecCbClick(this)' value="ON"></td>
+                  <td>Enable Wireless</td>
+               </tr>
+            </table>
+            <div id='wlSecInfo'>
+               <table border="0" cellpadding="4" cellspacing="0">
+                  <tr>
+                     <td valign="middle" align="center" width="30" height="30">
+                        <input type='checkbox' name='wlHide' value="ON"></td>
+                     <td>Hide Access Point</td>
+                  </tr>
+               <tr>
+                     <td valign="middle" align="center" width="30" height="30">
+                        <input type='checkbox' name='wlAPIsolation' value="ON"></td>
+                     <td>Clients Isolation</td>
+               </tr>
+               <tr>
+                     <td valign="middle" align="center" width="30" height="30">
+                        <input type='checkbox' name='wlDisableWme' value="ON"></td>
+                     <td>Disable WMM Advertise</td>
+               </tr>
+               <tr>
+                   <td valign="middle" align="center" width="30" height="30">
+                       <input type='checkbox' name='wlEnableWmf' value="ON">
+                   </td>
+                   <td>Enable Wireless Multicast Forwarding (WMF)</td>
+               </tr>
+               </table>              
+               <table border="0" cellpadding="4" cellspacing="0">
+                  <tr>
+                     <td width="50">SSID:</td>
+                     <td>
+                        <input type='text' name='wlSsid' maxlength="32" size="32"></td>
+                  </tr>
+                  <tr>
+                     <td width="50">BSSID:</td>
+                     <td>
+                        <%ejGetWl(wlBssid)%>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>Country:</td>
+                     <td><select name='wlCountry' size="1">
+                        </select></td>
+                  </tr>
+                  <tr>
+                     <td>Max Clients:</td>
+                     <td>
+                        <input type='text' name='wlMaxAssoc' maxlength="3" size="3"></td>
+                  </tr>
+                  <tr> <td>&nbsp;</td> <td>&nbsp;</td> </tr>                                      
+               </table>              
+            </div>                  
+            <div id="wlLegacyGuestInfo">
+               <table border="0" cellpadding="4" cellspacing="0">
+                  <tr>
+                     <td valign="middle" align="center" width="30" height="30">
+                        <input type='checkbox' name='wlEnbl_2' value="ON"></td>
+                     <td>Enable Wireless Guest Network</td>
+                  </tr>
+               </table>
+               <table border="0" cellpadding="4" cellspacing="0">
+                  <tr>
+                     <td width="100">Guest SSID:</td>
+                     <td>
+                        <input type='text' name='wlSsid_2' maxlength="32" size="32"></td>
+                  </tr>
+               </table>
+               <br>
+               <br>
+            </div>            
+           <div id="wlMBSSInfo">
+              <br><b>Wireless - Guest/Virtual Access Points:</b><br>
+              <table border="0" cellpadding="4" cellspacing="0">
+                 <tr> <td>
+                 <table border='1' cellpadding='2' cellspacing='0' align="left" >
+                    <tr>
+                       <td class='hd' valign="middle" align="center" width="30" height="30" >Enabled</td>                    
+                       <td class='hd' valign="middle" align="center" width="30" height="30" >SSID</td>
+                       <td class='hd' valign="middle" align="center" width="30" height="30" >Hidden</td>                       
+                       <td class='hd' valign="middle" align="center" width="30" height="30" >Isolate Clients</td>
+                       <td class='hd' valign="middle" align="center" width="30" height="30" >Disable WMM Advertise</td>
+                        <td class='hd' valign="middle" align="center" width="30" height="30" >Enable WMF</td>
+                       <td class='hd' valign="middle" align="center" width="30" height="30" >Max Clients</td>                                            
+                       <td class='hd' valign="middle" align="center" width="30" height="30" >BSSID</td>
+                    </tr>
+                       <%ejGetWl(wlMbssTbl)%>
+                 </table>
+                 </td></tr>
+              </table>
+           <br>
+           <br>            
+           </div>
+           <div id="divApply">           
+              <table border="0" cellpadding="4" cellspacing="0">
+               <tr> <td>        
+               <input type='button' onClick='btnApply()' value='Apply/Save'>
+               </tr> </td>
+              </table>
+           </div>
+         </form>
+      </blockquote>
+   </body>
+</html>

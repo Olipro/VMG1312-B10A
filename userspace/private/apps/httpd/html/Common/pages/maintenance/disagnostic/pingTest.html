@@ -1,0 +1,223 @@
+<script language="javascript">
+var dstAddr = '<%ejGet(diagAddr)%>';
+var status = '<%ejGet(diagState)%>';
+var diagTypeVar = '<%ejGet(diagTestType)%>';
+var forEircom  = '<%ejGetOther(sysInfo, forEircom)%>';
+
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; 
+
+var objXMLHTTP = null;
+function diagnosticStart() {
+
+    var url = "../maintenance/disagnostic/diagResult.html";
+    initRequest(url);
+    /* set callback function*/
+    objXMLHTTP.onreadystatechange = processPollRequest;
+    objXMLHTTP.send(null);
+}
+
+//ZyXEL, cathy, merge from VMG4380 to fix
+//Ping & TraceRoute in Diagnostic can't work on Goole Chrome only.
+Date.prototype.toString = function(){
+    var t = this.toTimeString().split("(");
+    var s = this.toDateString()+" "+t[0];
+    return s;
+}
+//cathy
+function initRequest(url) {
+    if (window.XMLHttpRequest) {
+        objXMLHTTP = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        objXMLHTTP = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    if (objXMLHTTP){
+        objXMLHTTP.open("GET", url, true);
+        /*let IE refresh page */
+        //objXMLHTTP.setRequestHeader("Cache-Control", "no-cache");
+        objXMLHTTP.setRequestHeader("If-Modified-Since",new Date(0));
+    }
+}
+
+/* callback function for intial request to schedule a task  */
+function processPollRequest() {
+    var diagnosticResult = '';
+    if (objXMLHTTP.readyState == 4) {
+        if (objXMLHTTP.status == 200) {
+            diagnosticResult = objXMLHTTP.responseText;   
+        } 
+        else {
+            diagnosticResult = "trace route fail. status code:" + objXMLHTTP.status;
+        }
+        if(diagTypeVar=='2')           // tracert
+        {
+            if (diagnosticResult.search("tracert_end")<0){
+                document.forms[0].DisplayInfo.value = diagnosticResult;
+                setTimeout("diagnosticStart()",1000);
+            } else {
+                complete(diagnosticResult.replace("tracert_end", "----<%ejGetML(MLG_Maintenance_Diagnostic_AlertMsg_Str4)%>----"));
+            }
+        }else if(diagTypeVar=='3')           // nslookup
+        {
+            if (diagnosticResult.search("Nslookup_end")<0){
+                document.forms[0].DisplayInfo.value = diagnosticResult;
+                setTimeout("diagnosticStart()",1000);
+            } else {
+                complete(diagnosticResult.replace("Nslookup_end", "----<%ejGetML(MLG_Maintenance_Diagnostic_AlertMsg_Str3)%>----"));
+            }
+        }else if(diagTypeVar=='1'){    // ping
+            complete(diagnosticResult);
+        }
+    }
+}
+
+function complete(result) {
+    document.forms[0].DisplayInfo.value =  result;
+    buttonControl(0);
+}
+
+function buttonControl(mode) {
+    if (mode == 1){
+        document.forms[0].TraceRoute.disabled = true;
+        document.forms[0].Ping.disabled = true;
+        document.forms[0].NsLookup.disabled = true;
+    }
+    else{
+        document.forms[0].TraceRoute.disabled = false;
+        document.forms[0].Ping.disabled = false;
+        document.forms[0].NsLookup.disabled = false;
+    }
+}
+
+function btnApply(type){
+    if(document.forms[0].diagAddr.value == ''){
+        hciAlert('<%ejGetML(MLG_Maintenance_CFM_AlertMsg_Str3)%>',{height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        return;
+    }
+    if(!isValidHostName(document.forms[0].diagAddr.value)){
+        hciAlert('<%ejGetML(MLG_Maintenance_CFM_AlertMsg_Str4)%>',{height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+        return;
+  }
+
+///* __ZyXEL__, Albert, 20160114, diagnostic cant ping from CPE  */  
+//	var Wicmp = <%ejGet(icmpWan)%>;
+//	if ((type == 1) && (Wicmp == 0) ){ // ping
+//	   hciAlert('<%ejGetML(MLG_Maintenance_CFM_AlertMsg_Str5)%>',{height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+//	   return;
+//	}
+
+  document.forms[0].diagTestType.value = type;
+  $.openLoadingMask(1);
+  document.forms[0].submit();
+}
+function clearText(){
+    if(document.forms[0].diagAddr.value == "<%ejGetML(MLG_Maintenance_PingTraceRouteNsLookup_Str10)%>")
+    {
+        document.forms[0].diagAddr.value = "";
+    }
+}
+function frmLoad(){
+
+/* __ZyXEL__, Albert, 20150804, Support interface for Ping command   */
+    if(!(customizationFlag & 0x00800000)){
+        $('#select_intf_txt').hide(); 
+    }
+
+    if(status=='1'){
+        document.forms[0].diagAddr.value = dstAddr;
+        buttonControl(1);
+        setTimeout("diagnosticStart()",5000);
+    }else{
+        document.forms[0].DisplayInfo.value = "- <%ejGetML(MLG_Maintenance_OAMPing_Str2)%> -";
+        if(forEircom==1)
+        {
+            document.forms[0].diagAddr.value= "www.eircom.net";
+        }
+        else
+        {
+            document.forms[0].diagAddr.value= "<%ejGetML(MLG_Maintenance_PingTraceRouteNsLookup_Str10)%>";
+        }
+    } 
+
+}
+$(document).ready(function() {
+    frmLoad();
+});
+</script>
+<form  action="/pages/tabFW/disagnostic-general.cgi" method="post">
+<input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">
+<input type="hidden" name="diagTestType" id="diagTestType" value="1">
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Maintenance_CFM_Explain)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame">
+<ul>
+<div class="title"><%ejGetML(MLG_Maintenance_CFM_Str15)%></div>
+<li class="set1">
+  <div class="infodisplay">
+    <textarea name="DisplayInfo" class="input_big" rows="15" cols="80" readonly="readonly">-<%ejGetML(MLG_Maintenance_OAMPing_Str2)%>-</textarea>
+  </div></li>
+  <li class="space"> </li>
+  <li class="set1">
+  <div class="title"><%ejGetML(MLG_Maintenance_CFM_Str16)%></div>
+    <div class="w_text" id='select_intf_txt'>
+      <ul>
+        <li><%ejGetML(MLG_Maintenance_PingTraceRouteNsLookup_Str9)%>:&nbsp&nbsp</li>
+        <li>
+          <select name='diagIntf' id = 'diagIntf'> 
+          
+<script language="javascript">
+{
+
+	var i=0;
+	var interfaceInfo = '<%ejGetOther(wanInterfaceInfo, route)%>';
+	var interfaces = interfaceInfo.split('|');
+
+	if(interfaces.length>0){  
+		for ( i = 0; i < interfaces.length; i++ ) {
+			var names = interfaces[i].split('/');
+			if(names[1] != "(null)"){
+				$('#diagIntf').append('<option value="'+names[1]+'" >'+interfaces[i]+'</option>'); 
+			}
+		}
+	}
+			
+	var i=0;
+	var laninterfaceInfo = '<%ejGetOther(lanInterfaceInfo)%>';
+	var laninterfaces = laninterfaceInfo.split('|');
+	if(laninterfaces.length>0){  
+		for ( i = 0; i < laninterfaces.length; i++ ) {
+			var names = laninterfaces[i].split('/');
+			$('#diagIntf').append('<option value="'+names[1]+'" >'+laninterfaces[i]+'</option>'); 
+		}
+	}
+}
+</script>
+          
+          </select>
+        </li>
+      </ul>
+       <br><br>
+    </div>
+  <div class="w_text"> 
+    <%ejGetML(MLG_Maintenance_PingTraceRouteNsLookup_Str4)%> :
+<input type="text" name="diagAddr" size="50" maxlength="50" value="" onClick="clearText();" onKeyPress="clearText();" />&nbsp;
+<span class="none_right"><input type="button" name="Ping" value="<%ejGetML(MLG_Maintenance_PingTraceRouteNsLookup_Str6)%>" onClick="btnApply(1);" /></span>&nbsp;
+<span class="none_right"><input type="button" name="TraceRoute" value="<%ejGetML(MLG_Maintenance_PingTraceRouteNsLookup_Str7)%>" onClick="btnApply(2);" /></span>
+<input type="hidden" name="actionType" value="" />
+<span class="none_right"><input type="button" name="NsLookup" value=" <%ejGetML(MLG_Maintenance_PingTraceRouteNsLookup_Str8)%>" onClick="btnApply(3);"  /></span></div>
+</li>
+<li class="buttonframe"></li>
+<!--Button define end-->
+</ul>
+</ul>
+</div>
+<!--Set area end-->
+</div>
+</form>
+<br/><br/>

@@ -1,0 +1,144 @@
+<script language="javascript">
+var enblUpnpGet = '<%ejGet(enblUpnp)%>';
+var enblUpnpNATTGet = '<%ejGet(enblUpnpNATT)%>';
+var upnpinfo = '<%ejGetOtherBig(portMap, upnp)%>';
+
+function frmLoad () {	
+	
+	if (enblUpnpGet == 1)
+	{	    
+		$("input[name='enblUpnp']").get(0).checked = true;
+		if (enblUpnpNATTGet == 1)
+		$("input[name='enblUpnpNATT']").get(0).checked = true;
+		else
+		$("input[name='enblUpnpNATT']").get(1).checked = true;
+	}
+	else 
+	{
+		$("input[name='enblUpnp']").get(1).checked = true;
+		$("input[name='enblUpnpNATT']").get(1).checked = true;
+	}
+	
+	document.forms[0].upnpProtocol.value = '';
+	document.forms[0].upnpExternalPort.value ='';	
+	
+}
+
+function doDel(uProtocol,uExternalPort){	
+	document.forms[0].upnpProtocol.value = uProtocol;
+	document.forms[0].upnpExternalPort.value = uExternalPort;
+	$.openLoadingMask(1);
+	document.forms[0].submit();
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+</script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+   <div class="explain">
+      <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+      <div class="explain_text"><%ejGetML(MLG_Network_UPnP_Explain)%></div>
+      <div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+   </div>
+<!--Unit Explain End-->
+   <form action="/pages/tabFW/homeNetworking-upnpcfg.cgi" method="post" onSubmit="$.openLoadingMask(1);return true;">
+      <input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">
+      <input type="hidden" name="upnpProtocol" id="upnpProtocol" >
+      <input type="hidden" name="upnpExternalPort" id="upnpExternalPort" >
+      <div class="data_frame"><ul>
+         <li class="set1">
+            <div class="title"><%ejGetML(MLG_Network_UPnP_Str5)%> </div>
+            <div class="w_text">
+               <ul>
+                  <li class="left_table"><%ejGetML(MLG_Network_UPnP_Str6)%> :</li>
+                  <li class="right_table" id="someone">
+                     <input name="enblUpnp" id="enblUpnp" type="radio" value="1" />
+                     	<%ejGetML(MLG_Common_Enable)%>
+                     <input name="enblUpnp" id="enblUpnp" type="radio" value="0" />
+                     	<%ejGetML(MLG_Common_Disable)%>
+                  </li>
+               </ul>
+            </div>
+         </li>
+         <li class="space"></li>
+         <li class="set1"> 
+            <div class="title"><%ejGetML(MLG_Network_UPnP_Str3)%> </div>
+            <div class="w_text">
+               <ul>
+                  <li class="left_table"><%ejGetML(MLG_Network_UPnP_Str4)%> :</li>
+                  <li class="right_table">
+                     <input name="enblUpnpNATT" id="enblUpnpNATT" type="radio" value="1" /> <%ejGetML(MLG_Common_Enable)%>
+                     <input name="enblUpnpNATT" id="enblUpnpNATT" type="radio" value="0" /> <%ejGetML(MLG_Common_Disabled)%>
+                  </li>
+               </ul>
+            </div>
+         </li>
+         <li class="space"> </li>
+<!--Note define start-->
+         <li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Network_Note)%>:</span></div><div class="note_text"><%ejGetML(MLG_Network_UPnP_Str2)%></div></li>
+         <li class="space"> </li>
+         <li class="set1">
+            <div class="w_table">
+               <table width="100%" cellpadding="0" cellspacing="0" class="table_frame" style="table-layout:fixed;" id="upnpTable">
+                  <tr align="center">
+                     <td width="5%"class="top_font">#</td>
+                     <td class="top_font"><%ejGetML(MLG_Common_Description)%></td>
+                     <td class="top_font"><%ejGetML(MLG_Common_IPAddress)%></td>
+                     <td class="top_font"><%ejGetML(MLG_Common_ExternalPort)%></td>
+                     <td class="top_font"><%ejGetML(MLG_Common_InternalPort)%></td>
+                     <td class="top_font"><%ejGetML(MLG_NAT_Applications_Str143)%></td>
+                     <td class="top_font"></td>
+                     <!--td width="60" class="top_font" style="border-right:0px;">Modify</td-->
+                  </tr>
+<script language="javascript">
+<!-- hide
+{
+   var uinfo = upnpinfo.split('|');
+   var str = '';
+   var proto = '';
+
+   if ( uinfo != '' ) {
+      for (var i = 0 ; i < uinfo.length ; i++) {
+         if (uinfo[i] != '') {
+            var names = uinfo[i].split('/');
+            str += '<tr align=\'center\' >';
+            str += '   <td class=\'table_font\'>' + (i + 1) + '</td>';
+            str += '   <td class="table_font">' + names[1] + '</td>';
+            str += '   <td class="table_font">' + names[5] + '</td>';
+            str += '   <td class="table_font">' + names[3] + '</td>';
+            str += '   <td class="table_font">' + names[6] + '</td>';
+            if (names[8] == '1')
+               proto = "TCP";
+            else
+               proto = "UDP";
+            str += '   <td class="table_font">' + proto + '</td>';
+//            str += '   <td class="table_font"><div class="i_modify"><ul>';
+//            str += '      <li><a href="#" onClick="editClick(\''+ names[0] + '\',\''+ names[2] + '\')" class="edit" title="Edit" id="editBtn" ></a></li>';
+//            str += '      <li><a href="#" onclick="removeClick(\''+ names[0] + '\',\''+ names[2] + '\')" class="delete" title="Delete" id="deleteBtn"></a></li>';
+            str += '   <td class="table_font"><input name="upnpButtonClear" id="upnpButtonClear" value="Clear" type="button" onclick="doDel(\''+ proto + '\',\''+ names[3] + '\');"/></td>';
+//			str += '   </ul></div></td>';
+            str += '</tr>';
+//            document.writeln("<td><a onClick='removeClick("+i+")' class='btn remove_btn'><a/></td>");
+         }
+
+      }
+   }
+
+   $('#upnpTable').append(str);
+}
+//-->
+</script>
+               </table>
+            </div>
+         </li>
+         <li class="space"> </li>
+<!--Button define start-->
+         <li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="submit" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();' /></div></li>
+<!--Button define end-->
+      </ul></div>
+   </form>
+<!--Set area end-->
+</div><br /><br />

@@ -1,0 +1,13 @@
+FILES = igd_linux_main.c
+FILES += igd_linux_osl.c
+FILES += InternetGatewayDevice.c
+FILES += soap_x_layer3forwarding.c
+FILES += soap_x_wancommoninterfaceconfig.c
+FILES += soap_x_wanipconnection.c
+FILES += xml_InternetGatewayDevice.c
+FILES += xml_x_wancommoninterfaceconfig.c
+FILES += xml_x_layer3forwarding.c
+FILES += xml_x_wanipconnection.c
+FILES += InternetGatewayDevice_table.c
+FILES += igd_mainloop.c
+FILES += soap_x_wfawlanconfig.c

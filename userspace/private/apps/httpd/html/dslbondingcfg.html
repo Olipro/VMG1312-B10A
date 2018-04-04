@@ -1,0 +1,108 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+var bonding = '<%ejGet(dslBonding)%>';
+var bondingStatus = '<%ejGet(dslBondingStatus)%>';
+
+function hideDslBondingMode(hide) {
+   var status = 'visible';
+
+   if ( hide == 1 )
+      status = 'hidden';
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('dslBondingInfo').style.visibility = status;
+   else {
+      if (document.layers == false) // IE4
+         document.all.dslBondingInfo.style.visibility = status;
+   }
+}
+
+function dslBondingClick(cb) {
+   if (cb.checked == true)
+      hideDslBondingMode(0)
+   else
+      hideDslBondingMode(1);
+}
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+      if ( bonding == '1' ) {
+        chkDslBonding.checked = true;
+        hideDslBondingMode(0);
+      } else {
+        chkDslBonding.checked = false;
+        hideDslBondingMode(1);
+      }
+   }
+}
+
+function btnApplySave() {
+   var loc = 'dslbondingcfg.cgi?';
+
+   with ( document.forms[0] ) {
+     if ( chkDslBonding.checked == true )
+        loc += 'dslBonding=1';
+     else
+        loc += 'dslBonding=0';
+   }
+   loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+
+
+// done hiding -->
+</script>
+   </head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <form>
+            <P>
+               <b>xDSL Bonding Capability Configuration</b><br><br>
+               Any Changes will require a reboot.<br><br>
+               Bonding/Non-bonding modes - Auto controlled from within the system. <br><br>
+               For any kind of xDSL bonding capability in the modem now or in the future,<br><br>
+               Please keep this configuration enabled.<br><br>
+            </P>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td><input type='checkbox' name='chkDslBonding' onClick='dslBondingClick(this)'>&nbsp;&nbsp;xDSL Bonding Capability</td>
+               </tr>
+            </table>
+            <br>
+            <br>
+            <table border=0 cellspacing=1 cellpadding=1 >
+              <tr>
+                  <td class='hd'>     Current WAN xDSL Mode:</td>
+                  <td class='hd'>
+                     <script language="javascript">
+                     <!-- hide 
+                       {
+                         with ( document.forms[0] ) {
+                           bondingStatus = '<%ejGet(dslBondingStatus)%>';
+                           if(bondingStatus == 1) {
+                             document.writeln("<font color='green'>Bonded</font>");
+                           }
+                           else {
+                             document.writeln("<font color='blue'>Non Bonded</font>");
+                           }
+                         }
+                       }
+                     // done hiding -->
+                     </script>
+                  </td>
+              </tr>
+            </table>
+						   <center>
+						      <input type='button' onClick='btnApplySave()' value='Save/Reboot'>
+						   </center>
+         </form>
+      </blockquote>
+   </body>
+</html>

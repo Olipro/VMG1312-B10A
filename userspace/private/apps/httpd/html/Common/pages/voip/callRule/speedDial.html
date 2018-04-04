@@ -1,0 +1,281 @@
+<script type="text/javascript">
+
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+
+var voiceRunning = '<%ejGetVoice(voiceInUse)%>';
+var tmppbname   = '<%ejGetVoice(phbookname)%>';
+var tmppborinum   = '<%ejGetVoice(phbookorinum)%>';
+var tmppbspdnum   = '<%ejGetVoice(phbookspdnum)%>';
+var tmppbflags   = '<%ejGetVoice(phbookflags)%>';
+
+var tmpname = tmppbname.split(',');
+var	tmporinum = tmppborinum.split(',');
+var	tmpspdnum = tmppbspdnum.split(',');
+var	tmpflags = tmppbflags.split(',');
+
+var maxPhBook = 10;
+
+function btnStartSip(current_view) {
+
+	var pbname, pborignum;
+	var phbook, pbstr;
+	var pbFlags1 = 'SDConfigure';
+	var pbFlags2 = 'SDActive';
+	var pbType = 'SDSipProxy';
+	var pbForceSipUri = ' ';
+
+	if(parseInt(voiceRunning)==1){
+		alert("<%ejGetML(MLG_VoIP_region_AlertMsg_Str1)%>");
+	}	
+
+	with ( document.forms[0] ) {
+
+		// Test if the input value is valid
+		for (var j = 1; j <= maxPhBook; j++) {
+		  	pbname = document.getElementById("pbname"+j);
+			pborignum = document.getElementById("pborignum"+j);
+			
+			// No name
+			if ( pborignum.value.length == 0 && pbname.value.length != 0) {
+				alert(MLG_Makestring("<%ejGetML(MLG_VoIP_speedDial_AlertMsg_Str1)%>", j));
+				return;
+			}
+			// No desciption
+			/*
+			else if ( pborignum.value.length != 0 && pbname.value.length == 0) {
+				alert('Key #0' + j + ': No Description!');
+				return;
+			}
+			*/
+			
+			var str_pborignum = new String(pborignum.value);
+			
+			for (var i = 0; i < pborignum.value.length; i++) {
+				if ( (str_pborignum.charAt(i) == '*') || (str_pborignum.charAt(i) == '#') || 
+					((str_pborignum.charAt(i) >= '0') && (str_pborignum.charAt(i) <= '9')) ) {
+					// valid value
+				} else {
+					// invalid value
+					alert(MLG_Makestring("<%ejGetML(MLG_VoIP_speedDial_AlertMsg_Str1)%>", str_pborignum.charAt(i)));
+					return false;
+				}
+			}
+
+		}
+
+		action.value = "start";
+		sessionKey.value = glbSessionKey;
+		
+		for (var j = 1; j <= maxPhBook; j++) {
+			phbook = document.getElementById("phbook"+j);
+		  	pbname = document.getElementById("pbname"+j);
+			pborignum = document.getElementById("pborignum"+j);
+			
+			// delete phone book j
+			if ( pborignum.value.length == 0) {
+				pbstr = j;
+				pbstr += ", ";
+				if(j<10)
+				{
+					pbstr += "," + "#0" + j;
+				}
+				else
+				{
+					pbstr += "," + "#" + j;
+				}
+				pbstr += ", ";
+				pbstr += "," + pbFlags1;
+				pbstr += "," + pbType;
+				pbstr += "," + pbForceSipUri;
+			}
+			// add phone book j
+			else {
+				pbstr = j;
+				pbstr += "," + pborignum.value;
+				if(j<10)
+				{
+					pbstr += "," + "#0" + j;
+				}
+				else
+				{
+					pbstr += "," + "#" + j;
+				}
+				if ( pbname.value.length != 0) {
+				pbstr += "," + pbname.value;
+				} else {
+					pbstr += ", ";
+				}
+				pbstr += "," + pbFlags2;
+				pbstr += "," + pbType;
+				pbstr += "," + pbForceSipUri;
+			}
+			phbook.value = pbstr;
+		}
+		
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+function btnClearItem() {
+
+	with ( document.forms[0] ) {
+		action.value = "phonebookclear";
+		sessionKey.value = glbSessionKey;
+		
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+function frmLoad() {
+
+	var pbname, pborignum, pbspeednum;
+	
+	for (var j = 0; (tmpname.length > 1) && (j < tmpname.length) ; j++)
+	{
+		var k = j+1;
+		pbname = document.getElementById("pbname"+k);
+		pborignum = document.getElementById("pborignum"+k);
+
+		if(tmpname[j].indexOf('(null)') == -1 && tmpname[j] != " "){
+			pbname.value = tmpname[j];
+		} else {
+			pbname.value = "";
+		}
+		if(tmporinum[j].indexOf('(null)') == -1 && tmporinum[j] != " "){
+			pborignum.value = tmporinum[j];
+		} else {
+			pborignum.value = "";
+		}
+	}
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+$(function(){
+ 
+    $('.clear').click(function(){
+    
+        var db1 = window.parent.$.zyUiDialog({
+            width: 450,
+            height: 190,
+            title: '<%ejGetML(MLG_VoIP_speedDial_Str3)%>',
+            buttons: {
+                '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close')},
+                '<%ejGetML(MLG_Common_OK)%>': function(){
+					db1.dialog('close');
+					btnClearItem();
+				}
+            }
+			
+        });
+		var link = 'pages/voip/callRule/confirm.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+});
+ </script>
+
+<form id="SpeedDialForm" name="SpeedDialForm" method="post" action="/pages/tabFW/callRule-voicesipcfg.cmd">
+<input name="action" type="HIDDEN" id="action" value="view"; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""; />
+
+<input name="phbook1" type="HIDDEN" id="phbook1" value=""; />
+<input name="phbook2" type="HIDDEN" id="phbook2" value=""; />
+<input name="phbook3" type="HIDDEN" id="phbook3" value=""; />
+<input name="phbook4" type="HIDDEN" id="phbook4" value=""; />
+<input name="phbook5" type="HIDDEN" id="phbook5" value=""; />
+<input name="phbook6" type="HIDDEN" id="phbook6" value=""; />
+<input name="phbook7" type="HIDDEN" id="phbook7" value=""; />
+<input name="phbook8" type="HIDDEN" id="phbook8" value=""; />
+<input name="phbook9" type="HIDDEN" id="phbook9" value=""; />
+<input name="phbook10" type="HIDDEN" id="phbook10" value=""; />
+
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_VoIP_speedDial_Explain)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<li class="set1">
+<div class="w_table"><ul><input type='button' class='clear' value='<%ejGetML(MLG_VoIP_speedDial_Str3)%>'></ul></div>
+<div class="w_table">
+  <!--Table define start-->
+  <table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;"class="table_frame" id="speeddialTable">
+    <tr align="center" valign="top">
+      <td width="10%" class="top_font"><%ejGetML(MLG_VoIP_speedDial_Str1)%></td>
+      <td class="top_font"><%ejGetML(MLG_VoIP_speedDial_Str2)%></td>
+      <td class="top_font"><%ejGetML(MLG_Common_Description)%></td>
+    </tr>
+    <tr align="center">
+      <td class="table_font">#01</td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pborignum1" id="pborignum1"/></td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pbname1" id="pbname1" size="36" /></td>
+    </tr>
+    <tr align="center">
+      <td class="table_font">#02</td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pborignum2" id="pborignum2"/></td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pbname2" id="pbname2" size="36"/></td>
+    </tr>
+    <tr align="center">
+      <td class="table_font">#03</td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pborignum3" id="pborignum3"/></td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pbname3" id="pbname3" size="36"/></td>
+    </tr>
+    <tr align="center">
+      <td class="table_font">#04</td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pborignum4" id="pborignum4"/></td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pbname4" id="pbname4" size="36" /></td>
+    </tr>
+    <tr align="center">
+      <td class="table_font">#05</td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pborignum5" id="pborignum5"/></td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pbname5" id="pbname5" size="36"/></td>
+    </tr>
+    <tr align="center">
+      <td class="table_font">#06</td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pborignum6" id="pborignum6"/></td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pbname6" id="pbname6" size="36"/></td>
+    </tr>
+    <tr align="center">
+      <td class="table_font">#07</td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pborignum7" id="pborignum7"/></td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pbname7" id="pbname7" size="36" /></td>
+    </tr>
+    <tr align="center">
+      <td class="table_font">#08</td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pborignum8" id="pborignum8"/></td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pbname8" id="pbname8" size="36"/></td>
+    </tr>
+    <tr align="center">
+      <td class="table_font">#09</td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pborignum9" id="pborignum9"/></td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pbname9" id="pbname9" size="36"/></td>
+    </tr>
+    <tr align="center">
+      <td class="table_font">#10</td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pborignum10" id="pborignum10"/></td>
+      <td  class="table_font"><input type="text" maxlength="128" name="pbname10" id="pbname10" size="36"/></td>
+    </tr>
+  </table>
+</div></li>
+<li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe"><div class="button_position">
+<input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="btnStartSip('voip_sip_account')"/>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick="frmLoad();"/></div></li>
+<!--Button define end-->
+</ul>
+</div>
+</div>
+<br/><br/>
+</form>

@@ -1,0 +1,227 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+var macUsed = '<%ejGetOther(memInfo, pcMacAddr)%>';
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+     radioMac[0].checked = true;
+     pcMac.value = macUsed;
+   }
+}
+
+function btnApply(place) {
+
+  var loc = place + '?action=add&';
+
+  if ( place == "todmngr.tod" ) {
+    with ( document.forms[0] ) {
+      if ( username.value == '' ) {
+        alert( 'Please enter a Parental Control rule name' );
+      } else if ( isValidName(username.value) == false ) {
+        alert( 'Please enter valid rule name: No special characters.' );
+      } else if ( macUsed == '' ) {
+        alert( 'Please enter a MAC address.' );
+      } else if ( isValidMacAddress( macUsed ) == false ) {
+        alert( macUsed + " is an invalid MAC address." );
+      } else {
+        loc += "username="+username.value+"&mac="+macUsed;
+
+        days = 0;
+
+        if( monday.checked )
+          days = 1;
+
+        if( tuesday.checked )
+          days |= 2;
+
+        if( wednesday.checked )
+          days |= 4;
+
+        if( thursday.checked )
+          days |= 8;
+
+        if( friday.checked )
+          days |= 16;
+
+        if( saturday.checked )
+          days |= 32;
+
+        if( sunday.checked )
+          days |= 64;
+
+        if( days == 0 ) {
+          alert("No days were specified.");
+          return;
+        }
+
+        loc += "&days=" + days;
+
+        loc += '&start_time=';
+        if( startTime.value.length ) {
+          vals = startTime.value.split( ':' );
+          if ( vals.length == 2 ) {
+            hour = eval( vals[0] );
+            min = eval( vals[1] );
+            if( hour < 0 || hour > 23 ) {
+              alert( startTime.value + " is an invalid time." );
+              return;
+            }
+            if( min < 0 || min > 59 ) {
+              alert( startTime.value + " is an invalid time." );
+            }
+            st_time = hour * 60 + min;
+          } else {
+            alert( startTime.value + " is an invalid time." );
+            return;
+          }
+        } else {
+          st_time = 0; // 00:00
+        }
+        loc += st_time;
+
+        loc += '&end_time=';
+        if(endTime.value.length ) {
+          vals = endTime.value.split( ':' );
+          if ( vals.length == 2 ) {
+            hour = eval( vals[0] );
+            min = eval( vals[1] );
+            if( hour < 0 || hour > 23 ) {
+              alert( endTime.value + " is an invalid time." );
+              return;
+            }
+            if( min < 0 || min > 59 ) {
+              alert( endTime.value + " is an invalid time." );
+              return;
+            }
+            en_time = hour* 60 + min;
+          } else {
+            alert( endTime.value + " is an invalid time." );
+            return;
+          }
+        } else {
+          en_time = 1439; // 23:59
+        }
+        loc += en_time;
+
+        if( en_time < st_time ) {
+          alert( 'Stop time is before start time.');
+          return;
+        }
+        loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+        var code = 'location="' + loc + '"';
+        if("<%ejGet(ntp_enabled)%>" != "1")
+          alert("WARNING: Modem time is not set and Parental Control will not work correctly without it!  Please set it in 'Management/Internet Time'");
+        eval(code);
+      }
+    }
+  }
+}
+
+function radioClick()
+{
+   with (document.forms[0]) {
+      if (radioMac[1].checked == true)
+         macUsed = '';
+      else
+         macUsed = '<%ejGetOther(memInfo, pcMacAddr)%>';
+   }
+}
+
+function cusEnterMac()
+{
+   with (document.forms[0]) {
+      if (radioMac[1].checked == true)
+         macUsed = cusMac.value;
+   }
+}
+
+// done hiding -->
+    </script>
+   </head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <form>
+            <b>Access Time Restriction</b><br>
+            <br>
+            <br>
+            This page adds time of day restriction to a special LAN device connected to the 
+            Router. The 'Browser's MAC Address' automatically displays the MAC address of the 
+            LAN device where the browser is running. To restrict other LAN device, click the  
+            "Other MAC Address" button and enter the MAC address of the other LAN device. 
+            To find out the MAC address of a Windows based PC, go to command window and 
+            type "ipconfig /all".
+            <br>
+            <br>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width='180'>User Name</td>
+                  <td><input type='text' name='username' size='18'></td>
+               </tr>
+            </table>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td colspan="2">&nbsp;</td>
+               </tr>
+               <tr>
+                  <td width='180'>
+                     <input type="radio" name="radioMac" onclick='radioClick()'>&nbsp;&nbsp;Browser's 
+                     MAC Address&nbsp;
+                  </td>
+                  <td><input type='text' size="18" name="pcMac"></td>
+               </tr>
+               <tr>
+                  <td width='180'>
+                     <input type="radio" name="radioMac" onclick='radioClick()'>&nbsp;&nbsp;Other 
+                     MAC Address (xx:xx:xx:xx:xx:xx)&nbsp;</td>
+                  <td><input type='text' size="18" name="cusMac" onchange='cusEnterMac()'></td>
+               </tr>
+               <tr>
+                  <td colspan="1">&nbsp;</td>
+               </tr>
+            </table>
+            <table border='1' cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width='180'>Days of the week</td>
+                  <td class='hd'>Mon</td>
+                  <td class='hd'>Tue</td>
+                  <td class='hd'>Wed</td>
+                  <td class='hd'>Thu</td>
+                  <td class='hd'>Fri</td>
+                  <td class='hd'>Sat</td>
+                  <td class='hd'>Sun</td>
+               </tr>
+               <tr>
+                  <td>Click to select</td>
+                  <td align='center'><input type='checkbox' name='monday'></td>
+                  <td><input type='checkbox' name='tuesday'></td>
+                  <td align='center'><input type='checkbox' name='wednesday'></td>
+                  <td><input type='checkbox' name='thursday'></td>
+                  <td><input type='checkbox' name='friday'></td>
+                  <td><input type='checkbox' name='saturday'></td>
+                  <td><input type='checkbox' name='sunday'></td>
+               </tr>
+            </table>
+            <br>
+            <table border='0' cellpadding='0' cellspacing='0'>
+               <tr>
+                  <td width='180'>Start Blocking Time (hh:mm)&nbsp;&nbsp;</td>
+                  <td><input type='text' size='5' name='startTime'></td>
+               </tr>
+               <tr>
+                  <td>End Blocking Time (hh:mm)&nbsp;&nbsp;</td>
+                  <td><input type='text' size='5' name='endTime'></td>
+               </tr>
+            </table>
+            <center>
+               <input type='button' value="Apply/Save" onClick='btnApply("todmngr.tod")'>
+            </center>
+         </form>
+      </blockquote>
+   </body>
+</html>

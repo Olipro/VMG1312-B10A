@@ -1,0 +1,82 @@
+dnl --------------------------------------------------------------------
+dnl Process this file with autoconf to produce a configure script.
+dnl lots of m4 macros are borrowed from php configure
+dnl muquit@muquit.com Jan-12-2003 
+dnl --------------------------------------------------------------------
+
+AC_INIT(mailsend.h)
+
+AC_PROG_RANLIB
+AC_PROG_MAKE_SET
+
+dnl Checks for programs.
+AC_PROG_CC
+test "$GCC" = yes && CFLAGS="$CFLAGS -Wall"
+
+AC_STDC_HEADERS
+AC_CHECK_HEADERS(string.h strings.h memory.h malloc.h unistd.h ctype.h)
+AC_CHECK_HEADERS(limits stdint.h sys/types.h stdlib.h fcntl.h sys/file.h)
+
+dnl Checks for libraries.
+dnl Some systems (OpenServer 5) dislike -lsocket -lnsl, so we try
+dnl to avoid -lnsl checks, if we already have the functions which
+dnl are usually in libnsl
+dnl Also, uClibc will bark at linking with glibc's libnsl.
+
+PHP_CHECK_FUNC(flock)
+PHP_CHECK_FUNC(socket, socket)
+PHP_CHECK_FUNC(htonl, socket)
+PHP_CHECK_FUNC(gethostname, nsl)
+PHP_CHECK_FUNC(gethostbyaddr, nsl)
+PHP_CHECK_FUNC(yp_get_default_domain, nsl)
+
+dnl Check for resolver routines.
+dnl Need to check for both res_search and __res_search
+dnl in -lc, -lbind, -lresolv and -lsocket
+PHP_CHECK_FUNC(res_search, resolv, bind, socket)
+
+dnl Check for inet_aton and dn_skipname
+dnl in -lc, -lbind and -lresolv
+PHP_CHECK_FUNC(inet_aton, resolv, bind)
+PHP_CHECK_FUNC(dn_skipname, resolv, bind)
+PHP_CHECK_FUNC(mkstemp)
+
+use_open_ssl="no"
+AC_MSG_CHECKING(for OpenSSL)
+OPENSSL_DO_IT_ALL
+if test ."$OPENSSL_DIR" != . -a ."$OPENSSL_INC" != . -a ."$OPENSSL_LIBS" != . ; then
+    AC_DEFINE(HAVE_OPENSSL)
+    AC_MSG_RESULT(yes)
+    use_open_ssl="yes"
+else
+    AC_MSG_RESULT(no)
+fi
+DL_LIB=""
+if test ".$use_open_ssl" = ".yes"; then
+dnl following borrowed from bind 9.3.2's configure.in
+AC_MSG_CHECKING(whether linking with OpenSSL requires -ldl)
+        AC_TRY_LINK([
+#include <openssl/err.h>],
+[ DSO_METHOD_dlfcn(); ],
+        [AC_MSG_RESULT(no)],
+        [LIBS="-L$OPENSSL_DIR/lib -lssl -lcrypto -ldl"
+        AC_TRY_LINK([
+#include <openssl/err.h>
+],[ DSO_METHOD_dlfcn(); ],
+        [AC_MSG_RESULT(yes)
+        DL_LIB="-ldl"
+        ],
+         [AC_MSG_RESULT(unknown)
+         AC_MSG_ERROR(OpenSSL has unsupported dynamic loading)],
+        [AC_MSG_RESULT(assuming it does work on target platform)])
+        ],
+        [AC_MSG_RESULT(assuming it does work on target platform)]
+        )
+
+fi
+AC_SUBST(DL_LIB)
+
+dnl Checks for header files.
+dnl AC_HEADER_STDC
+
+AC_OUTPUT(Makefile libs/libmsock/Makefile libs/libmutils/Makefile libs/libsll/Makefile)

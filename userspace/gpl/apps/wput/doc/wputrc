@@ -1,0 +1,171 @@
+###
+### Sample Wput initialization file .wputrc
+###
+
+# This file can be used to set default wput-options instead of
+# having to type them each time in the command-line.
+
+# This sample file contains all available options with descriptions
+# and examples which are most likely equal to the default settings,
+# so you have to uncomment and change them in order to take effect
+# For detailed reference to the command-line options
+# refer to wput(1)
+
+# Locations:
+# Wput will try to look for this file at the following locations:
+#  /etc/wputrc, ~/.wputrc, $WPUTRC
+# Using windows Wput will try C:\wput.ini and $WPUTRC.
+# You can set the environment-variable WPUTRC by either:
+# export WPUTRC="filename" or
+# set WPUTRC="filename"
+
+### Proxy
+
+# Wput is able to use socks (v5) as well as http-proxys
+# proxy-settings can be overridden/specified by the env-variable ftp_proxy
+# e.g. export ftp_proxy=http://user:pass@hostname:port
+# or for socks5: export ftp_proxy=user:pass@hostname:port
+
+# proxy = http | socks | off
+;proxy = http
+;proxy_host = somehost.org
+;proxy_port = 3128
+# When using http-proxies you can supply a username and password.
+# Wput will encode them using the basic-authentication cheme
+;proxy_user = username
+;proxy_pass = password
+# Some socks proxies support listen requests. e.g. they will listen
+# for an incoming connection. This is useful for port-mode ftp
+# using a proxy. However this is not supported / allowed by every
+# proxy and you might want to disable it.
+;proxy_bind = on
+
+### URL-Input
+
+# When using multiple URLs it is useful to sort the URLs by server and path.
+# This requires wput to read all URLs first and upload then. If you supply
+# the URLs using a pipe, wput will not being unless an EOF is found. If
+# sorting is off Wput will start as soon as the first URL has been read.
+;sort_urls = off
+
+### FTP-Options
+
+# Password-File
+# Warning:
+#   Since wput 0.6 the password-file is deprecated. Please use the .netrc-file
+#   instead.
+# If you don't want to type the password on the commandline or if you are just
+# lazy, you can use a password-file from which wput will read usernames and/or
+# passwords for a specified host. If the env-variable PASSWORDFILE is set, wput
+# will take this file as well for reference.
+# See doc/passwordfile for a syntactical description.
+;passwordfile = .wputpass
+
+# FTP is capable of transfering files passively (PASV) or actively (PORT)
+# If you are behind a router or firewall you want most likely to always
+# use passive mode which is default.
+# On the other hand if the remote-server is firewalled you might need port-
+# mode. Wput will try the other one if one fails, but this setting might
+# save some time.
+# 
+# transfer = port | pasv
+;connection_mode = pasv
+
+# TLS
+# FTP is an unsecure protocoll that does not encrypt any data. If wput is
+# compiled with SSL-Support, it will automatically try to encrypt connections
+# using the AUTH TLS method if possible.
+# You can force wput to reject connections to servers without tls-support,
+# thus being sure that no data is transmitted without encryption.
+;force_tls = off
+
+# CWD
+# Some hosts either do not support absolute CWDs or have a file system
+# that makes you wish to use relative CWDs. So you might turn it on here
+;relative_cwd = off
+
+# Ascii / Binary
+# Normally Wput will automatically detect which transfer-mode is to use by
+# looking at the file-extension. But you can override this default and tell
+# wput to always use either one.
+# transfer_type = auto | ascii | binary
+;transfer_type = auto
+
+# Resuming (see wput(1))
+# Wput will always try to resume a partially uploaded file or skip the file
+# if the remote file-size is equal. If remote size is wput will upload the
+# file again.
+# 2_1 = RESUME
+# 2_2 = SKIP
+# 1_2 = UPLOAD
+# The first number symbolizes the local file-size. The second one the remote
+# filesize. The RESUME-value may only be used in the 2_1 setting.
+# If you want to disable resuming use:
+;2_1 = UPLOAD
+# If you want to skip remote files that are larger than local (default in
+# wput 0.3.x) use:
+;1_2 = SKIP
+
+# Aggressions
+# Wput is per default aggressive meaning that if something fails, wput tries
+# an other way. This setting can be offending so it can be disabled
+;peace
+
+# Anonymous Email-address
+;email_address = wput@localhost.com
+
+# Scripting
+# Wput might be able to use a script-file to execute some commands on different
+# events some day.
+# Here you can specify a global script-file.
+;script_file = /home/user/.wputscript
+
+# Log-Level / Verbosity
+# You can override the default verbose setting.
+# verbosity = debug | more | normal | less | quite
+;verbosity = normal
+
+# Bind-Address
+# Sometimes you might want Wput not to bind to all local IPs (0.0.0.0) but
+# to a specific one.
+# bind-address = ip
+;bind-address = 0.0.0.0
+
+# Retry-Count
+# Per default Wput tries infinitely to upload a file.
+# -1 means infinite
+;retry_count = -1
+
+# Retry-Wait
+# Wait N seconds before retrying an action that failed
+# default: 10 seconds
+;wait_retry = 10
+
+# Timeout
+# Wput has several timeouts that take effect for example when connecting,
+# transmitting, waiting for an answer etc...
+# You might wish to change this this if you are on a rather slow or real
+# fast connection.
+# The argument is supplied in 10th-seconds. Default: 10 seconds
+;timeout = 100
+
+# Timestamping
+# Wput can assume to compare the file-dates of the local file with the 
+# remote server and upload the file only, if it is locally newer.
+;timestamping = off
+# Since these ftp-servers are often located in a different time-zone,
+# you may wish to specify the offset between you and the server here.
+# (e.g. YOU: GMT+1, FTP: GMX-1 => timeoffset = -2)
+;timeoffset = -2
+# Allowed Deviation
+# Your clock and the remote-clock may differ slightly. Therefore allow
+# a few seconds of deviation.
+;timedeviation = 5
+
+# Speed Limit
+# Wput is capable of limiting the maximum upload-rate.
+# The value consists of bytes per second. K and M are the common
+# prefixes for Kibi and Mebi bytes
+# rate = n [K|M], default is 0 / no-limit
+;rate = 10K
+

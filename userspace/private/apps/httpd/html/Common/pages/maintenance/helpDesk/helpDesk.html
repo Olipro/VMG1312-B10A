@@ -1,0 +1,43 @@
+<script type='text/javascript'>
+    $(function(){
+        $('input[name="sysSubmit"]').click(function(){
+           window.parent.$.openLoadingMask(2);
+           
+           //close loading mask by calling window.parent.$.closeLoadingMask();
+           setTimeout(function(){ window.parent.$.closeLoadingMask();}, 2000);
+        });
+    });
+</script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">When any user connects to this device remotely, the user will be automatically signed off after he or she is idle for a period of time that is given on this page.</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame">
+<ul><li class="set1">
+<div class="w_text">
+ <ul>
+                    <li>Allow idle time period :
+					<input id="HelpDeskTimer" name="HelpDeskTimer" size="5" maxlength="2" value="5" type="text" >
+					(1-10) <%ejGetML(MLG_ConnStatus_Status_Str109)%>.</li></ul>
+					<ul>
+					<li><input id="HelpDesk_Telnet" name="HelpDesk_Telnet" type="checkbox"  >
+					<%ejGetML(MLG_Security_ServiceControl_Str20)%></li></ul><ul>
+					<li><input id="HelpDesk_FTP" name="HelpDesk_FTP" type="checkbox"  >
+					<%ejGetML(MLG_Maintenance_Remote_FTP_Str)%></li></ul>
+					<ul>
+					 <li><input id="HelpDesk_HTTP" name="HelpDesk_HTTP" type="checkbox"  >
+					<%ejGetML(MLG_Maintenance_Remote_Services_Str)%></li>
+                     </ul>
+        </div></li>
+		<li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="submit" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="reset" /></div></li>
+</ul>
+</div>
+</ul>
+</div>
+<br/><br/>

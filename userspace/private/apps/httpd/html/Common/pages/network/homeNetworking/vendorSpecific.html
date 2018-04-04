@@ -1,0 +1,208 @@
+<script language="javascript">
+<!-- hide
+
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+
+function btnApply()
+{
+	with ( document.forms[0] ) 
+	{
+		sessionKey.value = gblsessionKey;
+		action.value="active";
+		if($('input[name=enable_op125]').get(0).checked == true)
+		{
+			enable.value=1;
+		}else{
+			enable.value=0;
+		}
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+function frmLoad(firstload) {
+  var i = 0;
+  var enbl = "<%ejGetOther(Option125isEnable)%>";
+  
+  if(enbl == ""){
+	  $('input[name=enable_op125]').get(0).disabled = true;
+	  $('input[name=enable_op125]').get(1).disabled = true;
+	  
+	  if ( enbl == "1" ) {
+		$('input[name=enable_op125]').get(0).checked = true;
+	  }
+	  else {
+		$('input[name=enable_op125]').get(1).checked = true;
+	  }
+  }else{
+	  $('input[name=enable_op125]').get(0).disabled = false;
+	  $('input[name=enable_op125]').get(1).disabled = false;
+	  if ( enbl == "1" ) {
+		$('input[name=enable_op125]').get(0).checked = true;
+	  }
+	  else {
+		$('input[name=enable_op125]').get(1).checked = true;
+	  }  
+  }
+  
+}
+
+function addClick() {
+   var loc = '/pages/network/homeNetworking/vendorSpecific_add.html';
+   var vendor_add_dialog = window.parent.$.zyUiDialog({
+   	width: '50%',
+   	height: 250,
+   	title: '<%ejGetML(MLG_Network_VendorSpecific_Str1)%>',
+   	buttons: {
+   		'<%ejGetML(MLG_Common_Cancel)%>': function(){ vendor_add_dialog.dialog('close') },
+   		'<%ejGetML(MLG_Common_Apply)%>': function(){}
+   	}
+	})
+	vendor_add_dialog.load(loc);
+	vendor_add_dialog.dialog('open');
+}
+
+function editClick(vendor) {
+   var vendor = vendor.replace(/ /g, "%20");
+   var loc = '/homeNetworking-Option125Entry.cmd?action=view&oui=' + vendor;
+   loc += '&sessionKey=' + gblsessionKey;
+
+   var db1 = window.parent.$.zyUiDialog({
+		width: '50%',
+   	height: 250,
+		title: '<%ejGetML(MLG_Network_VendorSpecific_Str9)%>',
+
+		buttons: {
+			'<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close') },
+			'<%ejGetML(MLG_Common_Apply)%>':function(){}
+		}
+	});
+	db1.load(loc);
+	db1.dialog('open');
+}
+
+function removeClick(vendor) {
+	vendor = vendor.replace(" ", "%20");
+	var db1 = window.parent.$.zyUiDialog({
+		width: 450,
+		height: 200,
+		title: '<%ejGetML(MLG_Network_VendorSpecific_Str8)%>',
+		buttons: {
+			'<%ejGetML(MLG_Common_No)%>': function(){ db1.dialog('close'); },
+			'<%ejGetML(MLG_Common_Yes)%>': function(){ db1.dialog('close'); deleteProcess(vendor); }
+		}
+	});
+	db1.load('/pages/delete.html');
+	db1.dialog('open');
+}
+
+function deleteProcess(vendor) {
+   with ( document.forms[0] ) {
+      sessionKey.value = gblsessionKey;
+      rmLst.value = vendor;
+      $.openLoadingMask(1);
+      document.forms[0].submit();
+   }
+}
+
+$(document).ready(function() {
+	frmLoad();
+$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );    
+$('.textOverflow').ellipsis(true); 
+//$('.table_font').tooltip(); 
+});
+
+//hiding done-->	
+</script>
+
+<form action="/pages/tabFW/homeNetworking-Option125Entry.cmd" method="post">
+      <input type=hidden name="sessionKey" id="sessionKey" value="">
+      <input type=hidden name="action" id="action" value="remove">
+      <input type=hidden name="rmLst" id="rmLst" value="">
+      <input type="hidden" name="enable" id="enable">
+
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Network_Option125_Explain)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<div class="w_text" >
+  <ul>
+    <li class="left_table">
+      <%ejGetML(MLG_Network_VendorSpecific_Str13)%>   
+      :</li>
+    <li class="right_table" id="enable_table">
+    	<input name="enable_op125" id="enable_op125" type="radio" value="1"/>
+      <%ejGetML(MLG_Security_FirewallACL_Str4)%>
+      <input name="enable_op125" id="enable_op125" type="radio" value="0"/>
+      <%ejGetML(MLG_Security_FirewallACL_Str5)%></li>
+  </ul>
+</div>
+<li class="set1">
+<div class="button_other">
+  <input name="ruleAdd" type="button" value="<%ejGetML(MLG_Network_VendorSpecific_Str1)%>" onclick="addClick()" />
+</div>
+</li>
+<li class="set1">
+<div class="w_table">
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="stbTable">
+   <tr align="center">
+      <td width="25%" class="top_font"><%ejGetML(MLG_Network_VendorSpecific_Str5)%></td>
+      <td width="30%" class='top_font'><%ejGetML(MLG_Network_VendorSpecific_Str6)%></td>
+      <td width="30%" class='top_font'><%ejGetML(MLG_Network_VendorSpecific_Str7)%></td>
+      <td width="15%" class='top_font'><%ejGetML(MLG_Network_StaticRoute_Str9)%></td>
+   </tr>
+<script language="javascript">
+	{
+   	var i = 0;
+   	var Option125 = '<%ejGetOther(Option125Entry)%>';
+   	var info = Option125.split('|');
+   	var str = '';
+   	var count = 0;
+   
+   	if (info != '') {
+      	for ( i = 0; i < info.length; i++ ) {
+         	if (info[i] != '') {
+            	var names = info[i].split('/');
+            	str += "<tr align=\"center\" >";
+            	str += "<td class=\"table_font textOverflow\">" + names[0] + "</td>";
+            	str += "<td class=\"table_font textOverflow\">" + names[1] + "</td>";
+            	if (names[1] != '' && names[1] != "(null)")
+            	    str += "<td class=\"table_font textOverflow\">" + names[2] + "</td>";
+           	    else
+            	    str += "<td class=\"table_font\">" + "</td>";
+            	str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editClick('" + names[0] + "')\" class=\"edit\" title=\"<%ejGetML(MLG_Common_Edit)%>\" id='editBtn'></a></li><li><a href=\"#\" onclick=\"removeClick('"+ names[0] + "')\" class=\"delete\" title=\"<%ejGetML(MLG_Common_Delete)%>\" id='deleteBtn'></a></li></ul></div></td>";
+	            str += "</tr>";
+				count++;
+      	   }
+      	}
+   	}
+
+   	$('#stbTable').append(str)
+   	$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );
+
+   	var errMsg = "<%ejGetOther(errMsg)%>";
+   	if (errMsg != '') {
+      	hciAlert(errMsg, {height: 180,type: 2, title: ''});
+	   }
+	}
+</script>
+</table>
+</div></li>
+
+<li class="buttonframe"><div class="button_position">
+<input name="button" type="button" onclick='btnApply()' value="<%ejGetML(MLG_Common_Apply)%>"/>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<input name="Cancel" type="button" onclick='frmLoad(0)' value="<%ejGetML(MLG_Common_Cancel)%>" />
+</div>
+</li>
+<!--Table define end-->
+
+</ul></div>
+<!--Set area end-->
+</div>
+</form>
+

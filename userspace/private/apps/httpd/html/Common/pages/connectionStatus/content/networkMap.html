@@ -1,0 +1,685 @@
+<script language="javascript">
+<!-- hide
+// update static host to MDMOID_LAN_HOST_ENTRY.
+var update = '<%ejFncCmd(updatestatic)%>';
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+
+var wiredActiveUsers;
+var wlActiveUsers;
+var wanLevel;
+var wanType;
+var wlEnbl = 0;
+
+var AllwifiVarStr = '<%ejGetWl(wlVarForNetWorkMap)%>'; 
+var AllwifiVarStrArr = AllwifiVarStr.split("|", 10); 
+
+var customer = '<%ejGetOther(customer)%>';
+var ip6LanPrefix = '<%ejGetOther(ipv6LanPrefix)%>';
+var slaacEnbl = '<%ejGetOther(enblSLAAC, all)%>';
+var dhcpv6State = '<%ejGet(enblDhcp6sStateful)%>';
+var enblLanIPv6 = '<%ejGetOther(enblIpv6Lan, all)%>';
+var pcpActiveUsers = '<%ejGetOtherBig(PCPHostList)%>';
+var enableParentCtl = '<%ejGetOther(activeParentCtl)%>'
+var wiredActiveUsers = '<%ejGetOtherBig(wiredactiveusers)%>';
+var wlActiveUsers = '<%ejGetOtherBig(wlactiveusers)%>';
+var wanLevel = '<%ejGetOther(sysInfo, wanStatus)%>';
+var wanType = '<%ejGetOther(wanType)%>';
+var wlEnbl = AllwifiVarStrArr[0] | AllwifiVarStrArr[1] | AllwifiVarStrArr[2] | AllwifiVarStrArr[3];
+var wlSenbl = AllwifiVarStrArr[4] | AllwifiVarStrArr[5] | AllwifiVarStrArr[6] | AllwifiVarStrArr[7];  
+var forEircom  = '0';
+	
+function hciDefine(){
+   // HCI define
+   $('#naviNext').click(function(){
+      $('ul.popupMenu').hide();
+   });
+
+   $.fn.zyClickMenu = function(){
+      function showPopupMenu(popupMenu){
+         $('ul.popupMenu').hide();
+         popupMenu.show();
+      }
+      var _handler = function(){
+         var menuLi = $(this).children('.addmenu');
+         menuLi.addClass('main');
+         $(this).addClass('clickMenu');
+         var popMenu = menuLi.children('.popupMenu');
+         var pwidth = popMenu.width();
+         popMenu.children('li').width(pwidth);
+   		   
+         menuLi.click(function(){
+            var popupMenu =  $(this).children('ul.popupMenu');
+            popupMenu.css('display')=='none'?showPopupMenu(popupMenu): popupMenu.hide();
+            return false;
+         }).children('ul').hide();
+      };
+      var zyClickMenuPlugin = this.each(_handler);
+      return zyClickMenuPlugin;
+   };
+
+   $('.iconBtn').click(function(){
+      $('.iconBtn').addClass('highlight');
+      $('.listBtn').removeClass('highlight');
+      $('.iconView').fadeIn(0);
+      $('.listView').fadeOut(0);
+      $('.networkmapframe').height($('#mapView').height() + subMenuHeight);
+   });
+
+   $('.listBtn').click(function(){
+      $('.listBtn').addClass('highlight');
+      $('.iconBtn').removeClass('highlight');
+      $('.listView').fadeIn(0);
+      $('.iconView').fadeOut(0);
+      $('.networkmapframe').height($('#mapView').height() + subMenuHeight);
+   });
+
+   $('.listmode').hover(function(){
+      $(this).children('a').addClass('hover').css('cursor', 'pointer');
+   }, function(){
+      $(this).children('a').removeClass('hover');
+   })
+
+   $('.iconmode').hover(function(){
+      $(this).children('a').addClass('hover').css('cursor', 'pointer');
+   }, function(){
+      $(this).children('a').removeClass('hover');
+   })
+/*
+   var menu = '<ul class="popupMenu">' +
+              '<li style="margin-top:3px;">' +
+              '<a href="#" class="info">Info</a>' +
+              '</li>' +
+              '<li>'+
+              '<a href="#" class="parental">Parental Control</a>'+
+              '</li>'+
+              '<li>' +
+              '<a href="#" class="block">Block</a>' +
+              '</li>' +
+              '<li >' +
+              '<a href="#" class="changename">Change icon/name</a>' +
+              '</li>' +
+              '</ul>';
+
+   var usb_menu = '<ul class="popupMenu">' +
+                  '<li  style="margin-top:3px;">' +
+                  '<a href="#" class="info">Info</a>' +
+                  '</li>' +
+                  '<li style="margin-bottom:10px;">' +
+                  '<a href="#" class="changename">Change icon/name</a>' +
+                  '</li>' +
+                  '</ul>';
+*/
+   var zCounter = 10000;
+   var subMenuHeight = 85;
+
+   $('.wirelessFrame .list').each(function(i, d){
+      zCounter -= 1;
+      var menuLi = $(d).children('.addmenu');
+      //menuLi.append(menu);
+      $(d).css('z-index', zCounter);
+      $(d).zyClickMenu();
+
+      var device = $(d).children('span.i_device').children('img').attr('src');
+      var PQAAttr = 'wireless device: ' + device ;
+      menuLi.children('a').attr('PQAAttr', PQAAttr);
+   });
+
+   $('body').click(function(){
+      $('ul.popupMenu').hide();
+   })
+
+   $('.usbFrame .list').each(function(i, d){
+      zCounter -= 1;
+      var menuLi = $(d).children('.addmenu');
+      //menuLi.append(usb_menu);
+      $(d).css('z-index', zCounter);
+      $(d).zyClickMenu();
+
+      var device = $(d).children('span.i_device').children('img').attr('src');
+      var PQAAttr = 'USB device: ' + device ;
+      menuLi.children('a').attr('PQAAttr', PQAAttr);
+   });
+    
+   $('.wiredFrame .list').each(function(i, d){
+      zCounter -= 1;
+      var menuLi = $(d).children('.addmenu');
+      //menuLi.append(menu);
+      $(d).css('z-index', zCounter);
+      $(d).zyClickMenu();
+
+      var device = $(d).children('span.i_device').children('img').attr('src');
+      var PQAAttr = 'wired device: ' + device ;
+      menuLi.children('a').attr('PQAAttr', PQAAttr);
+   });
+    
+   /*$('.i_router').click(function(){
+      //pop up low battery alert
+      window.parent.$.alertLowBattery();
+
+      //pop up detect no UPS alert
+      //window.parent.$.alertDetectNoUPS();
+
+      return false;
+   });*/
+
+   //no parental control
+   /*$('.parental').click(function(){
+      var db1 = window.parent.$.zyUiDialog({
+         width: 500,
+         height: 200,
+         title: 'No Parental Control Profile applied'
+      });
+      var link = 'pages/noparental.html'; 
+      if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+      link='../'+link;
+      db1.load(link);
+      db1.dialog('open');
+   });*/
+
+   /*$('.i_internet').toggle(function(e){
+      connection(false);
+      initwlLine(1);
+   }, function(){
+      connection(true);
+      initwlLine(0);
+   });*/
+
+   //initial
+   //0:all success, 1:all fail, 2:partial fail 
+   if(wanLevel == '0') {
+      connection(true, wanLevel);
+	  //0:display, 1:ether, 2:dsl, 3:3G 
+	  if(wanType == '3'){
+         $('#i_internet_type').show();
+         //$('#i_internet_type').text("3G");
+      }
+	  else{
+	     //$('#i_internet_type').hide();
+	  }
+   } else {
+      connection(false, wanLevel);
+	  //$('#i_internet_type').hide();
+   }
+   // HCI Define end
+}
+
+// device info and change icon
+function infoClick(mac) {
+	var loc = '/pages/connectionStatus/connectionStatus-hostEntry.cmd?action=view&macaddr=' + mac;
+	loc += '&sessionKey=' + glbSessionKey;
+	
+	var db1 = window.parent.$.zyUiDialog({
+		width: 450,
+		height: 250,
+		title: '<%ejGetML(MLG_ConnStatus_NetworkMap_Str3)%>',
+		
+		buttons: {
+		   '<%ejGetML(MLG_Common_OK)%>': function(){ db1.dialog('close'); }
+		}
+	});
+	//clearTimeout(timeValue);
+	db1.load(loc);
+	db1.dialog('open');
+}
+
+function editClick(mac) {
+	var loc = '/pages/connectionStatus/connectionStatus-hostEntry.cmd?action=viewedit&macaddr=' + mac;
+	loc += '&sessionKey=' + glbSessionKey;
+	
+	var db1 = window.parent.$.zyUiDialog({
+		width: 700,
+		height: 380,
+		title: '<%ejGetML(MLG_ConnStatus_NetworkMap_Str4)%>',
+		
+		buttons: {
+		 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+		 '<%ejGetML(MLG_Common_Apply)%>':function(){}
+		}
+	});
+	//clearTimeout(timeValue);
+	db1.load(loc);
+	db1.dialog('open');
+}
+
+
+function parentalControlClick(mac) {
+	var loc = '/pages/connectionStatus/connectionStatus-hostEntry.cmd?action=viewparentalcontrol&macaddr=' + mac;
+	loc += '&sessionKey=' + glbSessionKey;
+	
+	var db1 = window.parent.$.zyUiDialog({
+		width: 750,
+		height: 450,
+		title: '<%ejGetML(MLG_ConnStatus_NetworkMap_Str33)%>',
+		
+		buttons: {
+		   '<%ejGetML(MLG_Common_OK)%>': function(){ db1.dialog('close'); }
+		}
+	});
+	db1.load(loc);
+	db1.dialog('open');
+}
+
+// device list for Wire
+function CreateWireList () 
+{
+   var i = 0, j= 0;
+   var info = wiredActiveUsers.split('|');
+   var PCP_list = pcpActiveUsers.split('|');
+   var str = '';
+   var PCP_line,PCP_active=0;
+   
+   
+/* host list example: 
+pc/unknown/Ethernet/00:13:49:ab:ba:24/Static/192.168.1.33/3580/20/fe80::213:49ff:feab:ba24/:213:49ff:feab:ba24/::
+
+names[0]: host type
+names[1]: name
+names[2]: network type
+names[3]: MAC
+....etc
+*/
+
+/* pcp list example:
+0/test/unknown/00:13:49:ab:ba:24/Mon,Tue,Fri,Sat,Sun/00:00-24:00/Configured/
+1/ttt2/mypc-f415657ae8/00:11:22:33:44:09/Tue,Sun/00:00-24:00/Configured/
+
+PCP_line[0]: active
+PCP_line[1]: PCP rule name
+PCP_line[2]: host name
+PCP_line[3]: MAC
+....etc
+*/
+
+ 
+   if (info != '') {
+      for ( i = 0; i < info.length; i++ ) {
+         var names = info[i].split('/');
+		 
+         var tempName;
+         if (names[1].length > 10) {
+            tempName = names[1].substring(0, 10 - 3);
+            tempName += "...";
+         } else {
+            tempName = names[1];
+         }
+		 
+		 PCP_active=0;
+		 //if parent control enable
+		 if( enableParentCtl == "1")		 
+		 {			 
+			 // check for which host match MAC address
+			 for ( j = 0; j < PCP_list.length; j++ ) {
+				PCP_line = PCP_list[j].split('/');
+				//( "00:00:00:00:00:00" == PCP_line[3])  ==> all
+				if(( names[3] == PCP_line[3]) || ( "00:00:00:00:00:00" == PCP_line[3]) )   {
+					PCP_active |= PCP_line[0];
+				}
+			 }			 
+		 }
+		 
+         str += '<li class="list">';
+         str += '  <span class="i_device">';
+         str += '    <img src="../../images/network/i_' + names[0] + '.gif" width="55" height="52" />';
+         str += '  </span>';
+		 if( PCP_active == "1" )		 {
+			 
+			 str += '  <a href="#" class="parental" onClick="parentalControlClick(\'' + names[3] + '\')" >';			 			 
+			 str += '  <span class="i_parental">'; 		 
+			 str += '  </span>';		 
+			 str += '  </a> ';
+		 }
+         str += '  <div class="addmenu">';
+         str += '    <a title="' + names[1] + '" href="#">' + tempName + '<img src="../../images/network/i_downarrow.gif" width="6" height="4" /></a>';
+         str += '    <ul class="popupMenu">';
+         str += '      <li style="margin-top:3px;">';
+         str += '        <a href="#" class="info" onClick="infoClick(\'' + names[3] + '\')"><%ejGetML(MLG_ConnStatus_NetworkMap_Str3)%></a>';
+         str += '      </li>';
+         str += '      <li>';
+         str += '       <a href="#" class="parental" onClick="parentalControlClick(\'' + names[3] + '\')" ><%ejGetML(MLG_ConnStatus_NetworkMap_Str33)%></a>';
+         str += '      </li>';
+         //str += '      <li>';
+         //str += '        <a href="#" class="block">Block</a>';
+         //str += '      </li>';
+         str += '      <li>';
+         str += '        <a href="#" class="changename" onClick="editClick(\'' + names[3] + '\')" ><%ejGetML(MLG_ConnStatus_NetworkMap_Str4)%></a>';
+         str += '      </li>';
+         str += '    </ul>';
+         str += '  </div>';
+         str += '</li>';
+      }
+   }
+   else 
+   {
+      $(".wiredFrame").css('height', '85px');
+   }
+   $('#wiredInfo').html(str);
+}
+
+// device list for Wireless
+function CreateWlList()
+{
+   var i = 0, j =0;
+   /*var activeusers = '';*/
+   var info = wlActiveUsers.split('|');
+   var str = '';
+   var PCP_list = pcpActiveUsers.split('|');
+   var PCP_line,PCP_active=0;
+   
+   if (wlEnbl == '1' || wlSenbl == '1') {
+      $(".wirelessFrame").css('visibility', 'visible');
+   } else {
+      $(".wirelessFrame").css('visibility', 'hidden');
+   }
+
+   if (info != '') {
+      for ( i = 0; i < info.length; i++ ) {
+         var names = info[i].split('/');
+
+         var tempName;
+         if (names[1].length > 10) {
+            tempName = names[1].substring(0, 10 - 3);
+            tempName += "...";
+         } else {
+            tempName = names[1];
+         }
+
+		 PCP_active=0;
+		 //if parent control enable
+		 if( enableParentCtl == "1")		 
+		 {			 
+			 // check for which host match MAC address
+			 for ( j = 0; j < PCP_list.length; j++ ) {
+				PCP_line = PCP_list[j].split('/');
+				
+				if(( names[3] == PCP_line[3]) || ( "00:00:00:00:00:00" == PCP_line[3]) )   {
+					PCP_active |= PCP_line[0];
+				}
+			 }		 
+		 }		 
+		 
+         str += '<li class="list">';
+         str += '  <div class="i_wifi"></div>';
+         str += '  <span class="i_device">';
+         str += '    <img src="../../images/network/i_' + names[0] + '.gif" width="55" height="52" />';
+         str += '  </span>';
+		 if( PCP_active == "1" )		 {
+			 
+			 str += '  <a href="#" class="parental" onClick="parentalControlClick(\'' + names[3] + '\')" >';			 			 
+			 str += '  <span class="i_parental">'; 		 
+			 str += '  </span>';		 
+			 str += '  </a> ';
+		 }		 
+         str += '  <div class="addmenu">';
+         str += '    <a title="' + names[1] + '" href="#">' + tempName + '<img src="../../images/network/i_downarrow.gif" width="6" height="4" /></a>';
+         str += '      <ul class="popupMenu">';
+         str += '      <li style="margin-top:3px;">';
+         str += '        <a href="#" class="info" onClick="infoClick(\'' + names[3] + '\')"><%ejGetML(MLG_ConnStatus_NetworkMap_Str3)%></a>';
+         str += '      </li>';
+         str += '      <li>';
+         str += '        <a href="#" class="parental" onClick="parentalControlClick(\'' + names[3] + '\')" ><%ejGetML(MLG_ConnStatus_NetworkMap_Str33)%></a>';
+         str += '      </li>';
+         //str += '      <li>';
+         //str += '        <a href="#" class="block">Block</a>';
+         //str += '      </li>';
+         str += '      <li>';
+         str += '        <a href="#" class="changename" onClick="editClick(\'' + names[3] + '\')" ><%ejGetML(MLG_ConnStatus_NetworkMap_Str4)%></a>';
+         str += '      </li>';
+         str += '    </ul>';
+         str += '  </div>';
+         str += '</li>';
+      }
+   }
+   else {
+      $(".wirelessFrame").css('height', '85px');
+   }
+   $('#wlInfo').html(str);
+}
+
+// device list for list view
+function CreateListView()
+{
+   var i = 0;
+   var wlinfo = wlActiveUsers.split('|');
+   var wiredinfo = wiredActiveUsers.split('|');
+   var info = wlinfo.concat(wiredinfo);
+   var str = '';
+
+   info.sort();
+   if (info != '') {
+      for ( i = 0; i < info.length; i++ ) {
+         if (info[i] != '') {
+            var names = info[i].split('/');
+            str += '<tr align="center" >';
+            str += '<td class="table_font"><img src="../../images/network/i_s_' + names[0] + '.gif" width="16" height="16" /></td>';
+            str += '<td class="table_font textOverflow">' + names[1] + '</a></td>';
+
+            if (names[0] == 'computer') {
+               if (navigator.appName != "Microsoft Internet Explorer") {
+                  str += '<td class="table_font textOverflow"><a href="#" onClick="hciAlert(\'<%ejGetML(MLG_ConnStatus_NetworkMap_AlertMsg_Str4)%>\', {height: 180,type: 2, title: \'<%ejGetML(MLG_Common_Error)%>\'})">' + names[5] + '</a></td>';
+               } else {
+                  str += '<td class="table_font textOverflow"><a href="file://' + names[5] + '/" target="_blank">' + names[5] + '</a></td>';
+               }
+            } else {
+               str += '<td class="table_font">' + names[5] + '</td>';
+            }
+
+	        if(enblLanIPv6 != '0'){
+               str += '<td class="table_font w_blue textOverflow">' + names[8] + '</td>';
+		       if(ip6LanPrefix != '' && slaacEnbl != 0){
+		 	      str += '<td class="table_font w_blue textOverflow">' + names[9] + '</td>';
+		 	   }
+		       else {
+		 	      str += '<td class="table_font">::</td>';
+		       }
+		       if(dhcpv6State != 0){
+		 	      str += '<td class="table_font w_blue textOverflow">' + names[10] + '</td>';
+		       }
+		       else {
+		 	      str += '<td class="table_font">::</td>';
+		       }
+	        }
+
+            str += '<td class="table_font">' + names[3] + '</td>';
+            str += '<td class="table_font">' + names[4] + '</td>';
+
+            /*if(names[4] == 'DHCP'){
+               str += '<td class="table_font">' + (parseInt)(names[6]/3600)+'hours:'+(parseInt)(names[6]%3600/60)+'minutes:'+(parseInt)(names[6]%3600%60)+'seconds'+'</td>';		
+            }else{
+               str += '<td class="table_font">' + 'N/A' + '</td>';
+            }*/
+
+            str += '<td class="table_font">' + names[2] + '</td>';
+            str += '</tr>';
+         }
+      }
+   }
+
+   $('#listTable').html(str);
+}
+
+// wireless line
+function initwlLine()
+{
+   if (wlEnbl == '1') {
+      $('#wl_line').removeClass('rightwirelessline2');
+      $('#wl_line').addClass('righttopline');
+   }
+   else {
+      $('#wl_line').removeClass('righttopline');
+      $('#wl_line').addClass('rightwirelessline2');
+   }
+}
+// end wireless line
+
+function updateValue(msg){
+   // wiredActiveUsers/wlActiveUsers/wanLevel/wlEnbl
+   var upDate = msg.replace(/\r\n/ig, "");
+   upDate = upDate.replace(/\n/ig, "");
+   var upDates = upDate.split('@');
+
+   // ignore first value
+   wiredActiveUsers = (((upDates[1] == undefined) || (upDates[1] == '')) ? '' : upDates[1]);
+   wlActiveUsers = (((upDates[2] == undefined) || (upDates[2] == '')) ? '' : upDates[2]);
+   wanLevel = upDates[3];
+   wanType = upDates[7];
+   pcpActiveUsers = (((upDates[6] == undefined) || (upDates[6] == '')) ? '' : upDates[6]);
+
+   var wlStatus = upDates[4].split('|');
+   wlEnbl = parseInt(wlStatus[0]) | parseInt(wlStatus[1]) | parseInt(wlStatus[2]) | parseInt(wlStatus[3]);
+
+   frmLoad();
+}
+
+function frmLoad() {
+   //init Device list for Wire
+   CreateWireList();
+
+   //init Device list for Wireless
+   CreateWlList();
+
+   //decide whether to show ipv6 info of hosts on list mode
+   if(enblLanIPv6 == '0'){
+      document.getElementById("ip6addr1").style.display="none";
+      document.getElementById("ip6addr2").style.display="none";
+	  document.getElementById("ip6addr3").style.display="none";
+   }
+
+   //init Device list view
+   CreateListView();
+
+   //init wireless line
+   initwlLine();
+
+   hciDefine();
+
+   	if(forEircom==1)
+	{
+		document.getElementById("internetwordText").style.color="#736C66";
+		document.getElementById("modelName_mapText").style.color="#736C66";
+		document.getElementById("internetwordText2").style.color="#736C66";
+		document.getElementById("modelName_mapText2").style.color="#736C66";
+	}
+}
+
+$(document).ready(function() {
+	frmLoad();
+   $('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );    
+   $('.textOverflow').ellipsis(true); 
+});
+// done hiding -->
+</script>
+
+<div id="mapView" class="naviView" > 
+<div class="modesetting modeMap" id="modesetting_map"><ul><li style="margin-left:10px;">
+  <div class="viewmode" id="viewModeicon" >
+    <ul>
+      <li class="iconmode"><a class="iconBtn highlight" title="<%ejGetML(MLG_ConnStatus_NetworkMap_Str18)%>"></a></li>
+      <li class="listmode"><a class="listBtn" title="<%ejGetML(MLG_ConnStatus_NetworkMap_Str19)%>"></a></li>
+    </ul>
+  </div>
+  </li>
+  <li class="blod viewModeHide"><%ejGetML(MLG_ConnStatus_NetworkMap_Str17)%>:</li>
+  </ul></div>
+  <div class="nMSemicircle"></div>
+  <div class="iconView" >
+    <!--Icon View start-->
+    <div class="iconfrmae">
+      <table width="96%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td width="190" valign="top">
+            <!--Disconnect start-->
+            <div style="position:absolute; width:190px; ">
+              <div class="disconnect" >
+                <div class="i_internet">
+                  <img src="../../images/network/i_internet.gif" width="55" height="55" />
+                  <span  class="internetword" id="internetwordText" ><%ejGetML(MLG_ConnStatus_NetworkMap_Str2)%></span>
+                  <div class="i_modom_dline">
+                    <!-- <div class="i_router"><img src="../../images/network/i_router.gif"  /><span class="modelName_map"sysVar='model-name'></span></div> -->
+                    <div class="i_router"><img src="<%ejGet(modeltype)%>"  /><span class="modelName_map"><%ejGet(modelName)%></span></div>
+                  </div>
+                </div>
+                <div class="i_router_line"> </div>
+              </div>
+            </div>
+            <!--Disconnect end-->
+            <div class="connect">
+              <div class="i_internet">
+                <img src="../../images/network/i_internet.gif" width="55" height="55" />
+                <span  class="internetword" id="internetwordText" ><%ejGetML(MLG_ConnStatus_NetworkMap_Str2)%></span>
+                <div class="i_modom_line" id="wanConnStatus" >
+                  <!-- <div class="i_router"><img src="../../images/network/i_router.gif"  /><span class="modelName_map"sysVar='model-name'></span></div> -->
+                  <div id="i_internet_type" style="position:relative; left:-25px; top:30px; color:#fff; display:none">3G</div>
+                  <div class="i_router"><img src="<%ejGet(modeltype)%>"  /><span class="modelName_map"><%ejGet(modelName)%></span></div>
+                </div>
+              </div>
+              <div class="i_router_line"> </div>
+            </div>
+          </td>
+          <td valign="top" class="verticalline">
+            <div class="righttopline"></div>
+            <div class="rightbottomline"></div>
+          </td>
+          <td valign="top">
+            <div class="deviceicon">
+              <!-- wireless device(s) beginning -->
+              <ul class="wirelessFrame" id="wlInfo" >
+              </ul> 
+              <!-- wireless device(s) ending -->
+			  <ul style="min-height:40px;_height:40px;"></ul>
+              <!-- usb device(s) beginning -->
+                <!--<ul class="usbFrame"  style="display:none;">
+                <li class="list">
+                  <div class="i_usb_s"></div>
+                  <span class="i_device"><img src="../../images/network/i_game.gif" width="55" height="52" /></span>
+                  <div class="addmenu"><a  title="Game one" href="#">Game one <img src="../../images/network/i_downarrow.gif" width="6" height="4" /></a></div>
+                </li>
+                <li class="list">
+                  <div class="i_usb_s"></div>
+                  <span class="i_device"><img src="../../images/network/i_router2.gif" width="55" height="52" /></span>
+                  <div class="addmenu"><a title="Rotuer" href="#">Router<img src="../../images/network/i_downarrow.gif" width="6" height="4" /></a></div>
+                </li>
+              </ul> -->
+              <!-- usb device(s) ending -->
+			   <ul style="min-height:40px;_height:40px;"></ul>
+              <!-- wired device(s) beginning -->
+              <ul class="wiredFrame" id="wiredInfo" >
+              </ul>
+              <!-- wired device(s) ending -->
+			  <!-- When the map haven't devices, please you show this area. [start] -->
+			   <ul style=" display:none;">
+                <li class="list">  
+                </li>
+				</ul>
+			 <!-- When the map haven't devices, please you show this area. [ending]-->
+            </div>
+			
+          </td>
+        </tr>
+      </table>
+    </div>
+    <!--Icon View End-->
+  </div>
+  <!--List view-->
+  <div class="listView" style="display:none;" >
+    <table width="92%" border="0" align="right" cellpadding="0" cellspacing="0" class="table_frame" style="margin-right:50px;" >
+      <tr align="center">
+        <td width="5%" class="top_font">#</td>
+        <td class="top_font"><%ejGetML(MLG_ConnStatus_NetworkMap_Str20)%></td>
+        <td class="top_font"><%ejGetML(MLG_Common_IPAddress)%></td>
+        <!--IPv6 begin-->
+          <td id=ip6addr1 class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str81)%></td>
+          <td id=ip6addr2 class="top_font"><%ejGetML(MLG_Common_IPv6Address)%>(SLAAC)</td>
+          <td id=ip6addr3 class="top_font"><%ejGetML(MLG_Common_IPv6Address)%>(DHCP)</td>
+        <!--IPv6 end-->  
+        <td class="top_font"><%ejGetML(MLG_Common_MACAddress)%></td>
+        <td class="top_font"><%ejGetML(MLG_ConnStatus_NetworkMap_Str5)%></td>
+        <td class="top_font"><%ejGetML(MLG_ConnStatus_NetworkMap_Str8)%></td>
+      </tr>
+      <tbody id="listTable">
+      </tbody>
+    </table>
+    <p>&nbsp;</p>
+  </div>
+</div>
+
+<!--List view end-->

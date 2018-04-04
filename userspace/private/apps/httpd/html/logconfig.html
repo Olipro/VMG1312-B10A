@@ -1,0 +1,227 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+var addr = '<%ejGet(logIpAddress)%>';
+var port = '<%ejGet(logPort)%>';
+
+function getLogPort() {
+   var portNum = parseInt(port);
+   if ( isNaN(portNum) || portNum == 0 )
+      portNum = 514; // default system log server port is 514
+
+   return portNum;
+}
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+      status[<%ejGet(logStatus)%>].checked = true;
+
+      levelLog.selectedIndex = <%ejGet(logLevel)%>;
+      levelDisplay.selectedIndex = <%ejGet(logDisplay)%>;
+
+      logMode.selectedIndex = <%ejGet(logMode)%> - 1;
+      if ( logMode.selectedIndex == 0 ) {
+         logAddr.value = '';
+         logPort.value = '';
+         hideInfo(1);
+      } else {
+         logAddr.value = addr;
+         logPort.value = getLogPort();
+         hideInfo(0);
+      }
+   }
+}
+
+function btnApply() {
+   var loc = 'logconfig.cgi?';
+   var idx, log, display, mode;
+
+   with ( document.forms[0] ) {
+      if ( status[0].checked == true ) {
+         var msg = 'If disabled, the information captured by the ';
+         msg += 'Broadband Router will be lost. If you wish to save ';
+         msg += 'the current log information, click the ';
+         msg += '"Cancel" button, view the current system ';
+         msg += 'log, and use the Save option from the File ';
+         msg += 'menu to save the log data.';
+         if ( confirm(msg) == false )
+            return;
+      }
+
+      if ( status[1].checked == true )
+         loc += 'logStatus=1';
+      else
+         loc += 'logStatus=0';
+      idx = levelLog.selectedIndex;
+      log = levelLog.options[idx].value;
+      idx = levelDisplay.selectedIndex;
+      display = levelDisplay.options[idx].value;
+      idx = logMode.selectedIndex;
+      mode = logMode.options[idx].value;
+      if ( mode == 1 ) {
+         valAddr = addr;
+         valPort = getLogPort();
+      } else {
+         if ( isValidIpAddress(logAddr.value) == false ) {
+            alert('Server IP address "' + logAddr.value + '" is invalid IP address.');
+            return;
+         }
+         if ( isValidPort(logPort.value) == false ) {
+            alert('Server UDP port "' + logPort.value + '" is invalid.');
+            return;
+         }
+         valAddr = logAddr.value;
+         valPort = logPort.value;
+      }
+      loc += '&logLevel=' + log;
+      loc += '&logDisplay=' + display;
+      loc += '&logMode=' + mode;
+      loc += '&logIpAddress=' + valAddr;
+      loc += '&logPort=' + valPort;
+   }
+
+   loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function hideInfo(hide) {
+   var status = 'visible';
+
+   if ( hide == 1 ) {
+      status = 'hidden';
+      document.forms[0].logAddr.value = '';
+      document.forms[0].logPort.value = '';
+   } else {
+      document.forms[0].logAddr.value = addr;
+      document.forms[0].logPort.value = getLogPort();
+   }
+
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('srvInfo').style.visibility = status;
+   else {
+      if (document.layers) { // Netscape 4
+         if ( hide == 1 ) {
+            document.forms[0].logAddr.value = '';
+            document.forms[0].logPort.value = '';
+         }
+      } else  // IE 4
+         document.all.srvInfo.style.visibility = status;
+   }
+}
+
+function cbClick(obj) {
+   var idx = obj.selectedIndex;
+   var val = obj.options[idx].value;
+   if ( val == 1 )
+      hideInfo(1);
+   else
+      hideInfo(0);
+}
+
+// done hiding -->
+</script>
+   </head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <form>
+            <b>System Log -- Configuration<br>
+            </b>
+            <br>
+            If the log mode is enabled, the system will begin to log all the selected 
+            events. For the Log Level, all events above or equal to the selected level will 
+            be logged. For the Display Level, all logged events above or equal to the 
+            selected level will be displayed. If the selected mode is 'Remote' or 'Both,' 
+            events will be sent to the specified IP address and UDP port of the remote 
+            syslog server. If the selected mode is 'Local' or 'Both,' events will be 
+            recorded in the local memory.<br>
+            <br>
+            Select the desired values and click 'Apply/Save' to configure the system log 
+            options.<br>
+            <br>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width="80">Log:</td>
+                  <td><input name='status' type='radio'>Disable</td>
+                  <td><input name='status' type='radio'>Enable</td>
+               </tr>
+            </table>
+            <br>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td>Log Level:</td>
+                  <td colspan="2"><select name='levelLog' size="1">
+                        <option value="0">
+                        Emergency
+                        <option value="1">
+                        Alert
+                        <option value="2">
+                        Critical
+                        <option value="3">
+                        Error
+                        <option value="4">
+                        Warning
+                        <option value="5">
+                        Notice
+                        <option value="6">
+                        Informational
+                        <option value="7">
+                        Debugging
+                     </select></td>
+               </tr>
+               <tr>
+                  <td>Display Level:</td>
+                  <td colspan="2"><select name='levelDisplay' size="1">
+                        <option value="0">
+                        Emergency
+                        <option value="1">
+                        Alert
+                        <option value="2">
+                        Critical
+                        <option value="3">
+                        Error
+                        <option value="4">
+                        Warning
+                        <option value="5">
+                        Notice
+                        <option value="6">
+                        Informational
+                        <option value="7">
+                        Debugging
+                     </select></td>
+               </tr>
+               <tr>
+                  <td width="120">Mode:</td>
+                  <td colspan="2"><select name='logMode' size="1" onClick='cbClick(this)'>
+                        <option value="1">
+                        Local
+                        <option value="2">
+                        Remote
+                        <option value="3">
+                        Both
+                     </select></td>
+               </tr>
+            </table>
+            <div id='srvInfo'>
+               <table border="0" cellpadding="0" cellspacing="0">
+                  <tr>
+                     <td width="120">Server IP Address:</td>
+                     <td><input type='text' name='logAddr'></td>
+                  </tr>
+                  <tr>
+                     <td>Server UDP Port:</td>
+                     <td><input type='text' name='logPort'></td>
+                  </tr>
+               </table>
+            </div>
+            <p align="center">
+               <input type='button' onClick='btnApply()' value='Apply/Save'>
+         </form>
+      </blockquote>
+   </body>
+</html>

@@ -1,0 +1,247 @@
+<script language="javascript">
+<!-- hide
+var wwanValue;
+var objXDSKInfoXMLHTTP = null;
+var wwanDeviceStatus = '<%ejGet(wwanDeviceStatus)%>';
+var wwanIsp = '<%ejGet(wwanIsp)%>';
+var wwanStrentgh = '<%ejGet(wwanStrentgh)%>';
+var wwanFirmware = '<%ejGet(wwanFirmware)%>';
+var wwanQuality = '<%ejGet(wwanQuality)%>';
+var wwanEnable = '<%ejGet(wwanEnable)%>';
+var wwanManf = '<%ejGet(wwanManf)%>';
+var wwanImsi = '<%ejGet(wwanImsi)%>';
+var wwanProd = '<%ejGet(wwanProd)%>';
+var wwanUpTime = '<%ejGet(wwanUpTime)%>';
+var wwan3gStatus = '<%ejGet(wwan3gStatus)%>';
+//Budget
+var wwanBudgetEnable = '<%ejGet(wwanBudgetEnable)%>';
+var wwanBudget_btime = '<%ejGet(wwanBudget_btime)%>';
+var wwanBudget_bdata = '<%ejGet(wwanBudget_bdata)%>';
+var wwanBudget_pdata = '<%ejGet(wwanBudget_pdata)%>';
+var wwanBudget_TimePer = '<%ejGet(wwanBudget_TimePer)%>';
+var wwanBudget_DataPer = '<%ejGet(wwanBudget_DataPer)%>';
+var wwanBudget_PktPer = '<%ejGet(wwanBudget_PktPer)%>';
+var glbSessionKey = '<%ejGetOther(sessionKey)%>';
+
+function EnableClick() {
+	//alert("EnableClick");
+	//if(wwan3gStatus == 'Up'){
+	if(wwan3gStatus != 'NoDevice'){
+		showhide('3gStatusInUse',1);
+		showhide('3gStatusNoUse',0);
+		if(wwanBudgetEnable == '1'){
+			showhide('BudgetStatus',1);
+		}
+	}
+	else{
+		showhide('3gStatusInUse',0);
+		showhide('3gStatusNoUse',1);
+		showhide('BudgetStatus',0);
+	}
+}
+
+function btnReset(){
+   //AlertOpen( 'Reset time and data budget counters.' );
+   hciAlert('Reset time and data budget counters.', {height: 180,type: 2, title: 'Error'});
+   BackgroundUrl('3gStatistics-ressetbugettime.cgi?action=backup' + "&sessionKey=" + glbSessionKey);
+}
+
+
+function resetInterval() {
+	var selecting;
+	//clearTimeout(xdslValue);
+	
+	selecting = $('#3g_RefreshList').val();
+	$.cookie("refresh", selecting);    
+	if (selecting == 1)
+		wwanValue = setTimeout('AutoRefresh()', 30000);
+	else if (selecting == 2)
+		wwanValue = setTimeout('AutoRefresh()', 60000);
+}
+function AutoRefresh() {
+   var natloc = '3gStatistics-3gStatistics.cgi?';
+   natloc += 'sessionKey=' + glbSessionKey;
+   natloc = 'location.assign("' + natloc + '")';
+   eval(natloc);
+}
+function frmLoad()
+{
+	
+	EnableClick();
+
+	if ($.cookie("refresh") == null) {
+		$('#3g_RefreshList').val(1);
+	} 
+	else {
+		$('#3g_RefreshList').val($.cookie("refresh"));
+	}
+	resetInterval();
+}
+
+$(document).ready(function() {
+	//alert("mandy00");
+	frmLoad();
+});
+// done hiding -->
+</script>
+<form name="loadForm" action="/pages/tabFW/3gStatistics-3gStatistics.cgi" method="post" >
+   <input name="sessionKey" type="HIDDEN" id="sessionKey" value=""; />
+      <div class="content_frame">
+<!--Unit Explain start-->
+         <div class="explain">
+            <div>
+               <b class="r1"></b>
+               <b class="r2"></b>
+               <b class="r3"></b>
+               <b class="r4"></b>
+               <b class="r4"></b>
+            </div>
+            <div class="explain_text"><%ejGetML(MLG_System_3gStatistics_explain1)%></div>
+            <div>
+               <b class="r4"></b>
+               <b class="r4"></b>
+               <b class="r3"></b>
+               <b class="r2"></b>
+               <b class="r1"></b>
+            </div>
+          </div>
+<!--Unit Explain End-->
+         <div class="data_frame"><ul>
+<!--level 1 title start-->
+      <li class="title"><%ejGetML(MLG_Common_Monitor)%></li>
+<!--level 1 title end-->
+<!--level 1 start-->
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Common_RefreshInterval)%> :</li>
+            <li class="right_table">
+              <select id="3g_RefreshList" name="3g_RefreshList" size="1" onchange="resetInterval()">
+                <option value="0" selected="selected"><%ejGetML(MLG_System_xdslStatistic)%></option>
+                <option value="1">30 <%ejGetML(MLG_Common_Seconds)%> </option>
+                <option value="2">60 <%ejGetML(MLG_Common_Seconds)%> </option>
+              </select><span id="loading"></span>
+            </li>			
+          </ul>
+        </div>
+      </li>
+      <li class="space"> </li>
+<!--level 1 end-->
+<div id="3gStatus">
+	<div id="3gStatusInUse" style="display:none">
+		<!--3gStatusInUse title start-->
+		<li class="title"><%ejGetML(MLG_System_TrafficStatusWAN_Str2)%> :</li>
+		<!--3gStatusInUse title end-->
+		<!--3gStatusInUse start-->
+			<div class="w_text" style="padding-left:12px">
+				<ul>
+					<li class="left_table" style="font-weight:bold" ><%ejGetML(MLG_System_3gStatistics_connection_status)%>: </li>
+					<li class="right_table"><%ejGet(wwan3gStatus)%></li>
+				</ul>
+			</div>
+            <div class="w_text" style="padding-left:12px">
+              <ul>
+                <li class="left_table" style="font-weight:bold" ><%ejGetML(MLG_System_3gStatistics_str1)%>: </li>
+                <li class="right_table">
+                  	<%ejGet(wwanDeviceStatus)%></li>
+              </ul>
+            </div>
+           <div class="w_text" style="padding-left:12px">
+              <ul>
+                <li class="left_table" style="font-weight:bold"><%ejGetML(MLG_System_3gStatistics_str2)%>: </li>
+                <li class="right_table">
+				 <%ejGet(wwanIsp)%></li>
+              </ul>
+            </div>
+          <div class="w_text" style="padding-left:12px">
+              <ul>
+                <li class="left_table" style="font-weight:bold"><%ejGetML(MLG_System_3gStatistics_str3)%>: </li>
+                <li class="right_table">
+                   <%ejGet(wwanStrentgh)%>  ( <%ejGet(wwanQuality)%> )</li>
+              </ul>
+            </div>
+           <div class="w_text" style="padding-left:12px">
+              <ul>
+                <li class="left_table" style="font-weight:bold"><%ejGetML(MLG_System_3gStatistics_str4)%>: </li>
+                <li class="right_table">
+                	  <%ejGet(wwanUpTime)%> </li>
+              </ul>
+            </div>
+           <div class="w_text" style="padding-left:12px">
+              <ul>
+                <li class="left_table" style="font-weight:bold"><%ejGetML(MLG_System_3gStatistics_str5)%>: </li>
+                <li class="right_table">
+ 					<%ejGet(wwanManf)%></li>
+              </ul>
+            </div>
+           <div class="w_text" style="padding-left:12px">
+              <ul>
+                <li class="left_table" style="font-weight:bold"><%ejGetML(MLG_System_3gStatistics_str6)%>: </li>
+                <li class="right_table">
+ 					<%ejGet(wwanProd)%></li>
+              </ul>
+            </div>
+           <!--<div class="w_text" style="padding-left:12px">
+              <ul>
+                <li class="left_table" style="font-weight:bold"><%ejGetML(MLG_System_3gStatistics_str7)%>: </li>
+                <li class="right_table">
+					 <%ejGet(wwanFirmware)%></li>
+              </ul>
+            </div>
+	   		<div class="w_text" style="padding-left:12px">
+              <ul>
+                <li class="left_table" style="font-weight:bold"><%ejGetML(MLG_System_3gStatistics_str8)%>:</li>
+                <li class="right_table">
+ 					<%ejGet(wwanImsi)%></li>
+              </ul>
+            </div>-->
+		<!--3gStatusInUse end-->
+	</div>
+	<div id="3gStatusNoUse" style="display:none">
+		<!--3gStatusNoUse title start-->
+		<li class="title"><%ejGetML(MLG_System_TrafficStatusWAN_Str2)%> :</li>
+		<!--3gStatusNoUse title end-->
+		<!--3gStatusNoUse start-->
+
+	   <div class="w_text">
+				<%ejGetML(MLG_System_3gStatistics_explain2)%>
+		</div>
+		<!--3gStatusNoUse end-->
+	</div>
+	<div id="BudgetStatus" style="display:none">
+		<!--level 2 title start-->
+		<li class="title"><%ejGetML(MLG_System_3gStatistics_title1)%> :</li>
+		<!--level 2 title end-->
+		<!--level 2 start-->
+
+	   <div class="w_text" style="padding-left:12px">
+              <ul> 
+                <li class="left_table" style="font-weight:bold" ><%ejGetML(MLG_System_3gStatistics_str9)%>: </li>
+                <li class="right_table">
+ 					<%ejGet(wwanBudget_btime)%> ( <%ejGet(wwanBudget_TimePer)%>  % <%ejGetML(MLG_System_3gStatistics_item3)%> ) </li>
+              </ul>
+            </div>
+            <div class="w_text" style="padding-left:12px">
+			  <ul>
+                <li class="left_table" style="font-weight:bold"><%ejGetML(MLG_System_3gStatistics_str10)%>: </li>
+                <li class="right_table">
+ 					<%ejGet(wwanBudget_bdata)%> <%ejGetML(MLG_System_3gStatistics_item1)%> ( <%ejGet(wwanBudget_DataPer)%> % <%ejGetML(MLG_System_3gStatistics_item4)%> )  </li>
+              </ul>
+            </div>
+           <div class="w_text" style="padding-left:12px">
+              <ul>
+                <li class="left_table" style="font-weight:bold"><%ejGetML(MLG_System_3gStatistics_str11)%>: </li>
+                <li class="right_table">
+ 					<%ejGet(wwanBudget_pdata)%>  <%ejGetML(MLG_System_3gStatistics_item2)%> ( <%ejGet(wwanBudget_PktPer)%> % <%ejGetML(MLG_System_3gStatistics_item4)%> )  </li>
+              </ul>
+            </div>
+		 <ul><li>
+   			<input type="button" name="BudgetReset"  onClick="btnReset()" value="<%ejGetML(MLG_System_3gStatistics_button)%>">
+   		</li></ul>
+		<!--level 2 end-->
+	</div>
+</dev>
+</ul>
+</div>
+</div>
+ </form>

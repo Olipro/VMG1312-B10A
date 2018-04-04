@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/times/x86
+END
+dess.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/times/x86/dess.cpp
+END
+sha1s.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/times/x86/sha1s.cpp
+END
+des3s.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/times/x86/des3s.cpp
+END
+md4s.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/times/x86/md4s.cpp
+END
+md5s.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/times/x86/md5s.cpp
+END
+bfs.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/times/x86/bfs.cpp
+END
+rc4s.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/times/x86/rc4s.cpp
+END
+casts.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/TPDC/Broadcom/!svn/ver/1899/412/Product/VMG8324/VMG8924_Generic/userspace/public/libs/openssl/times/x86/casts.cpp
+END

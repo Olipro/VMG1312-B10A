@@ -1,0 +1,133 @@
+<script type="text/javascript"> 
+
+var voipv6Enable = "<%ejGetVoice(ipAddrFamily)%>";
+//var ipAddress = '<%ejGet(ethIpAddress)%>';
+var upprocess = '<%ejGet(UpdateProcess)%>';
+
+function btnApply()
+{   
+   document.forms[0].action.value = "chmod";
+   with ( document.forms[0] ) {
+      if ( voip_Ipv6Mode[0].checked == true )
+      {
+         ipAddrFamily.value = "IPv6";
+      }
+      else
+      {
+         ipAddrFamily.value = "IPv4";
+      }
+
+      if ( ipAddrFamily.value != voipv6Enable )
+      {
+         voicecahnge.value = 1;
+      }
+      else
+      {
+         var nchMsg = "Without change VOIP Advance setting, please check your request and try it again."
+         hciAlert('<%ejGetML(MLG_VoIP_SIPAdvance_AlertMsg_Str1)%>', 2);         
+         return;
+      }
+      submit();
+   }
+   
+}
+
+function frmLoad() {
+   if (voipv6Enable == 'IPv6')
+   {
+      $("input[name='voip_Ipv6Mode']").get(0).checked = true;
+   }
+   else
+   {
+      $("input[name='voip_Ipv6Mode']").get(1).checked = true;
+   }
+
+
+   if ( upprocess == '2') {
+      setTimeout("$.openLoadingMask(2)", 1500);
+      setTimeout("BackgroundUrl('reboot-rebootpost.cgi')", 1500);
+      setTimeout('reboot()', 150000);
+   }
+
+
+}
+
+function reboot() {
+        var loc = '/login/login.html';
+        var code = 'window.top.location="' + loc + '"';
+        eval(code);
+}
+
+function BackgroundUrl(url)
+{
+        var objXMLHTTP = null;
+
+        if (window.XMLHttpRequest){
+                objXMLHTTP=new XMLHttpRequest();
+        }// code for IE
+        else if (window.ActiveXObject){
+                objXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        else{
+                alert("<%ejGetML(MLG_Common_XMLHttp)%>");
+                return;
+        }
+
+        if ( objXMLHTTP != null ){
+                objXMLHTTP.open("GET","./"+url,true);
+                objXMLHTTP.onreadystatechange = function()
+                {
+                }
+                objXMLHTTP.send(null);
+        }
+}
+
+$(document).ready(function() {
+ 	//var errMsg = "<%ejGetOther(errMsg)%>";
+	frmLoad();
+	//if (errMsg != '')
+	//{
+	//	hciAlert(errMsg, 2);
+	//}
+});
+
+</script>
+
+<!--Set area start-->
+<form id="SipOpForm" name="SipOpForm" method="post" action="/pages/tabFW/sip-voicesipcfg.cmd">
+
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value="<%ejGetOther(sessionKey)%>"; />
+<input name="action" type="HIDDEN" id="action" value="view"; />
+
+<input name="ipAddrFamily" type="HIDDEN" id="ipAddrFamily" value="">
+<input name="voicechange"  type="HIDDEN" id="voicecahnge"  value="">
+
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain"><div><b class="r1"></b><b class="r2"></b> <b class="r3"></b> <b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_VoIP_SIPAdvance_Explain)%></div><div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+</div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<!--level 1 start-->
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_VoIP_SIPAdvance_Str1)%> :</li>
+     <li class="right_table">
+      <input name="voip_Ipv6Mode" id="voip_Ipv6Mode" type="radio" value="1" />
+      <%ejGetML(MLG_Common_IPv6Only)%>
+      <input name="voip_Ipv6Mode" id="voip_Ipv6Mode" type="radio" value="0" />
+      <%ejGetML(MLG_Common_IPv4Only)%>
+     </li>
+  </ul>
+</div>
+</li>
+</div>
+<!--level 1 end-->
+<li class="space"> </li>
+<!--Button define start-->
+<li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="btnApply()" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();'/></div></li>
+<!--Button define end-->
+</ul></div>
+</form>
+<!--Set area end-->

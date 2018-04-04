@@ -1,0 +1,87 @@
+<script type="text/javascript">
+<!-- hide
+var AppluBtn = $('.ui-dialog-buttonpane:last').children("button:last");
+AppluBtn.click(function(){ applyClick_browse(); });
+
+function applyClick_browse() {
+	try {
+		var radioObj = document.forms['browselist'].elements['BrowseSelectShare'];
+	}catch(error){
+		$('.ui-dialog-titlebar-close:last').trigger('click');
+		return
+	}
+	
+	var radioLength = radioObj.length;
+	for(var i = 0; i < radioLength; i++) {
+		if(radioObj[i].checked) {
+			document.getElementById("AddSharePath").value = radioObj[i].value;
+		}
+	}
+
+	 $('.ui-dialog-titlebar-close:last').trigger('click');
+}
+// done hiding -->
+</script>
+<script type="text/javascript">
+/*
+$(function(){
+<!-- #BEGINZONE form_browse_error_original_zone -->
+        $('.ui-dialog-buttonpane').children("button").unbind('click').click(function(){$('.ui-dialog-titlebar-close').trigger('click');window.parent.document.activePage('Net-HomeNet',3);});
+<!-- #ENDZONE form_browse_error_original_zone -->
+<!-- #BEGINZONE form_browse_error_Norway_zone -->
+        $('.ui-dialog-buttonpane').children("button").unbind('click').click(function(){$('.ui-dialog-titlebar-close').trigger('click');window.parent.document.activePage('Net-HomeNet',4);});
+<!-- #ENDZONE form_browse_error_Norway_zone -->
+
+})
+*/
+</script>
+<form name="browselist">
+<div id="browse_div">
+<div class="data_frame2">
+<li class="set1">
+<div class="title">Browse Directory</div>
+<div class="w_table">
+  <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame">
+    <tr>
+      <td><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" >
+        <tr>
+          <td><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td><table id="table_content" width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;">
+                <tr align="center" valign="top">
+                  <td class="top_font" width="12%">Select</td>
+                  <td class="top_font" width="12%">Type</td>
+                  <td class="top_font" width="60%">Name</td>
+                </tr>
+                <tr align="center">
+                   <td class="table_font"><input type="radio" name="BrowseSelectShare" value="." checked ></td>
+                   <td class="table_font"><img src="../../../images/i_share_enable.gif" /></td>
+                   <td class="table_font">.</td>
+                </tr>
+				<!-- generate the table -->
+<script language="javascript">
+<!-- hide
+{
+	var element = document.getElementById('select2');
+	var value = element.options[element.selectedIndex].text;
+	//console.log("%s\n", value);
+	if (!value.localeCompare("usb1_1"))
+		$('#table_content').append("<%ejGetOtherBig(volumeBrowseFolder, usb1_1)%>");
+	else if (!value.localeCompare("usb2_1"))
+		$('#table_content').append("<%ejGetOtherBig(volumeBrowseFolder, usb2_1)%>");
+}
+// done hiding -->
+</script>
+                <!-- generate the table -->
+              </table></td>
+            </tr>
+          </table></td>
+        </tr>
+      </table></td>
+    </tr>
+  </table>
+</div>
+</li>
+</div>
+</div>
+</form>

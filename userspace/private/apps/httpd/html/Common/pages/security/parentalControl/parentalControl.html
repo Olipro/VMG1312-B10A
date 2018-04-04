@@ -1,0 +1,300 @@
+<script language='javascript'>
+<!-- hide
+	var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+//	var parentUseList = "<%ejGetOtherBig(parentUseList)%>";
+	var errMsg = "<%ejGetOther(errMsg)%>";
+	if (errMsg != '')
+	{
+		hciAlert(errMsg, 2);
+	}
+
+function btnApply()
+{
+	with ( document.forms[0] ) 
+	{
+		sessionKey.value = gblsessionKey;
+		action.value="active";
+		if($('input[name=enable_parent]').get(0).checked == true)
+		{
+			enable.value=1;
+		}else{
+			enable.value=0;
+		}
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+function editClick(pcpname, mac)
+{
+	var loc = 'parentalControl-cfg.cmd?action=view&pcpname=' + pcpname;
+	loc += '&hostMac=' + mac;
+	loc += '&enterPCPPage=PCP';
+    	loc += '&sessionKey=' + gblsessionKey;
+	var db1 = window.parent.$.zyUiDialog({
+              width: '70%',
+              height: 500,
+              title: ' <%ejGetML(MLG_Security_ParentalControl_Str18)%>',
+
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close');  },
+                 '<%ejGetML(MLG_Common_Apply)%>':function(){}
+              }
+             });
+    	db1.load(loc);
+    	db1.dialog('open');
+}
+
+function removeClick(rml) 
+{
+	 var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 190,
+              title: ' <%ejGetML(MLG_Common_Delete)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+                 '<%ejGetML(MLG_Common_OK)%>': function(){ db1.dialog('close'); deleteProcess(rml); }
+              }
+             });
+    	if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+    		db1.load('../../pages/delete.html');
+    	else
+      		db1.load('/pages/delete.html');
+    	db1.dialog('open');
+}
+function deleteProcess(pcpValue) {
+    with ( document.forms[0] ) {
+	  action.value="remove";
+      sessionKey.value = gblsessionKey;
+      pcpname.value = pcpValue;
+      $.openLoadingMask(1);
+      submit();
+   }
+}
+	
+function addList()
+{
+   if (parentalCtlData_count < 21) {
+   	  var db1 = window.parent.$.zyUiDialog({
+                 width: '70%',
+                 height: 500,
+                 title: '<%ejGetML(MLG_Security_Add_New_PCP)%>',
+
+                 buttons: {
+                    '<%ejGetML(MLG_Common_Cancel)%>': function(){ db1.dialog('close'); },
+                    '<%ejGetML(MLG_Common_Apply)%>':function(){}
+                 }
+                });
+      db1.load("/pages/security/parentalControl/parentalControl_add.html");
+      db1.dialog('open');
+   } else {
+   		hciAlert('<%ejGetML(MLG_Security_ParentalControl_AlertMsg_Str23)%>', {height: 180, type: 2, title: ''});
+      //AlertOpen('The number of list records is limited to 20.',2);
+      return;
+   }
+}
+
+function getParentalCtlList()
+{
+	var i = 0;
+	var j = 0;
+	var parentalCtlData = '<%ejGetOtherBig(parentallist)%>';
+	var info = parentalCtlData.split('|');
+	var str = '';
+	parentalCtlData_count = 0;
+	if (info != '') {
+		for ( i = 0; i < info.length; i++ ) {
+			var names = info[i].split('/');
+			str += "<tr align=\"center\" >";
+			str += "<td class=\"table_font\">" + (i + 1) + "</td>";
+			if (names[0]=='1')
+			str += "<td class=\"table_font\"><img src=\"../../../images/i_active_on.gif\" width=\"18\" height=\"18\" title=\"<%ejGetML(MLG_Common_Active)%>\" />"+ "</td>"; //enable
+			else
+			str += "<td class=\"table_font\"><img src=\"../../../images/i_active_off.gif\" width=\"18\" height=\"18\" title=\"<%ejGetML(MLG_Common_Inactive)%>\" />"+ "</td>"; //enable
+			//str += "<td class=\"table_font\">" + names[0] + "</td>"; //enable
+			str += "<td class=\"table_font textOverflow\">" + names[1] + "</td>"; //name
+			//str += "<td class=\"table_font textOverflow\">" + names[3] + "</td>"; //mac
+			
+			//str += "<td class=\"table_font textOverflow\">" + names[2] + "</td>"; //mac
+			
+			if (names != '') {
+					var mac_name = names[2].split('@');
+					var cmdStr = '';
+					for ( j = 0; j < mac_name.length; j++ ) {
+
+								cmdStr += mac_name[j] + "<br/>"; //name and mac
+						
+					}
+			}
+			str += "<td class=\"table_font\">" + "<br/>" + cmdStr+'</td>\n';
+			
+			str += "<td class=\"table_font\"><div class=\"weekBox\"><ul>";
+			if (names[3]!=''){
+				if ((names[3].indexOf("Mon"))!= -1)
+				str += "<li title=\"Monday\">M</li>";
+				else
+				str += "<li title=\"Monday\" class='off'>M</li>";
+
+				if ((names[3].indexOf("Tue"))!= -1)
+				str += "<li title=\"Tuesday\">T</li>";
+				else
+				str += "<li title=\"Tuesday\" class='off'>T</li>";
+
+				if ((names[3].indexOf("Wed"))!= -1)
+				str += "<li title=\"Wednesday\">W</li>";
+				else
+				str += "<li title=\"Wednesday\" class='off'>W</li>";
+
+				if ((names[3].indexOf("Thu"))!= -1)
+				str += "<li title=\"Thursday\">T</li>";
+				else
+				str += "<li title=\"Thursday\" class='off'>T</li>";
+
+				if ((names[3].indexOf("Fri"))!= -1)
+				str += "<li title=\"Friday\">F</li>";
+				else
+				str += "<li title=\"Friday\" class='off'>F</li>";
+
+				if ((names[3].indexOf("Sat"))!= -1)
+				str += "<li title=\"Saturday\">S</li>";
+				else
+				str += "<li title=\"Saturday\" class='off'>S</li>";
+
+				if ((names[3].indexOf("Sun"))!= -1)
+					str += "<li title=\"Sunday\">S</li>";
+				else
+					str += "<li title=\"Sunday\" class='off'>S</li>";
+			}else{
+				str += "<li title=\"Monday\" class='off'>M</li>";
+				str += "<li title=\"Tuesday\" class='off'>T</li>";
+				str += "<li title=\"Wednesday\" class='off'>W</li>";
+				str += "<li title=\"Thursday\" class='off'>T</li>";
+				str += "<li title=\"Friday\" class='off'>F</li>";
+				str += "<li title=\"Saturday\" class='off'>S</li>";
+				str += "<li title=\"Sunday\" class='off'>S</li>";
+			}
+			
+			str += "</div></td>"; //time		
+			
+			if (names != '') {
+					var time_tmp = names[4].split('@');
+					var cmdStr = '';
+					for ( j = 0; j < time_tmp.length; j++ ) {
+
+								cmdStr += time_tmp[j]+"<br>"; //time
+						
+					}
+			}
+			//<td class="table_font"><div style="float:right;text-indent:0;">00:00-03:00<br>04:00-06:00<br>08:00-14:00</div></td>
+			
+			str += "<td class=\"table_font\">"+ "<div style=\"float:right;text-indent:0;\">"+ "<br>" + cmdStr + "</div></td>";
+			//str += cmdStr; //time		
+			
+			
+			str += "<td class=\"table_font\">" + names[5] + "</td>";//Network service
+			if (names[6]!='')
+			str += "<td class=\"table_font\"><%ejGetML(MLG_Common_Configured)%></td>";//Website
+			else
+			str += "<td class=\"table_font\"><%ejGetML(MLG_Common_None)%></td>";//Website
+
+			//str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editClick('" + names[1] + "','" + names[3] +"')\" class=\"edit\" id='editBtn' title=\"<%ejGetML(MLG_Common_Edit)%>\"></a></li><li><a href=\"#\" onclick=\"removeClick('"+ names[1] + "','" + names[3] + "')\" class=\"delete\" id='deleteBtn' title=\"<%ejGetML(MLG_Common_Delete)%>\"></a></li></ul></div></td>";
+			str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editClick('" + names[1] + "','" + names[2] +"')\" class=\"edit\" id='editBtn' title=\"<%ejGetML(MLG_Common_Edit)%>\"></a></li><li><a href=\"#\" onclick=\"removeClick('"+ names[1] + "')\" class=\"delete\" id='deleteBtn' title=\"<%ejGetML(MLG_Common_Delete)%>\"></a></li></ul></div></td>";
+			str += "</tr>";
+
+			parentalCtlData_count++;
+		}
+	}
+	$('#ParentalList').append(str);
+
+}
+
+function frmLoad(firstload) {
+  var i = 0;
+  var enbl = "<%ejGetOther(activeParentCtl)%>";
+  
+  if ( enbl == "1" ) {
+  	$('input[name=enable_parent]').get(0).checked = true;
+  }
+  else {
+  	$('input[name=enable_parent]').get(1).checked = true;
+  }
+  if( firstload != 0)
+	getParentalCtlList();
+  var errMsg = "<%ejGetOther(errMsg)%>";
+  if (errMsg != '') {
+        hciAlert(errMsg, {height: 180,type: 2, title: ''});
+  }
+
+}
+
+$(document).ready(function() {
+	frmLoad();
+$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );    
+$('.textOverflow').ellipsis(true); 
+//$('.table_font').tooltip(); 
+});
+
+// done hiding -->
+</script>
+
+<form method="post" action="/pages/tabFW/parentalControl-cfg.cmd">
+<input type="hidden" name="action" id="action">
+<input type="hidden" name="hostMac" id="hostMac">
+<input type="hidden" name="pcpname" id="pcpname">
+<input type="hidden" name="enable" id="enable">
+<input name="sessionKey" type="hidden" id="sessionKey"/>
+  
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Security_MACFilter_Note4)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1">
+  <div class="title2"><%ejGetML(MLG_Security_FirewallACL_Str16)%></div>
+  <div class="w_text" >
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Menu_ParentalControl)%>   :</li>
+    <li class="right_table">
+    	<input name="enable_parent" id="enable_parent" type="radio" value="1"/>
+      <%ejGetML(MLG_Security_FirewallACL_Str4)%>
+      <input name="enable_parent" id="enable_parent" type="radio" value="0"/>
+      <%ejGetML(MLG_Security_FirewallACL_Str5)%>  (<%ejGetML(MLG_Security_MACFilter_Note3)%>)</li>
+  </ul>
+</div>
+</li>
+<li class="space"></li>
+<li class="set1">
+  <div class="title2"><%ejGetML(MLG_Security_ParentalControl_Profile)%></div>
+  <div class="w_table"><ul><input type='button' onclick="addList()" value='<%ejGetML(MLG_Security_Add_New_PCP)%>'></ul></div></li>
+<li class="set1"> 
+<div class="w_table">
+<!--Table define start-->
+<table width="100%" align="center" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame" id="ParentalList">
+            <tr align="center">
+              <td width="25" class="top_font">#</td>
+              <td class="top_font" width="45"><%ejGetML(MLG_Common_Status)%></td>
+              <td class="top_font" width="100"><%ejGetML(MLG_Security_ParentalControl_Str21)%></td>
+              <td class="top_font textOverflow"><%ejGetML(MLG_Security_ParentalControl_Str19)%> <%ejGetML(MLG_Security_ParentalControl_Str20)%></td>
+              <td class="top_font textOverflow" width="230" colspan="2"><%ejGetML(MLG_Security_ParentalControl_Str22)%></td>
+              <td class="top_font textOverflow" width="70"><%ejGetML(MLG_Security_ParentalControl_Str23)%></td>
+              <td class="top_font textOverflow" width="70"><%ejGetML(MLG_Security_ParentalControl_Str24)%></td>
+              <td class="top_font" width="70" style="border-right:0px;"><%ejGetML(MLG_Security_FirewallProtocol_Str6)%></td>
+            </tr>
+</table>
+</div>
+</li>
+<li class="space"> </li>
+<li class="space"> </li>
+<li class="buttonframe"><div class="button_position">
+<input name="button" type="button" onclick='btnApply()' value="<%ejGetML(MLG_Common_Apply)%>"/>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<input name="Cancel" type="button" onclick='frmLoad(0)' value="<%ejGetML(MLG_Common_Cancel)%>" />
+</div>
+</li>
+<!--Button define end-->
+</ul></div>
+</div>
+<br /><br />
+</form>

@@ -1,0 +1,149 @@
+<script language="javascript">
+<!-- hide
+function frmLoad () {
+   var i = 0;
+   var arp = '<%ejGetOtherBig(arpinfo)%>';
+   var neigh = '<%ejGetOtherBig(neighinfo)%>';
+   var wanPrv = '<%ejGetOther(privilegeByUser, broadband)%>';
+   var lanPrv = '<%ejGetOther(privilegeByUser, homeNetworking)%>';
+   //var arp = '192.168.1.2/00:19:11:12:ba:11/LAN|10.10.100.1/00:50:1a:c2:01/WAN';
+   var info = arp.split('|');
+   var info6 = neigh.split('|');
+   var str = '';
+	 var str6 = '';
+   if (info != '') {
+      for ( i = 0; i < info.length; i++ ) {
+         var names = info[i].split('/');
+         str += "<tr align=\"center\" >";
+         str += "<td class=\"table_font\">" + (i + 1) + "</td>";
+         str += "<td class=\"table_font\">" + names[0] + "</td>";
+         str += "<td class=\"table_font\">" + names[1] + "</td>";
+         if (names[2] == 'LAN') {
+            if ( lanPrv == '1' ) {
+               str += "<td class=\"table_font\"><a href=\"#\" onClick=\"window.parent.document.activePage('network-homeNetworking');\" >" + names[2] + "</a></td>";
+            }
+            else {
+               str += "<td class=\"table_font\">" + names[2] + "</td>";               	
+            }
+         }
+         else {
+            if ( wanPrv == '1' ) {
+               str += "<td class=\"table_font\"><a href=\"#\" onClick=\"window.parent.document.activePage('network-broadband');\" >" + names[2] + "</a></td>";
+            }
+            else {
+            	  str += "<td class=\"table_font\">" + names[2] + "</td>";
+            }
+         }
+         str += "</tr>";
+      }
+   }
+
+   $('#arpTable').append(str);
+
+   if (info6 != '') {
+      for ( i = 0; i < info6.length; i++ ) {
+         var names = info6[i].split('/');
+         str6 += "<tr align=\"center\" >";
+         str6 += "<td class=\"table_font\">" + (i + 1) + "</td>";
+         str6 += "<td class=\"table_font\">" + names[0] + "</td>";
+         str6 += "<td class=\"table_font\">" + names[1] + "</td>";
+         if (names[2] == 'LAN') {
+            if ( lanPrv == '1' ) {
+               str6 += "<td class=\"table_font\"><a href=\"#\" onClick=\"window.parent.document.activePage('network-homeNetworking');\" >" + names[2] + "</a></td>";
+            }
+            else {
+               str6 += "<td class=\"table_font\">" + names[2] + "</td>";               	
+            }
+         }
+         else {
+            if ( wanPrv == '1' ) {
+               str6 += "<td class=\"table_font\"><a href=\"#\" onClick=\"window.parent.document.activePage('network-broadband');\" >" + names[2] + "</a></td>";
+            }
+            else {
+            	  str6 += "<td class=\"table_font\">" + names[2] + "</td>";
+            }
+         }
+         str6 += "</tr>";
+      }
+   }
+
+   $('#neighTable').append(str6);
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+// done hiding -->
+</script>
+   <form>
+      <div class="content_frame">
+<!--Unit Explain start-->
+         <div class="explain">
+            <div>
+               <b class="r1"></b>
+               <b class="r2"></b>
+               <b class="r3"></b>
+               <b class="r4"></b>
+               <b class="r4"></b>
+            </div>
+            <div class="explain_text"><%ejGetML(MLG_System_Monitor_ARPTable_Str1)%><br>
+            	<%ejGetML(MLG_System_Monitor_ARPTable_Str2)%></div>
+            <div>
+               <b class="r4"></b>
+               <b class="r4"></b>
+               <b class="r3"></b>
+               <b class="r2"></b>
+               <b class="r1"></b>
+            </div>
+         </div>
+<!--Unit Explain End-->
+         <div class="data_frame"><ul>
+<!--level 1 start-->
+<!--
+            <li class="set1">
+               <div class="w_text">
+                  <input type="button" name="sysAddUserBtn" value="Add new MAC filter rule" onclick="window.parent.document.activePage('securitySettings-macFilter');" />
+               </div>
+            </li>
+-->
+<!--level 1 start-->
+            <li class="set1">
+               <div class="title"><%ejGetML(MLG_System_Monitor_ARPTable_Str3)%></div>
+               <div class="w_table">
+                  <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="arpTable">
+                                       <tr align="center" >
+                                          <td width="5%" class="top_font">#</td>
+                                          <td class="top_font"><%ejGetML(MLG_Common_IPAddress)%></td>
+                                          <td class="top_font"><%ejGetML(MLG_Common_MACAddress)%></td>
+                                          <td class="top_font"><%ejGetML(MLG_Common_Device)%></td>
+                                       </tr>
+                  </table>
+               </div>
+            </li>
+         </div></ul>
+         <div class="data_frame"><ul>
+<!--level 1 start-->
+<!--
+            <li class="set1">
+               <div class="w_text">
+                  <input type="button" name="sysAddUserBtn" value="Add new MAC filter rule" onclick="window.parent.document.activePage('securitySettings-macFilter');" />
+               </div>
+            </li>
+-->
+<!--level 1 start-->
+            <li class="set1">
+               <div class="title"><%ejGetML(MLG_System_Monitor_ARPTable_Str4)%></div>
+               <div class="w_table">
+                  <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="neighTable">
+                                       <tr align="center" >
+                                          <td width="5%" class="top_font">#</td>
+                                          <td class="top_font"><%ejGetML(MLG_Common_IPv6Address)%></td>
+                                          <td class="top_font"><%ejGetML(MLG_Common_MACAddress)%></td>
+                                          <td class="top_font"><%ejGetML(MLG_Common_Device)%></td>
+                                       </tr>
+                  </table>
+               </div>
+            </li>
+         </div></ul>
+      </div>
+   </form>

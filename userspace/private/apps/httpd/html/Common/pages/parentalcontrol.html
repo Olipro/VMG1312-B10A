@@ -1,0 +1,116 @@
+<!--<script type="text/javascript" src="js/jquery.text-overflow.js"></script>
+<script type="text/javascript" src="js/jquery.tooltip.min.js"></script>-->
+<script language='javascript'>
+mainFrame.glbSessionKey = "<%ejGetOther(sessionKey)%>";
+
+$(document).ready(function() {
+    $('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );    
+    $('.textOverflow').ellipsis(true); 
+    
+    //$('.table_font').tooltip(); 
+});
+</script>
+<div class="deleteframe">
+  <div class="title2"><img src="../../../images/network/i_s_pc.gif" width="16" height="16" /> <%ejGet(pcHostName)%> (<%ejGet(pcmacAddr)%>)</div>
+  <div class="w_table">
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="parentcontrolTable">
+            <tr align="center">
+              <td width="25" class="top_font">#</td>
+              <td class="top_font" width="45"><%ejGetML(MLG_Common_Status)%></td>
+              <td class="top_font"><%ejGetML(MLG_Security_ParentalControl_Str21)%></td>
+              <td class="top_font" width="230"><%ejGetML(MLG_Security_ParentalControl_Str22)%></td>
+              <td class="top_font" width="70"><%ejGetML(MLG_Security_ParentalControl_Str23)%></td>
+              <td class="top_font" width="70"><%ejGetML(MLG_Security_ParentalControl_Str24)%></td>
+              <td class="top_font" width="50" style="border-right:0px;"><%ejGetML(MLG_Common_Modify)%></td>
+            </tr>
+<script language="javascript">
+	<!-- hide
+	{
+		var i = 0;
+		var j = 0;
+		var parentalCtlData = '<%ejGetOtherBig(parentallist_status)%>';
+		var macAddr = '<%ejGet(pcmacAddr)%>';
+		var info = parentalCtlData.split('|');
+		var str = '';
+
+		$('#parentcontrolTable tr:gt(0)').remove();
+
+		if (info != '') {
+			str = "";
+			for ( i = 0; i < info.length; i++ ) {
+				var names = info[i].split('/');
+					j++;
+					str += "<tr align=\"center\" >";
+					str += "<td class=\"table_font\">" + j + "</td>";
+					if (names[0]=='1')
+						str += "<td class=\"table_font\"><img src=\"../../../images/i_active_on.gif\" width=\"18\" height=\"18\" title=\"Active\" />"+ "</td>"; //enable
+					else
+						str += "<td class=\"table_font\"><img src=\"../../../images/i_active_off.gif\" width=\"18\" height=\"18\" title=\"Inactive\" />"+ "</td>"; //enable
+
+					str += "<td class=\"table_font textOverflow\">" + names[1] + "</td>"; //name
+
+					str += "<td class=\"table_font\"><div class=\"weekBox\"><ul>";
+					if (names[4]!=''){
+						if ((names[4].indexOf("Mon"))!= -1)
+							str += "<li title=\"Monday\">M</li>";
+						else
+							str += "<li title=\"Monday\" class='off'>M</li>";
+
+						if ((names[4].indexOf("Tue"))!= -1)
+							str += "<li title=\"Tuesday\">T</li>";
+						else
+							str += "<li title=\"Tuesday\" class='off'>T</li>";
+
+						if ((names[4].indexOf("Wed"))!= -1)
+							str += "<li title=\"Wednesday\">W</li>";
+						else
+							str += "<li title=\"Wednesday\" class='off'>W</li>";
+
+						if ((names[4].indexOf("Thu"))!= -1)
+							str += "<li title=\"Thursday\">T</li>";
+						else
+							str += "<li title=\"Thursday\" class='off'>T</li>";
+
+						if ((names[4].indexOf("Fri"))!= -1)
+							str += "<li title=\"Friday\">F</li>";
+						else
+							str += "<li title=\"Friday\" class='off'>F</li>";
+
+						if ((names[4].indexOf("Sat"))!= -1)
+							str += "<li title=\"Saturday\">S</li>";
+						else
+							str += "<li title=\"Saturday\" class='off'>S</li>";
+
+						if ((names[4].indexOf("Sun"))!= -1)
+							str += "<li title=\"Sunday\">S</li>";
+						else
+							str += "<li title=\"Sunday\" class='off'>S</li>";
+					}
+					else{
+						str += "<li title=\"Monday\" class='off'>M</li>";
+						str += "<li title=\"Tuesday\" class='off'>T</li>";
+						str += "<li title=\"Wednesday\" class='off'>W</li>";
+						str += "<li title=\"Thursday\" class='off'>T</li>";
+						str += "<li title=\"Friday\" class='off'>F</li>";
+						str += "<li title=\"Saturday\" class='off'>S</li>";
+						str += "<li title=\"Sunday\" class='off'>S</li>";
+					}
+					str += "</ul><span style=\"line-height:16px;\">" + names[5] + "</span></div></td>"; //time						 
+					str += "<td class=\"table_font\">" + names[6] + "</td>";//Network service
+					if (names[7]!='')
+						str += "<td class=\"table_font\"><%ejGetML(MLG_Common_Configured)%></td>";//Website
+					else
+						str += "<td class=\"table_font\"><%ejGetML(MLG_Common_None)%></td>";//Website
+
+					str += "<td class=\"table_font\"><div class=\"i_modify\"><ul><li><a href=\"#\" onClick=\"editPCPClick('" + names[1] + "','" + macAddr + "')\" class=\"edit netmap\" id='editBtn' title=\"<%ejGetML(MLG_Common_Edit)%>\"></a></li></ul></div></td>";
+					str += "</tr>";
+
+			
+			}
+			$('#parentcontrolTable').append(str);
+		}
+	}
+		// done hiding -->
+</script>
+	</table>  </div>
+</div>

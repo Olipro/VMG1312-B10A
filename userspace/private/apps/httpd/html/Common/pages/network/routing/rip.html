@@ -1,0 +1,279 @@
+<script language="javascript">
+<!-- hide
+function doSubmit() {
+   var lst = '';
+	var riplist = $(document.forms[0]).find("input[name=riplist[]]");
+	var ripVer = $(document.forms[0]).find("select[name=ripVer[]]");
+	var ripOp = $(document.forms[0]).find("select[name=ripOp[]]");
+	var ripDefaultGateway = $(document.forms[0]).find("input[name=ripDefaultGateway[]]");
+	
+     if (riplist.length > 0) {
+       for (i = 0; i < riplist.length; i++)
+       {  
+			if ( riplist[i].checked == true )
+			{
+				if (ripDefaultGateway[i].checked == true)
+					lst = lst + riplist[i].value + '|' + ripVer[i].value + '|' + ripOp[i].value + '|' + '1' + '|' + '1' + ', ';
+				else
+					lst = lst + riplist[i].value + '|' + ripVer[i].value + '|' + ripOp[i].value + '|' + '1' + '|' + '0' + ', ';
+			}
+			else
+			{
+				if (ripDefaultGateway[i].checked == true)
+					lst = lst + riplist[i].value + '|' + ripVer[i].value + '|' + ripOp[i].value + '|' + '0' + '|' + '1' + ', ';
+				else
+					lst = lst + riplist[i].value + '|' + ripVer[i].value + '|' + ripOp[i].value + '|' + '0' + '|' + '0' + ', ';
+			}
+		}
+     }
+
+	document.forms[0].ripLst.value = lst;
+	document.forms[0].submit();
+
+   $.openLoadingMask(1);
+}
+
+function frmLoad() {
+   var errMsg = "<%ejGetOther(errMsg)%>";
+   if (errMsg != '')
+   {
+	  hciAlert(errMsg, {height: 180,type: 2, title: ''});
+   }
+}
+
+$(document).ready(function() {
+   frmLoad(); 
+});
+
+// done hiding -->
+</script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">
+<%ejGetML(MLG_Network_Routing_rip_Str1)%> 
+<%ejGetML(MLG_Network_Routing_rip_Str2)%> 
+<%ejGetML(MLG_Network_Routing_rip_Str3)%>
+</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<form action="/pages/tabFW/routing-rip.cmd" method="post" target="mainFrame">
+  <input name="ripLst" type="HIDDEN" id="ripLst" value=""; />
+  <input name="guiStyle" type="HIDDEN" id="guiStyle" value="Brick"; />
+  <input name="action" type="HIDDEN" id="action" value="apply"; />    
+  <input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">
+  
+<div class="data_frame"><ul>
+<li class="set1">
+<div class="w_table">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame" id="ripTable">
+                <tr align="center" valign="top">
+                  <td width="5%" class="top_font">#</td>
+                  <td class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str20)%></td>
+                  <td class="top_font"><%ejGetML(MLG_System_TrafficStatusHPNA_Str4)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Network_Routing_rip_Str4)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Common_Enable)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Network_Routing_rip_Str6)%></td>
+                </tr>
+<script language="javascript">
+<!-- hide
+{
+   // #|ifName|verision|operation|@
+   var i = 0;
+   var ripList = '<%ejGetOther(ripLANShow)%>';
+   var ripEntry = ripList.split('@');
+   var str = '';
+
+   for ( i = 0; i < ripEntry.length; i++ ) {
+      if (ripEntry[i] != '') {
+
+         var fields = ripEntry[i].split('|');
+
+         if (fields != '') {
+            str += '<tr align="center">'; // #
+            str += '<td class="table_font textOverflow">' + fields[0] + '</td>'; // #
+            str += '<td class="table_font textOverflow">' + fields[1] + '</td>'; // interface
+            
+			str += '<td class="table_font textOverflow">'; // Type
+            str += '<select name=\'ripVer[]\'>'; // version
+			if (fields[2] == 'Off' || fields[2] == 'RIPv2'){
+				str += '<option value=\'1\'>1'; // version
+				str += '<option value=\'2\' selected>2'; // version
+				str += '<option value=\'3\'><%ejGetML(MLG_Network_Routing_rip_Str7)%>'; // version					
+			}else if  (fields[2] == 'RIPv1'){
+				str += '<option value=\'1\' selected>1'; // version
+				str += '<option value=\'2\'>2'; // version
+				str += '<option value=\'3\'><%ejGetML(MLG_Network_Routing_rip_Str7)%>'; // version				
+			}else{
+				str += '<option value=\'1\'>1'; // version
+				str += '<option value=\'2\'>2'; // version
+				str += '<option value=\'3\' selected><%ejGetML(MLG_Network_Routing_rip_Str7)%>'; // version				
+			}
+            str += '</select>'; // version			
+            str += '</td>'; // Mode			
+            
+			str += '<td class="table_font textOverflow">'; // Type
+            str += '<select name=\'ripOp[]\'>'; // Operation
+			if (fields[2] == 'Off' || fields[3] == 'Passive'){
+				str += '<option value=\'0\'><%ejGetML(MLG_Common_Active)%>';
+				str += '<option value=\'1\' selected><%ejGetML(MLG_Common_Passive)%>';				
+			}else{
+				str += '<option value=\'0\' selected><%ejGetML(MLG_Common_Active)%>';
+				str += '<option value=\'1\'><%ejGetML(MLG_Common_Passive)%>';			
+			}
+			
+            str += '</select>'; // Operation			
+            str += '</td>'; // Mode
+			
+			str += '<td class="table_font textOverflow">'; // Enable
+
+			if (fields[4] == 'Disable'){
+				str += '<input type=\'checkbox\' name=\'riplist[]\' value=\''+fields[1]+'\'>';			
+			}else{
+				str += '<input type=\'checkbox\' name=\'riplist[]\' value=\''+fields[1]+'\' checked>';
+			}
+            str += '</td>'; // Enable
+
+                        str += '<td class="table_font textOverflow">'; // DefaultGateway
+
+                        if (fields[5] == 'Disable'){
+                                str += '<input type=\'checkbox\' name=\'ripDefaultGateway[]\' value=\''+fields[5]+'\'>';                    
+                        }else{
+                                str += '<input type=\'checkbox\' name=\'ripDefaultGateway[]\' value=\''+fields[5]+'\' checked>';
+                        }
+            str += '</td>'; // DefaultGateway
+
+            str += '</tr>';
+         }
+      }
+   }
+
+   $('#ripTable').append(str)
+
+   $('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );    
+   $('.textOverflow').ellipsis(true);
+}
+// done hiding -->
+</script>
+        
+              </table>
+</div></li>
+<li class="set1">
+<div class="w_table">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;" class="table_frame" id="ripTable2">
+                <tr align="center" valign="top">
+                  <td width="5%" class="top_font">#</td>
+                  <td class="top_font"><%ejGetML(MLG_ConnStatus_Status_Str20)%></td>
+                  <td class="top_font"><%ejGetML(MLG_System_TrafficStatusHPNA_Str4)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Network_Routing_rip_Str4)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Common_Enable)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Network_Routing_rip_Str6)%></td>
+                </tr>
+<script language="javascript">
+<!-- hide
+{
+   // #|ifName|verision|operation|@
+   var i = 0;
+   var ripList = '<%ejGetOther(ripShow)%>';
+   var ripEntry = ripList.split('@');
+   var str = '';
+
+   for ( i = 0; i < ripEntry.length; i++ ) {
+      if (ripEntry[i] != '') {
+
+         var fields = ripEntry[i].split('|');
+
+         if (fields != '') {
+            str += '<tr align="center">'; // #
+            str += '<td class="table_font textOverflow">' + fields[0] + '</td>'; // #
+            str += '<td class="table_font textOverflow">' + fields[1] + '</td>'; // interface
+            
+			str += '<td class="table_font textOverflow">'; // Type
+            str += '<select name=\'ripVer[]\'>'; // version
+			if (fields[3] == 'Off' || fields[3] == 'RIPv2'){
+				str += '<option value=\'1\'>1'; // version
+				str += '<option value=\'2\' selected>2'; // version
+				str += '<option value=\'3\'><%ejGetML(MLG_Network_Routing_rip_Str7)%>'; // version					
+			}else if  (fields[3] == 'RIPv1'){
+				str += '<option value=\'1\' selected>1'; // version
+				str += '<option value=\'2\'>2'; // version
+				str += '<option value=\'3\'><%ejGetML(MLG_Network_Routing_rip_Str7)%>'; // version				
+			}else{
+				str += '<option value=\'1\'>1'; // version
+				str += '<option value=\'2\'>2'; // version
+				str += '<option value=\'3\' selected><%ejGetML(MLG_Network_Routing_rip_Str7)%>'; // version				
+			}
+            str += '</select>'; // version			
+            str += '</td>'; // Mode			
+            
+			str += '<td class="table_font textOverflow">'; // Type
+            str += '<select name=\'ripOp[]\'>'; // Operation
+			if (fields[3] == 'Off' || fields[4] == 'Passive'){
+				str += '<option value=\'0\'><%ejGetML(MLG_Common_Active)%>';
+				str += '<option value=\'1\' selected><%ejGetML(MLG_Common_Passive)%>';				
+			}else{
+				str += '<option value=\'0\' selected><%ejGetML(MLG_Common_Active)%>';
+				str += '<option value=\'1\'><%ejGetML(MLG_Common_Passive)%>';			
+			}
+			
+            str += '</select>'; // Operation			
+            str += '</td>'; // Mode
+			
+			str += '<td class="table_font textOverflow">'; // Enable
+
+			if (fields[5] == 'Disable'){
+				str += '<input type=\'checkbox\' name=\'riplist[]\' value=\''+fields[2]+'\'>';			
+			}else{
+				str += '<input type=\'checkbox\' name=\'riplist[]\' value=\''+fields[2]+'\' checked>';
+			}
+            str += '</td>'; // Enable
+
+                        str += '<td class="table_font textOverflow">'; // DefaultGateway
+
+                        if (fields[6] == 'Disable'){
+                                str += '<input type=\'checkbox\' name=\'ripDefaultGateway[]\' value=\''+fields[6]+'\'>';                    
+                        }else{
+                                str += '<input type=\'checkbox\' name=\'ripDefaultGateway[]\' value=\''+fields[6]+'\' checked>';
+                        }
+            str += '</td>'; // DefaultGateway
+
+            str += '</tr>';
+         }
+      }
+   }
+
+   $('#ripTable2').append(str)
+
+   $('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );    
+   $('.textOverflow').ellipsis(true);
+}
+// done hiding -->
+</script>
+        
+              </table>
+</div></li>
+
+<li class="space"> </li>
+      <!--Button define start-->
+      <li class="buttonframe">
+        <div class="button_position">
+          <input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="doSubmit(this.form.riplist);" />
+          &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+          <input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick="frmLoad();" />
+        </div>
+      </li>
+      <!--Button define end-->
+<!--level 2 start--><!--Please add this tag--><!--Note define start-->
+<!--Note define start-->
+
+<!--Note define end-->
+
+</ul>
+</div>
+</form>
+<!--Set area end-->
+</div>
+<br/><br/>

@@ -1,0 +1,96 @@
+<script language="JavaScript">
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+
+$(document).ready(function() {
+var errMsg = "<%ejGetOther(errMsg)%>";
+	if (errMsg != '')
+	{
+//		AlertOpen(errMsg, 2);
+		hciAlert(errMsg, {height: 180, type: 2, title: ''});
+	}
+});
+
+function addClick() {
+      var loc = '/pages/maintenance/emailNotification/emailNotification.html';
+      var code = 'location=\"' + loc + '\"';
+
+      var protocol_add_diglog = window.parent.$.zyUiDialog({
+                 width: '70%',
+                 height: 300,
+                 title: '<%ejGetML(MLG_Maintenance_Email_Str1)%>',
+
+                 buttons: {
+                    '<%ejGetML(MLG_Common_Cancel)%>': function(){ protocol_add_diglog.dialog('close') },
+                    '<%ejGetML(MLG_Common_Apply)%>':function(){}
+                 }
+                });
+      protocol_add_diglog.load(loc);
+      protocol_add_diglog.dialog('open');
+}
+
+function removeClick(name) {
+   var db1 = window.parent.$.zyUiDialog({
+              width: 450,
+              height: 200,
+              title: '<%ejGetML(MLG_Maintenance_Email_Str2)%>',
+              buttons: {
+                 '<%ejGetML(MLG_Common_No)%>': function(){ db1.dialog('close'); },
+                 '<%ejGetML(MLG_Common_Yes)%>': function(){ db1.dialog('close'); $.openLoadingMask(1); deleteProcess(name); }
+              }
+             });
+	   db1.load('/pages/delete.html');
+	   db1.dialog('open');
+}
+
+function deleteProcess(name) {
+   var loc = '/pages/tabFW/emailNotification-mailserver.cmd?action=remove&rmLst=' + name;
+
+   loc += '&sessionKey=' + gblsessionKey;
+
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+
+</script>
+<form>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Maintenance_Email_Notification_Explain)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<!--level 1 start-->
+<li class="set1"> 
+<div class="w_table">
+  	<input name="Fw_Add" id="Fw_Add" type="button" value='<%ejGetML(MLG_Maintenance_Btn_Add_New_Email)%>' onclick="addClick();" />
+</div>
+</li>
+<li class="set1"> 
+<div class="w_table">
+  <!--Table define start--><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id='tbl' style="table-layout:fixed;">
+			<tr>
+			<td class="top_font"><center><%ejGetML(MLG_Maintenance_Mail_Server_Address_Str)%></center></td>
+			<td class="top_font"><center><%ejGetML(MLG_Common_Username)%></center></td>
+			<td class="top_font"><center><%ejGetML(MLG_Common_Password)%></center></td>
+			<td class="top_font"><center><%ejGetML(MLG_Maintenance_Email_Account_Email_Port_Str)%></center></td>
+			<td class="top_font"><center><%ejGetML(MLG_Maintenance_Email_Address_Str)%></center></td>
+			<td width="60" align="center" class="top_font"><%ejGetML(MLG_Maintenance_Remove)%></td>
+			</tr>
+			<%ejGetOtherBig(mailList)%>
+  </table>
+</div><!--Table define end-->
+</li>
+<li class="space"></li>
+<!--level 1 end-->
+<li class="space"> </li>
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Common_Note)%>:</span></div>
+  <div class="note_text">&nbsp;&nbsp;<%ejGetML(MLG_Maintenance_Email_Notification_Str)%></div>
+</li>
+</ul></div>
+<!--Set area end-->
+</div>
+</form>

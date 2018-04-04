@@ -1,0 +1,356 @@
+<div class="popup_frame" >
+
+<!--Set area start-->
+<div class="data_frame2"><ul><div class="title">Basic Setting </div>
+<li class="set2">
+                     <div class="w_text">
+                        <ul>
+                           <li class="left_table">Self Diagnostic :</li>
+                           <li class="right_table">
+                              <input name="enblSdera" id="enblSdera" type="radio" value="1" /> <%ejGetML(MLG_Common_Enable)%>
+                              <input name="enblSdera" id="enblSdera" type="radio" value="0" /> <%ejGetML(MLG_Common_Disable)%></li>
+                        </ul>
+                     </div>
+                     <div class="w_text">
+                        <ul>
+                           <li class="left_table">By schedule :</li>
+                           <li class="right_table">
+                              <input name="schedSdera" id="schedSdera" type="radio" value="1"/> <%ejGetML(MLG_Common_Enable)%>
+                              <input name="schedSdera" id="schedSdera" type="radio" value="0"/> <%ejGetML(MLG_Common_Disable)%>  </li>
+                        </ul>
+                     </div>
+                     <div class="w_text">
+                        <ul>
+                           <li class="left_table">Start Time :</li>
+                           <li class="right_table">
+                              <input maxlength="2" size="2" name="sderaStartHr" /> hr :
+                              <input maxlength="2" size="2" name="sderaStartMin" /> <%ejGetML(MLG_WLAN_Advanced_Str6)%> :
+                              <input maxlength="2" size="2" name="sderaStartSec" /> <%ejGetML(MLG_Common_Second)%>  </li>
+                        </ul>
+                     </div>
+                     <div class="w_text">
+                        <ul>
+                           <li class="left_table">Periodic Interval :</li>
+                           <li class="right_table">
+                              <input maxlength="10" size="10" name="sderaTestInterval" /> <%ejGetML(MLG_Common_Second)%>                           </li>
+                        </ul>
+                     </div>
+</li>
+<li class="space"> </li>
+<div class="title">Test Case</div>
+<li class="set2">
+                     <div class="w_text">
+                        <ul>
+                           <li class="left_table"><input name="TBHR" id="TBHR" type="checkbox" />&nbsp;Internal System Resources</li><li class="right_table"> <input name="TWANTYPE" id="TWANTYPE" type="checkbox" />&nbsp;<%ejGetML(WAN_Broadband_Str17)%> <%ejGetML(MLG_Common_Type)%> </li></ul>
+                          <ul> <li class="left_table">
+                              <input name="TWANMOCA" id="TWANMOCA" type="checkbox" />&nbsp;<%ejGetML(MLG_Common_WAN)%> <%ejGetML(MLG_Common_MoCA)%> <%ejGetML(MLG_System_TrafficStatusLAN_Str2)%></li>
+                          <li class="right_table">
+                              <input name="TWANETH" id="TWANETH" type="checkbox" />&nbsp;<%ejGetML(MLG_Common_WAN)%> <%ejGetML(MLG_WAN_Broadband_Str26)%> <%ejGetML(MLG_System_TrafficStatusLAN_Str2)%>  </li></ul>
+                            <ul> <li class="left_table">
+                              <input name="TWANIP" id="TWANIP" type="checkbox" />&nbsp;<%ejGetML(MLG_Common_WAN)%> <%ejGetML(MLG_Common_IP)%> Assignment  </li>
+                           <li class="right_table">
+                              <input name="TWANIPCON" id="TWANIPCON" type="checkbox" />&nbsp;<%ejGetML(MLG_Common_WAN)%> <%ejGetML(MLG_Common_IP)%> Connectivity </li></ul>
+                             <ul><li class="left_table">
+                              <input name="TWANBW" id="TWANBW" type="checkbox" />&nbsp;<%ejGetML(MLG_Common_WAN)%> <%ejGetML(MLG_WLAN_BasicWirelessSetup_Str9)%> Statistics </li>
+                           <li class="right_table">
+                              <input name="TLANTYPE" id="TLANTYPE" type="checkbox" />&nbsp;<%ejGetML(MLG_Common_LAN)%> <%ejGetML(MLG_ConnStatus_Status_Str20)%> Types  </li></ul>
+                            <ul> <li class="left_table">
+                              <input name="TLANMOCA" id="TLANMOCA" type="checkbox" />&nbsp;<%ejGetML(MLG_Common_LAN)%> <%ejGetML(MLG_Common_MoCA)%> <%ejGetML(MLG_ConnStatus_Status_Str20)%> </li>
+                           <li class="right_table">
+                              <input name="TLANETH" id="TLANETH" type="checkbox" />&nbsp;<%ejGetML(MLG_Common_LAN)%> <%ejGetML(MLG_ConnStatus_NetworkMap_Str9)%> <%ejGetML(MLG_ConnStatus_Status_Str20)%></li></ul>
+                            <ul> <li class="left_table">
+                              <input name="TLANWIFI" id="TLANWIFI" type="checkbox" />&nbsp;<%ejGetML(MLG_Common_LAN)%> WiFi <%ejGetML(MLG_ConnStatus_Status_Str20)%></li>
+                           <li class="right_table">
+                              <input name="TLANDEV" id="TLANDEV" type="checkbox" />&nbsp;<%ejGetML(MLG_Common_LAN)%> <%ejGetML(MLG_Common_Device)%> Visibility  </li></ul>
+                            <ul><li class="left_table">
+                              <input name="TLANIP" id="TLANIP" type="checkbox" />&nbsp;<%ejGetML(MLG_Common_LAN)%> <%ejGetML(MLG_Common_Device)%> <%ejGetML(MLG_Common_IPAddress)%> Assignment  </li>
+                           <li class="right_table">
+                              <input name="TLANBW" id="TLANBW" type="checkbox" />&nbsp;<%ejGetML(MLG_Common_LAN)%> <%ejGetML(MLG_WLAN_BasicWirelessSetup_Str9)%> Statistics </li></ul>
+							  <ul><input name="TLANIPCONSTB" id="TLANIPCONSTB" type="checkbox" />&nbsp;<%ejGetML(MLG_Common_LAN)%> <%ejGetML(MLG_Common_MoCA)%> STB <%ejGetML(MLG_Common_Device)%> <%ejGetML(MLG_Common_IP)%> Connectivity</ul>
+                     </div>
+                  </li>   
+<li class="space"> </li>
+<li class="title">Detail Setting</li>
+<li class="set2">
+                     <div class="w_text">
+                        <ul>
+                           <li class="left_table">
+                              <%ejGetML(MLG_Common_WAN)%> <%ejGetML(MLG_Common_IP)%> polling interval:                           </li>
+                           <li class="right_table">
+                              <input maxlength="10" size="10" name="sderaWANIPPollingInterval" />&nbsp;<%ejGetML(MLG_Common_Second)%>                           </li>
+                           <li class="left_table">
+                              <%ejGetML(MLG_WLAN_BasicWirelessSetup_Str9)%> polling interval:                           </li>
+                           <li class="right_table">
+                              <input maxlength="10" size="10" name="sderaBWPollingInterval" />&nbsp;<%ejGetML(MLG_Common_Second)%>                           </li>
+                           <li class="left_table">
+                              Memory utilization threshold:                           </li>
+                           <li class="right_table">
+                              <input maxlength="3" size="3" name="sderaMemTshd" />&nbsp;%                           </li>
+                           <li class="left_table">
+                              CPU utilization threshold:                           </li>
+                           <li class="right_table">
+                              <input maxlength="3" size="3" name="sderaCPUTshd" />&nbsp;%                           </li>
+                           <li class="left_table">
+                              <%ejGetML(MLG_Common_MoCA)%> rate threshold:                           </li>
+                           <li class="right_table">
+                              <input maxlength="10" size="10" name="sderaMoCATshd" />&nbsp;<%ejGetML(MLG_ConnStatus_Status_Str24)%>                           </li>
+                           <li class="left_table">
+                              <%ejGetML(MLG_Common_WAN)%> bandwidth threshold:                           </li>
+                           <li class="right_table">
+                              <input maxlength="10" size="10" name="sderaWANBWTshd" />&nbsp;bytes                           </li>
+                           <li class="left_table">
+                              <%ejGetML(MLG_Common_LAN)%> bandwidth threshold:                           </li>
+                           <li class="right_table">
+                              <input maxlength="10" size="10" name="sderaLANBWTshd" />&nbsp;bytes                           </li>
+                        </ul>
+                     </div>
+</li>
+<li class="space"> </li>
+<div class="title">Corrective Action</div>
+<li class="set2">
+                     <div class="w_text">
+                           <input name="enblCorrect" type="checkbox"/>&nbsp;<%ejGetML(MLG_Common_Enable)%> Correction
+                     </div>
+                     <div class="w_text">
+Start Time :  <input maxlength="2" size="2" name="sderaCorrectStartHr" /> hr :
+                              <input maxlength="2" size="2" name="sderaCorrectStartMin" /> <%ejGetML(MLG_WLAN_Advanced_Str6)%> :
+                              <input maxlength="2" size="2" name="sderaCorrectStartSec" /> <%ejGetML(MLG_Common_Second)%>                        
+                     
+                     </div>
+                     <div class="w_text">
+                        <ul>
+                           <input name="enblFReset" type="checkbox" />&nbsp;<%ejGetML(MLG_Common_Enable)%> <%ejGetML(MLG_ConnStatus_Status_Str54)%>
+                        </ul>
+                     </div>
+                     <div class="w_text">
+                        <ul>
+                              Consecutive reboot times to apply factory reset: &nbsp&nbsp
+                              <input maxlength="2" size="2" name="sderaRebootCountLimit" />
+                        </ul>
+                     </div>
+<li class="space"> </li>
+<div class="w_table">
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame">
+    <tr>
+        <td><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+                <td><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td><table width="100%" cellpadding="0" cellspacing="0" >
+                            <tr align="center">
+                                <td width="50%" valign="top" class="top_font">Condition</td>
+                               <td class="top_font" style="border-right:0px;">Corrective Action</td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">Not enough memory space</td>
+                                <td class="table_font">
+                                    <select name="CBHR_MEM" id="CBHR_MEM" size="1" >
+                                      <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                      <option value="2">Re-Initialize Interface </option>
+                                      <option value="3">No Operation </option>
+                                      <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                                    </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">Not enough CPU resource</td>
+                                <td class="table_font">
+                                    <select name="CBHR_CPU" id="CBHR_CPU" size="1" >
+                                      <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                      <option value="2">Re-Initialize Interface </option>
+                                      <option value="3">No Operation </option>
+                                      <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                                    </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">Both WAN Ethernet and MoCA interface are activated</td>
+                                <td class="table_font">
+                                    <select name="CWANTYPE" id="CWANTYPE" size="1" >
+                                      <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                      <option value="2">Re-Initialize Interface </option>
+                                      <option value="3">No Operation </option>
+                                      <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                                    </select>                                </td>
+                            </tr>                            
+                            <tr align="center">
+                                <td class="table_font">WAN IP is not assigned</td>
+                                <td class="table_font">
+                              <select name="CWANIP" id="CWANIP" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%></option>
+                              </select>                                </td>
+                            </tr>                            
+                            <tr align="center">
+                                <td class="table_font">Default gateway does not respond to ICMP PING</td>
+                                <td class="table_font">
+                              <select name="CWANIPCON_PNGDF" id="CWANIPCON_PNGDF" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">BWAN TX or RX bandwidth is below threshold</td>
+                                <td class="table_font">
+                              <select name="CWANBW" id="CWANBW" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">LAN TX or RX bandwidth is below threshold</td>
+                                <td class="table_font">
+                              <select name="CLANBW" id="CLANBW" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">No LAN interface are enabled</td>
+                                <td class="table_font">
+                              <select name="CLANTYPE" id="CLANTYPE" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">WAN MoCA physical port is not operational</td>
+                                <td class="table_font">
+                              <select name="CWANMOCA_PORT" id="CWANMOCA_PORT" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">WAN Ethernet physical port is not operational</td>
+                                <td class="table_font">
+                              <select name="CWANETH_PORT" id="CWANETH_PORT" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">WAN MoCA transmition rate is below threshold</td>
+                                <td class="table_font">
+                              <select name="CWANMOCA_RATE" id="CWANMOCA_RATE" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">DNS server does not respond to ICMP PING</td>
+                                <td class="table_font">
+                              <select name="CWANIPCON_PNGDNS" id="CWANIPCON_PNGDNS" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">DNS resolution is fail</td>
+                                <td class="table_font">
+                              <select name="CWANIPCON_DNSR" id="CWANIPCON_DNSR" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">LAN MoCA transmition rate is below threshold</td>
+                                <td class="table_font">
+                              <select name="CLANMOCA_RATE" id="CLANMOCA_RATE" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">One of attached and active STB do not respond to ICMP PING</td>
+                                <td class="table_font">
+                              <select name="CLANIPCONSTB_PNG" id="CLANIPCONSTB_PNG" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">LAN MoCA physical port is not operational</td>
+                                <td class="table_font">
+                              <select name="CLANMOCA_PORT" id="CLANMOCA_PORT" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">One of LAN Ethernet physical port is not operational</td>
+                                <td class="table_font">
+                              <select name="CLANETH_PORT" id="CLANETH_PORT" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">WiFi signal level (RSSI) is not acceptable</td>
+                                <td class="table_font">
+                              <select name="CLANWIFI_PORT" id="CLANWIFI_PORT" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">No LAN device is attached and active</td>
+                                <td class="table_font">
+                              <select name="CLANDEV" id="CLANDEV" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td class="table_font">Not all LAN devices have IP assignment</td>
+                                <td class="table_font">
+                              <select name="CLANIP" id="CLANIP" size="1" >
+                                 <option value="1"><%ejGetML(MLG_ConnStatus_Status_Str53)%></option>
+                                 <option value="2">Re-Initialize Interface </option>
+                                 <option value="3">No Operation </option>
+                                 <option value="0"><%ejGetML(MLG_ConnStatus_Status_Str54)%> </option>
+                              </select>                                </td>
+                            </tr>
+                        </table></td>
+                    </tr>
+                </table></td>
+            </tr>
+        </table></td>
+    </tr>
+</table>
+</div>
+</li>
+</ul>
+</div>
+<!--Set area end-->
+</div>

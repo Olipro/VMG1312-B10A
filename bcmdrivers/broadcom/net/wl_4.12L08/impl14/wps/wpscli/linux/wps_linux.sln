@@ -1,0 +1,38 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E9BF6947-C346-4B35-BCCF-92ABB0ED4180}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "wps_linux_enr", "wps_linux_enr", "{6017AA7D-A2F2-4562-8F38-006965B39D0F}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\linux\enr\wl_wps.c = ..\..\linux\enr\wl_wps.c
+		..\..\linux\enr\wps_api.c = ..\..\linux\enr\wps_api.c
+		..\..\linux\enr\wps_api_tester.c = ..\..\linux\enr\wps_api_tester.c
+		..\..\linux\enr\wps_enr.c = ..\..\linux\enr\wps_enr.c
+		..\..\linux\enr\wps_enr_app.mk = ..\..\linux\enr\wps_enr_app.mk
+		..\..\linux\enr\wps_linux_hooks.c = ..\..\linux\enr\wps_linux_hooks.c
+		..\..\linux\enr\wps_reg.c = ..\..\linux\enr\wps_reg.c
+		..\..\linux\inc\wps_sdk.h = ..\..\linux\inc\wps_sdk.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "wpscli_linux", "wpscli_linux", "{C843B8DC-EED9-48E2-8087-45384E95E015}"
+	ProjectSection(SolutionItems) = preProject
+		softap_sta_wl.mk = softap_sta_wl.mk
+		wpscli.mk = wpscli.mk
+		..\include\wpscli_api.h = ..\include\wpscli_api.h
+		..\common\include\wpscli_osl.h = ..\common\include\wpscli_osl.h
+		wpscli_osl_helper.c = wpscli_osl_helper.c
+		wpscli_osl_timer.c = wpscli_osl_timer.c
+		wpscli_pktdisp.c = wpscli_pktdisp.c
+		wpscli_wl_handler.c = wpscli_wl_handler.c
+		wpscli_wlan.c = wpscli_wlan.c
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6017AA7D-A2F2-4562-8F38-006965B39D0F} = {E9BF6947-C346-4B35-BCCF-92ABB0ED4180}
+		{C843B8DC-EED9-48E2-8087-45384E95E015} = {E9BF6947-C346-4B35-BCCF-92ABB0ED4180}
+	EndGlobalSection
+EndGlobal

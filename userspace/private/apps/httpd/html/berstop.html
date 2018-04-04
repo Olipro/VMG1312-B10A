@@ -1,0 +1,50 @@
+<html>
+<head>
+<meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+<link rel=stylesheet href='stylemain.css' type='text/css'>
+<link rel=stylesheet href='colors.css' type='text/css'>
+<script language="javascript">
+<!-- hide
+
+function btnClose() {
+   window.close();
+}
+
+// done hiding -->
+</script>
+<base target="_self">
+</head>
+
+<body>
+<blockquote>
+<form>
+  <b>ADSL BER Test - Result</b><br><br>
+  The ADSL BER test completed successfully.<br>
+  <br>
+<table border="1" cellpadding="3" cellspacing="0">
+  <tr>
+    <td class='hd' width="160">Test Time (sec):</td>
+    <td><%ejGetTest(berTime)%></td>
+  </tr>
+  <tr>
+    <td class='hd'>Total Transferred Bits:</td>
+    <td><%ejGetTest(berTotalBits)%></td>
+  </tr>
+  <tr>
+    <td class='hd'>Total Error Bits:</td>
+    <td><%ejGetTest(berErrorBits)%></td>
+  </tr>
+  <tr>
+    <td class='hd'>Error Ratio:</td>
+    <td><%ejGetTest(berErrorRatio)%></td>
+  </tr>
+</table>
+<p align="center"><input type='button' onClick='btnClose()' value='Close'>
+</form>
+</blockquote>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,132 @@
+<script language="javascript">
+<!-- hide
+
+var vd_lan1;
+var vd_lan2;
+var vd_lan3;
+var vd_lan4;
+var vd_lan5;
+var vd_wifiSignal;
+var vd_dslLine1;
+var vd_ethWAN;
+var wanLevel;
+var wanToLanEnbl;
+var vd_usb;
+
+wanToLanEnbl = <%ejGetOther(sysInfo, enblEthWanToLan)%>;
+vd_lan1 = '<%ejGetOther(ifStatus,LAN,eth0,status2)%>';
+vd_lan2 = '<%ejGetOther(ifStatus,LAN,eth1,status2)%>';
+vd_lan3 = '<%ejGetOther(ifStatus,LAN,eth2,status2)%>';
+vd_lan4 = '<%ejGetOther(ifStatus,LAN,eth3,status2)%>';
+vd_lan5 = '<%ejGetOther(ifStatus,LAN,eth4,status2)%>';
+vd_wifiSignal = '<%ejGetOther(ifStatus,WLAN,wifiSignal,status2)%>';
+vd_dslLine1 = '<%ejGetOther(ifStatus,WAN,DSL,0)%>';
+vd_ethWAN = '<%ejGetOther(ifStatus,WAN,eth4,status2)%>';
+wanLevel = '<%ejGetOther(sysInfo, wanStatus)%>';
+
+vd_usb='<%ejGetOther(ifStatus,USB,USB,USB)%>';
+function initVirtualDevice()
+{
+   var vd_lan1_msg = '';
+   var vd_lan2_msg = '';
+   var vd_lan3_msg = '';
+   var vd_lan4_msg = '';
+   var vd_wifiSignal_msg = '';
+   var vd_dslLine1_msg = '';
+   var vd_ethWAN_msg = '';
+   var vd_usb_msg = '';
+
+   // init msg
+   if(vd_lan1 == 'on'){
+      vd_lan1_msg = MLG_Makestring("<%ejGetML(MLG_ConnStatus_VD_Str1)%>",1);
+   }
+   if(vd_lan2 == 'on'){
+      vd_lan2_msg = MLG_Makestring("<%ejGetML(MLG_ConnStatus_VD_Str1)%>",2);
+   }
+   if(vd_lan3 == 'on'){
+      vd_lan3_msg = MLG_Makestring("<%ejGetML(MLG_ConnStatus_VD_Str1)%>",3);
+   }
+   if(vd_lan4 == 'on'){
+      vd_lan4_msg = MLG_Makestring("<%ejGetML(MLG_ConnStatus_VD_Str1)%>",4);
+   }
+   if(vd_wifiSignal == 'on'){
+      vd_wifiSignal_msg = '<%ejGetML(MLG_ConnStatus_VD_Str2)%>';
+   }
+   if(vd_dslLine1 == 'on'){
+      vd_dslLine1_msg = '<%ejGetML(MLG_ConnStatus_VD_Str3)%>';
+   }
+   if(wanToLanEnbl == '1') {
+      if(vd_lan5 == 'on'){
+         vd_ethWAN_msg = '<%ejGetML(MLG_ConnStatus_Status_Str30)%> <%ejGetML(MLG_Common_On)%>';
+      }
+      vd_ethWAN = vd_lan5;
+   } else {
+      if(vd_ethWAN == 'on'){
+         vd_ethWAN_msg = '<%ejGetML(MLG_ConnStatus_VD_Str4)%>';
+      }
+   }
+
+   var VDdate = {
+      dslline: {status: vd_dslLine1, msg: vd_dslLine1_msg },
+      lan1: {status: vd_lan1, msg: vd_lan1_msg},
+      lan2: {status: vd_lan2, msg: vd_lan2_msg},
+      lan3: {status: vd_lan3, msg: vd_lan3_msg},
+      lan4: {status: vd_lan4, msg: vd_lan4_msg},
+      wan: {status: vd_ethWAN, msg: vd_ethWAN_msg},
+      usb: {status: vd_usb, msg: vd_usb_msg},
+      wifiSignal: {status: vd_wifiSignal, msg: vd_wifiSignal_msg}
+   };
+   
+   var $VDObj = $('#vdContainer').VDcomponent({
+      vdHtml: '/pages/VD/vd/VD.html',
+      vdCss: ['/pages/VD/vd/css/css.css'],
+      portDef:'/pages/VD/vd/portDef.js'
+   });
+
+   if(wanToLanEnbl == '1') {
+      $('#wanLable').html('LAN 5');
+   }
+
+   $VDObj.setValue(VDdate);
+}
+
+function updateValue(msg){
+   var upDate = msg.replace(/\r\n/ig, "");
+   upDate = upDate.replace(/\n/ig, "");
+   var upDates = upDate.split('@');
+
+   vd_lan1 = (((upDates[0] == undefined) || (upDates[0] == '')) ? 'off' : upDates[0]);
+   vd_lan2 = (((upDates[1] == undefined) || (upDates[1] == '')) ? 'off' : upDates[1]);
+   vd_lan3 = (((upDates[2] == undefined) || (upDates[2] == '')) ? 'off' : upDates[2]);
+   vd_lan4 = (((upDates[3] == undefined) || (upDates[3] == '')) ? 'off' : upDates[3]);
+   vd_lan5 = (((upDates[4] == undefined) || (upDates[4] == '')) ? 'off' : upDates[4]);
+   vd_wifiSignal = (((upDates[5] == undefined) || (upDates[5] == '')) ? 'off' : upDates[5]);
+   vd_dslLine1 = (((upDates[6] == undefined) || (upDates[6] == '')) ? 'off' : upDates[6]);
+   vd_ethWAN = (((upDates[7] == undefined) || (upDates[7] == '')) ? 'off' : upDates[7]);
+   wanLevel = upDates[8];
+   wanToLanEnbl = upDates[9];
+
+   frmLoad();
+}
+
+function frmLoad() {
+   // init Virtual Device
+   initVirtualDevice();
+
+   if(wanLevel == '0') {
+      connection(true, wanLevel);
+   } else {
+      connection(false, wanLevel);
+   }
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+// done hiding -->
+</script>
+
+<div id='VDView' class='naviView' style='position: relative;'>
+  <div id='vdContainer' style='position:relative; left:4%;right:4%; top:100px; '></div> 
+</div>

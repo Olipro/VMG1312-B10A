@@ -1,0 +1,834 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+var timeOut = '<%ejGet(pppTimeOut)%>';
+var onDemand = '<%ejGet(enblOnDemand)%>';
+var ipExtension = '<%ejGet(pppIpExtension)%>';
+var authMethod = '<%ejGet(pppAuthMethod)%>';
+var prtcl = '<%ejGetOther(memInfo, ntwkPrtcl)%>';
+var enblIpAddr = '<%ejGet(useStaticIpAddress)%>';
+var localIpAddr = '<%ejGet(pppLocalIpAddress)%>';
+var pppDebug = '<%ejGet(enblPppDebug)%>';
+var pppShowAuthErrorRetry = '<%ejGet(pppShowAuthErrorRetry)%>';
+var pppAuthErrorRetry = '<%ejGet(pppAuthErrorRetry)%>';
+var enetWan = parseInt('<%ejGet(enblEnetWan)%>');
+var ppptobr = '<%ejGet(pppToBridge)%>';
+var fullcone = '<%ejGet(enblFullcone)%>';
+var enblAdvDmz = '<%ejGet(enblAdvDmz)%>';
+var serviceId= '<%ejGet(serviceId)%>';
+var sessionKey='<%ejGetOther(sessionKey)%>';
+var cfgL2tpAc= '<%ejGet(cfgL2tpAc)%>';
+var enblGponWan = '<%ejGetOther(sysInfo, buildGponWan)%>';
+
+var enblIpVer = '<%ejGet(enblIpVer)%>';
+var unnumbered = '<%ejGet(unnumberedModel)%>';
+var dhcp6cAddress = '<%ejGet(dhcp6cForAddr)%>';
+var dhcp6cPd = '<%ejGet(dhcp6cForPd)%>';
+var addr6Type = '<%ejGet(wanAddr6Type)%>'; if ( addr6Type == '&nbsp' ) addr6Type = '';
+var addr6 = '<%ejGet(wanAddr6)%>';  if (addr6 == '&nbsp') addr6 = '';
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+      if (enblAdvDmz == 1) {
+	    var enblAdvancedDmz = '<%ejGet(enableAdvancedDmz)%>';
+  	    var nonDmzIpAddr = '<%ejGet(nonDmzIpAddress)%>';
+	    var nonDmzIpMsk = '<%ejGet(nonDmzIpMask)%>';
+        if ( enblAdvancedDmz == '1' )
+          enableAdvancedDmz.checked = true;
+        else
+          enableAdvancedDmz.checked = false;	
+        nonDmzIpAddress.value = nonDmzIpAddr;
+        nonDmzIpMask.value = nonDmzIpMsk;		 
+      }
+
+      showPppoe(0);
+      if ( onDemand == '1' ) {
+         enblOnDemand.checked = true;
+         hideOnDemandInfo(0);
+      } else {
+         enblOnDemand.checked = false;
+         hideOnDemandInfo(1);
+      }
+		
+	  if (cfgL2tpAc == '1')
+		hidePppToBridgeInfo(1);
+
+      if ( enblIpVer != '2' ) {
+         if ( enblIpAddr == '1' && cfgL2tpAc != '1') {
+            enblPppIpAddress.checked = true;
+            hidePppIpAddressInfo(0);
+         } else {
+            enblPppIpAddress.checked = false;
+            hidePppIpAddressInfo(1);
+         }
+
+         if ( fullcone == '1' )
+            enblFullcone.checked = true;
+         else
+            enblFullcone.checked = false; 
+         fullConeClick(enblFullcone);
+	  
+         var enableIgmp = '<%ejGet(enblIgmp)%>';
+         if ( enableIgmp == '1' )
+            enblIgmp.checked = true;
+         else
+            enblIgmp.checked = false;
+      }
+      else
+      {
+         enblPppIpAddress.checked = false;
+         enblPppIpAddress.disabled = true;
+         hidePppIpAddressInfo(1);
+         enblFullcone.disabled = true;
+         enblFullcone.checked = false; 
+         fullConeClick(enblFullcone);
+         enblIgmp.checked = false;
+         enblIgmp.disabled = true;
+         pppIpExtension.disabled = true;
+         enblOnDemand.disabled = true;
+      }
+ 
+      if (serviceId == '1' || cfgL2tpAc == '1'  || prtcl == 'PPPoA')
+        hideIpExtension(1);
+	  else {
+        if ( ipExtension == '1' )
+           pppIpExtension.checked = true;
+        else
+           pppIpExtension.checked = false;
+	  }
+      if ( authMethod == '1' )
+         pppAuthMethod.selectedIndex = 2;
+      else if ( authMethod == '2' )
+         pppAuthMethod.selectedIndex = 3;
+      else if ( authMethod == '3' )
+         pppAuthMethod.selectedIndex = 4;
+      else
+         pppAuthMethod.selectedIndex = 1;
+
+      pppUserName.value = '<%ejGet(pppUserName)%>';
+      pppPassword.value = '<%ejGet(pppPassword)%>';
+      pppTimeOut.value = timeOut;
+      pppLocalIpAddress.value = localIpAddr;
+      if ( prtcl == 'PPPoE' )
+         pppServerName.value = '<%ejGet(pppServerName)%>';
+
+      if ( pppShowAuthErrorRetry == '1' )
+         hidePppAuthErrorRetry(0);
+      else
+         hidePppAuthErrorRetry(1);
+
+      if ( pppAuthErrorRetry == '1' )
+         authErrorRetry.checked = true;
+      else
+         authErrorRetry.checked = false;
+
+      if ( pppDebug == '1' )
+         enblPppDebug.checked = true;
+      else
+         enblPppDebug.checked = false;
+      
+      if (prtcl == 'PPPoE') {
+	     setCheck(pppToBridge, ppptobr);
+	  }   
+	  else {
+	     setCheck(pppToBridge, 0);
+	  }
+      pppIpExtChange(pppIpExtension);
+
+      if ( enblGponWan == '1' ) {
+         if ( enableIgmp == '1' ) {
+         var noMcastVlanFlt = '<%ejGet(noMcastVlanFilter)%>';
+            if ( noMcastVlanFlt == '1' )
+               noMcastVlanFilter.checked = true;
+            else
+               noMcastVlanFilter.checked = false;
+            hideMcastFilterInfo(0);
+         }
+         else
+            hideMcastFilterInfo(1);
+      }
+
+      if ( enblIpVer != '0' ) {
+         if ( addr6Type == 'Static' ) {
+            enblPppIp6Address.checked = true;
+         } else {
+            enblPppIp6Address.checked = false;
+         }
+      
+         if ( unnumbered == '1' )
+            enblUnnumbered.checked = true;
+         else
+            enblUnnumbered.checked = false;
+
+         if ( dhcp6cAddress == '1' )
+            enblDhcp6cForAddr.checked = true;
+         else
+            enblDhcp6cForAddr.checked = false;
+
+         if ( dhcp6cPd == '1' )
+            enblDhcp6cForPd.checked = true;
+         else
+            enblDhcp6cForPd.checked = false;
+
+         hideWan6Info(0);
+
+         var enableMld = '<%ejGet(enblMld)%>';
+         if ( enableMld == '1' )
+            enblMld.checked = true;
+         else
+            enblMld.checked = false;
+         hideMldInfo(0);
+      } else {
+         hideWan6Info(1);
+         hideMldInfo(1);
+      }
+   }
+}
+
+function btnNext() {
+   var loc = 'ifcgateway.cgi?';
+
+   if (serviceId == '1' || cfgL2tpAc == '1')
+  	 loc = 'ntwksum2.cgi?';
+
+   with ( document.forms[0] ) {
+      // validate user name
+      var len = pppUserName.value.length;
+      if ( len > 64 ) {
+         msg = 'The length of user name (' + len + ') is too long [0-64].';
+         alert(msg);
+         return;
+      }
+      // validate password
+      len = pppPassword.value.length;
+      if ( len > 32 ) {
+         msg = 'The length of password (' + len + ') is too long [0-32].';
+         alert(msg);
+         return;
+      }
+      // validate inactivity timeout
+      if ( enblOnDemand.checked == true ) {
+         if ( isNaN(parseInt(pppTimeOut.value)) == true ) {
+            msg = 'Inactivity Timeout "' + pppTimeOut.value + '" is invalid.';
+            alert(msg);
+            return;
+         }
+         timeOutNum = parseInt(pppTimeOut.value);
+         if ( timeOutNum < 1 || timeOutNum > 4320 ) {
+            msg = 'Inactivity Timeout "' + pppTimeOut.value + '" is out of range [1-4320].';
+            alert(msg);
+            return;
+         }
+      }
+
+	  if ((enblIpVer != '2') && (enblAdvDmz == 1)) {
+        // validate ppp IP address
+        if ( enblPppIpAddress.checked == true ) {
+           if ( isValidIpAddress(pppLocalIpAddress.value) == false ) {
+              alert('Address "' + pppLocalIpAddress.value + '" is invalid IP address.');
+              return;
+           }
+        }
+        // validate non DMZ IP address and Netmask
+        if ( enableAdvancedDmz.checked == true ) {
+           if ( isValidIpAddress(nonDmzIpAddress.value) == false ) {
+              alert('Address "' + nonDmzIpAddress.value + '" is invalid IP address.');
+              return;
+           }
+           if ( isValidIpAddress(nonDmzIpMask.value) == false ) {
+              alert('Address "' + nonDmzIpMask.value + '" is invalid Netmask.');
+              return;
+           }
+        }
+	  }
+	  
+      // validate authentication method
+      if ( pppAuthMethod.selectedIndex == 0 ) {
+         msg = 'No selection for authentication method.';
+         alert(msg);
+         return;
+      }
+      // validate server name
+      if ( prtcl == 'PPPoE') {
+         len = pppServerName.value.length;
+         if ( len > 32 ) {
+            msg = 'The length of PPP service (' + len + ') is too long [0-32].';
+            alert(msg);
+            return;
+         }
+      }
+
+      loc += 'pppUserName=' + encodeUrl(pppUserName.value);
+      loc += '&pppPassword=' + encodeUrl(pppPassword.value);
+      if ( enblOnDemand.checked == true ) {
+         loc += '&enblOnDemand=1';
+         loc += '&pppTimeOut=' + timeOutNum;
+      } else {
+         loc += '&enblOnDemand=0';
+         loc += '&pppTimeOut=' + timeOut;
+      }
+      if ( enblPppIpAddress.checked == true ) {
+         loc += '&useStaticIpAddress=1';
+         loc += '&pppLocalIpAddress=' + pppLocalIpAddress.value;
+      } else {
+         loc += '&useStaticIpAddress=0';
+         loc += '&pppLocalIpAddress=' + localIpAddr;
+      }
+      if ( ipExtension == '1' || pppIpExtension.checked == true ) {
+         loc += '&pppIpExtension=1&enblNat=0&enblFirewall=0';
+	     if (enblAdvDmz == '1') {
+	         if ( enableAdvancedDmz.checked == true ) {
+	            loc += '&enableAdvancedDmz=1';
+	            loc += '&nonDmzIpAddress=' + nonDmzIpAddress.value;
+	            loc += '&nonDmzIpMask=' + nonDmzIpMask.value;
+	         } else {
+	            loc += '&enableAdvancedDmz=0';
+	         }
+	     }
+      }
+      else
+         loc += '&pppIpExtension=0&enblFirewall=1&enblNat=1';
+      if ( enblFullcone.checked == true )
+         loc += '&enblFullcone=1';
+      else
+         loc += '&enblFullcone=0';
+      var idx = pppAuthMethod.selectedIndex;
+      loc += '&pppAuthMethod=' + pppAuthMethod.options[idx].value;
+      if ( prtcl == 'PPPoE')
+         loc += '&pppServerName=' + encodeUrl(pppServerName.value);
+
+      if ( authErrorRetry.checked == true )
+         loc += '&pppAuthErrorRetry=1';
+      else
+         loc += '&pppAuthErrorRetry=0';
+
+      if ( enblPppDebug.checked == true )
+         loc += '&enblPppDebug=1';
+      else
+         loc += '&enblPppDebug=0';
+         
+      loc += submitCheck(pppToBridge);
+
+      if ( enblIgmp.checked == true )
+         loc += '&enblIgmp=1';
+      else
+         loc += '&enblIgmp=0';
+
+      if ( enblGponWan == '1' ) {
+         if ( noMcastVlanFilter.checked == true )
+            loc += '&noMcastVlanFilter=1';
+         else
+            loc += '&noMcastVlanFilter=0';
+      }
+
+      if ( enblIpVer != '0' ) {
+         if ( enblPppIp6Address.checked == false )
+            loc += '&wanAddr6Type=DHCP';   // auto WAN address
+         else {
+            loc += '&wanAddr6Type=Static';   // static WAN address
+            if (pppLocalIp6Address.value != '' && isValidIpAddress6(pppLocalIp6Address.value) == false) {
+               alert('Invalid PPP local IPv6 address.');
+               return;
+            }
+            loc += '&wanAddr6=' + pppLocalIp6Address.value;
+         }
+
+         if ( enblUnnumbered.checked == true )
+            loc += '&unnumberedModel=1';
+         else
+            loc += '&unnumberedModel=0';
+
+         if ( enblDhcp6cForAddr.checked == true )
+            loc += '&dhcp6cForAddr=1';
+         else
+            loc += '&dhcp6cForAddr=0';
+
+         if ( enblDhcp6cForPd.checked == true )
+            loc += '&dhcp6cForPd=1';
+         else
+            loc += '&dhcp6cForPd=0';
+
+         if ( enblMld.checked == true )
+            loc += '&enblMld=1';
+         else
+            loc += '&enblMld=0';
+      }
+   }
+   loc += '&sessionKey=' + sessionKey;
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function btnBack() {
+   var loc = 'wancfg.cmd';
+
+   if (serviceId == '1')
+  	 loc = 'wancfg.cmd';
+   else if (cfgL2tpAc == '1')
+	 loc = 'cfgl2tpac.html';
+	 
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function showPppoe(show) {
+   var status = 'visible';
+   if ( show == 0 )
+      status = 'hidden';
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('pppoeSN').style.visibility = status;
+   else
+      document.all.pppoeSN.style.visibility = status;
+}
+
+
+function hideIpExtension(hide) {
+   var status = 'visible';
+   if ( hide == 1 )
+      status = 'hidden';
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('divIpExtension').style.visibility = status;
+   else {
+      if (document.layers == false) // IE4
+         document.all.divIpExtension.style.visibility = status;
+   }
+}
+			
+function hideMcastFilterInfo(hide) {
+   var status = 'visible';
+   if ( hide == 1 )
+      status = 'hidden';
+
+   if ( enblGponWan == '0') {
+      status = 'hidden';
+   }
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('McastFilter').style.visibility = status;
+   else {
+      if (document.layers == false) // IE 4
+         document.all.McastFilter.style.visibility = status;
+   }
+}
+
+function mcastFilterOnClick(cb) {
+   if ( cb.checked == true )
+      hideMcastFilterInfo(0);
+   else
+      hideMcastFilterInfo(1);
+}
+
+function hideOnDemandInfo(hide) {
+   var status = 'visible';
+   if ( hide == 1 )
+      status = 'hidden';
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('pppInfo').style.visibility = status;
+   else {
+      if (document.layers) { // Netscape 4
+         if ( hide == 1 )
+            document.forms[0].pppTimeOut.value = '';
+         else
+            document.forms[0].pppTimeOut.value = '<%ejGet(pppTimeOut)%>';
+      } else  // IE 4
+         document.all.pppInfo.style.visibility = status;
+   }
+}
+
+function dialOnDemandClick(cb) {
+   if ( cb.checked == true )
+      hideOnDemandInfo(0);
+   else
+      hideOnDemandInfo(1);
+}
+
+function advancedDmzClick(cb) {
+   with ( document.forms[0] ) {
+     setDisable(nonDmzIpAddress, cb.checked != true);
+     setDisable(nonDmzIpMask, cb.checked != true);
+   }
+}
+
+function hidePppIpAddressInfo(hide) {
+   var status = 'visible';
+   if ( hide == 1 )
+      status = 'hidden';
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('pppIpAddressInfo').style.visibility = status;
+   else {
+      if (document.layers) { // Netscape 4
+         if ( hide == 1 )
+            document.forms[0].pppLocalIpAddress.value = '';
+         else
+            document.forms[0].pppLocalIpAddress.value = '<%ejGet(pppLocalIpAddress)%>';
+      } else  // IE 4
+         document.all.pppIpAddressInfo.style.visibility = status;
+   }
+}
+
+function pppIpAddressClick(cb) {
+   if ( cb.checked == true )
+      hidePppIpAddressInfo(0);
+   else
+      hidePppIpAddressInfo(1);
+}
+
+function hidePppIp6AddressInfo(hide) {
+   var status = 'visible';
+   if ( hide == 1 )
+      status = 'hidden';
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('pppIp6AddressInfo').style.visibility = status;
+   else {
+      if (document.layers == false) // IE4
+         document.all.pppIp6AddressInfo.style.visibility = status;
+   }
+}
+
+function pppIp6AddressClick() {
+   with ( document.forms[0] ) {
+      pppLocalIp6Address.value = addr6;
+      if ( enblPppIp6Address.checked == true ) {
+         pppLocalIp6Address.value = addr6;
+         hidePppIp6AddressInfo(0);
+      }
+      else {
+         pppLocalIp6Address.value = '';
+         hidePppIp6AddressInfo(1);
+      }
+   }
+}
+
+function hideWan6Info(hide) {
+   var status = 'visible';
+
+   if ( hide == 1 )
+      status = 'hidden';
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('wan6Info').style.visibility = status;
+   else {
+      if (document.layers == false) // IE4
+         document.all.wan6Info.style.visibility = status;
+   }
+
+      pppIp6AddressClick();
+}
+
+function hideMldInfo(hide) {
+   var status = 'visible';
+
+   if ( hide == 1 )
+      status = 'hidden';
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('MldInfo').style.visibility = status;
+   else {
+      if (document.layers == false) // IE4
+         document.all.MldInfo.style.visibility = status;
+   }
+}
+
+function disableWan4Info() {
+   with ( document.forms[0] ) {
+      enblFullcone.disabled = 1;
+      enblOnDemand.disabled = 1;
+      pppIpExtension.disabled = 1
+      enblPppIpAddress.disabled = 1
+      enblIgmp.disabled = 1
+   }
+}
+function hidePppToBridgeInfo(hide) {
+   var status = 'visible';
+
+   if ( hide == 1 )
+      status = 'hidden';
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('divPppToBridge').style.visibility = status;
+   else {
+      if (document.layers == false) // IE4
+         document.all.divPppToBridge.style.visibility = status;
+   }
+}
+
+function hidePppAuthErrorRetry(hide) {
+   var status = 'visible';
+
+   if ( hide == 1 )
+      status = 'hidden';
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('pppAuthErrorInfo').style.visibility = status;
+   else {
+      if (document.layers == false) // IE4
+         document.all.pppAuthErrorInfo.style.visibility = status;
+   }
+}
+
+function pppIpExtChange(item) {
+        if ( item.checked == true ) {
+            with ( document.forms[0] ) {
+	          if (enblAdvDmz == '1') {
+                setDisable(enableAdvancedDmz, 0);
+                setDisable(nonDmzIpAddress, enableAdvancedDmz.checked != true);
+                setDisable(nonDmzIpMask, enableAdvancedDmz.checked != true);
+	          }
+            }
+        } else {
+            with ( document.forms[0] ) {
+	          if (enblAdvDmz == '1') {				
+                setDisable(enableAdvancedDmz,1);
+                setDisable(nonDmzIpAddress,1);
+                setDisable(nonDmzIpMask,1);
+	          }
+            }
+        }
+
+	if (enetWan == '1' || prtcl != 'PPPoE' || item.checked == true)  {
+	    showhide("divPppToBridge", 0);
+	}
+	else {
+	    showhide("divPppToBridge", 1);
+	}
+}
+
+function fullConeClick(cb)
+{
+   var status = 'visible';
+   
+   if (!cb.checked)
+      status = 'hidden';
+
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('fullConeWarning').style.visibility = status;
+   else {
+      if (document.layers == false) // IE4
+         document.all.fullConeWarning.style.visibility = status;
+   }
+}
+
+// done hiding -->
+</script>
+   </head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <form>
+            <b>PPP Username and Password</b><br>
+            <br>
+            PPP usually requires that you have a user name and password to establish your 
+            connection. In the boxes below, enter the user name and password that your ISP 
+            has provided to you.<br>
+            <br>
+            <div id='pppoeSN'>
+               <table border="0" cellpadding="0" cellspacing="0">
+                  <tr>
+                     <td width="150">PPPoE Service Name:</td>
+                     <td>
+                        <b><%ejGetOther(memInfo, pppoeServiceName)%></b>
+                     </td>
+                  </tr>
+                  <br>
+               </table>
+            </div>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td>PPP Username:&nbsp;&nbsp;</td>
+                  <td><input type='text' name='pppUserName'></td>
+               </tr>
+               <tr>
+                  <td>PPP Password:&nbsp;&nbsp;</td>
+                  <td><input type='password' name='pppPassword' autocomplete="new-password"></td>
+               </tr>
+<script language="javascript">
+<!-- hide
+if ( prtcl == 'PPPoE') {
+   document.writeln("               </tr>");
+   document.writeln("                  <td>PPPoE Service Name:&nbsp;&nbsp;</td>");
+   document.writeln("                  <td><input type='text' name='pppServerName'></td>");
+   document.writeln("               </tr>");
+}
+// done hiding -->
+</script>
+               <tr>
+                  <td>Authentication Method:&nbsp;&nbsp;</td>
+                  <td><select name='pppAuthMethod' size="1">
+                        <option value="-1">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp
+                        <option value="0">AUTO
+                        <option value="1">PAP
+                        <option value="2">CHAP
+                        <option value="3">MSCHAP
+                     </select></td>
+               </tr>
+            </table>
+              <br>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width='30' height="30"><input type='checkbox' name='enblFullcone' onClick='fullConeClick(this)'></td>
+                  <td>Enable Fullcone NAT</td>
+                </tr>
+                </table>
+                  <div id='fullConeWarning'>
+                     <table border="0" cellpadding="0" cellspacing="0">
+                     <td <font color='red'>&nbsp;&nbsp;&nbsp;ONLY IF REQUIRED -- DISABLES NETWORK ACCELERATION AND SOME SECURITY</font></td>
+                     </table>
+              </div>
+              <br>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width='30' height="30"><input type='checkbox' name='enblOnDemand' onClick='dialOnDemandClick(this)'></td>
+                  <td>Dial on demand (with idle timeout timer)</td>
+                </tr>
+              </table>
+            <div id='pppInfo'>
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>Inactivity Timeout (minutes) [1-4320]:&nbsp;&nbsp;</td>
+                <td><input type='text' name='pppTimeOut'></td>
+              </tr>
+            </table>
+            <br>
+            </div>
+            <div id='divIpExtension'>                     
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width='30' height="30"><input type='checkbox' name='pppIpExtension' onClick='pppIpExtChange(this)'></td>
+                <td>PPP IP extension</td>
+              </tr>
+              </table>
+            </div>
+<script language="javascript">
+<!-- hide
+if (enblAdvDmz == '1')
+{      
+   document.writeln("<div id='advancedDmzInfo'>");
+   document.writeln("<table border='0' cellpadding='0' cellspacing='0'>");
+   document.writeln("<tr>");
+   document.writeln("<td width='30' height='30'><input type='checkbox' name='enableAdvancedDmz' onClick='advancedDmzClick(this)'></td>");
+   document.writeln("<td>Advanced DMZ</td>");
+   document.writeln("</tr>");
+   document.writeln("</table>");
+
+   document.writeln("</div>");
+   document.writeln("<div id='nonDmzIpAddressInfo'>");
+   document.writeln("<table border='0' cellpadding='0' cellspacing='0'>");
+   document.writeln("<tr>");
+   document.writeln("<td width='140'>Non DMZ IP Address:&nbsp;&nbsp;</td>");
+   document.writeln("<td><input type='text' name='nonDmzIpAddress'></td>");
+   document.writeln("</tr>");
+   document.writeln("<tr>");
+   document.writeln("<td width='140'>Non DMZ Net Mask:&nbsp;&nbsp;</td>");
+   document.writeln("<td><input type='text' name='nonDmzIpMask'></td>");
+   document.writeln("</tr>");
+   document.writeln("</table>");
+   document.writeln("<br>");
+   document.writeln("</div>");
+}
+// done hiding -->
+</script>
+
+              <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width='30' height="30"><input type='checkbox' name='enblPppIpAddress' onClick='pppIpAddressClick(this)'></td>
+                <td>Use Static IPv4 Address</td>
+              </tr>
+            </table>
+            <div id='pppIpAddressInfo'>
+              <table border="0" cellpadding="0" cellspacing="0"">
+              <tr>
+                <td width="160">IPv4 Address:&nbsp;&nbsp;</td>
+                <td><input type='text' name='pppLocalIpAddress'></td>
+              </tr>
+            </table>
+            <br>
+            </div>
+            <div id='wan6Info'>
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width='30' height="30"><input type='checkbox' name='enblPppIp6Address' onClick='pppIp6AddressClick()'></td>
+                <td>Use Static IPv6 Address</td>
+              </tr>
+            </table>
+            <div id='pppIp6AddressInfo'>
+            <table border="0" cellpadding="0" cellspacing="0"">
+              <tr>
+                <td width="160">IPv6 Address:&nbsp;&nbsp;</td>
+                <td><input type='text' name='pppLocalIp6Address'></td>
+              </tr>
+            </table>
+            </div>
+            <div id='UnnumberedInfo'>
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width='30' height="30"><input type='checkbox' name='enblUnnumbered'></td>
+                <td>Enable IPv6 Unnumbered Model</td>
+              </tr>
+            </table>
+            </div>
+            <div id='Dhcp6cAddr'>
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width='30' height="30"><input type='checkbox' name='enblDhcp6cForAddr'></td>
+                <td>Launch Dhcp6c for Address Assignment (IANA)</td>
+              </tr>
+            </table>
+            </div>
+            <div id='Dhcp6cPd'>
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width='30' height="30"><input type='checkbox' name='enblDhcp6cForPd'></td>
+                <td>Launch Dhcp6c for Prefix Delegation (IAPD)</td>
+              </tr>
+            </table>
+            </div>
+            </div>
+            <div id='pppAuthErrorInfo'>
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width='30' height="30"><input type='checkbox' name='authErrorRetry'></td>
+                <td>Retry PPP password on authentication error</td>
+              </tr>
+            </table></div>
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width='30' height="30"><input type='checkbox' name='enblPppDebug'></td>
+                <td>Enable PPP Debug Mode</td>
+              </tr>
+            </table>
+            <div id = 'divPppToBridge'><table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width='30' height="30"><input type='checkbox' name='pppToBridge'></td>
+                <td>Bridge PPPoE Frames Between WAN and Local Ports </td>
+              </tr>
+            </table></div>
+            <br><br><b>Multicast Proxy</b><br>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width='30' height="30"><input type='checkbox' name='enblIgmp' onClick='mcastFilterOnClick(this)'></td>
+                  <td>Enable IGMP Multicast Proxy</td>
+               </tr>
+            </table>
+            <div id='McastFilter'>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width='30' height="30"><input type='checkbox' name='noMcastVlanFilter'></td>
+                  <td>No Multicast VLAN Filter</td>
+               </tr>
+            </table>
+            </div>
+            <div id='MldInfo'>
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width='30' height="30"><input type='checkbox' name='enblMld'></td>
+                <td>Enable MLD Multicast Proxy</td>
+              </tr>
+            </table>
+            </div>
+            <center>
+               <input type='button' onClick='btnBack()' value='Back'> <input type='button' onClick='btnNext()' value='Next'>
+            </center>
+         </form>
+      </blockquote>
+   </body>
+</html>

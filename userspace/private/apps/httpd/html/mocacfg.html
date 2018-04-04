@@ -1,0 +1,153 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+<!-- hide
+var sessionKey='<%ejGetOther(sessionKey)%>';
+var enblMocaPrivacy = '<%ejGetOther(sysInfo, enblMocaPrivacy)%>';
+var mocaPassword = '<%ejGetOther(sysInfo, mocaPassword)%>';
+var enblMocaAutoScan = '<%ejGetOther(sysInfo, enblMocaAutoScan)%>';
+var mocaFrequency = '<%ejGetOther(sysInfo, mocaFrequency)%>';
+
+
+function autoScanClick(cb) {
+
+}
+
+function privacyClick(cb) {
+
+}
+
+function changeMocaName() {
+   var loc = 'mocacfgget.cgi?';   
+   with ( document.forms[0] ) { 
+       loc += 'mocaIfName=' + mocaIfName.value;   
+   }
+   loc += '&sessionKey=' + sessionKey;
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+      mocaIfName.value = '<%ejGet(mocaIfName)%>';
+
+      if ('<%ejGetOther(sysInfo, enblMocaPrivacy)%>' == '1' ) {
+        chkPrivacy.checked = true;
+      } else {
+        chkPrivacy.checked = false;
+      }
+
+	  privacyPassword.value = '<%ejGetOther(sysInfo, mocaPassword)%>';
+
+      if ('<%ejGetOther(sysInfo, enblMocaAutoScan)%>' == '1' ) {
+        chkAutoScan.checked = true;
+      } else {
+        chkAutoScan.checked = false;
+      }
+
+      lastOperFreq.value = '<%ejGetOther(sysInfo, mocaFrequency)%>';
+   }
+}
+
+function btnSave(reboot) {
+   var loc = 'mocacfg.cgi?';
+
+   with ( document.forms[0] ) {
+     if ( chkPrivacy.checked == true )
+        loc += 'enblMocaPrivacy=1';
+     else
+        loc += 'enblMocaPrivacy=0';
+
+     loc += '&mocaPassword=' + privacyPassword.value;
+
+     if ( chkAutoScan.checked == true )
+        loc += '&enblMocaAutoScan=1';
+     else
+        loc += '&enblMocaAutoScan=0';
+
+	 loc += '&mocaFrequency=' + lastOperFreq.value;
+	 
+   }
+   loc += '&sessionKey=' + sessionKey;
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+
+function isValidPassword(pw) {
+
+   if (pw.length < 12 || pw.length > 17)
+   	  return false;
+   
+   pwParts = pw.split("");
+   for (i = 0; i < pw.length; i++) {
+      if (isNaN(pwParts[i]))
+	     return false;
+   }
+   	
+   return true;
+}
+
+function setPassword(password) {
+   with ( document.forms[0] ) {
+      if ( isValidPassword(password) == false ) {
+         alert('Password "' + password + '" is invalid.');
+         return;
+      }
+   }
+}
+
+function setFrequency(frequency) {
+
+}
+
+
+// done hiding -->
+</script>
+</head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <form>
+            <b>MoCA Configuration</b><br>
+            <br>
+            Configure the MoCA interface parameters.  Interface <%ejGet(mocaList)%></td><br>
+            <br>
+            <br>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width="150">MoCA Privacy:</td>
+                  <td><input type='checkbox' name='chkPrivacy' onClick='privacyClick(this)'>&nbsp;&nbsp;Enable</td>
+               </tr>
+            </table>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width="150">Privacy Password:</td>
+                  <td><input type='text' name='privacyPassword' onChange='setPassword(this.value)'></td>
+               </tr>
+            </table>
+            <br>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width="150">Enable Auto Scan:</td>
+                  <td><input type='checkbox' name='chkAutoScan' onClick='autoScanClick(this)'>&nbsp;&nbsp;Enable</td>
+               </tr>
+            </table>
+            <table border="0" cellpadding="0" cellspacing="0">
+               <tr>
+                  <td width="150">Last Operating Frequency:</td>
+                  <td><input type='text' name='lastOperFreq' onChange='setFrequency(this.value)'>&nbsp;&nbsp;MHz</td>
+               </tr>
+            </table>
+            <br>
+            <center>
+               <p align="center">
+                  <input type='button' onClick='btnSave(0)' value='Apply/Save'>
+            </center>
+         </form>
+      </blockquote>
+   </body>
+</html>

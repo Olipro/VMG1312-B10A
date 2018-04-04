@@ -1,0 +1,22 @@
+Generic Tasks:
+ o Look out for TODO-Directives in the sources (grep TODO src/*)
+ o testing, testing, bug-reporting and fixing :)
+
+Simple Todo List, ordered by relevance and likelyness of implementation:
+ o l10n
+ o support for files >2gb
+ o configure.in -> look what the system provides -> use it in the source
+ o ipv6 compatibility
+ o temporary upload filename. rename afterwards
+ o smart resuming (compare last bytes of the file)
+ o better ascii mode transfer (resume etc)
+ o scripting support
+ o wdel, for deletion of remote files, synch option
+ o HTTP/1.1 PUT / WebDAV
+
+Specific Tasks:
+# add a --no-tls option
+# add an option for keep-permissions. so restore the file-permissions
+  using the SITE chmod command
+# some error-messages are given twice or even more times in different
+  code-levels. check them and remove unneccessary ones.

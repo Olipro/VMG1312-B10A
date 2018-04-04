@@ -1,0 +1,1 @@
+static const char pcap_version_string[] = "libpcap version current-cvs.tcpdump.org.2003.02.02";

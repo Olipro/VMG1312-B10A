@@ -1,0 +1,70 @@
+
+<script language="javascript">
+<!-- hide
+
+function frmLoad() {
+
+	$("input[name='tftpservername']").val('<%ejGet(tftpservername)%>');
+  parent.$.closeLoadingMask();
+   
+}
+
+function btnApply() {
+   with ( document.forms[0] ) {
+      if (tftpservername.value == '') {
+		 hciAlert ('<%ejGetML(MLG_Network_Tftp_AlertMsg_Str1)%>', 2);
+         return;
+      }
+
+      if (tftpservername.value.length > 256) {
+		 hciAlert (MLG_Makestring("<%ejGetML(MLG_Network_Tftp_AlertMsg_Str2)%>", tftpservername.value.length), 2);
+         return;
+      }
+
+   }
+    parent.$.openLoadingMask(1);
+	document.loadForm.submit();
+}
+$(document).ready(function() {
+   frmLoad();
+//Show error message
+//ZyXEL, for cross-site scripting check, Albert
+    var errMsg = "<%ejGetOther(errMsg)%>";
+    if (errMsg != '') {
+      hciAlert(errMsg, {height: 180,type: 2, title: ''});
+    }
+});
+// done hiding -->
+</script>
+<div class="content_frame" >
+  <!--Unit Explain start-->
+  <div class="explain">
+    <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+    <div class="explain_text"><%ejGetML(MLG_Network_Tftp_description)%>.</div>
+    <div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+  </div>
+  <!--Unit Explain End-->
+<form name="loadForm" action="/pages/tabFW/homeNetworking-tftpservername.cgi" method="post">
+<input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">	
+<!--Set area start-->
+<div class="data_frame"><ul>
+<li class="set1">
+<div class="w_text">
+<ul>
+<li class="left_table"><%ejGetML(MLG_Network_Tftp_Server_Name)%> : </li>
+<li class="right_table">
+  <input name='tftpservername' type="text"  size="64" maxlength="64" />
+</li>
+</ul>
+</div>
+</li>
+<li class="space"></li>
+            <li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="btnApply();" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+    <input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();' />
+               </div>
+            </li>
+</ul></div>
+</form>
+<!--Set area end-->
+</div>
+<br/><br/>

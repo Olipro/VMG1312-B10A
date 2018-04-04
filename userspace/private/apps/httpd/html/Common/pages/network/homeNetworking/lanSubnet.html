@@ -1,0 +1,368 @@
+<script language="javascript">
+<!-- hide
+
+var glbSessionKey = '<%ejGetOther(sessionKey)%>';
+
+var isEnblLan2 = '<%ejGet(enblLan2)%>';
+var ipAddr = '<%ejGet(lan2IpAddress)%>';
+var subnetAddr = '<%ejGet(lan2SubnetMask)%>';
+
+// unnumbered mode
+var buildUnnumberedMode = '<%ejGetOther(sysInfo, buildUnnumberedMode)%>';
+var isBlockOfStaticIP = '<%ejGetOther(unnumberedInfo, isSetup)%>';
+var isUsePublic = '<%ejGet(usePublicIP)%>';
+var isArpPublicIP = '<%ejGet(enableArpPublicIP)%>';
+var publiclanAddr = '<%ejGet(publiclanIpAddress)%>';
+var publiclanMask = '<%ejGet(publiclanSubnetMask)%>';
+
+function PublicLANClick() {
+   with (document.forms[0]) {
+      if (enblPublic.checked) {
+         publiclanIpAddress.disabled = false;
+         publiclanSubnetMask.disabled = false;
+         lanAddrType.disabled = false;
+         enblArpPublic.disabled = false;
+      } else {
+         publiclanIpAddress.disabled = true;
+         publiclanSubnetMask.disabled = true;
+         lanAddrType.disabled = true;
+         enblArpPublic.disabled = true;
+      }  
+   }
+}
+
+function checkEnable(){
+   with ( document.forms[0] ) {
+      if (enblLan.checked){
+         lan2IpAddress.disabled = false;
+         lan2SubnetMask.disabled = false;
+      } else {
+         lan2IpAddress.disabled = true;
+         lan2SubnetMask.disabled = true;
+      }
+   }
+}
+
+function setIPAddresses() {
+   var ipArr = [0, 0, 0, 0],  maskArr = [0, 0, 0, 0], startArr = [0, 0, 0, 0],  endArr = [0, 0, 0, 0];
+   
+   with ( document.forms[0] ) {
+      lanIp = lan2IpAddress.value;
+      subnetMask = lan2SubnetMask.value;
+      if ( isValidIpAddress(lanIp) == false ) {
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str1)%>", lanIp );
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      if ( isValidIpAddress(subnetMask) == false ) {
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_LANSetup_AlertMsg_Str1)%>", subnetMask );
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }      
+      addrParts = lanIp.split('.');
+      maskParts = subnetMask.split('.');       
+      if ( addrParts.length != 4 || maskParts.length != 4) {
+         msg = '<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str6)%>';
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      for (i = 0; i < 4; i++) {
+         ipArr[i] = parseInt(addrParts[i]);
+         startArr[i] = parseInt(addrParts[i]);
+         endArr[i] = parseInt(addrParts[i]);
+         maskArr[i] = parseInt(maskParts[i]);
+      }
+
+      m3 = maskArr[3];
+      bcast = 255;
+      n3 = 0;
+      if (maskArr[0] == 255 && maskArr[1] == 0 &&  maskArr[2] == 0 && maskArr[3] == 0) {
+         /* 255.0.0.0 is only class A supported */
+         endArr[1] = 255;
+         endArr[2] = 255;
+      }
+      else if (maskArr[0] == 255 && maskArr[1] == 255 &&  maskArr[2] == 0 && maskArr[3] == 0) {
+         /* 255.255.0.0 is only class B supported */
+         endArr[2] = 255;
+      }
+      else if ((maskArr[0] == 255 && maskArr[1] == 255 &&  maskArr[2] == 255 ) &&
+               (m3 == 0 || m3 == 128 || m3 == 192 || m3 == 224 || m3== 240 || m3 == 248 ||  m3 == 252)) {
+         /* 255.255.255.0/128/192... class C supported */
+         n3 = ipArr[3] & m3;
+         hosts = 255 - m3;
+         bcast = n3 + hosts;
+      }
+      else {
+         msg = '<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str7)%>';
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;         
+      }
+
+      if (ipArr[3] == bcast) {
+         msg = '<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str8)%>';
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+   }
+}
+
+function changeBrName() {
+   with ( document.forms[0] ) { 
+      action.value = 'RELOAD';
+      sessionKey.value = glbSessionKey;
+   }
+   doSubmit();
+}
+
+function preBtnSave() {
+   with ( document.forms[0] ) {
+      var msg = "";
+      sessionKey.value = glbSessionKey;
+
+      // IP Alias
+      if (enblLan.checked == true) {
+         if (isValidIpAddress(lan2IpAddress.value) == false) {
+            msg = MLG_Makestring("<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str9)%>", lan2IpAddress.value);
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }
+         if (isValidIpAddress(lan2SubnetMask.value) == false) {
+            msg = MLG_Makestring("<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str10)%>", lan2SubnetMask.value );
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }
+         if (isNetworkAddress(lan2IpAddress.value, lan2SubnetMask.value)) 
+         {
+            msg = '<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str11)%>';
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+         }
+         if (isBroadcastAddress(lan2IpAddress.value, lan2SubnetMask.value)) 
+         {
+            msg = '<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str12)%>';
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return false;
+         }
+
+         enblLan.disabled = true;
+         enblLan2.value = 1;
+      }else {
+         enblLan2.value = 0;
+      }
+      
+      // UnNumber mode
+      if (enblPublic.checked == true)
+      {
+         if (isValidIpAddress(publiclanIpAddress.value) == false) {
+            msg = MLG_Makestring("<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str13)%>", publiclanIpAddress.value );
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }
+         if (isValidSubnetMask(publiclanSubnetMask.value) == false) {
+            msg = MLG_Makestring("<%ejGetML(MLG_Network_StaticDHCP_AlertMsg_Str14)%>", publiclanSubnetMask.value );
+            hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+            return;
+         }
+
+         lanAddrType.disabled = true;
+         enblPublic.disabled = true;
+         enblArpPublic.disabled = true;
+
+         if (lanAddrType.checked == true) {
+            usePublicIP.value = 1;
+         } else {
+            usePublicIP.value = 0;
+         }
+         enblPublicLan.value = 1;
+
+         if (enblArpPublic.checked == true) {
+            enableArpPublicIP.value = 1;
+         } else {
+            enableArpPublicIP.value = 0;
+         }
+      }
+      else	  	
+      {
+         enblPublicLan.value = 0;
+      }
+   }
+
+   window.parent.$.openLoadingMask(1);
+   doSubmit();
+}
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+      var errMsg = "<%ejGetOther(errMsg)%>";
+      if (errMsg != '') {
+	      hciAlert(errMsg, {height: 180,type: 2, title: ''});
+      }
+
+      enblLan.disabled = false;
+      lanAddrType.disabled = false;
+      enblPublic.disabled = false;
+      enblArpPublic.disabled = false;
+
+      // set bridge name.
+      brName.value = '<%ejGet(brName)%>';
+
+      if (isEnblLan2 == '0'){
+         enblLan.checked = false;
+         lan2IpAddress.disabled = true;
+         lan2SubnetMask.disabled = true;
+      } else {
+         enblLan.checked = true;
+         lan2IpAddress.disabled = false;
+         lan2SubnetMask.disabled = false;
+
+         lan2IpAddress.value = ipAddr
+         lan2SubnetMask.value = subnetAddr;
+      }
+      // unnumber mode
+      if (buildUnnumberedMode == '1') {
+         showhide("publicLan", 1);
+      } else {
+         showhide("publicLan", 0);
+      }
+
+      if (isBlockOfStaticIP == '1') {
+         enblPublic.checked = true;
+         publiclanIpAddress.value = publiclanAddr;
+         publiclanSubnetMask.value = publiclanMask;
+      } else {
+         enblPublic.checked = false;
+      }
+      PublicLANClick();
+
+      if (isUsePublic == '1') {
+         lanAddrType.checked = true;
+      } else {
+         lanAddrType.checked = false;
+      }
+
+      if (isArpPublicIP == '1') {
+         enblArpPublic.checked = true;
+      } else {
+         enblArpPublic.checked = false;
+      }
+   }
+}
+
+function doSubmit() {
+   document.forms[0].submit();
+}
+
+$(document).ready(function() {
+   frmLoad();
+});
+// done hiding -->
+</script>
+
+<form id='main_form' action="/pages/tabFW/homeNetworking-lanSubnet.cgi" method="post">
+  <input name="action" type="HIDDEN" id="action" value="NONE" />
+  <input name="sessionKey" type="HIDDEN" id="sessionKey" value=""; />
+  <input name="enblLan2" type="HIDDEN" id="enblLan2" value=""; />
+  <input name="usePublicIP" type="HIDDEN" id="usePublicIP" value=""; />
+  <input name="enblPublicLan" type="HIDDEN" id="enblPublicLan" value=""; />
+  <input name="enableArpPublicIP" type="HIDDEN" id="enableArpPublicIP" value=""; />
+
+  <div class="content_frame" >
+    <!--Unit Explain start-->
+    <div class="explain">
+      <div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+      <div class="explain_text"><%ejGetML(MLG_Network_A_Subnet_Str1)%></div>
+      <div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+    </div>
+    <!--Unit Explain End-->
+    <div class="data_frame"><ul>
+      <!--IP Alias Start -->
+      <li class="space"></li>
+      <li class="set1">
+        <div class="title"><%ejGetML(MLG_Network_StaticDHCP_Str14)%></div>
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_InterfaceGrouping_Str4)%> :</li>
+            <li class="right_table">
+              <%ejGet(groupList)%>
+            </li>
+          </ul>
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_StaticRoute_Str12)%></li>
+            <li class="right_table">
+              <input type='checkbox' name="enblLan" onClick="checkEnable()" />
+            </li>		   
+          </ul>
+        </div>
+      </li>
+      <li class="set1"><div class="w_text">
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_Common_IPAddress)%> : </li>
+          <li class="right_table">
+            <input maxlength="15" size="15" value="0.0.0.0" name="lan2IpAddress" />
+          </li>
+        </ul>
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_Network_StaticRoute_Str6)%> :</li>
+          <li class="right_table">
+            <input maxlength="15" size="15" value="0.0.0.0" name="lan2SubnetMask" />
+          </li>
+        </ul>
+      </div></li>
+      <li class="space"> </li>
+      <!--IP Alias End -->
+      <!--UNNumbermode Start -->
+      <!--UNNumbermode End -->
+      <div id='publicLan'>
+        <li class="set1">
+          <div class="title"><%ejGetML(MLG_Network_StaticDHCP_Str10)%></div>
+          <div class="w_text">
+            <ul>
+              <li class="left_table"><%ejGetML(MLG_Network_StaticRoute_Str12)%></li>
+              <li class="right_table">
+                <input type='checkbox' name="enblPublic" onClick="PublicLANClick()" />
+              </li>		   
+            </ul>
+          </div>
+        </li>
+        <li class="set1"><div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Common_IPAddress)%> : </li>
+            <li class="right_table">
+              <input maxlength="15" size="15" value="0.0.0.0" name="publiclanIpAddress" />
+            </li>
+          </ul>
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_StaticRoute_Str6)%> :</li>
+            <li class="right_table">
+              <input maxlength="15" size="15" value="0.0.0.0" name="publiclanSubnetMask" />
+            </li>
+          </ul>
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_StaticDHCP_Str11)%> :</li>
+            <li class="right_table">
+              <input type="checkbox" name="lanAddrType" value="1"/>
+            </li>
+          </ul>
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Network_StaticDHCP_Str12)%> :</li>
+            <li class="right_table">
+              <input type='checkbox' name="enblArpPublic" />
+            </li>
+          </ul>
+        </div></li>
+        <li class="space"> </li>
+      </div>
+      <!--Button define start-->
+      <li class="buttonframe">
+        <div class="button_position">
+          <input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="preBtnSave();" />
+          &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+          <input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick="frmLoad();" />
+        </div>
+      </li>
+      <!--Button define end-->
+    </ul></div>
+  </div>
+  <br/><br/>
+</form>

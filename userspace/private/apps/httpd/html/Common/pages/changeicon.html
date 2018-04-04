@@ -1,0 +1,442 @@
+<script language="javascript">
+<!-- hide
+var hostlist = '<%ejGet(dhcpHostEntryInfo)%>';
+mainFrame.glbSessionKey = "<%ejGetOther(sessionKey)%>";
+var tempoldname;
+var tempoldip;
+var tempoldtype;
+
+function changeIconValue(host_type) {
+   with ( document.forms[0] ) {
+      hosttype.value = host_type;
+
+      if (host_type == 'computer') {
+         $('.ipc').css("border-style", "dotted");
+         $('.ipc').css("border-width", "1px");
+         $('.igame').css("border-style", "none");
+         $('.iprinter').css("border-style", "none");
+         $('.istb').css("border-style", "none");
+         $('.icamera').css("border-style", "none");
+         $('.iserver').css("border-style", "none");
+         $('.itelephone').css("border-style", "none");
+         $('.irouter').css("border-style", "none");
+         $('.ipvr').css("border-style", "none");
+         $('.istereo').css("border-style", "none");
+         $('.istreamer').css("border-style", "none");
+         $('.itv').css("border-style", "none");
+         $('.imobile').css("border-style", "none");
+         $('.iothers').css("border-style", "none");
+         $('.ipc').focus();
+      } else if (host_type == 'gameconsole') {
+         $('.igame').css("border-style", "dotted");
+         $('.igame').css("border-width", "1px");
+         $('.ipc').css("border-style", "none");
+         $('.iprinter').css("border-style", "none");
+         $('.istb').css("border-style", "none");
+         $('.icamera').css("border-style", "none");
+         $('.iserver').css("border-style", "none");
+         $('.itelephone').css("border-style", "none");
+         $('.irouter').css("border-style", "none");
+	 $('.ipvr').css("border-style", "none");
+	 $('.istereo').css("border-style", "none");
+	 $('.istreamer').css("border-style", "none");
+	 $('.itv').css("border-style", "none");
+	 $('.imobile').css("border-style", "none");
+	 $('.iothers').css("border-style", "none");
+         $('.igame').focus();
+      } else if (host_type == 'printer') {
+         $('.iprinter').css("border-style", "dotted");
+         $('.iprinter').css("border-width", "1px");
+         $('.ipc').css("border-style", "none");
+         $('.igame').css("border-style", "none");
+         $('.istb').css("border-style", "none");
+         $('.icamera').css("border-style", "none");
+         $('.iserver').css("border-style", "none");
+         $('.itelephone').css("border-style", "none");
+         $('.irouter').css("border-style", "none");
+	 $('.ipvr').css("border-style", "none");
+	 $('.istereo').css("border-style", "none");
+	 $('.istreamer').css("border-style", "none");
+	 $('.itv').css("border-style", "none");
+	 $('.imobile').css("border-style", "none");
+	 $('.iothers').css("border-style", "none");
+         $('.iprinter').focus();
+      } else if (host_type == 'settop') {
+         $('.istb').css("border-style", "dotted");
+         $('.istb').css("border-width", "1px");
+         $('.ipc').css("border-style", "none");
+         $('.igame').css("border-style", "none");
+         $('.iprinter').css("border-style", "none");
+         $('.icamera').css("border-style", "none");
+         $('.iserver').css("border-style", "none");
+         $('.itelephone').css("border-style", "none");
+         $('.irouter').css("border-style", "none");
+	 $('.ipvr').css("border-style", "none");
+	 $('.istereo').css("border-style", "none");
+	 $('.istreamer').css("border-style", "none");
+	 $('.itv').css("border-style", "none");
+	 $('.imobile').css("border-style", "none");
+	 $('.iothers').css("border-style", "none");
+         $('.istb').focus();
+      } else if (host_type == 'camera') {
+         $('.icamera').css("border-style", "dotted");
+         $('.icamera').css("border-width", "1px");
+         $('.ipc').css("border-style", "none");
+         $('.igame').css("border-style", "none");
+         $('.iprinter').css("border-style", "none");
+         $('.istb').css("border-style", "none");
+         $('.iserver').css("border-style", "none");
+         $('.itelephone').css("border-style", "none");
+         $('.irouter').css("border-style", "none");
+	 $('.ipvr').css("border-style", "none");
+	 $('.istereo').css("border-style", "none");
+	 $('.istreamer').css("border-style", "none");
+	 $('.itv').css("border-style", "none");
+	 $('.imobile').css("border-style", "none");
+	 $('.iothers').css("border-style", "none");
+         $('.icamera').focus();
+      } else if (host_type == 'server') {
+         $('.iserver').css("border-style", "dotted");
+         $('.iserver').css("border-width", "1px");
+         $('.ipc').css("border-style", "none");
+         $('.igame').css("border-style", "none");
+         $('.iprinter').css("border-style", "none");
+         $('.istb').css("border-style", "none");
+         $('.icamera').css("border-style", "none");
+         $('.itelephone').css("border-style", "none");
+         $('.irouter').css("border-style", "none");
+	 $('.ipvr').css("border-style", "none");
+	 $('.istereo').css("border-style", "none");
+	 $('.istreamer').css("border-style", "none");
+	 $('.itv').css("border-style", "none");
+	 $('.imobile').css("border-style", "none");
+	 $('.iothers').css("border-style", "none");
+         $('.iserver').focus();
+      } else if (host_type == 'telephone') {
+         $('.itelephone').css("border-style", "dotted");
+         $('.itelephone').css("border-width", "1px");
+         $('.ipc').css("border-style", "none");
+         $('.igame').css("border-style", "none");
+         $('.iprinter').css("border-style", "none");
+         $('.istb').css("border-style", "none");
+         $('.icamera').css("border-style", "none");
+         $('.iserver').css("border-style", "none");
+         $('.irouter').css("border-style", "none");
+	 $('.ipvr').css("border-style", "none");
+	 $('.istereo').css("border-style", "none");
+	 $('.istreamer').css("border-style", "none");
+	 $('.itv').css("border-style", "none");
+	 $('.imobile').css("border-style", "none");
+	 $('.iothers').css("border-style", "none");
+         $('.itelephone').focus();
+      } else if (host_type == 'router') {
+         $('.irouter').css("border-style", "dotted");
+         $('.irouter').css("border-width", "1px");
+         $('.ipc').css("border-style", "none");
+         $('.igame').css("border-style", "none");
+         $('.iprinter').css("border-style", "none");
+         $('.istb').css("border-style", "none");
+         $('.icamera').css("border-style", "none");
+         $('.iserver').css("border-style", "none");
+         $('.itelephone').css("border-style", "none");
+	$('.ipvr').css("border-style", "none");
+	$('.istereo').css("border-style", "none");
+	$('.istreamer').css("border-style", "none");
+	$('.itv').css("border-style", "none");
+	$('.imobile').css("border-style", "none");
+	$('.iothers').css("border-style", "none");
+         $('.irouter').focus();
+      } else if (host_type == 'pvr') {  
+         $('.ipvr').css("border-style", "dotted");
+         $('.ipvr').css("border-width", "1px");
+         $('.ipc').css("border-style", "none");
+         $('.igame').css("border-style", "none");
+         $('.iprinter').css("border-style", "none");
+         $('.istb').css("border-style", "none");
+         $('.icamera').css("border-style", "none");
+         $('.iserver').css("border-style", "none");
+	 $('.irouter').css("border-style", "none");
+         $('.itelephone').css("border-style", "none");		 
+	 $('.istereo').css("border-style", "none");
+	 $('.istreamer').css("border-style", "none");
+	 $('.itv').css("border-style", "none");
+	 $('.imobile').css("border-style", "none");
+	 $('.iothers').css("border-style", "none");
+         $('.ipvr').focus();      
+      }else if (host_type == 'stereo') {
+         $('.istereo').css("border-style", "dotted");
+         $('.istereo').css("border-width", "1px");
+         $('.ipc').css("border-style", "none");
+         $('.igame').css("border-style", "none");
+         $('.iprinter').css("border-style", "none");
+         $('.istb').css("border-style", "none");
+         $('.icamera').css("border-style", "none");
+         $('.iserver').css("border-style", "none");
+         $('.itelephone').css("border-style", "none");
+	 $('.ipvr').css("border-style", "none");
+	 $('.irouter').css("border-style", "none");
+	 $('.istreamer').css("border-style", "none");
+	 $('.itv').css("border-style", "none");
+	 $('.imobile').css("border-style", "none");
+	 $('.iothers').css("border-style", "none");
+         $('.istereo').focus();      
+      }else if (host_type == 'streamer') {
+         $('.istreamer').css("border-style", "dotted");
+         $('.istreamer').css("border-width", "1px");
+         $('.ipc').css("border-style", "none");
+         $('.igame').css("border-style", "none");
+         $('.iprinter').css("border-style", "none");
+         $('.istb').css("border-style", "none");
+         $('.icamera').css("border-style", "none");
+         $('.iserver').css("border-style", "none");
+         $('.itelephone').css("border-style", "none");
+	 $('.ipvr').css("border-style", "none");
+	 $('.istereo').css("border-style", "none");
+	 $('.irouter').css("border-style", "none");
+	 $('.itv').css("border-style", "none");
+	 $('.imobile').css("border-style", "none");
+	 $('.iothers').css("border-style", "none");
+         $('.istreamer').focus();      
+      }else if (host_type == 'tv') {
+         $('.itv').css("border-style", "dotted");
+         $('.itv').css("border-width", "1px");
+         $('.ipc').css("border-style", "none");
+         $('.igame').css("border-style", "none");
+         $('.iprinter').css("border-style", "none");
+         $('.istb').css("border-style", "none");
+         $('.icamera').css("border-style", "none");
+         $('.iserver').css("border-style", "none");
+         $('.itelephone').css("border-style", "none");
+	 $('.ipvr').css("border-style", "none");
+	 $('.istereo').css("border-style", "none");
+	 $('.istreamer').css("border-style", "none");
+	 $('.irouter').css("border-style", "none");
+	 $('.imobile').css("border-style", "none");
+	 $('.iothers').css("border-style", "none");
+         $('.itv').focus();      
+      }else if (host_type == 'mobile') {
+         $('.imobile').css("border-style", "dotted");
+         $('.imobile').css("border-width", "1px");
+         $('.ipc').css("border-style", "none");
+         $('.igame').css("border-style", "none");
+         $('.iprinter').css("border-style", "none");
+         $('.istb').css("border-style", "none");
+         $('.icamera').css("border-style", "none");
+         $('.iserver').css("border-style", "none");
+         $('.itelephone').css("border-style", "none");
+	 $('.ipvr').css("border-style", "none");
+	 $('.istereo').css("border-style", "none");
+	 $('.istreamer').css("border-style", "none");
+	 $('.itv').css("border-style", "none");
+	 $('.irouter').css("border-style", "none");
+	 $('.iothers').css("border-style", "none");
+         $('.imobile').focus();      
+      }else if (host_type == 'others') {
+         $('.iothers').css("border-style", "dotted");
+         $('.iothers').css("border-width", "1px");
+         $('.ipc').css("border-style", "none");
+         $('.igame').css("border-style", "none");
+         $('.iprinter').css("border-style", "none");
+         $('.istb').css("border-style", "none");
+         $('.icamera').css("border-style", "none");
+         $('.iserver').css("border-style", "none");
+         $('.itelephone').css("border-style", "none");
+	 $('.ipvr').css("border-style", "none");
+	 $('.istereo').css("border-style", "none");
+	 $('.istreamer').css("border-style", "none");
+	 $('.itv').css("border-style", "none");
+	 $('.imobile').css("border-style", "none");
+	 $('.irouter').css("border-style", "none");
+         $('.iothers').focus();      
+      }
+   }
+}
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+      var info = hostlist.split('/');
+
+      hostname.value = info[0]
+      tempoldname = info[0];
+      tempoldip = info[1];
+
+      if (info[2] == 'computer') {
+         $('.ipc').trigger('click');
+         $('.ipc').css("border-style", "dotted");
+         $('.ipc').css("border-width", "1px");
+         $('.ipc').focus();
+      } else if (info[2] == 'gameconsole') {
+         $('.igame').trigger('click');
+         $('.igame').css("border-style", "dotted");
+         $('.igame').css("border-width", "1px");
+         $('.igame').focus();
+      } else if (info[2] == 'printer') {
+         $('.iprinter').trigger('click');
+         $('.iprinter').css("border-style", "dotted");
+         $('.iprinter').css("border-width", "1px");
+         $('.iprinter').focus();
+      } else if (info[2] == 'settop') {
+         $('.istb').trigger('click');
+         $('.istb').css("border-style", "dotted");
+         $('.istb').css("border-width", "1px");
+         $('.istb').focus();
+      } else if (info[2] == 'camera') {
+         $('.icamera').trigger('click');
+         $('.icamera').css("border-style", "dotted");
+         $('.icamera').css("border-width", "1px");
+         $('.icamera').focus();
+      } else if (info[2] == 'server') {
+         $('.iserver').trigger('click');
+         $('.iserver').css("border-style", "dotted");
+         $('.iserver').css("border-width", "1px");
+         $('.iserver').focus();
+      } else if (info[2] == 'telephone') {
+         $('.itelephone').trigger('click');
+         $('.itelephone').css("border-style", "dotted");
+         $('.itelephone').css("border-width", "1px");
+         $('.itelephone').focus();
+      } else if (info[2] == 'router') {
+         $('.irouter').trigger('click');
+         $('.irouter').css("border-style", "dotted");
+         $('.irouter').css("border-width", "1px");
+         $('.irouter').focus();
+      } else if (info[2] == 'pvr') {
+         $('.ipvr').trigger('click');
+         $('.ipvr').css("border-style", "dotted");
+         $('.ipvr').css("border-width", "1px");
+         $('.ipvr').focus();
+      } else if (info[2] == 'stereo') {
+         $('.istereo').trigger('click');
+         $('.istereo').css("border-style", "dotted");
+         $('.istereo').css("border-width", "1px");
+         $('.istereo').focus();
+      } else if (info[2] == 'streamer') {
+         $('.istreamer').trigger('click');
+         $('.istreamer').css("border-style", "dotted");
+         $('.istreamer').css("border-width", "1px");
+         $('.istreamer').focus();
+      } else if (info[2] == 'tv') {
+         $('.itv').trigger('click');
+         $('.itv').css("border-style", "dotted");
+         $('.itv').css("border-width", "1px");
+         $('.itv').focus();
+      } else if (info[2] == 'mobile') {
+         $('.imobile').trigger('click');
+         $('.imobile').css("border-style", "dotted");
+         $('.imobile').css("border-width", "1px");
+         $('.imobile').focus();
+      } else if (info[2] == 'others') {
+         $('.iothers').trigger('click');
+         $('.iothers').css("border-style", "dotted");
+         $('.iothers').css("border-width", "1px");
+         $('.iothers').focus();
+      }
+
+      tempoldtype = info[2];
+   }
+}
+
+function isDuplicateRecord(name)
+{
+   var hosts = '<%ejGetOther(hostentry)%>';
+   var info = hosts.split('|');
+
+   if (info != '') {
+      for ( i = 0; i < info.length; i++ ) {
+         if (info[i] != '') {
+            var names = info[i].split('/');
+            if (names[0] != tempoldname && names[0] == name) {
+               return false;
+            }
+         }
+      }
+   }
+}
+
+function btnSave() {
+   with ( document.forms[0] ) {
+      var msg = "";
+
+      if (!isValidHostName(hostname.value)) {
+         // alert( 'Host Name "' + hostname.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_ConnStatus_NetworkMap_Str31)%>", hostname.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return false;
+      } else if (isDuplicateRecord(hostname.value) == false) {
+         // alert('Duplicate static lease information! Please check the host name.');
+         msg = '<%ejGetML(MLG_ConnStatus_AlertMsg_Str1)%>';
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return false;
+      }
+      else {
+         oldip.value = tempoldip;
+         sessionKey.value = mainFrame.glbSessionKey;
+         submit();
+         $('.ui-dialog-titlebar-close').trigger('click');
+         $.openLoadingMask(1);
+      }
+   }
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var OkBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+OkBtn.click(function(){ btnSave(); });
+
+// done hiding -->
+</script>
+
+<form action="/pages/connectionStatus/connectionStatus-hostEntry.cmd" method="post" target="mainFrame">
+  <input type="hidden" name="action" value="edit">
+  <input type="hidden" name="oldip">
+  <input type="hidden" name="hosttype">
+  <input type="hidden" name="sessionKey">
+
+  <div class="popup_frame" >
+    <div class="data_frame2"><ul>
+      <li class="set1"> 
+        <div class="w_text">
+          <ul>
+            <li class="left_table" style="width:28%;">&nbsp;<%ejGetML(MLG_ConnStatus_NetworkMap_Str29)%>:</li>
+            <li class="right_table">
+              <div class="textarea">
+                <ul>
+                  <li><a href="#" class="ipc" onClick="changeIconValue('computer');" ><span><%ejGetML(MLG_ConnStatus_NetworkMap_Str22)%></span></a></li>
+                  <li><a href="#" class="igame" onClick="changeIconValue('gameconsole');" ><span><%ejGetML(MLG_ConnStatus_NetworkMap_Str23)%></span></a></li>
+                  <li><a href="#" class="iprinter" onClick="changeIconValue('printer');" ><span><%ejGetML(MLG_ConnStatus_NetworkMap_Str24)%></span></a></li>
+                  <li><a href="#" class="istb" onClick="changeIconValue('settop');" ><span><%ejGetML(MLG_ConnStatus_NetworkMap_Str25)%></span></a></li>
+                  <ul>
+                    <li><a href="#" class="icamera" onClick="changeIconValue('camera');" ><span><%ejGetML(MLG_ConnStatus_NetworkMap_Str26)%></span></a></li>
+                    <li><a href="#" class="iserver" onClick="changeIconValue('server');" ><span><%ejGetML(MLG_Common_DHCPServer)%></span></a></li>
+                    <li><a href="#" class="itelephone" onClick="changeIconValue('telephone');" ><span><%ejGetML(MLG_ConnStatus_NetworkMap_Str27)%></span></a></li>
+                    <li><a href="#" class="irouter" onClick="changeIconValue('router');" ><span><%ejGetML(MLG_ConnStatus_NetworkMap_Str28)%></span></a></li>
+                  </ul>
+		  <ul> 
+                    <li><a href="#" class="ipvr" onClick="changeIconValue('pvr');" ><span><%ejGetML(MLG_ConnStatus_NetworkMap_Str39)%></span></a></li>
+                    <li><a href="#" class="istereo" onClick="changeIconValue('stereo');" ><span><%ejGetML(MLG_ConnStatus_NetworkMap_Str40)%></span></a></li>
+                    <li><a href="#" class="istreamer" onClick="changeIconValue('streamer');" ><span><%ejGetML(MLG_ConnStatus_NetworkMap_Str41)%></span></a></li>
+                    <li><a href="#" class="itv" onClick="changeIconValue('tv');" ><span><%ejGetML(MLG_ConnStatus_NetworkMap_Str42)%></span></a></li>
+		  </ul>
+		  <ul>
+                    <li><a href="#" class="imobile" onClick="changeIconValue('mobile');" ><span><%ejGetML(MLG_ConnStatus_NetworkMap_Str43)%></span></a></li>
+                    <li><a href="#" class="iothers" onClick="changeIconValue('others');" ><span><%ejGetML(MLG_ConnStatus_NetworkMap_Str44)%></span></a></li>                     
+                  </ul>	
+                </ul>
+              </div>
+            </li>
+          </ul>
+          <ul>
+            <li class="left_table"style="width:28%;">&nbsp;<%ejGetML(MLG_ConnStatus_NetworkMap_Str20)%>:</li>
+            <li class="right_table">
+              <input name="hostname"  type="text" value="NB One" size="20" maxlength="31" />
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul></div>
+  </div>
+</form>
+<script language="javascript">
+<!-- hide
+   frmLoad();
+// done hiding -->
+</script>

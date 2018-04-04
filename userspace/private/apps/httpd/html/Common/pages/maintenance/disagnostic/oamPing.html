@@ -1,0 +1,161 @@
+<script language="JavaScript">
+<!--
+var stat = '<%ejGet(oamTestState)%>';
+var portId = "<%ejGet(portId)%>";
+var vpi= "<%ejGet(atmVpi)%>";
+var vci= "<%ejGet(atmVci)%>";
+
+function diagnosticStart() {
+    var url = "../maintenance/disagnostic/OamPingResult.html";
+    initRequest(url);
+    /* set callback function*/
+    objXMLHTTP.onreadystatechange = processPollRequest;
+    objXMLHTTP.send(null);
+}
+//ZyXEL, cathy, merge from VMG4380 to fix 
+//Ping & TraceRoute in Diagnostic can't work on Goole Chrome only.
+Date.prototype.toString = function(){
+var t = this.toTimeString().split("(");
+var s = this.toDateString()+" "+t[0];
+return s;
+}
+//cathy
+function initRequest(url) {
+    if (window.XMLHttpRequest) {
+        objXMLHTTP = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        objXMLHTTP = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    if (objXMLHTTP){
+        objXMLHTTP.open("GET", url, true);
+        /*let IE refresh page */
+        objXMLHTTP.setRequestHeader("If-Modified-Since",new Date(0));
+    }
+}
+
+/* callback function for intial request to schedule a task  */
+function processPollRequest() {
+    var diagnosticResult = '';
+    if (objXMLHTTP.readyState == 4) {
+        if (objXMLHTTP.status == 200) {
+            diagnosticResult = objXMLHTTP.responseText;   
+        } 
+
+        if (diagnosticResult.search("Diag_end")<0){
+            document.forms[0].InfoDisplay.value = diagnosticResult;
+            setTimeout("diagnosticStart()",1000);
+        } else {
+            complete(diagnosticResult.replace("Diag_end", ""));
+        }
+    }
+}
+
+function complete(result) {
+    document.forms[0].InfoDisplay.value =  result;
+    buttonControl(0);
+}
+
+function buttonControl(mode) {
+    if (mode == 1){
+        document.forms[0].F4sPing.disabled = true;
+        document.forms[0].F4ePing.disabled = true;
+        document.forms[0].F5sPing.disabled = true;
+        document.forms[0].F5ePing.disabled = true;
+    }
+    else{
+        document.forms[0].F4sPing.disabled = false;
+        document.forms[0].F4ePing.disabled = false;
+        document.forms[0].F5sPing.disabled = false;
+        document.forms[0].F5ePing.disabled = false;
+    }
+}
+
+function btnApply(type){
+    var loc='DiagOamPing.cgi?';
+    var idx = document.forms[0].PVC.selectedIndex; 
+    var dslinfo  =  document.forms[0].PVC[idx].value;
+    var itemVal = dslinfo.split('/');
+    
+    document.forms[0].atmVpi.value = itemVal[0];
+    document.forms[0].atmVci.value = itemVal[1];
+    document.forms[0].atmportId.value = itemVal[2];
+    document.forms[0].oamTestType.value = type;
+    
+    $.openLoadingMask(1);
+    document.forms[0].submit();
+}
+function wanSelection(){
+
+    var interfaceInfo = '<%ejGetOther(atmPvcInfo)%>'; 
+    var interfaces = interfaceInfo.split('|');
+    var i=0;
+
+    for(i=0;i<interfaces.length;i++)
+    {
+        var itemInfo=interfaces[i].split('/');
+        var textstr = "  <%ejGetML(MLG_Maintenance_OAMPing_Str15)%> : "+itemInfo[0]+"/"+itemInfo[1]+"  ";
+        document.forms[0].PVC[i] = new Option(textstr,interfaces[i]);
+        if((vpi==itemInfo[0])&&(vci==itemInfo[1])&&(portId == itemInfo[2]))
+        {
+            document.forms[0].PVC[i].selected = true;
+        }
+    }
+
+
+}
+function frmLoad(){
+
+    wanSelection();
+    if(stat=='1'){
+        document.forms[0].InfoDisplay.value = "<%ejGetML(MLG_Maintenance_OAMPing_Str18)%>";
+        buttonControl(1);
+        setTimeout("diagnosticStart();",100);
+    }
+    else{
+        document.forms[0].InfoDisplay.value = "- <%ejGetML(MLG_Maintenance_OAMPing_Str2)%> -";
+    }
+}
+$(document).ready(function() {
+    frmLoad();
+});
+//-->
+</script >
+<form  action="/pages/tabFW/disagnostic-DiagOamPing.cgi" method="POST">
+<input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">
+<input type="hidden" name="diagTestType" id="diagTestType" value="1">
+<input type="hidden" name="atmVpi" id="atmVpi">
+<input type="hidden" name="atmVci" id="atmVci">
+<input type="hidden" name="atmportId" id="atmportId">
+<input type="hidden" name="oamTestType" id="oamTestType">
+<div class="content_frame" >
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Maintenance_OAMPing_Str1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame">
+<ul><li class="set1">
+  <div class="infodisplay">
+    <textarea name="InfoDisplay" class="input_big" rows="5" cols="40" readonly="readonly"></textarea>
+  </div>
+  <li class="buttonframe"><div class="button_position">
+  <select name="PVC" size='1'></select>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  <input name="F4sPing" value=" <%ejGetML(MLG_Maintenance_OAMPing_Str3)%> " onClick="btnApply(15)" type="button" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  <input name="F4ePing" value=" <%ejGetML(MLG_Maintenance_OAMPing_Str4)%> " onClick="btnApply(16)" type="button" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  <input name="F5sPing" value=" <%ejGetML(MLG_Maintenance_OAMPing_Str5)%> " onClick="btnApply(3)" type="button" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  <input name="F5ePing" value=" <%ejGetML(MLG_Maintenance_OAMPing_Str6)%> " onClick="btnApply(4)" type="button" />
+  </div></li>
+</li>
+<li class="buttonframe"></li>
+<!--Button define end-->
+</ul>
+</ul>
+</div>
+<!--Set area end-->
+</div>
+</form>
+<br/><br/>

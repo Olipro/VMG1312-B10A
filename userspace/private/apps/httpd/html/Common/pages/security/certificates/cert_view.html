@@ -1,0 +1,156 @@
+<script language='javascript'>
+<!-- hide
+var certViewCerType='<%ejGet(certViewCerType)%>';
+var certViewType='<%ejGet(certViewType)%>';
+var certCategory='<%ejGet(certCategory)%>';
+var gblsessionKey='<%ejGetOther(sessionKey)%>';
+mainFrame.gblsessionKey = gblsessionKey;
+
+function frmLoad(){
+	$.closeLoadingMask();
+
+	if(certViewType=='error'){
+		$('.ui-dialog-titlebar-close').trigger('click');
+		return;	
+	}
+
+	if(certViewCerType=='request'){
+		var db = $('.popup_frame').parents('.dialogContener');
+		var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+		ApplyBtn.click(function(){ loadClick(); });
+		$('.ui-dialog-titlebar-close').hide();
+	}
+		
+	if(certViewType=='certDetail'){
+		$("#hiddenReqShow2").hide();
+		$("#hiddenDetail1").hide();
+		$("#caInfo").hide();
+	}else if(certViewType=='reqShow'){//certAdd need to remove
+		//$("#hiddenDetail2").hide();
+		$("#hiddenCert").hide();
+		$("#hiddenPriv").hide();
+		$("#hiddenDetail1").hide();
+		$("#caInfo").hide();
+	}
+	
+	if(certCategory=='ca'){//certCA need to remove
+		//$("#hiddenPriv").hide();
+		//$("#hiddenCSR").hide();
+		$("#hiddenDetail2").hide();
+		$("#hiddenDetail1").show();
+		$("#caInfo").show();
+		$("#certInfo").hide();
+	}
+}
+
+function loadClick() {
+	$('.ui-dialog-titlebar-close').trigger('click');
+	var name;
+	name='<%ejGet(certViewName)%>';
+	
+	//var loc ='/pages/security/certificates/certificates-LocalLoadSigned.cgi?certLocalAction=preload&certViewName=' + name;
+	var loc ='/pages/tabFW/certificates-LocalLoadSigned.cgi?certLocalAction=preload&certViewName=' + name;
+	loc += '&sessionKey=' + gblsessionKey; //mainFrame.gblsessionKey;
+	
+	//*** Disable escape. closeOnEscape:false
+	var db1 = window.parent.$.zyUiDialog({
+		width: '75%',
+		height: 500,
+		title: '<%ejGetML(MLG_Security_Certificates_Str14)%>',
+		closeOnEscape: false,
+		buttons: {
+				'<%ejGetML(MLG_Common_Cancel)%>': function(){mainFrame.tabApi.refresh(); db1.dialog('close');},
+				'<%ejGetML(MLG_Common_Apply)%>': function(){}
+		}
+	});
+
+	db1.load(loc);
+	db1.dialog('open');
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+// done hiding -->
+</script>
+
+<div class="popup_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div id="hiddenDetail1" class="explain_text"><%ejGetML(MLG_Security_Certificates_Str47)%></div>
+<div id="hiddenDetail2" class="explain_text"><%ejGetML(MLG_Security_Certificates_Str21)%></div>
+<div id="hiddenReqShow2" class="explain_text">
+<%ejGetML(MLG_Security_Certificates_Str15)%>
+</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame2"><ul>
+<!--level 1 start-->
+<div id="caInfo">
+<li class="set1"> 
+<div class="w_text"><ul><li class="left_table"><%ejGetML(MLG_Security_FirewallACL_Str9)%></li>
+<li class="right_table"><%ejGet(certViewName)%></li></ul></div>
+<li class="space"></li>
+<div class="infodisplay" align="center">
+       <textarea cols = '80' readonly="readonly" style="width:95%"><%ejGet(certViewContent)%></textarea>
+</div>
+</div>
+<div id="certInfo">
+<li class="set1"> 
+<div class="w_table">
+  <!--Table define start-->
+  <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame">
+	<tr align="center">
+		<td width="15%" valign="top" class="table_font2"><%ejGetML(MLG_Security_FirewallACL_Str9)%></td>
+              <td width="85%" class="table_font">
+                 	<%ejGet(certViewName)%>
+              </td>	
+	</tr>
+	
+	<tr id="hiddenType" align="center">
+		<td width="15%" valign="top" class="table_font2"><%ejGetML(MLG_Common_Type)%></td>
+		<td width="85%" class="table_font">
+			<%ejGet(certViewCerType)%>
+		</td>	
+	</tr>
+
+	<tr id="hiddenSubject" align="center">
+		<td width="15%" valign="top" class="table_font2"><%ejGetML(MLG_Security_Certificates_Str5)%></td>
+		<td width="85%" class="table_font">
+			<%ejGet(certViewSubj)%>
+		</td>	
+	</tr>
+	<tr id="hiddenCert" align="center">
+		<td width="15%" valign="top" class="table_font2"><%ejGetML(MLG_Security_ServiceControl_Str9)%></td>
+		<td width="85%" class="table_font">
+			<textarea cols = '80' style="width:95%"><%ejGet(certViewContent)%></textarea>
+		</td>	
+	</tr>
+
+	<tr id="hiddenPriv" align="center">
+		<td width="15%" valign="top" class="table_font2"><%ejGetML(MLG_Security_Certificates_Str22)%></td>
+		<td width="85%" class="table_font">
+			<textarea cols = '80' style="width:95%"><%ejGet(certViewPriv)%></textarea>
+		</td>	
+	</tr>
+
+	<tr id="hiddenCSR" align="center">
+		<td width="15%" valign="top" class="table_font2"><%ejGetML(MLG_Security_Certificates_Str16)%></td>
+		<td width="85%" class="table_font">
+			<textarea cols = '80' style="width:95%"><%ejGet(certViewSignReq)%></textarea>
+		</td>	
+	</tr>
+  </table>
+</div>
+</li>
+</div>
+<li class="space"> </li>
+<!--Button define start-->
+<!--Button define end-->
+</ul>
+</div>
+<!--Set area end-->
+</div>
+<br/><br/>

@@ -1,0 +1,575 @@
+<script language="javascript">
+<!-- hide
+var protoSrv2 = '';
+var Serv_Name = '<%ejGet(ServName)%>';
+
+function btnChk()
+{
+	alert(document.forms[0].protoSrv.value);
+	alert('table rows:'+ document.getElementById("tb2").rows.length);
+}
+
+function resetRule()
+{
+	with (document.forms[0]) {
+		protocol.value = 'Other';
+		prtcl_sel_src.selectedIndex = 0;
+		prtcl_sel_dst.selectedIndex = 0;
+
+		prtclChange();
+		portChange('src');
+		portChange('dst');
+	}
+}
+
+
+function btnSave()
+{	
+	with (document.forms[0]) {
+		if (ServName.value == ''){
+			hciAlert("<%ejGetML(MLG_Security_FirewallProtocol_AlertMsg_Str1)%>", 2);
+			return;
+		}
+		else if ( isValidNameNoSpecialCht(ServName.value) == false ) {
+			hciAlert( '<%ejGetML(MLG_Security_FirewallProtocol_AlertMsg_Str2)%>', 2);
+			return;
+		}
+
+		if (isValidDescription(ServDesc.value) == false) {
+			hciAlert( '<%ejGetML(MLG_Security_FirewallProtocol_AlertMsg_Str3)%>', 2);
+			return;
+		}
+		
+		if (document.getElementById("tb2").rows.length == 1)
+		{
+			hciAlert('<%ejGetML(MLG_Security_FirewallProtocol_AlertMsg_Str4)%>', 2);
+			return;
+		}
+      
+      sessionKey.value = mainFrame.gblsessionKey;
+		submit();
+		$('.ui-dialog-titlebar-close').trigger('click');
+		$.openLoadingMask(1);
+	}
+	return;
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var OkBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+OkBtn.click(function(){ btnSave(); });
+
+function frmLoad()
+{   
+	with (document.forms[0]) {
+		prtclChange();
+		portChange('src');
+		portChange('dst');
+
+		ServName.value = Serv_Name;
+		ServName.disabled = true;
+		protoSrv2 = protoSrv.value
+		ServDesc.value =  '<%ejGet(ServDesc)%>';
+		genTable();
+	}
+}
+
+
+
+function btnAdd()
+{
+	if (document.getElementById("tb2").rows.length > 32)
+		hciAlert("<%ejGetML(MLG_Security_FirewallACL_AlertMsg_Str1)%>", 2);
+
+	with (document.forms[0]) {
+		var result;
+		var num = document.getElementById("tb2").rows.length;
+		if (protocol.value == 'TCP' || protocol.value == 'UDP')
+		{
+			result = protocol.value;
+			if (prtcl_sel_src.selectedIndex == 0) //any
+			{		
+				result += ',<%ejGetML(MLG_Security_FirewallProtocol_Str15)%>';
+			}
+			else if (prtcl_sel_src.selectedIndex == 1)
+			{
+				if (isNaN(srcPortStart.value) || parseInt(srcPortStart.value) < 1 || parseInt(srcPortStart.value) > 65535){
+					hciAlert("<%ejGetML(MLG_Security_FirewallACL_AlertMsg_Str6)%>", 2);
+					return;
+				}
+
+				if (parseInt(srcPortStart.value) == 30005)
+				{
+					hciAlert("<%ejGetML(MLG_Security_AlertMsg_Port30005)%>", 2);
+					return;
+				}				
+				result += ',' + srcPortStart.value;
+			}
+			else
+			{
+				if (isNaN(srcPortStart.value) || isNaN(srcPortEnd.value))
+				{
+					hciAlert("<%ejGetML(MLG_Security_FirewallACL_AlertMsg_Str4)%>", 2);
+					return;				
+				}
+
+				if (parseInt(srcPortStart.value) < 1 || parseInt(srcPortStart.value) > 65535){
+					hciAlert("<%ejGetML(MLG_Security_FirewallACL_AlertMsg_Str4)%>", 2);
+					return;
+				}
+
+				if (parseInt(srcPortEnd.value) < 1 || parseInt(srcPortEnd.value) > 65535){
+					hciAlert("<%ejGetML(MLG_Security_FirewallACL_AlertMsg_Str4)%>", 2);
+					return;
+				}
+
+				if ( parseInt(srcPortEnd.value) <= parseInt(srcPortStart.value)){
+					hciAlert("<%ejGetML(MLG_Security_FirewallACL_AlertMsg_Str4)%>", 2);
+					return;
+				}
+
+				if (parseInt(srcPortStart.value) <= 30005 && parseInt(srcPortEnd.value) >= 30005 )
+				{
+					hciAlert("<%ejGetML(MLG_Security_AlertMsg_Port30005)%>", 2);
+					return;
+				}
+				
+				if(parseInt(srcPortStart.value) >= parseInt(srcPortEnd.value))
+				{
+					hciAlert("<%ejGetML(MLG_Security_FirewallGeneral_AlertMsg_Str7)%>", 2);
+					return;
+				}
+				
+				result += ',' + srcPortStart.value + ':' + srcPortEnd.value;
+			}
+
+			result += '/';
+
+			if (prtcl_sel_dst.selectedIndex == 0) //any
+			{		
+				result += '<%ejGetML(MLG_Security_FirewallProtocol_Str15)%>';
+			}
+			else if (prtcl_sel_dst.selectedIndex == 1)
+			{
+				if (isNaN(dstPortStart.value) || parseInt(dstPortStart.value) < 1 || parseInt(dstPortStart.value) > 65535){
+					hciAlert("<%ejGetML(MLG_Security_FirewallACL_AlertMsg_Str6)%>", 2);
+					return;
+				}
+
+				if (parseInt(dstPortStart.value) == 30005)
+				{
+					hciAlert("<%ejGetML(MLG_Security_AlertMsg_Port30005)%>", 2);
+					return;
+				}
+
+				result += dstPortStart.value;
+			}
+			else
+			{
+				if (isNaN(dstPortStart.value) || isNaN(dstPortEnd.value))
+				{
+					hciAlert("<%ejGetML(MLG_Security_FirewallACL_AlertMsg_Str4)%>", 2);
+					return;				
+				}
+
+				if (parseInt(dstPortStart.value) < 1 || parseInt(dstPortStart.value) > 65535){
+					hciAlert("<%ejGetML(MLG_Security_FirewallACL_AlertMsg_Str7)%>", 2);
+					return;
+				}
+
+				if (parseInt(dstPortEnd.value) < 1 || parseInt(dstPortEnd.value) > 65535){
+					hciAlert("<%ejGetML(MLG_Security_FirewallACL_AlertMsg_Str7)%>", 2);
+					return;
+				}
+
+				if ( parseInt(dstPortEnd.value) <= parseInt(dstPortStart.value)){
+					hciAlert("<%ejGetML(MLG_Security_FirewallACL_AlertMsg_Str7)%>", 2);
+					return;
+				}
+
+				if (parseInt(dstPortStart.value) <= 30005 && parseInt(dstPortEnd.value) >= 30005 )
+				{
+					hciAlert("<%ejGetML(MLG_Security_AlertMsg_Port30005)%>", 2);
+					return;
+				}
+				
+				if(parseInt(dstPortStart.value) >= parseInt(dstPortEnd.value))
+				{
+					hciAlert("<%ejGetML(MLG_Security_FirewallGeneral_AlertMsg_Str7)%>", 2);
+					return;
+				}
+				
+				result += dstPortStart.value + ':' + dstPortEnd.value;
+			}
+
+		}
+		else if (protocol.value == 'ICMP')
+		{
+			result = 'ICMP';
+		}
+		else if (protocol.value == 'ICMPv6')
+		{
+			result = 'ICMPv6,' + ICMPv6Type.value;
+		}
+		else //Other
+		{
+			var prtclNum = parseInt(prtcl_num.value);
+			
+			if (prtclNum < 0 || prtclNum > 255 || isNaN(prtcl_num.value) || prtcl_num.value == ''){
+				hciAlert('<%ejGetML(MLG_Security_FirewallACL_AlertMsg_Str8)%>', 2);
+				return;
+			}
+			result = 'Other,' + prtcl_num.value;
+		}
+		result += '|';
+
+		if (protoSrv.value.indexOf(result) != -1)
+		{
+			hciAlert('<%ejGetML(MLG_Security_FirewallACL_AlertMsg_Str9)%>', 2);
+			return;
+		}
+		protoSrv2 = result
+		protoSrv.value +=  result
+	}
+
+	//add table
+	genTable();
+	resetRule();
+}
+
+function genTable()
+{
+	var num = document.getElementById("tb2").rows.length;
+	var tempStr = protoSrv2.split('|');
+	var newStr = '';
+//var tempStr = 'test|Other/11|UDP/Any/Any@';
+	for (i=0; i< tempStr.length; i++)
+	{
+		if (tempStr[i] != '' && tempStr[i] != undefined)
+		{
+			var tempStr2 = tempStr[i].split(',');		
+
+			newStr += "<tr>\n";
+			newStr += "<td align=\'center\' class='table_font'>"+tempStr2[0]+"</td>\n";
+
+			if (tempStr2[1] == undefined)
+				newStr += "<td align=\'center\' class='table_font'><%ejGetML(MLG_Common_NA)%></td>\n";
+			else{
+
+				var tempStr3 = tempStr2[1].split('/');		
+				if (tempStr2[0] == 'TCP' || tempStr2[0] == 'UDP')
+				{
+					newStr += "<td align=\'center\' class='table_font'>"+tempStr3[0]+"->"+tempStr3[1]+"</td>\n";			
+				}
+				else
+				{
+					newStr += "<td align=\'center\' class='table_font'>"+tempStr2[1]+"</td>\n";
+				}
+			}
+			newStr += "<td align=\'center\' class='table_font'><div class='i_modify'><ul><li><a href='#' class='delete' title='Delete' id='deleteBtn' onclick=\"removeClick('"+num+"')\"></a></li></ul></div></td>\n";
+
+			newStr += "</td>\n";
+			newStr += "</tr>\n";
+		}
+	}
+
+	$('#tb2').append(newStr);
+}
+
+function removeClick(num)
+{
+	//re-order the var..
+
+	var tempStr = document.forms[0].protoSrv.value.split('|');	
+
+	var tempStr2 = '';
+	for (i=0; i< tempStr.length; i++)
+	{
+
+		if (tempStr[i] != '' && tempStr[i] != undefined)
+		{
+				if ((i+1) == num)
+					continue;
+				tempStr2 += tempStr[i]+'|';
+
+		}
+	}
+	document.forms[0].protoSrv.value = tempStr2;
+	//delete row
+	document.getElementById("tb2").deleteRow(num);
+}
+
+function prtclChange()
+{
+	with (document.forms[0]) {
+		if (protocol.value == 'TCP')
+		{
+			showhide('other', 0);
+			showhide('src_port',1);
+			showhide('dst_port',1);
+			showhide('ICMPv6Type',0);
+			srcPortStart.value = 0;
+			srcPortEnd.value = 0;
+			dstPortStart.value = 0;
+			dstPortEnd.value = 0;
+			prtcl_num.value = 0;
+		}
+		else if (protocol.value == 'UDP')
+		{
+			showhide('other', 0);
+			showhide('src_port',1);
+			showhide('dst_port',1);
+			showhide('ICMPv6Type',0);
+			srcPortStart.value = 0;
+			srcPortEnd.value = 0;
+			dstPortStart.value = 0;
+			dstPortEnd.value = 0;
+			prtcl_num.value = 0;
+		}
+		else if (protocol.value == 'ICMP')
+		{
+			showhide('other', 0);
+			showhide('src_port',0);
+			showhide('dst_port',0);
+			showhide('ICMPv6Type',0);
+			srcPortStart.value = 0;
+			srcPortEnd.value = 0;
+			dstPortStart.value = 0;
+			dstPortEnd.value = 0;
+			prtcl_num.value = 0;
+		}
+		else if (protocol.value == 'ICMPv6')
+		{
+			showhide('other', 0);
+			showhide('src_port',0);
+			showhide('dst_port',0);
+			showhide('ICMPv6Type',1);
+			srcPortStart.value = 0;
+			srcPortEnd.value = 0;
+			dstPortStart.value = 0;
+			dstPortEnd.value = 0;
+			prtcl_num.value = 0;
+		}
+		else
+		{
+			showhide('other', 1);
+			showhide('src_port',0);
+			showhide('dst_port',0);
+			showhide('ICMPv6Type',0);
+			srcPortStart.value = 0;
+			srcPortEnd.value = 0;
+			dstPortStart.value = 0;
+			dstPortEnd.value = 0;
+			prtcl_num.value = 0;		}
+	}
+}
+
+function portChange(portSrc)
+{
+	with (document.forms[0]) {
+
+		if (portSrc == 'src'){
+			if (prtcl_sel_src.selectedIndex == 0)
+			{
+				srcPortStart.disabled = true;
+				srcPortEnd.disabled = true;			
+				srcPortStart.value = 0;
+				srcPortEnd.value = 0;			
+			}
+			else if (prtcl_sel_src.selectedIndex == 1)
+			{
+				srcPortStart.disabled = false;
+				srcPortEnd.disabled = true;
+				srcPortEnd.value = 0;			
+			}
+			else
+			{
+				srcPortStart.disabled = false;
+				srcPortEnd.disabled = false;
+			}		
+		}else{
+			if (portSrc == 'dst'){
+				if (prtcl_sel_dst.selectedIndex == 0)
+				{
+					dstPortStart.disabled = true;
+					dstPortEnd.disabled = true;			
+					dstPortStart.value = 0;
+					dstPortEnd.value = 0;			
+				}
+				else if (prtcl_sel_dst.selectedIndex == 1)
+				{
+					dstPortStart.disabled = false;
+					dstPortEnd.disabled = true;
+					dstPortEnd.value = 0;			
+				}
+				else
+				{
+					dstPortStart.disabled = false;
+					dstPortEnd.disabled = false;
+				}	
+			}
+		}
+	}
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+
+
+// done hiding -->
+</script>
+<form action="/pages/tabFW/firewall-protocolPort.cgi" method="post" target="mainFrame">
+<input name="ServAct" type="HIDDEN" id="ServAct" value="saveEdit" />
+<input name="protoSrv" type="HIDDEN" id="protoSrv" value="<%ejGet(protoSrv)%>" />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""/>
+<div class="popup_frame" >
+<!--Unit Explain start-->
+<!--
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+-->
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<!--level 1 title start--><li class="title"><%ejGetML(MLG_Security_FirewallProtocol_Str9)%></li><!--level 1 title end-->
+<!--level 1 start-->
+               <li class="set1">
+                  <div class="w_text">
+                     <ul>
+                        <li class="left_table"><%ejGetML(MLG_Security_FirewallACL_Str12)%>:</li>
+                        <li class="right_table">
+						  <select name='protocol' id='protocol' width='30' onchange='prtclChange()'>
+						  <option value='TCP'><%ejGetML(MLG_Security_FirewallProtocol_Str11)%></option>
+						  <option value='UDP'><%ejGetML(MLG_Security_FirewallProtocol_Str12)%></option>
+						  <option value='ICMP'><%ejGetML(MLG_Security_FirewallProtocol_Str13)%></option>
+<script language="javascript">
+<!-- hide
+{
+//	var buildIPv6 = '<%ejGetOther(sysInfo, buildIPv6)%>';
+//		if(buildIPv6 == '1'){
+//			//$('#protocol').append('<option value="ICMPv6">ICMPv6</option>');
+//		}
+}
+// done hiding -->
+</script>
+						  <option value='Other' selected>Other</option>
+						  </select>
+						</li>
+                     </ul>
+                  </div>
+              </li>
+               <li class="set1">
+                  <div class="w_text" id='other'>
+                     <ul>
+                        <li class="left_table"><%ejGetML(MLG_Security_FirewallProtocol_Str25)%>:</li>
+                        <li class="right_table">
+							<input type='textbox' size='20' name='prtcl_num'>&nbsp;(0-255)
+						</li>
+                     </ul>
+                  </div>
+              </li>
+
+<li class="set1">
+<div class="w_text" id='src_port'><ul>	
+  <li class="left_table"><%ejGetML(MLG_Security_FirewallProtocol_Str18)%>:</li>
+  <li class="right_table">
+  <select name='prtcl_sel_src' width='30' onChange='portChange("src")'>
+  <option value='any' selected><%ejGetML(MLG_Security_FirewallProtocol_Str15)%></option>
+  <option value='single'><%ejGetML(MLG_Security_FirewallProtocol_Str16)%></option>
+  <option value='range'><%ejGetML(MLG_Security_FirewallProtocol_Str17)%></option>  
+  </select>
+  &nbsp;&nbsp;
+  <input  name='srcPortStart' type='textbox' size='10'>
+  &nbsp;-&nbsp;<input  name='srcPortEnd' type='textbox' size='10'>
+  </li>
+</ul></div>
+</li>  
+
+<li class="set1">
+<div class="w_text" id='dst_port'><ul>	
+  <li class="left_table"><%ejGetML(MLG_Security_FirewallProtocol_Str19)%>:</li>
+  <li class="right_table">
+  <select name='prtcl_sel_dst' width='30' onChange='portChange("dst")'>
+  <option value='any' selected><%ejGetML(MLG_Security_FirewallProtocol_Str15)%></option>
+  <option value='single'><%ejGetML(MLG_Security_FirewallProtocol_Str16)%></option>
+  <option value='range'><%ejGetML(MLG_Security_FirewallProtocol_Str17)%></option>  
+  </select>
+  &nbsp;&nbsp;
+  <input  name='dstPortStart' type='textbox' size='10'>
+  &nbsp;-&nbsp;<input  name='dstPortEnd' type='textbox' size='10'>
+  </li>
+</ul></div>
+</li>
+
+<li class="set1">
+<div class="w_text" id='ICMPv6Type'><ul>	
+  <li class="left_table"><%ejGetML(MLG_Common_Type)%>:</li>
+  <li class="right_table">
+  <SELECT size=1 name=ICMPv6Type> 
+      <OPTION selected value=15>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <OPTION value=no-route>1 / No-Rute
+      <OPTION value=communication-prohibited>1 / Communication-Prohibited
+      <OPTION value=address-unreachable>1 / Address-Unreachable
+      <OPTION value=port-unreachable>1 / Port-Unreachable
+      <OPTION value=packet-too-big>2 / Packet too Big
+      <OPTION value=ttl-zero-during-transit>3 / Time Exceeded (ttl-zero-during-transit)
+      <OPTION value=ttl-zero-during-reassembly>3 / Time Exceeded (ttl-zero-during-reassembly)
+      <OPTION value=bad-header>4 / Parameter Problem (bad-header)
+      <OPTION value=unknown-header-type>4 / Parameter Problem (unknown-header-type)
+      <OPTION value=unknown-option>4 / Parameter Problem (unknown-option)
+      <OPTION value=echo-request>128 / Echo Request
+      <OPTION value=echo-reply>129 / Echo Response
+      <OPTION value=130>130 / Listener Query
+      <OPTION value=131>131 / Listener Report
+      <OPTION value=132>132 / Listener Done
+      <OPTION value=143>143 / Listener Report v2
+      <OPTION value=router-solicitation>133 / Router Solicitation
+      <OPTION value=router-advertisement>134 / Router Advertisement
+      <OPTION value=neighbor-solicitation>135 / Neighbor Solicitation
+      <OPTION value=neighbor-advertisement>136 / Neighbor Advertisement
+      <OPTION value=redirect>137 / Redirect</OPTION>
+   </SELECT>
+  </li>
+</ul></div>
+</li>
+
+<li class="buttonframe">
+	<div class="button_position"><input name="addButton" id="addButton" value="<%ejGetML(MLG_Security_FirewallProtocol_Str23)%>" type="button" onClick='btnAdd()'/>
+</div></li>
+<!--level 1 end-->
+<li class="space"> </li>
+
+<!--level 1 title start--><li class="title"><%ejGetML(MLG_Security_ParentalControl_Str3)%></li><!--level 1 title end-->
+<!--level 1 start-->
+<li class="set1"> 
+<div class="w_table">
+  <!--Table define start--><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id='tb2'>
+<tr >
+<td valign="top" class="top_font"><center><%ejGetML(MLG_Security_FirewallACL_Str12)%></center></td>
+<td width="35%" valign="top" class="top_font"><center><%ejGetML(MLG_Security_FirewallProtocol_Str5)%></center></td>
+<td width="60" align="center" class="top_font"><center><%ejGetML(MLG_Security_FirewallProtocol_Str6_1)%></center></td>
+</tr>
+  </table>
+</div><!--Table define end-->
+</li>
+<!--level 1 end-->
+<li class="set1"><div class="w_table"><table width="100%" border="0" cellpadding="0" cellspacing="2" >
+   <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+  <td width='30%'><%ejGetML(MLG_Security_FirewallProtocol_Str21)%>:</td>
+  <td width='60%'><input name='ServName' type='text' size='32' width='32' maxlength='32' value='' disabled></td> 
+ </tr>
+  <tr>
+  <td><%ejGetML(MLG_Security_FirewallProtocol_Str22)%>:</td>
+  <td><input name='ServDesc' type='textbox' size='50' width='50' maxlength='512' value=''></td> 
+ </tr>
+              </table></table></div>
+</li>
+<li class="space"> </li>
+</ul></div></div>
+</form>
+<!--Set area end-->
+
+

@@ -1,0 +1,45 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript" src="util.js"></script>
+            <script language="javascript">
+
+function btnBack() {
+   var loc = 'cbt_firewall.html';
+	
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function btnSave() {
+   var loc = 'cbt_firewall-cfg.cgi?';
+
+   loc += 'enblCBTfw=1';
+   loc += '&CBTfwLevel=Custom';
+
+   loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+            </script>
+   </head>
+   <body> <!-- onLoad='frmLoad()'> -->
+      <blockquote>
+         <form>
+            <b>Firewall Setup<br>
+            </b>
+            <br>
+            Level Setting is Custom. <br><br>
+            Firewall will be enabled.
+            <br>
+            <p align="center">
+               <input type='button' value='Back' onClick='btnBack()'>
+               <input type='button' value='Apply/Save' onClick='btnSave()'>
+            </P>
+         </form>
+      </blockquote>
+   </body>
+</html>

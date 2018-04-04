@@ -1,0 +1,527 @@
+<script language="javascript">
+<!-- hide
+var igmpVer = '<%ejGet(igmpVer)%>';
+var igmpQI = '<%ejGet(igmpQI)%>';
+var igmpQRI = '<%ejGet(igmpQRI)%>';
+var igmpLMQI = '<%ejGet(igmpLMQI)%>';
+var igmpRV= '<%ejGet(igmpRV)%>';
+var igmpMaxGroups = '<%ejGet(igmpMaxGroups)%>';
+var igmpMaxSources = '<%ejGet(igmpMaxSources)%>';
+var igmpMaxMembers = '<%ejGet(igmpMaxMembers)%>';
+var igmpFastLeaveEnable = '<%ejGet(igmpFastLeaveEnable)%>';
+var igmpLan2LanMulticastEnable = '<%ejGet(igmpLan2LanMulticastEnable)%>';
+var igmpJoinImmediateEnable = '<%ejGet(igmpJoinImmediateEnable)%>';
+
+var enblIP6 = '<%ejGetOther(sysInfo, enblIPv6)%>'
+var mldVer = '<%ejGet(mldVer)%>';
+var mldQI = '<%ejGet(mldQI)%>';
+var mldQRI = '<%ejGet(mldQRI)%>';
+var mldLMQI = '<%ejGet(mldLMQI)%>';
+var mldRV= '<%ejGet(mldRV)%>';
+var mldMaxGroups = '<%ejGet(mldMaxGroups)%>';
+var mldMaxSources = '<%ejGet(mldMaxSources)%>';
+var mldMaxMembers = '<%ejGet(mldMaxMembers)%>';
+var mldFastLeaveEnable = '<%ejGet(mldFastLeaveEnable)%>';
+var mldLan2LanMulticastEnable = '<%ejGet(mldLan2LanMulticastEnable)%>';
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+      var multicast = '';
+      multicast = '<%ejGetOther(multicast)%>';
+      enblIP6 = '<%ejGetOther(sysInfo, enblIPv6)%>'
+      igmpFastLeave.checked = <%ejGet(igmpFastLeaveEnable)%>;
+      igmpLan2LanMulticast.checked = <%ejGet(igmpLan2LanMulticastEnable)%>;
+      igmpJoinImmediate.checked = <%ejGet(igmpJoinImmediateEnable)%>;
+      mldFastLeave.checked = <%ejGet(mldFastLeaveEnable)%>;
+      mldLan2LanMulticast.checked = <%ejGet(mldLan2LanMulticastEnable)%>;
+
+      if ( enblIP6 == '1' ) {
+         hideMldInfo(0);
+      }
+      else
+         hideMldInfo(1);
+   }
+}
+
+function hideMldInfo(hide) {
+   var status = 'visible';
+
+   if ( hide == 1 )
+      status = 'hidden';
+   if (document.getElementById)  // DOM3 = IE5, NS6
+      document.getElementById('mldInfo').style.visibility = status;
+   else {
+      if (document.layers == false) // IE4
+         document.all.mldInfo.style.visibility = status;
+   }
+}
+
+function btnApply() {
+   var msg = "";
+   with ( document.forms[0] ) {
+      sessionKey.value = '<%ejGetOther(sessionKey)%>';
+      if ( isNaN(parseInt(igmpVer.value)) == true ) {
+         //alert('IGMP Version"' + igmpVer.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str14)%>", igmpVer.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      iVer = parseInt(igmpVer.value);
+      if ( iVer < 1 || iVer > 3 ) {
+         //alert('IGMP Version"' + igmpVer.value + '" is out of range [1-3].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str15)%>", igmpVer.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( isNaN(parseInt(igmpQI.value)) == true ) {
+         //alert('IGMP Query Interval "' + igmpQI.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str16)%>", igmpQI.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      iQI = parseInt(igmpQI.value);
+      if ( iQI < 1 ) {
+         //alert('IGMP Query Interval"' + igmpQI.value + '" is out of range [1-].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str17)%>", igmpQI.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( isNaN(parseInt(igmpQRI.value)) == true ) {
+         //alert('IGMP Query Response Interval"' + igmpQRI.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str18)%>", igmpQRI.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      iQRI = parseInt(igmpQRI.value);
+      if ( iQRI < 1 ) {
+         //alert('IGMP Query Response Interval"' + igmpQRI.value + '" is out of range [1-].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str19)%>", igmpQRI.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( isNaN(parseInt(igmpLMQI.value)) == true ) {
+         //alert('IGMP Last Member Query Interval"' + igmpLMQI.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str20)%>", igmpLMQI.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      iLMQI = parseInt(igmpLMQI.value);
+      if ( iLMQI < 1 ) {
+         //alert('IGMP Last Member Query Interval"' + igmpLMQI.value + '" is out of range [1-].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str21)%>", igmpLMQI.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( isNaN(parseInt(igmpRV.value)) == true ) {
+         //alert('IGMP Robustness Value"' + igmpRV.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str22)%>", igmpRV.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      iRV = parseInt(igmpRV.value);
+      if ( iRV < 1 ) {
+         //alert('IGMP Robustness Value"' + igmpRV.value + '" is out of range [1-].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str23)%>", igmpRV.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( isNaN(parseInt(igmpMaxGroups.value)) == true ) {
+         //alert('IGMP Maximum Groups"' + igmpMaxGroups.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str24)%>", igmpMaxGroups.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      iMaxGroups = parseInt(igmpMaxGroups.value);
+      if ( iMaxGroups < 1 ) {
+         //alert('IGMP Maximum Groups"' + igmpMaxGroups.value + '" is out of range [1-].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str25)%>", igmpMaxGroups.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( isNaN(parseInt(igmpMaxSources.value)) == true ) {
+         //alert('IGMP Maximum Sources"' + igmpMaxSources.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str26)%>", igmpMaxSources.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      iMaxSources = parseInt(igmpMaxSources.value);
+      if ( iMaxSources < 1 ) {
+         //alert('IGMP maximum Sources"' + igmpMaxSources.value + '" is out of range [1-].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str27)%>", igmpMaxSources.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( isNaN(parseInt(igmpMaxMembers.value)) == true ) {
+         //alert('IGMP Maximum Members"' + igmpMaxMembers.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str28)%>", igmpMaxMembers.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      iMaxMembers = parseInt(igmpMaxMembers.value);
+      if ( iMaxMembers < 1 ) {
+         //alert('IGMP Maximum Members"' + igmpMaxMembers.value + '" is out of range [1-].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_Str29)%>", igmpMaxMembers.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( igmpFastLeave.checked == true )
+        igmpFastLeaveEnable.value = 1;
+      else
+        igmpFastLeaveEnable.value = 0;
+
+      if ( igmpLan2LanMulticast.checked == true )
+        igmpLan2LanMulticastEnable.value = 1;
+      else
+        igmpLan2LanMulticastEnable.value = 0;
+
+      if ( igmpJoinImmediate.checked == true )
+        igmpJoinImmediateEnable.value = 1;
+      else
+        igmpJoinImmediateEnable.value = 0;
+
+      if ( enblIP6 == '1' ) {
+      if ( isNaN(parseInt(mldVer.value)) == true ) {
+         //alert('MLD Version "' + mldVer.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str12)%>", mldVer.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      mVer = parseInt(mldVer.value);
+      if ( mVer < 1 || mVer > 2 ) {
+         //alert('MLD Version"' + mldVer.value + '" is out of range [1-2].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str13)%>", mldVer.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( isNaN(parseInt(mldQI.value)) == true ) {
+         //alert('MLD Query Interval "' + mldQI.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str14)%>", mldQI.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      mQI = parseInt(mldQI.value);
+      if ( mQI < 1 ) {
+         //alert('MLD Query Interval"' + mldQI.value + '" is out of range [1-].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str15)%>", mldQI.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( isNaN(parseInt(mldQRI.value)) == true ) {
+         //alert('MLD Query Response Interval"' + mldQRI.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str16)%>", mldQRI.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      mQRI = parseInt(mldQRI.value);
+      if ( mQRI < 1 ) {
+         //alert('MLD Query Response Interval"' + mldQRI.value + '" is out of range [1-].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str17)%>", mldQRI.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( isNaN(parseInt(mldLMQI.value)) == true ) {
+         //alert('MLD Last Member Query Interval"' + mldLMQI.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str18)%>", mldLMQI.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      mLMQI = parseInt(mldLMQI.value);
+      if ( mLMQI < 1 ) {
+         //alert('MLD Last Member Query Interval"' + mldLMQI.value + '" is out of range [1-].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str19)%>", mldLMQI.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( isNaN(parseInt(mldRV.value)) == true ) {
+         //alert('MLD Robustness Value"' + mldRV.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str20)%>", mldRV.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      mRV = parseInt(mldRV.value);
+      if ( mRV < 1 ) {
+         //alert('MLD Robustness Value"' + mldRV.value + '" is out of range [1-].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str21)%>", mldRV.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( isNaN(parseInt(mldMaxGroups.value)) == true ) {
+         //alert('MLD Maximum Groups"' + mldMaxGroups.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str22)%>", mldMaxGroups.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      mMaxGroups = parseInt(mldMaxGroups.value);
+      if ( mMaxGroups < 1 ) {
+         //alert('MLD Maximum Groups"' + mldMaxGroups.value + '" is out of range [1-].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str23)%>", mldMaxGroups.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( isNaN(parseInt(mldMaxSources.value)) == true ) {
+         //alert('MLD Maximum Sources"' + mldMaxSources.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str24)%>", mldMaxSources.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      mMaxSources = parseInt(mldMaxSources.value);
+      if ( mMaxSources < 1 ) {
+         //alert('MLD maximum Sources"' + mldMaxSources.value + '" is out of range [1-].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str25)%>", mldMaxSources.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( isNaN(parseInt(mldMaxMembers.value)) == true ) {
+         //alert('MLD Maximum Members"' + mldMaxMembers.value + '" is invalid.');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str26)%>", mldMaxMembers.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+      mMaxMembers = parseInt(mldMaxMembers.value);
+      if ( mMaxMembers < 1 ) {
+         //alert('MLD Maximum Members"' + mldMaxMembers.value + '" is out of range [1-].');
+         msg = MLG_Makestring("<%ejGetML(MLG_Network_IGMP_MLD_Str27)%>", mldMaxMembers.value);
+         hciAlert(msg, {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return;
+      }
+
+      if ( mldFastLeave.checked == true )
+        mldFastLeaveEnable.value = 1;
+      else
+        mldFastLeaveEnable.value = 0;
+
+      if ( mldLan2LanMulticast.checked == true )
+        mldLan2LanMulticastEnable.value = 1;
+      else
+        mldLan2LanMulticastEnable.value = 0;
+
+      }
+   }
+   return true;
+}
+
+function doSubmit() {
+   if (btnApply()) {
+      document.forms[0].submit();
+      $.openLoadingMask(1);
+   }
+}
+
+// done hiding -->
+</script>
+   <form action="/pages/tabFW/homeNetworking-multicase.cgi" method="post">
+<input type="hidden" name="sessionKey" id="sessionKey">
+<input name="igmpFastLeaveEnable" type="HIDDEN" id="igmpFastLeaveEnable" value=""; />
+<input name="igmpLan2LanMulticastEnable" type="HIDDEN" id="igmpLan2LanMulticastEnable" value=""; />
+<input name="igmpJoinImmediateEnable" type="HIDDEN" id="igmpJoinImmediateEnable" value=""; />
+<input name="mldFastLeaveEnable" type="HIDDEN" id="mldFastLeaveEnable" value=""; />
+<input name="mldLan2LanMulticastEnable" type="HIDDEN" id="mldLan2LanMulticastEnable" value=""; />
+<div class="content_frame">
+<!--Unit Explain start-->
+         <div class="explain">
+            <div>
+               <b class="r1"></b>
+               <b class="r2"></b>
+               <b class="r3"></b>
+               <b class="r4"></b>
+               <b class="r4"></b>
+            </div>
+            <div class="explain_text"><%ejGetML(MLG_Network_IGMP_Str1)%></div>
+            <div>
+               <b class="r4"></b>
+               <b class="r4"></b>
+               <b class="r3"></b>
+               <b class="r2"></b>
+               <b class="r1"></b>
+            </div>
+         </div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<!--level 1 title start-->
+            <li class="title"><%ejGetML(MLG_Network_IGMP_Str2)%></li>
+<!--level 1 title end-->
+<li class="set1">
+    <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_Str3)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='igmpVer' value='<%ejGet(igmpVer)%>'>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_Str4)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='igmpQI' value='<%ejGet(igmpQI)%>'>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_Str5)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='igmpQRI' value='<%ejGet(igmpQRI)%>'>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_Str6)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='igmpLMQI' value='<%ejGet(igmpLMQI)%>'>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_Str7)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='igmpRV' value='<%ejGet(igmpRV)%>'>
+                     </li>
+                  </ul>
+               <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_Str8)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='igmpMaxGroups' value='<%ejGet(igmpMaxGroups)%>'>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_Str9)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='igmpMaxSources' value='<%ejGet(igmpMaxSources)%>'>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_Str10)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='igmpMaxMembers' value='<%ejGet(igmpMaxMembers)%>'>
+                     </li>
+                  </ul>
+                  <ul>                     
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_Str11)%>:</li>
+                     <li class="right_table">		
+			<tr>
+				<td><input type="checkbox" name="igmpFastLeave">&nbsp;&nbsp;</td>							
+			</tr>
+			<tr> <td>&nbsp;</td> <td>&nbsp;</td> </tr>
+		     </li>
+                  </ul>
+                  <ul>                     
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_Str12)%>:</li>
+                     <li class="right_table">		
+			<tr>
+				<td><input type="checkbox" name="igmpLan2LanMulticast">&nbsp;&nbsp;</td>							
+			</tr>
+			<tr> <td>&nbsp;</td> <td>&nbsp;</td> </tr>
+		     </li>
+                  </ul>
+                  <ul>                     
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_Str13)%>:</li>
+                     <li class="right_table">		
+			<tr>
+				<td><input type="checkbox" name="igmpJoinImmediate">&nbsp;&nbsp;</td>							
+			</tr>
+			<tr> <td>&nbsp;</td> <td>&nbsp;</td> </tr>
+		     </li>
+                  </ul>
+	    </div>
+	    </li>
+
+            <div id='mldInfo'>
+            <li class="title"><%ejGetML(MLG_Network_IGMP_MLD_Str1)%></li>
+	    <li class="set1">
+	    <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_MLD_Str2)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='mldVer' value='<%ejGet(mldVer)%>'>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_MLD_Str3)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='mldQI' value='<%ejGet(mldQI)%>'>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_MLD_Str4)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='mldQRI' value='<%ejGet(mldQRI)%>'>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_MLD_Str5)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='mldLMQI' value='<%ejGet(mldLMQI)%>'>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_MLD_Str6)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='mldRV' value='<%ejGet(mldRV)%>'>
+                     </li>
+                  </ul>
+               <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_MLD_Str7)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='mldMaxGroups' value='<%ejGet(mldMaxGroups)%>'>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_MLD_Str8)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='mldMaxSources' value='<%ejGet(mldMaxSources)%>'>
+                     </li>
+                  </ul>
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_MLD_Str9)%>:</li>
+                     <li class="right_table">
+                        <input type='text' name='mldMaxMembers' value='<%ejGet(mldMaxMembers)%>'>
+                     </li>
+                  </ul>
+                  <ul>                     
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_MLD_Str10)%>:</li>
+                     <li class="right_table">		
+			<tr>
+				<td><input type="checkbox" name="mldFastLeave">&nbsp;&nbsp;</td>							
+			</tr>
+			<tr> <td>&nbsp;</td> <td>&nbsp;</td> </tr>
+		     </li>
+                  </ul>
+                  <ul>                     
+                     <li class="left_table"><%ejGetML(MLG_Network_IGMP_MLD_Str11)%>:</li>
+                     <li class="right_table">		
+			<tr>
+				<td><input type="checkbox" name="mldLan2LanMulticast">&nbsp;&nbsp;</td>							
+			</tr>
+			<tr> <td>&nbsp;</td> <td>&nbsp;</td> </tr>
+		     </li>
+                  </ul>
+	    </div>
+	    </li>
+	    </div>
+			
+            <li class="space"></li>
+            <li class="buttonframe">
+               <div class="button_position">
+                  <input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="doSubmit();" />
+                     &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                  <input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();' />
+</div>
+</li>
+         </ul></div>
+         </div>
+   </form>
+<script language="javascript">
+<!-- hide
+   frmLoad();
+// done hiding -->
+</script>

@@ -1,0 +1,65 @@
+
+<script type="text/javascript">
+$(function(){
+
+     function CreateDB(){
+         var db = window.parent.$.zyUiDialog({
+            width: 450,
+            height: 190,
+            title: 'db 0',
+            buttons: {
+                'close': function(){   
+                
+                    var confirmDB = window.parent.$.zyUiDialog({
+                        width: 450,
+                        height: 100,
+                        title: 'close ?',
+                        buttons: {
+                            '<%ejGetML(MLG_Common_OK)%>': function(){
+                                confirmDB.dialog('close');
+                                db.dialog('close');
+                            },
+                            '<%ejGetML(MLG_Common_Cancel)%>': function(){
+                                confirmDB.dialog('close');
+                            }
+                        }
+                    });
+        
+                confirmDB.load('pages/template/tabPages/tab5_DB2.html'); 
+                confirmDB.dialog('open'); }
+            }
+       });
+       
+       return db;
+     }
+    
+     $('#testBtn0').click(function(){
+        var db1 = CreateDB();
+        db1.load('pages/template/tabPages/tab5_DB0.html');
+        db1.dialog('open');
+    });
+    
+     $('#testBtn1').click(function(){
+         var db1 = window.parent.$.zyUiDialog({
+             width: 450,
+             height: 190,
+             title: 'db 1',
+             buttons: {
+                 '<%ejGetML(MLG_Common_Cancel)%>': function(){
+                     db1.dialog('close');
+                 }
+             }
+         });
+		var link = 'pages/template/tabPages/tab5_DB1.html';
+        if(jQuery.browser.safari && parseInt(jQuery.browser.version)<=525 )
+        link='../../'+link;
+        db1.load(link);
+        db1.dialog('open');
+    });
+    
+    
+    });
+</script>
+<button id='testBtn0'> show multiple dialog 1 </button>
+
+<button id='testBtn1'> show multiple dialog 2 </button>

@@ -1,0 +1,202 @@
+<script language="javascript">
+<!-- hide
+var wlActiveUsers = '<%ejGetOtherBig(wlactiveusers)%>';
+var macfltList = '<%ejGetOther(getMacFltInfo, macList)%>';
+
+function isDuplicatedRecord(mac)
+{
+   var list = '<%ejGetWl(wlMacFilterList)%>';
+   var info = list.split('|');
+
+   for ( i = 0; i < info.length; i++ ) {
+      if (info[i] != '') {
+         if (info[i] == mac) {
+            return true;
+         }
+      }
+   }
+
+   return false;
+}
+
+function frmLoad() {
+   $('#exitDevice').append('<option value=""><%ejGetML(MLG_WLAN_MACAuthentication_Str10)%></option>'); 
+
+   if (wlActiveUsers.length > 1) {
+      var lanInfo = wlActiveUsers.split('|');
+
+      if (lanInfo.length>0){
+         for (i = 0; i < lanInfo.length; i++){
+            var hostVar = lanInfo[i].split('/');
+
+            if (hostVar[1] == '' || hostVar[1] == undefined){
+               break;
+            }
+            $('#exitDevice').append('<option value="'+hostVar[3]+'">'+hostVar[1]+'('+hostVar[5]+')</option>');
+         }
+      }
+   }
+
+}
+
+function setInfo() {
+   if (wlActiveUsers.length > 1) {
+      var lanInfo = wlActiveUsers.split('|');
+      if (lanInfo.length>0){
+         for (i = 0; i < lanInfo.length; i++){
+            var hostVar = lanInfo[i].split('/');
+            $("#str1").val('');
+            $("#str2").val('');
+            $("#str3").val('');
+            $("#str4").val('');
+            $("#str5").val('');
+            $("#str6").val('');
+            
+            if (hostVar[3] == $('#exitDevice').val()) {
+               var mac = hostVar[3].split(':');
+               $("#str1").val(mac[0]);
+               $("#str2").val(mac[1]);
+               $("#str3").val(mac[2]);
+               $("#str4").val(mac[3]);
+               $("#str5").val(mac[4]);
+               $("#str6").val(mac[5]);
+               break;
+            }
+         }
+      }
+   }
+}
+
+function isMacFltInUsed(mac) {
+   var info = macfltList.split('@');
+
+   for ( i=0; i<info.length; i++ ) {
+      if ( info[i] != '' ) {
+         if ( info[i].toUpperCase() == mac ) {
+            return true;
+         }
+      }
+   }
+   return false;
+}
+
+function btnSave() {
+   with ( document.forms[0] ) {
+      var msg = "";
+      wlFltMacAddr.value = str1.value + ":" + str2.value + ":" + str3.value + ":" + str4.value + ":" + str5.value + ":" +str6.value;
+
+      if (wlFltMacAddr.value.length != 17) {
+         msg = MLG_Makestring("<%ejGetML(MLG_WLAN_MACAuthentication_AlertMsg_Str4)%>", wlFltMacAddr.value );
+         hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return false;
+      } else if (isValidMacAddress(wlFltMacAddr.value) == false) {
+         msg = MLG_Makestring("<%ejGetML(MLG_WLAN_MACAuthentication_AlertMsg_Str4)%>", wlFltMacAddr.value );
+         hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return false;
+      } else if (isDuplicatedRecord(wlFltMacAddr.value.toUpperCase()) == true) {
+         msg = MLG_Makestring("<%ejGetML(MLG_WLAN_MACAuthentication_AlertMsg_Str3)%>", wlFltMacAddr.value);
+         hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return false;
+      } else if (isMacFltInUsed(wlFltMacAddr.value.toUpperCase()) == true) {
+         msg = MLG_Makestring("<%ejGetML(MLG_WLAN_MACAuthentication_AlertMsg_Str5)%>", wlFltMacAddr.value);
+         hciAlert(msg, {height: 180, type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+         return false;
+      }
+      else {
+         sessionKey.value = mainFrame.glbSessionKey;
+
+         str1.disabled = "true";
+         str2.disabled = "true";
+         str3.disabled = "true";
+         str4.disabled = "true";
+         str5.disabled = "true";
+         str6.disabled = "true";
+
+         exitDevice.disabled = "true";
+      }
+
+      
+   }
+
+   return true;
+}
+
+function doSubmit() {
+   if (btnSave()) {
+      document.forms[0].submit();
+      $('.ui-dialog-titlebar-close').trigger('click');
+      $.openLoadingMask(1);
+   }
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var OkBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+OkBtn.click(function(){ doSubmit(); });
+
+$(document).ready(function() {
+  frmLoad();
+});
+
+// done hiding -->
+</script>
+   <form action="/pages/tabFW/wireless-macflt.cmd" method="post" target="mainFrame">
+      <div class="popup_frame" >
+<!--Unit Explain start-->
+<!--
+         <div class="explain">
+            <div>
+               <b class="r1"></b>
+               <b class="r2"></b>
+               <b class="r3"></b>
+               <b class="r4"></b>
+               <b class="r4"></b>
+            </div>
+            <div class="explain_text">Used for wireless MAC authentication.</div>
+            <div>
+               <b class="r4"></b>
+               <b class="r4"></b>
+               <b class="r3"></b>
+               <b class="r2"></b>
+               <b class="r1"></b>
+            </div>
+         </div>
+-->
+<!--Unit Explain End-->
+         <div class="data_frame"><ul>
+<!--level 1 start-->
+		 <li class="title"><%ejGetML(MLG_WLAN_MACAuthentication_Str6)%></li>
+            <li class="set1">
+               <div class="w_text"><%ejGetML(MLG_WLAN_MACAuthentication_Str8)%>  :</div>
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_MACAuthentication_Str9)%>:</li>
+                     <li class="right_table">
+                     	  <select name='exitDevice' id='exitDevice' size='1' onChange='setInfo()'>
+                     	  </select>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li class="left_table"><%ejGetML(MLG_WLAN_MACAuthentication_Str4)%> :</li>
+                     <li class="right_table">
+                        <input name="str1" id="str1" type="text" size="2" maxlength="2" onFocus="nextfield = 'str2'; prevfield = 'str1';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)" /> :<input name="str2" id="str2" type="text" size="2" maxlength="2" onFocus="nextfield  = 'str3';prevfield = 'str1';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)"/> :<input name="str3" id="str3" type="text" size="2" maxlength="2" onFocus="nextfield  = 'str4';prevfield = 'str2';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)"/> :<input name="str4" id="str4" type="text" size="2" maxlength="2" onFocus="nextfield  = 'str5';prevfield = 'str3';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)"/> :<input name="str5" id="str5" type="text" size="2" maxlength="2" onFocus="nextfield  = 'str6';prevfield = 'str4';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)"/> :<input name="str6" id="str6"type="text" size="2" maxlength="2" onFocus="nextfield = 'str6';prevfield = 'str5';" onKeyDown = "return doKeyDownEvent(event)" onKeyUp="return doMacStrKeyUp(event)"  onKeyPress="return disableEnterKey(event)"/>
+                     </li>
+                  </ul>   
+               </div>
+            </li>
+            <input name="wlFltMacAddr" size="17" maxlength="17" type="hidden" onKeyPress="return disableEnterKey(event)"/>
+            <input size="15" type="hidden" name="action" value="add" />
+            <input size="15" type="hidden" name="wlSyncNvram" value="1" />
+            <input size="15" type="hidden" name="sessionKey" />
+         </ul></div>
+      </div>
+   </form>
+   
+<script language="JavaScript">
+with ( document.forms[0] ) {
+   str1.focus();
+}
+</script>   

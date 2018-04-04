@@ -1,0 +1,464 @@
+<script language="javascript">
+
+var qosMonitorRefrshTime = "<%ejGet(qosMonitorRefrshTime)%>";
+var gblsessionKey = "<%ejGetOther(sessionKey)%>";
+
+var refreshTimeout = 0;
+var isRefreshing = 0;
+
+window.onbeforeunload = function () {
+    clearTimeout(gblTimeValue);
+}
+
+function autoRefresh() {
+  with ( document.forms[0] ) {
+      $('#monitorRefreshIcon').show();
+      isRefreshing = 1;
+      
+      autoRefreshLv3();
+      autoRefreshLv1();
+   }
+}
+
+function autoRefreshLv1(){
+   $.ajax({
+      url: "qos-view.cmd",
+      type: 'POST',
+      async: true,
+      cache: false,
+      timeout: 60000,
+      data:  "sessionKey=" + gblsessionKey + "&action=queryInterfaceList",
+      success:  function(data){
+
+                  if(data == undefined){
+                     return;
+                  }
+
+                  var params = data.split("@");
+
+                  if(params.length < 3){
+                     return;
+                  }
+                  
+                  gblsessionKey = params[0];
+                  var qosInterfaceMonitorList = params[1];
+
+                  var i = 0;
+                  var info = qosInterfaceMonitorList.split('|');
+                  var str = '';
+                  str += "<table width=\"100%\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" class=\"table_frame\" id=\"qosInterfaceMonitorTable\">";
+                  str += "<tr align=\"center\">";
+                  str += "<td width=\"5%\" class=\"top_font\">#</td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_Common_Name)%></td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_QOS_QOSMonitor_Str8)%></td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_QOS_QOSMonitor_Str9)%></td>";
+                  str += "</tr>";  
+
+                  qosInterfaceMonitorList_count = 0;
+                  if (info != '') {
+                     for ( i = 0; i < info.length; i++ ) {
+                        var names = info[i].split('/');
+                        str += "<tr align=\"center\" >";
+                        str += "<td class=\"table_font\">" + (i + 1) + "</td>";
+                        str += "<td class=\"table_font\">" + names[0] + "</td>";
+                        if(names[1]=="NA")
+                          str += "<td class=\"table_font\"><%ejGetML(MLG_Common_NA)%></td>";
+                        else
+                          str += "<td class=\"table_font\">" + names[1] + "</td>";
+                        if(names[2]=="NA")
+                          str += "<td class=\"table_font\"><%ejGetML(MLG_Common_NA)%></td>";
+                        else
+                          str += "<td class=\"table_font\">" + names[2] + "</td>";
+                        str += "</tr>";
+
+                        qosInterfaceMonitorList_count++;
+                     }
+                  }
+
+                  str += "</table>";
+
+                  $('#qosInterfaceMonitorTable').replaceWith(str);
+
+
+                  var qosQueueMonitorList = params[2];
+                  i = 0;
+                  info = qosQueueMonitorList.split('|');
+                  str = '';
+                  str += "<table width=\"100%\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" class=\"table_frame\" id=\"qosQueueMonitorTable\">";
+                  str += "<tr align=\"center\">";
+                  str += "<td width=\"5%\" class=\"top_font\">#</td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_Common_Name)%></td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_QOS_QOSMonitor_Str8)%></td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_QOS_QOSMonitor_Str9)%></td>";
+                  str += "</tr>";
+
+                  qosQueueMonitorList_count = 0;
+                  if (info != '') {
+                     for ( i = 0; i < info.length; i++ ) {
+                        var names = info[i].split('/');
+                        str += "<tr align=\"center\" >";
+                        str += "<td class=\"table_font\">" + (i + 1) + "</td>";
+                        str += "<td class=\"table_font\">" + names[0] + "</td>";
+                        if(names[1]=="NA")
+                           str += "<td class=\"table_font\"><%ejGetML(MLG_Common_NA)%></td>";
+                        else
+                           str += "<td class=\"table_font\">" + names[1] + "</td>";
+                        if(names[2]=="NA")
+                           str += "<td class=\"table_font\"><%ejGetML(MLG_Common_NA)%></td>";
+                        else
+                           str += "<td class=\"table_font\">" + names[2] + "</td>";
+                        str += "</tr>";
+
+                        qosQueueMonitorList_count++;
+                     }
+                  }
+
+                  str += "</table>";
+
+                  $('#qosQueueMonitorTable').replaceWith(str);
+                  
+                  //jump to level 2
+                  //autoRefreshLv2();
+               },
+      error:   function(){
+                  var str = '';
+                  str += "<table width=\"100%\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" class=\"table_frame\" id=\"qosInterfaceMonitorTable\">";
+                  str += "<tr align=\"center\">";
+                  str += "<td width=\"5%\" class=\"top_font\">#</td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_Common_Name)%></td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_QOS_QOSMonitor_Str8)%></td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_QOS_QOSMonitor_Str9)%></td>";
+                  str += "</tr>";  
+                  str += "</table>";
+
+                  $('#qosInterfaceMonitorTable').replaceWith(str);
+                  
+                  //autoRefreshLv2();
+                  
+                  var str = '';
+                  str += "<table width=\"100%\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" class=\"table_frame\" id=\"qosQueueMonitorTable\">";
+                  str += "<tr align=\"center\">";
+                  str += "<td width=\"5%\" class=\"top_font\">#</td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_Common_Name)%></td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_QOS_QOSMonitor_Str8)%></td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_QOS_QOSMonitor_Str9)%></td>";
+                  str += "</tr>";
+                  str += "</table>";
+
+                  $('#qosQueueMonitorTable').replaceWith(str);
+               }            
+   });
+}
+
+function autoRefreshLv2(){
+   $.ajax({
+      url: "qos-view.cmd",
+      type: 'POST',
+      async: true,
+      cache: false,
+      timeout: 60000,
+      data:  "sessionKey=" + gblsessionKey + "&action=queryQueueList",
+      success:  function(data){
+	  
+                  if(data == undefined){
+                     return;
+                  }
+      
+                  var params = data.split("@");
+
+                  if(params.length < 2){
+                     return;
+                  }
+                  
+                  gblsessionKey = params[0];
+                  var qosQueueMonitorList = params[1];   
+
+                  var i = 0;
+                  var info = qosQueueMonitorList.split('|');
+                  var str = '';
+                  str += "<table width=\"100%\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" class=\"table_frame\" id=\"qosQueueMonitorTable\">";
+                  str += "<tr align=\"center\">";
+                  str += "<td width=\"5%\" class=\"top_font\">#</td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_Common_Name)%></td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_QOS_QOSMonitor_Str8)%></td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_QOS_QOSMonitor_Str9)%></td>";
+                  str += "</tr>";
+
+                  qosQueueMonitorList_count = 0;
+                  if (info != '') {
+                     for ( i = 0; i < info.length; i++ ) {
+                        var names = info[i].split('/');
+                        str += "<tr align=\"center\" >";
+                        str += "<td class=\"table_font\">" + (i + 1) + "</td>";
+                        str += "<td class=\"table_font\">" + names[0] + "</td>";
+                        if(names[1]=="NA")
+                           str += "<td class=\"table_font\"><%ejGetML(MLG_Common_NA)%></td>";
+                        else
+                           str += "<td class=\"table_font\">" + names[1] + "</td>";
+                        if(names[2]=="NA")
+                           str += "<td class=\"table_font\"><%ejGetML(MLG_Common_NA)%></td>";
+                        else
+                           str += "<td class=\"table_font\">" + names[2] + "</td>";
+                        str += "</tr>";
+
+                        qosQueueMonitorList_count++;
+                     }
+                  }
+
+                  str += "</table>";
+
+                  $('#qosQueueMonitorTable').replaceWith(str);
+                  
+                  //jump to level 3
+                  //autoRefreshLv3();
+               },
+      error:   function(){
+                  var str = '';
+                  str += "<table width=\"100%\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" class=\"table_frame\" id=\"qosQueueMonitorTable\">";
+                  str += "<tr align=\"center\">";
+                  str += "<td width=\"5%\" class=\"top_font\">#</td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_Common_Name)%></td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_QOS_QOSMonitor_Str8)%></td>";
+                  str += "<td class=\"top_font\"><%ejGetML(MLG_QOS_QOSMonitor_Str9)%></td>";
+                  str += "</tr>";
+                  str += "</table>";
+
+                  $('#qosQueueMonitorTable').replaceWith(str);
+                  
+                  //autoRefreshLv3();
+               }
+   });
+}
+
+function autoRefreshLv3(){
+   if(refreshTimeout != 0){
+      gblTimeValue = setTimeout('autoRefresh()', refreshTimeout);
+   }
+
+   $('#monitorRefreshIcon').hide();
+   isRefreshing = 0;
+}
+
+function resetInterval(reload) {
+   var selecting;
+
+  with ( document.forms[0] ) {
+   selecting = monitorRefresh.options[monitorRefresh.selectedIndex].value;
+
+
+   if (reload != 1)
+      clearTimeout(gblTimeValue);
+
+   $.cookie("qosrefresh", selecting);
+
+   if (selecting == 0)
+   {
+     clearTimeout(gblTimeValue);
+     refreshTimeout = 0;
+      /*
+      if(isRefreshing == 0){
+         autoRefresh();
+      }
+	  */
+   }
+   else if (selecting == 1){
+      //5
+      if(isRefreshing == 0){
+         clearTimeout(gblTimeValue);
+         gblTimeValue = setTimeout('autoRefresh()', 5000);
+      }
+      refreshTimeout = 5000;
+   }else if (selecting == 2){
+      //10
+      if(isRefreshing == 0){
+         clearTimeout(gblTimeValue);
+         gblTimeValue = setTimeout('autoRefresh()', 10000);
+      }
+      refreshTimeout = 10000;
+   }else if (selecting == 3){
+      //30
+      if(isRefreshing == 0){
+         clearTimeout(gblTimeValue);
+         gblTimeValue = setTimeout('autoRefresh()', 30000);
+      }
+      refreshTimeout = 30000;
+   }else if (selecting == 4){
+      //60
+      if(isRefreshing == 0){
+         clearTimeout(gblTimeValue);
+         gblTimeValue = setTimeout('autoRefresh()', 60000);
+      }
+      refreshTimeout = 60000;
+   }
+      
+  }
+}
+
+function frmLoad() {
+	with ( document.forms[0] ) {
+      if (qosMonitorRefrshTime != 0){
+         for (i=0 ; i<monitorRefresh.length ; i++) {
+            if (monitorRefresh.options[i].value == qosMonitorRefrshTime){
+               monitorRefresh.selectedIndex = i;
+            }
+         }
+      }
+
+      if ( $.cookie("qosrefresh") != null ) {
+         $('#monitorRefresh').val($.cookie("qosrefresh"));
+      }      
+      
+      if ( monitorRefresh.selectedIndex != 0)
+         resetInterval(0);
+      }
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+</script>
+<form>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+  <div>
+    <b class="r1"></b>
+    <b class="r2"></b>
+    <b class="r3"></b>
+    <b class="r4"></b>
+    <b class="r4"></b>
+  </div>
+  <div class="explain_text"><%ejGetML(MLG_QOS_QOSMonitor_Str1)%></div>
+  <div>
+    <b class="r4"></b>
+    <b class="r4"></b>
+    <b class="r3"></b>
+    <b class="r2"></b>
+    <b class="r1"></b>
+  </div>
+</div>
+<!--Unit Explain End-->
+<div class="data_frame">
+  <ul>
+    <li class="set1">
+      <div class="title"><%ejGetML(MLG_QOS_QOSMonitor_Str2)%></div>
+      <div class="w_text">
+        <ul>
+          <li class="left_table"><%ejGetML(MLG_QOS_QOSMonitor_Str3)%></li>
+          <li class="right_table">
+            <select name="monitorRefresh" id="monitorRefresh" size="1" onchange="resetInterval(0);" onUnload="resetInterval(0);">
+              <option value="0" selected="selected" ><%ejGetML(MLG_QOS_QOSMonitor_Str12)%></option>
+              <option value="1" >5 <%ejGetML(MLG_Common_Seconds)%></option>
+              <option value="2" >10 <%ejGetML(MLG_Common_Seconds)%></option>
+              <option value="3" >30 <%ejGetML(MLG_Common_Seconds)%></option>
+            </select>
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li class="space"></li>
+    <li class="set1">
+      <div class="title"><%ejGetML(MLG_QOS_QOSMonitor_Str6)%></div>
+    </li>
+    <li class="set2">
+      <div class="title2">
+        <span class="i_title2"><%ejGetML(MLG_QOS_QOSMonitor_Str7)%></span>
+      </div>
+      <div class="w_table">
+        <table id="qosInterfaceMonitorTable" width="100%" cellpadding="0" cellspacing="0"class="table_frame" >
+          <tr align="center">
+            <td width="5%" class="top_font">#</td>
+            <td class="top_font"><%ejGetML(MLG_Common_Name)%></td>
+            <td class="top_font"><%ejGetML(MLG_QOS_QOSMonitor_Str8)%></td>
+            <td class="top_font"><%ejGetML(MLG_QOS_QOSMonitor_Str9)%></td>
+          </tr>
+<script language="javascript">
+<!-- hide
+{
+   var i = 0;
+   var qosInterfaceMonitorList = '<%ejGetOther(qosInterfaceMonitorList)%>';
+/*   var staticiplease = '1/00:19:cb:11:22:33/192.168.1.100|0/00:11:22:ab:12:13/192.168.1.200'; */
+   var info = qosInterfaceMonitorList.split('|');
+   var str = '';
+
+   qosInterfaceMonitorList_count = 0;
+   if (info != '') {
+      for ( i = 0; i < info.length; i++ ) {
+         var names = info[i].split('/');
+         str += "<tr align=\"center\" >";
+         str += "<td class=\"table_font\">" + (i + 1) + "</td>";
+         str += "<td class=\"table_font\">" + names[0] + "</td>";
+         if(names[1]=="NA")
+           str += "<td class=\"table_font\"><%ejGetML(MLG_Common_NA)%></td>";
+         else
+           str += "<td class=\"table_font\">" + names[1] + "</td>";
+         if(names[2]=="NA")
+           str += "<td class=\"table_font\"><%ejGetML(MLG_Common_NA)%></td>";
+         else
+           str += "<td class=\"table_font\">" + names[2] + "</td>";
+         str += "</tr>";
+
+         qosInterfaceMonitorList_count++;
+      }
+   }
+
+   $('#qosInterfaceMonitorTable').append(str)
+}
+// done hiding -->
+</script>
+        </table>
+      </div>
+    </li>
+    <li class="set2">
+      <div class="title2">
+        <span class="i_title2"><%ejGetML(MLG_QOS_QOSMonitor_Str10)%></span>
+      </div>
+      <div class="w_table">
+        <table id="qosQueueMonitorTable" width="100%" cellpadding="0" cellspacing="0"  class="table_frame">
+          <tr align="center">
+            <td width="5%" class="top_font">#</td>
+            <td class="top_font"><%ejGetML(MLG_Common_Name)%></td>
+            <td class="top_font"><%ejGetML(MLG_QOS_QOSMonitor_Str8)%></td>
+            <td class="top_font"><%ejGetML(MLG_QOS_QOSMonitor_Str9)%></td>
+          </tr>
+<script language="javascript">
+<!-- hide
+{
+   var i = 0;
+   var qosQueueMonitorList = '<%ejGetOther(qosQueueMonitorList)%>';
+/*   var staticiplease = '1/00:19:cb:11:22:33/192.168.1.100|0/00:11:22:ab:12:13/192.168.1.200'; */
+   var info = qosQueueMonitorList.split('|');
+   var str = '';
+
+   qosQueueMonitorList_count = 0;
+   if (info != '') {
+      for ( i = 0; i < info.length; i++ ) {
+         var names = info[i].split('/');
+         str += "<tr align=\"center\" >";
+         str += "<td class=\"table_font\">" + (i + 1) + "</td>";
+         str += "<td class=\"table_font\">" + names[0] + "</td>";
+         if(names[1]=="NA")
+           str += "<td class=\"table_font\"><%ejGetML(MLG_Common_NA)%></td>";
+         else
+           str += "<td class=\"table_font\">" + names[1] + "</td>";
+         if(names[2]=="NA")
+           str += "<td class=\"table_font\"><%ejGetML(MLG_Common_NA)%></td>";
+         else
+           str += "<td class=\"table_font\">" + names[2] + "</td>";
+         str += "</tr>";
+
+         qosQueueMonitorList_count++;
+      }
+   }
+
+   $('#qosQueueMonitorTable').append(str)
+}
+// done hiding -->
+</script>
+        </table>
+      </div>
+    </li>
+  </ul>
+</div>
+</div>
+</form>

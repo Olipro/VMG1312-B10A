@@ -1,0 +1,9 @@
+[Project Dir]
+Dirs=
+Files=wput.h/ftp.c/ftp.h/utils.c/utils.h/wput.c/progress.c/socketlib.c/progress.h/queue.c/windows.h/memdbg.c/ftp-ls.c/socketlib.h/_queue.h/constants.h/ftplib.c/ftplib.h
+
+[Project File]
+Name=wput
+Type=Default
+
+#open("ftplib.c").readlines.each {|i| print i if(i[0] != "\n"[0] && i[0] != "\t"[0] && i[0] != "}"[0] && i[0] != " "[0] && i[0] != "/"[0])}

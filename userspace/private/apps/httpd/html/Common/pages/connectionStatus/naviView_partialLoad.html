@@ -1,0 +1,364 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html style="overflow-x:hidden" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+<link href="../../css/brick.css" rel="stylesheet" type="text/css" />
+<script src="../../js/jquery-1.3.2.min.js" type="text/javascript"></script>
+<script src="../../js/common.js" type="text/javascript"></script>  
+<script src="../../js/jquery.tools.min_tab.js" type="text/javascript"></script>
+<script src="../../js/jquery.getParams.js" type="text/javascript"></script>
+<script type="text/javascript" src="../../js/jquery.pngFix.pack.js"></script>
+<script src="../../js/jquery.tooltip.min.js" type="text/javascript" ></script>
+<script src="../VD/VDcomponent.js" type="text/javascript"></script>
+<script src="../../js/functions.js" type="text/javascript"></script>
+<script type="text/javascript" src="../../js/jquery.text-overflow.js"></script>
+<script type="text/javascript" src="../../js/util.js"></script>
+
+<script language="javascript">
+<!-- hide
+
+var pageIdx = 0;
+var objInfoXMLHTTP = null;
+
+// Refresh
+var selecting;
+var timeValue;
+
+// Status page timer
+var timetask;
+var inctimetask;
+var cputask;
+var dnstask;
+
+setPageIndex('connectionStatus');
+var naviApi;
+var $contentPanel;
+var naviViewPath = "naviView.json"
+
+var customizationFlag = '<%ejGetOther(customizationFlag)%>'; 
+
+var naviViewObj = {
+   api: null,
+   content: null,
+   contentArry: []
+};
+
+if (window.XMLHttpRequest) {
+   objInfoXMLHTTP = new XMLHttpRequest();
+} else if (window.ActiveXObject) {
+   // code for IE
+   objInfoXMLHTTP = new ActiveXObject("Microsoft.XMLHTTP");
+}
+
+// HCI define
+$(function(){
+   var $title= $('.title');
+   var tabIndex = -1;
+      
+   function loadData(){
+      $contentPanel = $('.pane');
+      var allPath = naviViewPath;
+      var $tabContainer = $('.tabs');
+
+      var indexCounter = 0;
+      var defaultIndex = 0;
+
+      $.ajaxSettings.async = false;
+      $.getJSON(naviViewPath, function(data){
+
+      naviViewObj.content = data;
+      $.each(data, function(i, item){
+         if (i == "pageIndex") {
+            return true;
+         }
+
+         var menuItemA = $('<a class><span>' + item.title + '</span></a>');
+
+         menuItemA.attr('id', 't_' + i);
+         menuItemA.attr('href', item.url);
+
+         var tabItemLi = $('<li></li>');
+         /*  tabItemLi.attr('url', item.url);
+         tabItemLi.attr('tabId', i);
+         tabItemLi.attr('tabIndex', indexCounter);*/
+         naviViewObj.contentArry.push(item);
+
+         //set default
+         if (item.defaultPage != undefined) {
+            defaultIndex = indexCounter;
+         }
+         indexCounter++;
+         tabItemLi.append(menuItemA);
+         $tabContainer.append(tabItemLi);
+      });
+   });
+   $.ajaxSettings.async = true;
+   doTab(defaultIndex);
+}
+
+var urlIndex = -1;
+if ($.getURLParam("index") != null) {
+   urlIndex = $.getURLParam("index");
+}
+
+//do tab
+loadData();
+
+function doTab(index){
+   if (urlIndex != -1) 
+      index = parseInt(urlIndex);
+            
+      naviApi = $("ul.tabs").tabs("div.panes > div", {
+         effect: 'ajax',
+         initialIndex: index,
+         api: true,
+         onClick: function(d, index){
+            //open mask
+            if(window.parent.$.closeLoadingMask!=undefined) {
+               window.parent.$.closeLoadingMask();
+            }
+
+            //replase model name
+            replaceSysVar();
+            $title.html(naviViewObj.contentArry[index].title);
+
+            if (naviViewObj.contentArry[index + 1] != undefined) {
+               $('#naviRText').html(naviViewObj.contentArry[index + 1].title)
+            }
+
+            if (naviViewObj.contentArry[index - 1] != undefined) {
+               $('#naviLText').html(naviViewObj.contentArry[index - 1].title)
+            }
+                  
+            $('#naviPrev').removeClass('disable');
+            $('#naviNext').removeClass('disable');
+                  
+            if (naviApi.getIndex() + 1 == naviApi.getTabs().length) {
+               $('#naviNext').addClass('disable');
+            }
+
+            if (naviApi.getIndex() == 0) {
+               $('#naviPrev').addClass('disable');
+            }
+
+            // status page
+            if(naviApi.getIndex() != 1){
+               clearTimeout(inctimetask);
+               clearTimeout(timetask);
+               clearTimeout(cputask);
+			   clearTimeout(dnstask);
+            }
+
+            // Get network page index for refresh update.
+            // 0: NetworkMap, 1: Status, 2: Virtual Device
+            pageIdx = naviApi.getIndex();
+            resetInterval();
+         },
+         onBeforeClick: function(){
+            //close mask
+            if(window.parent.$.closeLoadingMask!=undefined) {
+               window.parent.$.openLoadingMask();
+            }
+         }
+      });     
+      naviViewObj.api = naviApi;
+   }
+
+   $('#naviPrev').click(function(){
+      naviApi.prev();
+   });
+
+   $('#naviNext').click(function(){
+      naviApi.next();
+   });
+
+   //pngfix for ie6
+   function doPngFix(){
+      if ($.browser.msie && ($.browser.version == "6.0") && !$.support.style) {
+         $contentPanel.pngFix();
+      }
+   }
+   doPngFix();
+   $('body').bind('ajaxComplete', doPngFix);
+});
+
+function connection(flag, level){
+   if (flag) {
+      $('.disconnect').hide();
+      $('.connect').show();
+      $('#downMsg').fadeOut(0);
+   } else {
+      $('.disconnect').show();
+      $('.connect').hide();
+      $('#downMsg').fadeIn(0);
+
+      var str = '';
+
+/* __ZyXEL__, Albert, 20170320, For ZAP customization. */
+      if((customizationFlag & 0x40000000) == 0x40000000){
+          str = MLG_Makestring("O ZAP Router não consegue ligar á Internet. Por favor verifique a ligação entre o ONT e o ZAP Router. Caso o problema se mantenha, por favor contacte a Linha de Apoio a Cliente ZAP Fibra através do nº 935 555 600" );	  	
+      }else{
+      if(level == '1') {
+         str = MLG_Makestring("<%ejGetML(MLG_ConnStatus_NetworkMap_AlertMsg_Str2)%>", "<%ejGet(modelName)%>", "<%ejGet(modelName)%>");
+      } else {
+         str = MLG_Makestring("<%ejGetML(MLG_ConnStatus_NetworkMap_AlertMsg_Str3)%>", "<%ejGet(modelName)%>");
+      }
+      }
+      $('#errorMsg').html(str);
+   }
+}
+
+function MM_goToURL(){ //v3.0
+   var i, args = MM_goToURL.arguments;
+   document.MM_returnValue = false;
+   for (i = 0; i < (args.length - 1); i += 2) {
+      eval(args[i] + ".location='" + args[i + 1] + "'");
+   }
+}
+// ===
+
+function updateValue_take()
+{
+   var url = '';
+   if (pageIdx == 0) {
+      // update networkMap value;
+      url = '/pages/connectionStatus/GetNetworkMapInfo.html';
+   } else if (pageIdx == 1){
+      // update status value;
+      url = '/pages/connectionStatus/GetStatusInfo.html';
+   } else if (pageIdx == 2) {
+      // update VD value;
+      url = '/pages/connectionStatus/GetVDInfo.html';
+   }
+
+   if ( objInfoXMLHTTP != null ) {
+      objInfoXMLHTTP.open("GET", url, true);
+      objInfoXMLHTTP.onreadystatechange = function() 
+      {
+         if(objInfoXMLHTTP.readyState == 4) {
+            // each Network Map page(networkMap, status, VD) have implement updateValue() function.
+            var updateValueStr = objInfoXMLHTTP.responseText;
+
+            if ( (updateValueStr != null) && updateValueStr != "" ) {
+               updateValue(updateValueStr);
+            }
+         }
+      }
+      objInfoXMLHTTP.send(null);
+   }
+
+   if (selecting == 1) {
+      timeValue = setTimeout('updateValue_take()', 5000);
+   } else if (selecting == 2) {
+      timeValue = setTimeout('updateValue_take()', 10000);
+	} else if (selecting == 3) {
+      timeValue = setTimeout('updateValue_take()', 15000);
+   } else if (selecting == 4) {
+      timeValue = setTimeout('updateValue_take()', 20000);
+   } else if (selecting == 5) {
+      timeValue = setTimeout('updateValue_take()', 25000);
+   } else if (selecting == 5) {
+      timeValue = setTimeout('updateValue_take()', 30000);
+   } else {
+      clearTimeout(timeValue);
+   }
+}
+
+// set update interval
+function resetInterval() {
+	selecting = $('#Sys_RefreshList').val();
+
+	clearTimeout(timeValue);
+
+   if (selecting == 1) {
+      timeValue = setTimeout('updateValue_take()', 5000);
+   } else if (selecting == 2) {
+      timeValue = setTimeout('updateValue_take()', 10000);
+	} else if (selecting == 3) {
+      timeValue = setTimeout('updateValue_take()', 15000);
+   } else if (selecting == 4) {
+      timeValue = setTimeout('updateValue_take()', 20000);
+   } else if (selecting == 5) {
+      timeValue = setTimeout('updateValue_take()', 25000);
+   } else if (selecting == 5) {
+      timeValue = setTimeout('updateValue_take()', 30000);
+   }
+}
+
+function adjustDownMsg() {
+   $('#downMsg').css({
+      top: $(window).height() - $('#downMsg').height() - 20 + $(window).scrollTop()
+   });
+}
+
+// message display
+function doDiagnostic() {
+	$(window).scroll(adjustDownMsg).resize(adjustDownMsg);
+
+	$('#downMsg').fadeOut(0);
+}
+
+$(document).ready(function() {
+   $(window).scroll(adjustDownMsg).resize(adjustDownMsg);
+});
+
+// done hiding -->
+</script>
+
+</head>
+<body >
+  <div class="title indexTitlePosition" ></div>
+  <div class="refreshFrame">
+    <div class="arrowbtnR"  id="naviPrev"><a></a> <span class="arrowbnText" id='naviLText'><%ejGetML(MLG_ConnStatus_NetworkMap_Str1)%></span></div>
+    <div class="arrowbtnL"  id="naviNext"><a></a> <span class="arrowbnText" id='naviRText'><%ejGetML(MLG_ConnStatus_Status_Str21)%></span> </div>
+    <div class="modesetting" id="modesetting_map">
+      <ul>
+        <li style="margin-left:10px;">
+          <select name="Sys_RefreshList" id="Sys_RefreshList" size="1" onchange="resetInterval()">
+            <option value="0"><%ejGetML(MLG_Common_None)%> </option>
+            <option value="1">5 <%ejGetML(MLG_Common_Seconds)%> </option>
+            <option value="2">10 <%ejGetML(MLG_Common_Seconds)%> </option>
+            <option value="3">15 <%ejGetML(MLG_Common_Seconds)%> </option>
+            <option value="4" selected="selected">20 <%ejGetML(MLG_Common_Seconds)%> </option>
+            <option value="5">25 <%ejGetML(MLG_Common_Seconds)%> </option>
+            <option value="6">30 <%ejGetML(MLG_Common_Seconds)%> </option>
+          </select>
+        </li>
+        <li class="blod">
+         <%ejGetML(MLG_ConnStatus_NetworkMap_Str11)%>:
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div>
+    <ul class="tabs" style='display:none;'></ul>
+    <!-- tab "panes" -->
+    <div class="panes">
+      <div class="pane" id='contentPanel' style="display:block;width:95%;"></div> 
+    </div>
+  </div>
+
+  <!--Error Message Start-->
+  <div class="downmessage" id="downMsg" style="display:none;" >
+    <ul>
+      <li class="downleft"></li>
+      <li class="downcenter" style="position:relative;">
+        <div style=" position:absolute;width:100%; z-index:800; top:15px; left:10px;">
+          <span class="blod"><%ejGetML(MLG_ConnStatus_Navi_Str3)%></span>
+          <br /><br />
+          <span><div id="errorMsg"></div></span>
+        </div>
+      </li>
+    </ul>
+    <div class="button_position" style=" position:absolute; top:65px; right:-5px;">
+      <!-- <input name="New Message" type="button" onclick="MM_goToURL('parent','../troubleshooting1.html');return document.MM_returnValue" value="OK" /> -->
+      <input name="New Message" type="button" onclick="doDiagnostic()" value="<%ejGetML(MLG_Common_OK)%>" />
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+    </div>
+  </div>
+  <!--Error Message End-->
+</body>
+</html>
+

@@ -1,0 +1,1494 @@
+<script language="javascript">
+<!-- hide
+
+var password = '<%ejGet(wwanPassWord)%>';
+var username = '<%ejGet(wwanUserName)%>';
+var onDemand = '<%ejGet(wwanEnblOnDemand)%>';
+var dns1 = '<%ejGetOther(sysInfo, dnsPrimary)%>'; if ( dns1 == '&nbsp' ) dns1 = '';
+var dns2 = '<%ejGetOther(sysInfo, dnsSecondary)%>'; if ( dns2 == '&nbsp' ) dns2 = '';
+var dynIP =  '<%ejGet(wwanDynIP)%>';
+var staticIP='<%ejGet(wwanStaticIP)%>';
+var enable3g = '<%ejGet(wwanEnable)%>';
+
+var enablePing = '<%ejGet(wwanEnablePingCheck)%>';
+var pingInterval='<%ejGet(wwanPingInterval)%>';
+var pingFailTolerance='<%ejGet(wwanPingFailTolerance)%>';
+var pingDefault='<%ejGet(wwanPingDefault)%>';
+var pingHost='<%ejGet(wwanPingHost)%>';
+
+var SendEmailEnable='<%ejGet(wwanEmailEnable)%>';	//user set to choose whether to send email or not. by Anita
+var emailSelect = '<%ejGet(wwanSelectEmailSend)%>';	//choose mail server to send email by Anita
+var sendmailto = '<%ejGet(wwanSendEmailTo)%>';		//Send email to by Anita
+var sendmailti = '<%ejGet(wwanSendEmailTitle)%>';	//Send email title by Anita
+var Enable3GBudget = '<%ejGet(wwanBudgetEnable)%>';
+var enableTime = '<%ejGet(wwanBudget_TimeEnable)%>';
+var enableBytes = '<%ejGet(wwanBudget_ByteEnable)%>';
+var enablePackets = '<%ejGet(wwanBudget_PktEnable)%>';
+var PacketsMax='<%ejGet(wwanBudget_PktMax)%>';
+var BytesType='<%ejGet(wwanBudget_DataDir)%>';
+var PacketsType='<%ejGet(wwanBudget_PktDir)%>';
+var resetDate = '<%ejGet(wwanBudget_ResetDate)%>';
+var timeActionPercent = '<%ejGet(wwanBudget_TimeActionPercent)%>';
+var dataActionPercent = '<%ejGet(wwanBudget_ByteActionPercent)%>';
+var PktActionPercent = '<%ejGet(wwanBudget_PktActionPercent)%>';
+var overAction = '<%ejGet(wwanBudget_OverAction)%>';
+var logInterval = '<%ejGet(wwanBudget_LogInterval)%>';
+var TimeMax='<%ejGet(wwanBudget_TimeMax)%>';
+var BytesMax='<%ejGet(wwanBudget_DataByteMax)%>';
+var PacketsMax='<%ejGet(wwanBudget_PktMax)%>';
+
+var tmpmceto = '<%ejGet(wwanBudget_EmailTo)%>';
+var tmpmceti = '<%ejGet(wwanBudget_EmailTitle)%>';
+var emailEnable = '<%ejGet(wwanBudget_EmailEnable)%>';
+var emailSA = '<%ejGet(wwanBudget_EmailSA)%>';
+var emailInterval = '<%ejGet(wwanBudget_EmailInterval)%>';
+
+var glbSessionKey = '<%ejGetOther(sessionKey)%>';
+var forNorway3g  = '<%ejGetOther(sysInfo, forNorway3g)%>'; 
+
+var dongleMode = '<%ejGet(wwanDongleMode)%>';
+
+function btnSave() {
+   with ( document.forms[0] ) {
+      sessionKey.value = glbSessionKey;
+      
+      if(enbl_3gBackup[1].checked)
+      {
+         wwanEnable.value = 0;
+      }
+      else
+      {
+         wwanEnable.value = 1;
+         wwanUserName.value = wwan_UserName.value;
+         wwanPassWord.value = encodeUrl(wwan_PassWord.value);
+         accessPointName.value = Access_Point_Name.value;
+         dialString.value = Dial_String.value;
+         PINCode.value = PIN_Code.value;
+
+         if(enbl_On_Demand.value == 1)
+         {
+            wwanEnblOnDemand.value = enbl_On_Demand.value;
+            wwanTimeOut.value = wwan_TimeOut.value;
+
+            if(wwan_TimeOut.value<1 || wwan_TimeOut.value>4320)
+            {
+               //AlertOpen('Max Idle Timeout should be [1-4320].');
+               hciAlert('<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str1)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return false;
+            }
+         }
+         else
+         {
+            wwanEnblOnDemand.value = enbl_On_Demand.value;
+         }
+		
+         if(Dyn_IP[0].checked == true)
+         {
+            wwanDynIP.value = 0;
+         }
+         else
+         {
+            wwanDynIP.value = 1;
+
+            if ( isValidIpAddress(Static_IP.value) == false ) {
+               //AlertOpen('Static IP "' + Static_IP.value + '" has invalid IP address.',2);
+               //hciAlert('Static IP "' + Static_IP.value + '" has invalid IP address.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str2)%>";
+			   hciAlert(MLG_Makestring(tmpStr, Static_IP.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			   return false;
+            } else {
+               wwanStaticIP.value = Static_IP.value;
+            }
+         }
+
+         if(Dyn_DNS[0].checked)
+         {
+            wwanDynDNS.value = 0;
+            wwanFirDNSAddr.value = "0.0.0.0";
+            wwanSecDNSAddr.value = "0.0.0.0";
+         }
+         else
+         {
+            wwanDynDNS.value = 1;
+
+            if ( isValidIpAddress(Fir_DNSAddr.value) == false ) {
+               //AlertOpen('Primary DNS "' + Fir_DNSAddr.value + '" has invalid IP address.',2);
+               //hciAlert('Primary DNS "' + Fir_DNSAddr.value + '" has invalid IP address.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			   var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str3)%>";
+			   hciAlert(MLG_Makestring(tmpStr, Fir_DNSAddr.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return false;
+            } else {
+			   	wwanFirDNSAddr.value = Fir_DNSAddr.value;
+            }
+
+            if ( isValidIpAddress(Sec_DNSAddr.value) == false ) {
+               //AlertOpen('Secondary DNS "' + Sec_DNSAddr.value + '" has invalid IP address.',2);
+               //hciAlert('Secondary DNS "' + Sec_DNSAddr.value + '" has invalid IP address.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			   var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str4)%>";
+			   hciAlert(MLG_Makestring(tmpStr, Sec_DNSAddr.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return false;
+            } else {
+               wwanSecDNSAddr.value = Sec_DNSAddr.value;
+            }
+         }
+
+         if(enbl_pingCheck[0].checked)
+         {
+            wwanEnablePingCheck.value = 1;
+
+            if ( wwan_PingInterval.value == "" || isNaN(wwan_PingInterval.value) || wwan_PingInterval.value < 5 ||wwan_PingInterval.value >31 ) {
+               //AlertOpen('Check Cycle "' + wwan_PingInterval.value + '"  is uncorrect.',2);
+               //hciAlert('Check Cycle "' + wwan_PingInterval.value + '"  is uncorrect.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			   var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str5)%>";
+			   hciAlert(MLG_Makestring(tmpStr, wwan_PingInterval.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return false;
+            }
+
+            wwanPingInterval.value = wwan_PingInterval.value;
+
+            if ( wwan_PingFailTolerance.value == "" || isNaN(wwan_PingFailTolerance.value) || wwan_PingFailTolerance.value < 2 ||wwan_PingFailTolerance.value >6 ) {
+               //AlertOpen('Consecutive Fail Time "' + wwan_PingFailTolerance.value + '"  is uncorrect.',2);
+               //hciAlert('Consecutive Fail Time "' + wwan_PingFailTolerance.value + '"  is uncorrect.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			   var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str6)%>";
+			   hciAlert(MLG_Makestring(tmpStr, wwan_PingFailTolerance.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return false;
+            }
+
+            wwanPingFailTolerance.value = wwan_PingFailTolerance.value;
+
+            if(wwan_PingDefault[0].checked)
+            {
+               wwanPingDefault.value = 0;
+            }
+            else
+            {
+               wwanPingDefault.value = 1;
+
+               if ( wwan_PingHost.value =="") 
+               {
+                  //AlertOpen('Ping Host "' + wwan_PingHost.value + '" has invalid IP address.',2);
+                  //hciAlert('Ping Host "' + wwan_PingHost.value + '" has invalid IP address.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				  var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str7)%>";
+				  hciAlert(MLG_Makestring(tmpStr, wwan_PingHost.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return false;
+               }
+               wwanPingHost.value = wwan_PingHost.value;
+            }
+         }
+         else
+         {
+            wwanEnablePingCheck.value = 0;
+            wwanPingInterval.value = wwan_PingInterval.value;
+            wwanPingFailTolerance.value = wwan_PingFailTolerance.value;
+            wwanPingDefault.value = wwan_PingDefault.value;
+            wwanPingHost.value = wwan_PingHost.value;
+         }
+
+/* user set the configuration of whether send email or not. by Bear, Anita*/
+	if(EmailEnableSend.checked)     
+	{
+		wwanEmailEnable.value = 1;
+		if(wwan_EmailSelect.value == "")
+		{        
+			//AlertOpen('Please set Mail Server in "Maintenance->Email Notification"',2);
+			hciAlert('<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str7)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}
+		if(isValidIpAddress(wwan_EmailSelect.value) == false && isValidHostName(wwan_EmailSelect.value) == false ) 
+		{
+			//AlertOpen ('Please set Mail Server in "Maintenance->Email Notification"',2);
+			hciAlert('<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str7)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}			
+		wwanSelectEmailSend.value = wwan_EmailSelect.value;
+		if( isValidEmail(SendEmailTo.value) == false )
+		{
+			//AlertOpen ( 'Send Notification to Email "' + wwan_EmailTo.value + '" is invalid, please set in maintenance>email notification.', 2);
+			//hciAlert('Send Notification to Email "' + wwan_EmailTo.value + '" is invalid, please set in maintenance>email notification.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str15)%>";
+			hciAlert(MLG_Makestring(tmpStr, SendEmailTo.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}
+		wwanSendEmailTo.value = SendEmailTo.value;
+		if ( SendEmailTitle.value == "")
+		{
+			//AlertOpen('Must Enter "Over Budget Email Title"',2);
+			hciAlert('<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str16)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			return;
+		}
+		wwanSendEmailTitle.value = SendEmailTitle.value;
+		}
+         else
+         {
+		wwanEmailEnable.value = 0;
+         }	
+/* END - user set the configuration of whether send email or not. by Bear, Anita*/
+         if(wwan_BudgetEnable[0].checked)
+         {
+            if(wwan_DataDir.value!=BytesType || wwan_PktDir.value!=PacketsType)
+            {
+               resetbudget = confirm('<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str8)%>');
+
+               if( resetbudget == true){
+               }else{
+                  return;
+               }
+            }
+         }
+
+         if(wwan_BudgetEnable[0].checked)
+         {
+            wwanBudget_OverAction.value = wwan_OverAction.value;
+
+            if(wwan_TimeEnable.checked)
+            {
+               if ( wwan_TimeMax.value == "" || isNaN(wwan_TimeMax.value) || wwan_TimeMax.value < 1 ) {
+                  //AlertOpen('Time Budget "' + wwan_TimeMax.value + '" hours is uncorrect.',2);
+                  //hciAlert('Time Budget "' + wwan_TimeMax.value + '" hours is uncorrect.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				  var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str9)%>";
+				  hciAlert(MLG_Makestring(tmpStr, wwan_TimeMax.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+
+               wwanBudget_TimeEnable.value = 1;
+            }
+            else
+            {
+               wwanBudget_TimeEnable.value = 0;
+            }
+
+            if(wwan_ByteEnable.checked)
+            {
+               if ( wwan_DataByteMax.value == "" || isNaN(wwan_DataByteMax.value) || wwan_DataByteMax.value < 1 ) {
+                  //AlertOpen('Data Budget "' + wwan_DataByteMax.value + '" Mbytes is uncorrect.',2);
+                  //hciAlert('Data Budget "' + wwan_DataByteMax.value + '" Mbytes is uncorrect.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				  var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str10)%>";
+				  hciAlert(MLG_Makestring(tmpStr, wwan_DataByteMax.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+
+               wwanBudget_ByteEnable.value = 1;
+            }
+            else
+            {
+               wwanBudget_ByteEnable.value = 0;
+            }
+
+            if(wwan_PktEnable.checked)
+            {
+               if ( wwan_PktMax.value == "" || isNaN(wwan_PktMax.value) || wwan_PktMax.value < 1 ) {
+                  //AlertOpen('Data Budget "' + wwan_PktMax.value + '" Packets is uncorrect.',2);
+                  //hciAlert('Data Budget "' + wwan_PktMax.value + '" Packets is uncorrect.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				  var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str11)%>";
+				  hciAlert(MLG_Makestring(tmpStr, wwan_PktMax.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+               wwanBudget_PktEnable.value = 1;
+            }
+            else
+            {
+               wwanBudget_PktEnable.value = 0;
+            }
+
+            if(wwan_TimeAction.checked)
+            {
+               if ( wwan_TimeActionPercent.value == "" || isNaN(wwan_TimeActionPercent.value) || wwan_TimeActionPercent.value < 1 || wwan_TimeActionPercent.value > 100) {
+                  //AlertOpen('"' + wwan_TimeActionPercent.value + '" % of time budget is uncorrect.',2);
+                  //hciAlert('"' + wwan_TimeActionPercent.value + '" % of time budget is uncorrect.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				  var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str12)%>";
+				  hciAlert(MLG_Makestring(tmpStr, wwan_TimeActionPercent.value ), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+               wwanBudget_TimeActionPercent.value = wwan_TimeActionPercent.value;
+            }
+            else
+            {
+               wwanBudget_TimeActionPercent.value = 0;
+            }
+
+            if(wwan_DataAction.checked)
+            {
+               if ( wwan_ByteActionPercent.value == "" || isNaN(wwan_ByteActionPercent.value) || wwan_ByteActionPercent.value < 1  || wwan_ByteActionPercent.value >100 ) {
+                  //AlertOpen('"' + wwan_ByteActionPercent.value + '" % of time budget is uncorrect.',2);
+                  //hciAlert('"' + wwan_ByteActionPercent.value + '" % of time budget is uncorrect.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				  var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str12)%>";
+				  hciAlert(MLG_Makestring(tmpStr, wwan_ByteActionPercent.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+               wwanBudget_ByteActionPercent.value = wwan_ByteActionPercent.value;
+            }
+            else
+            {
+               wwanBudget_ByteActionPercent.value = 0;
+            }
+
+            if(wwan_PktAction.checked)
+            {
+               if ( wwan_PktActionPercent.value == "" || isNaN(wwan_PktActionPercent.value) || wwan_PktActionPercent.value < 1 ||wwan_PktActionPercent.value >100 ) {
+                  //AlertOpen('"' + wwan_PktActionPercent.value + '" % of time budget is uncorrect.',2);
+                  //hciAlert('"' + wwan_PktActionPercent.value + '" % of time budget is uncorrect.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				  var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str12)%>";
+				  hciAlert(MLG_Makestring(tmpStr, wwan_PktActionPercent.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+               wwanBudget_PktActionPercent.value = wwan_PktActionPercent.value;
+            }
+            else
+            {
+               wwanBudget_PktActionPercent.value = 0;
+            }
+
+            wwanBudgetEnable.value = 1;
+            wwanBudget_TimeMax.value = wwan_TimeMax.value;
+            wwanBudget_DataByteMax.value = wwan_DataByteMax.value;
+            wwanBudget_PktMax.value = wwan_PktMax.value
+            wwanBudget_DataDir.value = encodeUrl(wwan_DataDir.value);
+            wwanBudget_PktDir.value = encodeUrl(wwan_PktDir.value);
+
+            if(wwan_LogEnable.checked && wwan_LogInterval.value < 1)
+            {
+               //AlertOpen('"' + wwanBudget_LogInterval.value + '" of log interval is uncorrect.',2);
+               //hciAlert('"' + wwanBudget_LogInterval.value + '" of log interval is uncorrect.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+			   var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str13)%>";
+			   hciAlert(MLG_Makestring(tmpStr, wwanBudget_LogInterval.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+               return;
+            }
+
+            if(wwan_LogEnable.checked) {
+               wwanBudget_LogInterval.value = wwan_LogInterval.value;
+            } else {
+               wwanBudget_LogInterval.value = 0;
+            }
+
+            if(wwan_AutoReset.value==1)
+            {
+               if ( wwan_ResetDate.value == "" || isNaN(wwan_ResetDate.value) || wwan_ResetDate.value < 1 ||wwan_ResetDate.value >31 ) {
+                  //AlertOpen('"' + wwan_ResetDate.value + '" reset date is uncorrect.',2);
+                  //hciAlert('"' + wwan_ResetDate.value + '" reset date is uncorrect.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				  var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str14)%>";
+				  hciAlert(MLG_Makestring(tmpStr, wwan_ResetDate.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+               wwanBudget_ResetDate.value = wwan_ResetDate.value;
+            }
+            else
+            {
+               wwanBudget_ResetDate.value = 0;
+            }
+		
+            if(wwan_EmailEnable.checked)
+            {
+               wwanBudget_EmailEnable.value = 1;
+
+               if(wwan_EmailSA.value == ""){
+                  //AlertOpen('Please set Mail Server in "Maintenance->Email Notification"',2);
+                  hciAlert('<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str7)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+
+               if ( isValidIpAddress(wwan_EmailSA.value) == false && isValidHostName(wwan_EmailSA.value) == false ) {
+                  //AlertOpen ('Please set Mail Server in "Maintenance->Email Notification"',2);
+                  hciAlert('<%ejGetML(MLG_Maintenance_LogsSetting_AlertMsg_Str7)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+
+               wwanBudget_EmailSA.value = wwan_EmailSA.value;
+
+               if( isValidEmail(wwan_EmailTo.value) == false )
+               {
+                  //AlertOpen ( 'Send Notification to Email "' + wwan_EmailTo.value + '" is invalid, please set in maintenance>email notification.', 2);
+                  //hciAlert('Send Notification to Email "' + wwan_EmailTo.value + '" is invalid, please set in maintenance>email notification.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				  var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str15)%>";
+				  hciAlert(MLG_Makestring(tmpStr, wwan_EmailTo.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+
+               wwanBudget_EmailTo.value = wwan_EmailTo.value;
+
+               if ( wwan_EmailTitle.value == "")
+               {
+                  //AlertOpen('Must Enter "Over Budget Email Title"',2);
+                  hciAlert('<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str16)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }
+
+               wwanBudget_EmailTitle.value = wwan_EmailTitle.value;
+
+               if(wwan_EmailInterval.value<1)
+               {
+                  //AlertOpen('"' + wwan_EmailInterval.value + '" of email interval is uncorrect.',2);
+                  //hciAlert('"' + wwan_EmailInterval.value + '" of email interval is uncorrect.', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+				  var tmpStr = "<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str17)%>";
+				  hciAlert(MLG_Makestring(tmpStr, wwan_EmailInterval.value), {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+                  return;
+               }	
+               wwanBudget_EmailInterval.value = wwan_EmailInterval.value;
+            }
+            else
+            {
+               wwanBudget_EmailEnable.value = 0;
+            }
+         }
+         else
+         {
+            wwanBudgetEnable.value = 0;
+
+            if(wwan_TimeEnable.checked)
+               wwanBudget_TimeEnable.value = 1;
+            else
+               wwanBudget_TimeEnable.value = 0;
+
+            if(wwan_ByteEnable.checked)
+               wwanBudget_ByteEnable.value = 1;
+            else
+               wwanBudget_ByteEnable.value = 0;
+
+            if(wwan_PktEnable.checked)
+               wwanBudget_PktEnable.value = 1;
+            else
+               wwanBudget_PktEnable.value = 0;
+
+            wwanBudget_TimeMax.value=wwan_TimeMax.value;
+            wwanBudget_DataByteMax.value=wwan_DataByteMax.value;
+            wwanBudget_PktMax.value=wwan_PktMax.value;
+
+            wwanBudget_DataDir.value=encodeUrl(wwan_DataDir.value);
+            wwanBudget_PktDir.value=encodeUrl(wwan_PktDir.value);
+         }
+      }
+
+      $.openLoadingMask(1);
+      submit();
+   }
+}
+
+function btnReset(){
+   //AlertOpen( 'Reset time and data budget counters.' );
+   hciAlert('<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str18)%>', {height: 180,type: 2, title: '<%ejGetML(MLG_Common_Error)%>'});
+   BackgroundUrl('3gStatistics-ressetbugettime.cgi?action=backup' + "&sessionKey=" + glbSessionKey);
+}
+
+
+function budgetTimeClick() {
+   with ( document.forms[0] ) {
+   if(wwan_BudgetEnable[0].checked && enbl_3gBackup[0].checked)
+   {
+      if ( wwan_TimeEnable.checked )
+      {
+		wwan_TimeMax.disabled=false;
+		wwan_TimeAction.disabled=false;
+		wwan_TimeActionPercent.disabled=false;
+      } 
+      else 
+      {
+		wwan_TimeMax.disabled=true;
+		wwan_TimeAction.disabled=true;
+		wwan_TimeActionPercent.disabled=true;
+      }
+   }
+   }
+}
+
+function budgetDataClick() {
+   with ( document.forms[0] ) {
+   if(wwan_BudgetEnable[0].checked && enbl_3gBackup[0].checked)
+   {
+      if ( wwan_ByteEnable.checked )
+      {
+		wwan_DataByteMax.disabled=false;
+		wwan_DataDir.disabled=false;
+		wwan_DataAction.disabled=false;
+		wwan_ByteActionPercent.disabled=false;
+      } 
+      else 
+      {
+		wwan_DataByteMax.disabled=true;
+		wwan_DataDir.disabled=true;
+ 		wwan_DataAction.disabled=true;
+		wwan_ByteActionPercent.disabled=true;
+     }
+   }
+   }
+}
+				
+function budgetPacketClick() {
+   with ( document.forms[0] ) {
+   if(wwan_BudgetEnable[0].checked && enbl_3gBackup[0].checked)
+   {
+      if ( wwan_PktEnable.checked )
+      {
+		wwan_PktMax.disabled=false;
+		wwan_PktDir.disabled=false;
+		wwan_PktAction.disabled=false;
+		wwan_PktActionPercent.disabled=false;
+      } 
+      else 
+      {
+		wwan_PktMax.disabled=true;
+		wwan_PktDir.disabled=true;
+		wwan_PktAction.disabled=true;
+		wwan_PktActionPercent.disabled=true;
+      }
+   }
+   }
+}
+
+function emailEnableClick(){
+   with ( document.forms[0] ) {
+   if( wwan_BudgetEnable[0].checked && enbl_3gBackup[0].checked)
+   {
+     	if(wwan_EmailEnable.checked)
+	{
+		wwan_EmailTo.disabled=false;
+		wwan_EmailTitle.disabled=false;
+		wwan_EmailSA.disabled=false;
+		wwan_EmailInterval.disabled=false;
+	}
+	else
+	{
+		wwan_EmailTo.disabled=true;
+		wwan_EmailTitle.disabled=true;
+		wwan_EmailSA.disabled=true;
+		wwan_EmailInterval.disabled=true;
+	}
+
+   }
+   }
+}
+
+/* Enable Email Notification while 3G backup kick-off by Anita */
+function emailEnableSendClick(){
+   with ( document.forms[0] ) {
+	if(enbl_3gBackup[0].checked && EmailEnableSend.checked)
+	{           
+		wwan_EmailSelect.disabled=false;
+		SendEmailTitle.disabled=false;
+		SendEmailTo.disabled=false;
+	}
+	else
+	{
+		wwan_EmailSelect.disabled=true;    
+		SendEmailTitle.disabled=true;
+		SendEmailTo.disabled=true;
+	}
+   }
+}
+
+/* END-Enable Email Notification while 3G backup kick-off by Anita */
+
+function disableBudget(){
+	with(document.forms[0]){
+		if(wwan_BudgetEnable[0].checked && enbl_3gBackup[0].checked){
+			wwan_TimeEnable.disabled=false;
+			wwan_ByteEnable.disabled=false;
+			wwan_PktEnable.disabled=false;
+			wwan_EmailEnable.disabled=false;
+			wwan_OverAction.disabled=false;
+			wwan_LogEnable.disabled=false;
+			wwan_LogInterval.disabled=false;
+			wwan_ResetDate.disabled=false;
+			wwan_AutoReset.disabled=false;
+			if(wwan_TimeEnable.checked)
+			{
+				wwan_TimeMax.disabled=false;
+				wwan_TimeAction.disabled=false;
+				wwan_TimeActionPercent.disabled=false;
+			}
+			else
+			{
+				wwan_TimeMax.disabled=true;
+				wwan_TimeAction.disabled=true;
+				wwan_TimeActionPercent.disabled=true;
+			}
+			if(wwan_ByteEnable.checked)
+			{
+				wwan_DataByteMax.disabled=false;
+				wwan_DataDir.disabled=false;
+				wwan_DataAction.disabled=false;
+				wwan_ByteActionPercent.disabled=false;
+			}
+			else
+			{
+				wwan_DataByteMax.disabled=true;
+				wwan_DataDir.disabled=true;
+				wwan_DataAction.disabled=true;
+				wwan_ByteActionPercent.disabled=true;
+			}
+			if(wwan_PktEnable.checked)
+			{
+				wwan_PktMax.disabled=false;
+				wwan_PktDir.disabled=false;
+				wwan_PktAction.disabled=false;
+				wwan_PktActionPercent.disabled=false;
+			}
+			else
+			{
+				wwan_PktMax.disabled=true;
+				wwan_PktDir.disabled=true;
+				wwan_PktAction.disabled=true;
+				wwan_PktActionPercent.disabled=true;
+			}
+
+			if(wwan_EmailEnable.checked)
+			{
+				wwan_EmailTo.disabled=false;
+				wwan_EmailTitle.disabled=false;
+				wwan_EmailSA.disabled=false;
+				wwan_EmailInterval.disabled=false;
+			}
+			else
+			{
+				wwan_EmailTo.disabled=true;
+				wwan_EmailTitle.disabled=true;
+				wwan_EmailSA.disabled=true;
+				wwan_EmailInterval.disabled=true;
+			}
+
+		}
+		else{
+			//OverAction.disabled=true;
+			wwan_TimeEnable.disabled=true;
+			wwan_ByteEnable.disabled=true;
+			wwan_PktEnable.disabled=true;
+			wwan_TimeMax.disabled=true;
+			wwan_DataByteMax.disabled=true;
+			wwan_PktMax.disabled=true;
+			wwan_DataDir.disabled=true;
+			wwan_PktDir.disabled=true;
+
+			wwan_TimeAction.disabled=true;
+			wwan_DataAction.disabled=true;
+			wwan_PktAction.disabled=true;
+			wwan_TimeActionPercent.disabled=true;
+			wwan_ByteActionPercent.disabled=true;
+			wwan_PktActionPercent.disabled=true;
+
+			wwan_EmailTo.disabled=true;
+			wwan_EmailTitle.disabled=true;
+			wwan_EmailSA.disabled=true;
+			wwan_EmailEnable.disabled=true;
+			wwan_EmailInterval.disabled=true;
+
+			wwan_LogEnable.disabled=true;
+			wwan_LogInterval.disabled=true;
+			wwan_ResetDate.disabled=true;
+			wwan_AutoReset.disabled=true;
+			wwan_OverAction.disabled=true;
+
+		}
+	}
+
+}
+
+
+function disablePing(){
+	with(document.forms[0]){
+		if(enbl_pingCheck[0].checked && enbl_3gBackup[0].checked){
+			wwan_PingInterval.disabled=false;
+			wwan_PingFailTolerance.disabled=false;
+			wwan_PingDefault[0].disabled=false;
+			wwan_PingDefault[1].disabled=false;
+			wwan_PingHost.disabled=false;
+			dynPingCheck();
+		}
+		else	{
+			wwan_PingInterval.disabled=true;
+			wwan_PingFailTolerance.disabled=true;
+			wwan_PingDefault[0].disabled=true;
+			wwan_PingDefault[1].disabled=true;
+			wwan_PingHost.disabled=true;
+		}
+	}
+}
+
+function dynPingCheck() {
+   with ( document.forms[0] ) {
+	if( enbl_3gBackup[0].checked)
+	{
+     		if ( wwan_PingDefault[0].checked )
+     		{
+      			wwan_PingHost.disabled=true;
+     		}
+      		else
+      		{
+      			wwan_PingHost.disabled=false;
+      		}
+	}
+   }
+}
+
+
+
+function disable3G() {
+   with ( document.forms[0] ) {
+	if(enbl_3gBackup[1].checked)
+	{
+		PIN_Code.disabled=true;
+		Access_Point_Name.disabled=true;
+		Dial_String.disabled=true;
+		wwan_TimeOut.disabled=true;
+		wwan_UserName.disabled=true;
+		wwan_PassWord.disabled=true;
+		enbl_On_Demand.disabled=true;
+		Dyn_DNS[0].disabled=true;
+		Dyn_DNS[1].disabled=true;
+		Dyn_IP[0].disabled=true;
+		Dyn_IP[1].disabled=true;
+		Fir_DNSAddr.disabled=true;
+		Sec_DNSAddr.disabled=true;
+		Static_IP.disabled=true;
+		enbl_pingCheck[0].disabled=true;
+		enbl_pingCheck[1].disabled=true;
+		EmailEnableSend.disabled=true;	//Anita add for 3g up to sendEmail
+		emailEnableSendClick();		//Anita add for 3g up to sendEmail
+		disablePing();
+		disableBudget();
+	}
+	else
+	{
+		PIN_Code.disabled=false;
+		Access_Point_Name.disabled=false;
+		Dial_String.disabled=false;
+		wwan_TimeOut.disabled=false;
+		wwan_UserName.disabled=false;
+		wwan_PassWord.disabled=false;
+		enbl_On_Demand.disabled=false;
+		Dyn_DNS[0].disabled=false;
+		Dyn_DNS[1].disabled=false;
+		Dyn_IP[0].disabled=false;
+		Dyn_IP[1].disabled=false;
+		enbl_pingCheck[0].disabled=false;
+		enbl_pingCheck[1].disabled=false;
+		EmailEnableSend.disabled=false;		//Anita add for 3g up to sendEmail	
+		emailEnableSendClick();			//Anita add for 3g up to sendEmail
+		DNSTypeChange();
+		dynIPClick();
+		disablePing();
+		disableBudget();
+	}
+
+
+   }
+}
+
+function DNSTypeChange() {
+   with ( document.forms[0] ) {
+      if (Dyn_DNS[0].checked == true) {
+         Fir_DNSAddr.disabled = true;
+         Sec_DNSAddr.disabled = true;
+      } else {
+         Fir_DNSAddr.disabled = false;
+         Sec_DNSAddr.disabled = false;
+      }
+   }
+}
+
+function dynIPClick() {
+   with ( document.forms[0] ) {
+      if (Dyn_IP[0].checked == true) {
+      		Static_IP.disabled=true;
+      } else {
+      		Static_IP.disabled=false;
+      }
+   }
+}
+
+function ConnectChange() {
+   with ( document.forms[0] ) {		
+	if ( enbl_On_Demand.value == 1 )
+	{
+		showhide("Time_out", "1");
+	}
+	else
+	{
+		showhide("Time_out", "0");
+	}
+   }
+}
+
+function BudgetautoResetChange() {
+   with ( document.forms[0] ) {		
+	if ( wwan_AutoReset.value == 1 )
+	{
+		showhide("BudgetautoResetInfo", "1");
+	}
+	else
+	{
+		showhide("BudgetautoResetInfo", "0");
+	}
+   }
+}
+
+function showtab(){
+	var string = document.getElementById("advanced").style.display;
+	if (string == ""){
+		document.getElementById("advanced").style.display = "none";
+		document.getElementById("showWord").innerHTML = "<%ejGetML(MLG_Menu_Tab_Advanced)%>";
+	}else if (string =="none"){
+		document.getElementById("advanced").style.display = "";
+		document.getElementById("showWord").innerHTML = "<%ejGetML(MLG_WLAN_BasicWirelessSetup_Str63)%>";
+	}
+}
+
+function frmLoad()
+{    
+	if(forNorway3g == '1'){
+	document.getElementById("advanced_block").style.display="none";
+	document.getElementById("sendemail_block").style.display="none";	
+	document.getElementById("trigger_bolck1").style.display="none";	
+	document.getElementById("trigger_bolck2").style.display="none";
+	document.getElementById("trigger_bolck3").style.display="none";
+	document.getElementById("general_block").style.display="none";
+	document.getElementById("connection_block").style.display="none";
+	}
+	if(onDemand==1)
+	{
+		showhide("Time_out", "1");
+	}
+	else
+	{
+		showhide("Time_out", "0");
+	}
+	if(resetDate==0)
+	{
+		showhide("BudgetautoResetInfo", "0");
+	}
+	else
+	{
+		showhide("BudgetautoResetInfo", "1");
+	}
+	if(dongleMode==1) //ether
+	{
+		showhide("PPPMode", "0");
+		showhide("EtherMode", "1");
+		showhide("AdvancedButton", "0");
+	}
+	else //ppp
+	{
+		showhide("PPPMode", "1");
+		showhide("EtherMode", "0");
+		showhide("AdvancedButton", "1");
+	}
+
+
+	with ( document.forms[0] ) {
+		PIN_Code.value='<%ejGet(PINCode)%>';
+		Access_Point_Name.value='<%ejGet(accessPointName)%>';
+		Dial_String.value = '<%ejGet(dialString)%>';
+		wwan_TimeOut.value='<%ejGet(wwanTimeOut)%>';
+		wwan_UserName.value='<%ejGet(wwanUserName)%>';
+		wwan_PassWord.value='<%ejGet(wwanPassWord)%>';
+		enbl_On_Demand.value=onDemand;		
+		/*Norway Explain text*/
+		if(forNorway3g == '1')
+		{
+		  $('#explain_text').html('<font size=1 color="#FF0000"><p><%ejGetML(MLG_WAN_3Gbackup_Telenor_explain_text1)%></p><p><%ejGetML(MLG_WAN_3Gbackup_Telenor_explain_text2)%></p></font>'); 
+		}
+		else
+		{
+		  $('#explain_text').html('<%ejGetML(MLG_WAN_3Gbackup_explain_text)%>'); 
+		}
+		
+
+		if(enable3g == '1')
+		{
+			enbl_3gBackup[0].checked=true;
+		}
+		else
+		{
+			enbl_3gBackup[1].checked=true;
+		}
+
+		/* 3g UP send email by Anita */
+		if(SendEmailEnable == '1')   
+		{
+			EmailEnableSend.checked=true;
+		
+		}else
+		{
+
+			EmailEnableSend.checked=false;
+		}
+
+		SendEmailTo.value=sendmailto;     
+		SendEmailTitle.value=sendmailti;  
+
+		$("#wwan_EmailSelect").attr("value", '<%ejGet(wwanSelectEmailSend)%>'); 
+
+		/* END - 3g UP send email by Anita */		
+		if (dns1 == '') {
+			Dyn_DNS[0].checked = true;
+			Fir_DNSAddr.value = '';
+			Sec_DNSAddr.value = '';	  	
+		} else {
+			Dyn_DNS[1].checked = true;
+			Fir_DNSAddr.value = dns1;
+		if (dns2 == '0.0.0.0')
+			Sec_DNSAddr.value = '';
+		else				 
+			Sec_DNSAddr.value = dns2;
+		}
+
+		if(dynIP==0)	{
+			Dyn_IP[0].checked=true;
+		}
+		else	{
+			Dyn_IP[1].checked=true;
+			Static_IP.value=staticIP;
+		}
+
+		if(enablePing == '1')
+		{
+			enbl_pingCheck[0].checked=true;
+		}
+		else
+		{
+			enbl_pingCheck[1].checked=true;
+		}
+		
+		wwan_PingInterval.value=pingInterval;
+		wwan_PingFailTolerance.value=pingFailTolerance;
+		if(pingDefault==0)
+		{
+			wwan_PingDefault[0].checked=true;
+		}
+		else
+		{
+			wwan_PingDefault[1].checked=true;
+			wwan_PingHost.value=pingHost;
+		}
+
+		wwan_TimeMax.value=TimeMax;
+		wwan_DataByteMax.value=BytesMax;
+		wwan_DataDir.value=BytesType;
+		wwan_PktMax.value=PacketsMax;
+		wwan_PktDir.value=PacketsType;
+		wwan_OverAction.value=overAction
+
+		wwan_TimeActionPercent.value=timeActionPercent;
+		wwan_ByteActionPercent.value=dataActionPercent;
+		wwan_PktActionPercent.value=PktActionPercent;
+		wwan_LogInterval.value=logInterval;
+
+		if(logInterval>=1)
+		{
+			wwan_LogEnable.checked=true;
+		}
+		if(resetDate==0)
+		{
+			wwan_AutoReset.value=0;
+		}
+		else
+		{
+			wwan_AutoReset.value=1;
+			wwan_ResetDate.value=resetDate;
+		}
+
+		if(emailEnable==1)
+		{	
+			wwan_EmailEnable.checked=true;
+		}
+		wwan_EmailTo.value=tmpmceto;
+		wwan_EmailTitle.value=tmpmceti;
+		wwan_EmailInterval.value=emailInterval;
+		$("#wwan_EmailSA").attr("value", '<%ejGet(wwanBudget_EmailSA)%>');
+
+		if(Enable3GBudget == '1'){
+			wwan_BudgetEnable[0].checked=true;
+			if(enableTime == '1')
+			{
+				wwan_TimeEnable.checked=true;
+				if(wwan_TimeActionPercent.value>0 && wwan_TimeActionPercent.value<100)
+				{
+					wwan_TimeAction.checked=true;
+					wwan_TimeActionPercent.disabled=false;
+				}
+				else
+				{
+					wwan_TimeAction.checked=false;
+					wwan_TimeActionPercent.disabled=true;
+				}
+			}
+			else
+			{
+				wwan_TimeEnable.checked=false;
+				wwan_TimeMax.disabled=true;
+				wwan_TimeAction.disabled=true;
+				wwan_TimeActionPercent.disabled=true;
+			}
+			if(enableBytes == '1')
+			{
+				wwan_ByteEnable.checked=true;
+				if(wwan_ByteActionPercent.value>0 && wwan_ByteActionPercent.value<100)
+				{
+					wwan_DataAction.checked=true;
+					wwan_ByteActionPercent.disabled=false;
+				}
+				else
+				{
+					wwan_DataAction.checked=false;
+					wwan_ByteActionPercent.disabled=true;
+				}
+			}
+			else
+			{
+				wwan_ByteEnable.checked=false;
+				wwan_DataByteMax.disabled=true;
+				wwan_DataDir.disabled=true;
+				wwan_DataAction.disabled=true;
+				wwan_ByteActionPercent.disabled=true;
+			}
+			if(enablePackets == '1')
+			{
+				wwan_PktEnable.checked=true;
+				if(wwan_PktActionPercent.value>0 && wwan_PktActionPercent.value<100)
+				{
+					wwan_PktAction.checked=true;
+					wwan_PktActionPercent.disabled=false;
+				}
+				else
+				{
+					wwan_PktAction.checked=false;
+					wwan_PktActionPercent.disabled=true;
+				}
+			}
+			else
+			{
+				wwan_PktEnable.checked=false;
+				wwan_PktMax.disabled=true;
+				wwan_PktDir.disabled=true;
+				wwan_PktAction.disabled=true;
+				wwan_PktActionPercent.disabled=true;
+			}
+
+		}
+		else
+		{
+			wwan_BudgetEnable[1].checked=true;
+		}
+
+		disable3G();
+
+	}
+}
+
+// done hiding -->
+</script>
+   <form action="/pages/tabFW/broadband-3gbackup.cgi" method="post">
+<!--Note define end-->
+  <input name="wwanEnable" type="HIDDEN" id="wwanEnable" value="0"; />
+<input name="accessPointName" type="HIDDEN" id="accessPointName" value=""; />
+<input name="dialString" type="HIDDEN" id="dialString" value=""; />
+<input name="PINCode" type="HIDDEN" id="PINCode" value=""; />
+<input name="wwanUserName" type="HIDDEN" id="wwanUserName" value=""; />
+<input name="wwanPassWord" type="HIDDEN" id="wwanPassWord" value=""; />
+<input name="wwanEnblOnDemand" type="HIDDEN" id="wwanEnblOnDemand" value=""; />
+<input name="wwanTimeOut" type="HIDDEN" id="wwanTimeOut" value=""; />
+<input name="wwanDynIP" type="HIDDEN" id="wwanDynIP" value=""; />
+<input name="wwanStaticIP" type="HIDDEN" id="wwanStaticIP" value=""; />
+<input name="wwanDynDNS" type="HIDDEN" id="wwanDynDNS" value=""; />
+<input name="wwanEmailEnable" type="HIDDEN" id="wwanEmailEnable" value="0"; />		<!--Anita-->
+<input name="wwanSelectEmailSend" type="HIDDEN" id="wwanSelectEmailSend" value=""; />	<!--Anita-->
+<input name="wwanSendEmailTo" type="HIDDEN" id="wwanSendEmailTo" value=""; />		<!--Anita-->
+<input name="wwanSendEmailTitle" type="HIDDEN" id="wwanSendEmailTitle" value=""; />	<!--Anita-->
+<input name="wwanFirDNSAddr" type="HIDDEN" id="wwanFirDNSAddr" value=""; />
+<input name="wwanSecDNSAddr" type="HIDDEN" id="wwanSecDNSAddr" value=""; />
+<input name="wwanEnablePingCheck" type="HIDDEN" id="wwanEnablePingCheck" value=""; />
+<input name="wwanPingInterval" type="HIDDEN" id="wwanPingInterval" value=""; />
+<input name="wwanPingFailTolerance" type="HIDDEN" id="wwanPingFailTolerance" value=""; />
+<input name="wwanPingDefault" type="HIDDEN" id="wwanPingDefault" value=""; />
+<input name="wwanPingHost" type="HIDDEN" id="wwanPingHost" value=""; />
+<input name="wwanBudgetEnable" type="HIDDEN" id="wwanBudgetEnable" value=""; />
+<input name="wwanBudget_OverAction" type="HIDDEN" id="wwanBudget_OverAction" value=""; />
+<input name="wwanBudget_TimeEnable" type="HIDDEN" id="wwanBudget_TimeEnable" value=""; />
+<input name="wwanBudget_ByteEnable" type="HIDDEN" id="wwanBudget_ByteEnable" value=""; />
+<input name="wwanBudget_PktEnable" type="HIDDEN" id="wwanBudget_PktEnable" value=""; />
+<input name="wwanBudget_TimeActionPercent" type="HIDDEN" id="wwanBudget_TimeActionPercent" value=""; />
+<input name="wwanBudget_ByteActionPercent" type="HIDDEN" id="wwanBudget_ByteActionPercent" value=""; />
+<input name="wwanBudget_PktActionPercent" type="HIDDEN" id="wwanBudget_PktActionPercent" value=""; />
+<input name="wwanBudget_TimeMax" type="HIDDEN" id="wwanBudget_TimeMax" value=""; />
+<input name="wwanBudget_DataByteMax" type="HIDDEN" id="wwanBudget_DataByteMax" value=""; />
+<input name="wwanBudget_PktMax" type="HIDDEN" id="wwanBudget_PktMax" value=""; />
+<input name="wwanBudget_DataDir" type="HIDDEN" id="wwanBudget_DataDir" value=""; />
+<input name="wwanBudget_PktDir" type="HIDDEN" id="wwanBudget_PktDir" value=""; />
+<input name="wwanBudget_LogInterval" type="HIDDEN" id="wwanBudget_LogInterval" value=""; />
+<input name="wwanBudget_ResetDate" type="HIDDEN" id="wwanBudget_ResetDate" value=""; />
+<input name="wwanBudget_EmailTo" type="HIDDEN" id="wwanBudget_EmailTo" value=""; />
+<input name="wwanBudget_EmailTitle" type="HIDDEN" id="wwanBudget_EmailTitle" value=""; />
+<input name="wwanBudget_EmailEnable" type="HIDDEN" id="wwanBudget_EmailEnable" value=""; />
+<input name="wwanBudget_EmailSA" type="HIDDEN" id="wwanBudget_EmailSA" value=""; />
+<input name="wwanBudget_EmailInterval" type="HIDDEN" id="wwanBudget_EmailInterval" value=""; />
+<input name="sessionKey" type="HIDDEN" id="sessionKey" value=""; />
+<!--Button define start-->
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><span id="explain_text"></span></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+
+<!--Set area start-->
+<div class="data_frame"><ul>
+<li id=general_block class="title"><%ejGetML(MLG_Common_General)%></li>
+<li class="set1">
+  <div class="w_text"><ul> <li class="left_table" ><%ejGetML(MLG_Menu_Tab_3GBackup)%></li><li class="right_table">
+  <input name="enbl_3gBackup" type="radio" onclick="disable3G();" value="0"/><%ejGetML(MLG_WAN_Broadband_Str4)%> 
+      <input name="enbl_3gBackup"  type="radio" onclick="disable3G();" value="1"/> <%ejGetML(MLG_Common_Disable)%> ( <%ejGetML(MLG_WAN_3gbackup_Str2)%> )</li></ul>
+  </div>
+<li class="space"></li>
+<li id=trigger_bolck1 class="set1">
+  <div class="w_text"><ul><li> <%ejGetML(MLG_WAN_3gbackup_Str3)%> </li></ul>
+  <div class="w_text"><ul> <li class="left_table" ><%ejGetML(MLG_WAN_3gbackup_Str4)%></li><li class="right_table">
+  <input name="enbl_pingCheck" type="radio" onclick="disablePing();" value="0"/> 
+<%ejGetML(MLG_WAN_Broadband_Str4)%> 
+      <input name="enbl_pingCheck"  type="radio" onclick="disablePing();" value="1"/> 
+<%ejGetML(MLG_Common_Disable)%></li></ul>
+  </div>
+<ul><li class="left_table"><%ejGetML(MLG_WAN_3gbackup_Str5)%> : </li><li class="right_table"><%ejGetML(MLG_WAN_3gbackup_Str6)%>&nbsp;<input maxlength="5" size="5" name="wwan_PingInterval" />
+&nbsp;(5~30 <%ejGetML(MLG_WAN_3gbackup_Str7)%>) </li> </ul>
+<ul><li class="left_table"><%ejGetML(MLG_WAN_3gbackup_Str8)%> : </li><li class="right_table"><input name="wwan_PingFailTolerance" size="5" maxlength="5" />
+&nbsp;(2~5 <%ejGetML(MLG_WAN_3gbackup_Str9)%>) </li> </ul>
+</div>
+</li>
+  <li id=trigger_bolck2 class="set1" style="clear:both;">
+  <div class="w_text" style=" line-height:25px;">
+<input name="wwan_PingDefault" type="radio" onclick="dynPingCheck();" value="0"/>
+<%ejGetML(MLG_WAN_3gbackup_Str10)%> 	</div>
+	  <div class="w_text" style="line-height:25px;" value="1"><ul>
+<li class="left_table"><input name="wwan_PingDefault" type="radio" onclick="dynPingCheck();"/> <%ejGetML(MLG_WAN_3gbackup_Str11)%> </li>
+<li class="right_table"><input name="wwan_PingHost" size="15" maxlength="15" />  (<%ejGetML(MLG_WAN_3gbackup_Str12)%>)</li>
+	</ul></div>
+	 </li>
+    <li class="set1">
+      <div class="w_text">
+        <ul>
+           <li class="left_table"></li>
+        </ul>
+      </div>
+    </li>
+<!--Note define start-->
+<li id=trigger_bolck3 class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_WAN_Broadband_Str18)%>:</span></div>
+<div class="note_text">&nbsp;&nbsp; <%ejGetML(MLG_WAN_3gbackup_Str13)%>  </div>
+</li>
+<!--Note define end-->
+</ul>
+</div>
+<!--Set area end-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<li id=connection_block class="title"><%ejGetML(MLG_WAN_3gbackup_Str14)%></li>
+<li class="set1">
+  <div class="w_text"><ul><li class="left_table"><%ejGetML(MLG_WAN_3gbackup_Str15)%> :  </li><li class="right_table"><%ejGet(wwanManf)%>
+</li> </ul>
+<div id=PPPMode>
+<ul><li class="left_table"><%ejGetML(MLG_Common_Username)%> :  </li><li class="right_table"><input maxlength="32" size="15" name="wwan_UserName" />
+(<%ejGetML(MLG_WAN_3gbackup_Str16)%>)</li> </ul>
+<ul><li class="left_table"><%ejGetML(MLG_Common_Password)%> :  </li><li class="right_table"><input name="wwan_PassWord" autocomplete="new-password" type="password" size="15" maxlength="32" />
+(<%ejGetML(MLG_WAN_3gbackup_Str16)%>)</li> </ul>
+<ul><li class="left_table">PIN :  </li><li class="right_table"><input name="PIN_Code" type="password" size="15" maxlength="15" />
+(<%ejGetML(MLG_WAN_3gbackup_Str16)%>) (<%ejGetML(MLG_WAN_3gbackup_Str17)%>)</li> </ul>
+<ul><li class="left_table">&nbsp;  </li>
+  <li class="right_table">(<%ejGetML(MLG_WAN_3gbackup_Str18)%>: <%ejGet(wwanPinErrorTimes)%>)</li> 
+</ul>
+<ul><li class="left_table"><%ejGetML(MLG_WAN_3gbackup_Str19)%> :  </li><li class="right_table"><input name="Dial_String" size="15" maxlength="15" /></li> </ul>
+<ul>
+  <li class="left_table">APN :  </li>
+  <li class="right_table"><input name="Access_Point_Name" size="64" maxlength="100" /></li> </ul>
+    <ul>
+  <li class="left_table"><%ejGetML(MLG_WAN_3gbackup_Str20)%> :  </li>
+  <li class="right_table">
+    <label>
+    <select id="enbl_On_Demand" name="enbl_On_Demand" onchange="ConnectChange(this.selectedIndex)">
+      <option value='0'><%ejGetML(MLG_WAN_3gbackup_Str21)%></option>
+      <option value='1'><%ejGetML(MLG_WAN_3gbackup_Str22)%></option>
+    </select>
+    </label>
+  </li> </ul>
+  </div>
+  <div id=EtherMode>
+    <ul><li class="left_table">Detailed setting :  </li><li class="right_table"><a target="_blank" href="http://<%ejGet(wwanHttpServer)%>">http://<%ejGet(wwanHttpServer)%>
+    </a></li></ul>
+  </div>
+</div>
+</li>
+<li class="set2"><div class="w_text"> 
+<div id=Time_out>
+<ul>
+  <li class="left_table"><%ejGetML(MLG_WAN_3gbackup_Str23)%> :  </li>
+  <li class="right_table"><input name="wwan_TimeOut" size="15" maxlength="15" /> 
+  (<%ejGetML(MLG_ConnStatus_Status_Str109)%>)[1-4320] </li> 
+</ul>
+</div>
+  </div>
+  </li>
+  <li class="set1" style="clear:both;">
+  <div class="w_text" style=" line-height:25px;">
+<input name="Dyn_IP" type="radio" onclick="dynIPClick();" value="0"/>
+<%ejGetML(MLG_WAN_Broadband_Str41)%>	</div>
+	  <div class="w_text" style="line-height:25px;" value="1">
+<input name="Dyn_IP" type="radio" onclick="dynIPClick();"/> <%ejGetML(MLG_WAN_3gbackup_Str24)%>
+	</div>
+	 </li>
+	 <li class="set2"><div class="w_text">    
+<ul>
+  <li class="left_table"><%ejGetML(MLG_WAN_Broadband_Str43)%> :  </li>
+  <li class="right_table"><input name="Static_IP" size="15" maxlength="15" />
+  </li> 
+</ul>
+  </div>
+  </li>
+   <li class="set1" style="clear:both;">
+  <div class="w_text" style="line-height:25px;">
+<input name="Dyn_DNS" type="radio"  onclick="DNSTypeChange();" value="0"/>
+ <%ejGetML(MLG_WAN_3gbackup_Str25)%></div>
+	  <div class="w_text" style="line-height:25px;">
+<input name="Dyn_DNS" type="radio" onclick="DNSTypeChange();" value="1"/>
+ <%ejGetML(MLG_WAN_3gbackup_Str26)%>	</div>
+	 </li>
+	 <li class="set2"><div class="w_text">    
+<ul>
+  <li class="left_table"><%ejGetML(MLG_Common_Primary_DNS_server)%> :  </li>
+  <li class="right_table"><input name="Fir_DNSAddr"  size="15" maxlength="15" />
+  </li> 
+</ul>
+<ul>
+  <li class="left_table"><%ejGetML(MLG_Common_Secondary_DNS_server)%> :  </li>
+  <li class="right_table"><input name="Sec_DNSAddr" size="15" maxlength="15" />
+  </li> 
+</ul>
+  </div>
+  </li>
+
+<!-- here add feature about "Enable Email Notification while 3G backup kick-off" by Anita Chiang-->
+<div id=sendemail_block>
+<li class="set1">
+<div class="w_text" style="line-height:25px;">
+<ul><li class="left_table" style="line-height:25px;">
+    <input type="checkbox" name="EmailEnableSend" onClick="emailEnableSendClick();"><%ejGetML(MLG_Common_Enable)%> <%ejGetML(MLG_Menu_Tab_EmailNotification)%>
+    </li>
+</ul>
+<ul>
+	<li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Maintenance_LogsSetting_Str9)%>: </li>
+    <li class="right_table">
+    	<select name="wwan_EmailSelect" id="wwan_EmailSelect" size="1">
+        	<script TYPE="text/javascript">
+<!-- hide 
+{
+   	var i = 0;	
+   	var ServerList = '<%ejGetOther(mailServerList)%>';
+	var mailServer = ServerList.split('|');	
+
+	   for (i=0; i<mailServer.length; i++)
+	   {
+		var names = mailServer[i].split('/');
+		$('#wwan_EmailSelect').append('<option value="'+names[0]+'">'+names[0]+'</option>'); 
+	   }
+}
+// done hiding -->
+			</script>
+		</select>
+	</li> 
+</ul>
+<ul>
+   <li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;3G backup Send Email Title:</li>
+   <li class="right_table">
+   <input name="SendEmailTitle" size="30" maxlength="127" value="" type="text" /></li>
+  </ul>
+  <ul>
+   <li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_WAN_3gbackup_Str43)%>: </li>
+   <li class="right_table">
+   <input name="SendEmailTo" size="30" maxlength="127" value="" type="text" /></li>
+  </ul>
+</div>
+</li>
+<!-- END here add feature about "Enable Email Notification while 3G backup kick-off" by Anita Chiang-->
+   <li class="set1">
+      <div class="w_text">
+        <ul>
+           <li class="left_table"></li>
+        </ul>
+      </div>
+    </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_WAN_Broadband_Str18)%>:</span></div>
+<div class="note_text">&nbsp;&nbsp; <%ejGetML(MLG_WAN_3gbackup_Str27)%> </div>
+</li>
+<!--Note define end-->
+</ul>
+</div>
+<!--Set area end-->
+<div id=AdvancedButton>
+<div style="display:none ;" id="advanced">
+<!--Set area start-->
+<div class="data_frame"><ul>
+<li class="title"><%ejGetML(MLG_WAN_3gbackup_Str28)%></li>
+<li class="space"></li>
+<li class="set1">
+  <div class="w_text"><ul> <li class="left_table" ><%ejGetML(MLG_WAN_Broadband_Str4)%> <%ejGetML(MLG_WAN_3gbackup_Str29)%></li><li class="right_table">
+  <input name="wwan_BudgetEnable" type="radio" onclick="disableBudget();" value="0"/> 
+<%ejGetML(MLG_WAN_Broadband_Str4)%> 
+      <input name="wwan_BudgetEnable"  type="radio" onclick="disableBudget();" value="1"/> 
+<%ejGetML(MLG_Common_Disable)%></li></ul>
+  </div>
+</li>
+<li class="set1">
+  <div class="w_text">  
+  <ul><li>
+      <input type='checkbox' name="wwan_TimeEnable" onClick="budgetTimeClick();"/><%ejGetML(MLG_WAN_3gbackup_Str30)%>:
+      <input maxlength="5" size="5" name="wwan_TimeMax" /><%ejGetML(MLG_ConnStatus_Status_Str108)%> <%ejGetML(MLG_WAN_3gbackup_Str31)%> 
+   </li></ul>		   
+  <ul><li>
+      <input type='checkbox' name="wwan_ByteEnable" onClick="budgetDataClick();"/><%ejGetML(MLG_WAN_3gbackup_Str32)%>:
+      <input maxlength="5" size="5" name="wwan_DataByteMax" />Mbytes 
+    <select name="wwan_DataDir">
+        <option value="UpDown" selected><%ejGetML(MLG_WAN_3gbackup_Str33)%>/<%ejGetML(MLG_Maintenance_FWUpgrade_Str6)%></option>
+        <option value="Down"><%ejGetML(MLG_WAN_3gbackup_Str33)%></option>
+        <option value="Up"><%ejGetML(MLG_Maintenance_FWUpgrade_Str6)%></option>                      
+    </select>
+      <%ejGetML(MLG_WAN_3gbackup_Str31)%> 
+   </li></ul>		   
+  <ul><li>
+      <input type='checkbox' name="wwan_PktEnable" onClick="budgetPacketClick();"/><%ejGetML(MLG_WAN_3gbackup_Str32)%>:
+      <input maxlength="5" size="5" name="wwan_PktMax" />kPackets
+    <select name="wwan_PktDir">
+        <option value="UpDown" selected><%ejGetML(MLG_WAN_3gbackup_Str33)%>/<%ejGetML(MLG_Maintenance_FWUpgrade_Str6)%></option>
+        <option value="Down"><%ejGetML(MLG_WAN_3gbackup_Str33)%></option>
+        <option value="Up"><%ejGetML(MLG_Maintenance_FWUpgrade_Str6)%></option>                      
+    </select>
+      <%ejGetML(MLG_WAN_3gbackup_Str31)%> 
+   </li></ul>		   
+  <ul><li>
+      <%ejGetML(MLG_WAN_3gbackup_Str46)%> 
+     <select name="wwan_AutoReset" size="1" onchange="BudgetautoResetChange(this);">
+       <option value="0" selected><%ejGetML(MLG_WAN_3gbackup_Str47)%></option>
+       <option value="1"><%ejGetML(MLG_WAN_3gbackup_Str48)%></option>                    
+     </select>
+      <%ejGetML(MLG_WAN_3gbackup_Str49)%> 
+     <div id='BudgetautoResetInfo' align='left'> : 
+     <input maxLength=2 name='wwan_ResetDate' size=2>
+     </div>
+   </li></ul>	
+  <ul><li>
+   <input type="button" name="BudgetReset"  onClick="btnReset()" value="<%ejGetML(MLG_WAN_3gbackup_AlertMsg_Str18)%>">
+   </li></ul>	
+  <ul><li>
+   <%ejGetML(MLG_WAN_3gbackup_Str34)%>:
+   </li></ul>	
+  <ul><li>
+	<input type="checkbox" name="wwan_TimeAction"> <%ejGetML(MLG_WAN_Broadband_Str4)%>                   
+       <input maxLength=2 name="wwan_TimeActionPercent" size=3>% <%ejGetML(MLG_WAN_3gbackup_Str35)%>     
+  </li></ul>
+  <ul><li>
+       <input type="checkbox" name="wwan_DataAction"><%ejGetML(MLG_WAN_Broadband_Str4)%>
+       <input maxLength=2 name="wwan_ByteActionPercent" size=3>% <%ejGetML(MLG_WAN_3gbackup_Str36)%>                                                 
+  </li></ul>
+  <ul><li>
+       <input type="checkbox" name="wwan_PktAction"> <%ejGetML(MLG_WAN_Broadband_Str4)%>                                    
+       <input maxLength=2 name="wwan_PktActionPercent" size=3>% <%ejGetML(MLG_WAN_3gbackup_Str37)%>                                                 
+  </li></ul>
+  <ul><li>
+	<%ejGetML(MLG_WAN_3gbackup_Str38)%>:    
+  </li></ul>
+  <ul><li>
+       <%ejGetML(MLG_WAN_3gbackup_Str39)%>
+       <select name="wwan_OverAction" size="1">
+         <option value="0" selected><%ejGetML(MLG_WAN_3gbackup_Str40)%></option>
+         <option value="1"><%ejGetML(MLG_System_TrafficStatusWAN_Str11)%></option> 
+       </select>                     
+  </li></ul>
+  <ul><li>
+	<%ejGetML(MLG_WAN_3gbackup_Str50)%>:    
+  </li></ul>
+  <ul><li>
+        <input type="checkbox" name="wwan_EmailEnable" onClick="emailEnableClick();"><%ejGetML(MLG_Common_Enable)%> <%ejGetML(MLG_Menu_Tab_EmailNotification)%>
+  </li>
+  </ul>
+  <ul>
+    <li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_Maintenance_LogsSetting_Str9)%>: </li>
+    <li class="right_table">
+    		<select name="wwan_EmailSA" id="wwan_EmailSA" size="1">
+                  <script TYPE="text/javascript">
+<!-- hide 
+{
+   	var i = 0;	
+   	var ServerList = '<%ejGetOther(mailServerList)%>';
+	var mailServer = ServerList.split('|');	
+
+	   for (i=0; i<mailServer.length; i++)
+	   {
+		var names = mailServer[i].split('/');
+		$('#wwan_EmailSA').append('<option value="'+names[0]+'">'+names[0]+'</option>'); 
+	   }
+}
+// done hiding -->
+                  </script>
+                </select>
+     </li> 
+  </ul>
+  <ul>
+   <li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_WAN_3gbackup_Str42)%>: </li>
+   <li class="right_table">
+   <input name="wwan_EmailTitle" size="30" maxlength="127" value="" type="text" /></li>
+  </ul>
+  <ul>
+   <li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_WAN_3gbackup_Str43)%>: </li>
+   <li class="right_table">
+   <input name="wwan_EmailTo" size="30" maxlength="127" value="" type="text" /></li>
+  </ul>
+  <ul>
+   <li class="left_table">&nbsp;&nbsp;&nbsp;&nbsp;<%ejGetML(MLG_WAN_3gbackup_Str44)%>: </li>
+   <li class="right_table">
+   <input name="wwan_EmailInterval" size="30" maxlength="127" value="" type="text" /><%ejGetML(MLG_ConnStatus_Status_Str109)%> </li>
+  </ul>
+  <ul><li>
+        <input type="checkbox" name="wwan_LogEnable"> 
+        <%ejGetML(MLG_WAN_Broadband_Str4)%> <%ejGetML(MLG_Menu_Log)%>: <%ejGetML(MLG_WAN_3gbackup_Str44)%> <input type="text" id="wwan_LogInterval" name="wwan_LogInterval" size="4" maxlength="4" /><%ejGetML(MLG_ConnStatus_Status_Str109)%>
+  </li></ul>
+  </div>
+</li>
+   <li class="set1">
+      <div class="w_text">
+        <ul>
+           <li class="left_table"></li>
+        </ul>
+      </div>
+    </li>
+<!--Note define start-->
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_WAN_Broadband_Str18)%>:</span></div>
+<div class="note_text">&nbsp;&nbsp; <%ejGetML(MLG_WAN_3gbackup_Str45)%>  </div>
+</li>
+<!--Note define end-->
+</ul>
+</div>
+<!--Set area end-->
+</div>
+    <table id=advanced_block width="90%" align="center" border="0" bordercolor="#ffffff" cellpadding="1" cellspacing="0">
+         <tbody>
+            <tr class="tabcolor1" align="center">
+            <td width="39%"></td>
+            <td width="39%"></td>
+            <td width="24%" align="right"><a href="javascript:showtab();"><span id="showWord"><%ejGetML(MLG_Menu_Tab_Advanced)%></span></a></td>
+            </tr>
+          </tbody>
+   </table> 
+</div>
+<!--Button define start-->
+<div class="data_frame"><ul>
+<li class="buttonframe"><div class="button_position">
+<input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="btnSave();"/>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick="frmLoad();"/></div></li>
+</ul>
+</div>
+<!--Button define end-->
+</div>
+</form>
+<script language='JavaScript'>
+<!--
+$(document).ready(function() {
+
+	frmLoad();
+});
+//-->
+</script>

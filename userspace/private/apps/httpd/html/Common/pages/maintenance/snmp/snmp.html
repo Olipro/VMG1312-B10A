@@ -1,0 +1,145 @@
+
+<script language="javascript">
+<!-- hide
+var enableSnmp = '<%ejGet(snmpStatus)%>';
+var errMsg = "<%ejGetOther(errMsg)%>";
+
+
+function frmLoad() {
+ 
+      if (enableSnmp == 1)
+		$("input[name='snmpStatus']").get(0).checked = true;
+	else 
+		$("input[name='snmpStatus']").get(1).checked = true;
+				
+	$("input[name='snmpRoCommunity']").val('<%ejGet(snmpRoCommunity)%>');
+	$("input[name='snmpRwCommunity']").val('<%ejGet(snmpRwCommunity)%>');	
+	$("input[name='snmpSysName']").val('<%ejGet(snmpSysName)%>');
+	$("input[name='snmpSysContact']").val('<%ejGet(snmpSysContact)%>');
+	$("input[name='snmpSysLocation']").val('<%ejGet(snmpSysLocation)%>');
+	$("input[name='snmpTrapIp']").val('<%ejGet(snmpTrapIp)%>');
+  parent.$.closeLoadingMask();
+   
+}
+
+function btnApply() {
+   with ( document.forms[0] ) {
+
+		if ( snmpStatus[0].checked == true ) 
+         $("input[name='snmpStatus']").val('1');
+	    else
+         $("input[name='snmpStatus']").val('0');
+
+      if (snmpRoCommunity.value == '') {
+         hciAlert('<%ejGetML(MLG_Maintenance_SNMPSetting_AlertMsg_Str1)%>');
+         return;
+      }
+      if (snmpRwCommunity.value == '') {
+         hciAlert('<%ejGetML(MLG_Maintenance_SNMPSetting_AlertMsg_Str2)%>');
+         return;
+      }
+
+      if (snmpRoCommunity.value.length > 15) {
+         hciAlert(MLG_Makestring("<%ejGetML(MLG_Maintenance_SNMPSetting_AlertMsg_Str3)%>", snmpRoCommunity.value.length));
+         return;
+      }
+      if (snmpRwCommunity.value.length > 15) {
+         hciAlert(MLG_Makestring("<%ejGetML(MLG_Maintenance_SNMPSetting_AlertMsg_Str4)%>", snmpRwCommunity.value.length));
+         return;
+      }
+      if (snmpSysName.value.length > 15) {
+         hciAlert(MLG_Makestring("<%ejGetML(MLG_Maintenance_SNMPSetting_AlertMsg_Str5)%>", snmpSysName.value.length));
+         return;
+      }
+      if (snmpSysContact.value.length > 60) {
+         hciAlert(MLG_Makestring("<%ejGetML(MLG_Maintenance_SNMPSetting_AlertMsg_Str6)%>", snmpSysContact.value.length));
+         return;
+      }
+      if (snmpSysLocation.value.length > 15) {
+         hciAlert(MLG_Makestring("<%ejGetML(MLG_Maintenance_SNMPSetting_AlertMsg_Str7)%>", snmpSysLocation.value.length));
+         return;
+      }
+      if ( isValidIpAddress(snmpTrapIp.value) == false &&  snmpTrapIp.value != '0.0.0.0') {
+         hciAlert(MLG_Makestring("<%ejGetML(MLG_Maintenance_SNMPSetting_AlertMsg_Str8)%>", snmpTrapIp.value));
+         return;
+      }
+   }
+    parent.$.openLoadingMask(1);
+	document.loadForm.submit();
+}
+$(document).ready(function() {
+   frmLoad();
+   if(errMsg)
+   {
+      hciAlert(errMsg);
+   }
+});
+// done hiding -->
+</script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Maintenance_SNMPSetting_Str1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+
+<form name="loadForm" action="/pages/tabFW/snmp-set.cgi" method="post">
+<input type="hidden" name="sessionKey" id="sessionKey" value="<%ejGetOther(sessionKey)%>">	
+
+
+<!--Set area start-->
+<div class="data_frame"><ul>
+<li class="set1">
+<div class="w_text">
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_SNMPSetting_Str10)%>: </li>
+<li class="right_table">
+    <input name="snmpStatus" type="radio" value="1" />
+     <%ejGetML(MLG_Common_Enable)%>
+    <input name="snmpStatus" type="radio" value="0" />
+     <%ejGetML(MLG_Common_Disable)%>
+</li></ul>
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_SNMPSetting_Str2)%>: </li>
+<li class="right_table">
+  <input type='text'   name="snmpRoCommunity"  size="15" maxlength="15" />
+</li></ul>
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_SNMPSetting_Str3)%>: </li>
+<li class="right_table">
+  <input  type='text'   name="snmpRwCommunity"  size="15"   maxlength="15" />
+</li></ul>
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_SNMPSetting_Str4)%>: </li>
+<li class="right_table">
+  <input type="text" name="snmpSysName"  size="15" maxlength="15" />
+</li></ul>
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_SNMPSetting_Str5)%>: </li>
+<li class="right_table">
+  <input type="text" name='snmpSysLocation'  size="15" maxlength="15" />
+</li></ul>
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_SNMPSetting_Str6)%>: </li>
+<li class="right_table">
+  <input type="text" name='snmpSysContact'  size="30" maxlength="60" />
+</li></ul>
+<ul>
+<li class="left_table"><%ejGetML(MLG_Maintenance_SNMPSetting_Str7)%>: </li>
+<li class="right_table">
+  <input name='snmpTrapIp' type="text"  size="30" maxlength="30" />
+</li>
+</ul>
+</div>
+</li>
+<li class="space"></li>
+            <li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Maintenance_SNMPSetting_Str8)%>" type="button" onClick="btnApply();" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+    <input name="Cancel" value="<%ejGetML(MLG_Maintenance_SNMPSetting_Str9)%>" type="button" onClick='frmLoad();' />
+               </div>
+            </li>
+</ul></div>
+</form>
+<!--Set area end-->
+</div>
+<br/><br/>

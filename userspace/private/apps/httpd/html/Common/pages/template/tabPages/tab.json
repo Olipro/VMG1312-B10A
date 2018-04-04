@@ -1,0 +1,12 @@
+
+  {
+         "tabTitle" : "Template",
+         "pageIndex" : "Template-tabPage",
+         "Tab1": {"url":"../template/tabPages/template1.html"  },
+		 "Tab2": {"url":"../template/tabPages/template2.html"  },
+		 "Tab3": {"url":"../template/tabPages/template3.html"  },
+         "Tab4": {"url":"../template/tabPages/template4.html"  },
+         "Tab5": {"url":"../template/tabPages/template5.html"  },
+		 "Tab6": {"url":"../template/tabPages/template6.html"  },
+		 "Tab7": {"url":"../template/tabPages/template7.html"  }
+  }

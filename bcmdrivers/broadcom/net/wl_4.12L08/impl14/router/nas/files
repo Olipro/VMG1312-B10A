@@ -1,0 +1,8 @@
+FILES = mppe.c
+FILES += nas.c
+FILES += nas_linux.c
+FILES += nas_radius.c
+FILES += nas_wksp.c
+FILES += nas_wl.c
+FILES += nas_wksp_radius.c
+FILES += wpa.c

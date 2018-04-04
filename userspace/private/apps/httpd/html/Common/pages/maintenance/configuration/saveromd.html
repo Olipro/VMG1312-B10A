@@ -1,0 +1,61 @@
+<script language="javascript">
+var sessionKey='<%ejGetOther(sessionKey)%>';
+var errMsg="<%ejGetOther(errMsg)%>";
+
+if(typeof String.prototype.trim !== 'function') {
+  String.prototype.trim = function() {
+    return this.replace(/^\s+|\s+$/g, ''); 
+  }
+}
+//ZyXEL, Save/Clean ROM-D, Albert
+function saClick() {
+	window.parent.$.openLoadingMask(1);
+	var loc = '/pages/tabFW/configuration-saveromd.cgi?';
+	loc += 'sessionKey=' + sessionKey;
+	var code = 'location="' + loc + '"';
+	eval(code);
+}
+function cleanClick() {
+	var loc = '/pages/tabFW/configuration-cleanromd.cgi?';
+	loc += 'sessionKey=' + sessionKey;
+	var code = 'location="' + loc + '"';
+	eval(code);
+}
+
+$(document).ready(function() {
+	if(errMsg.trim() != ""){
+		hciAlert(errMsg, {height: 180, type: 2, title: ''});
+	}
+});
+</script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">You can push a Save/Clean button to save/clean a configuration to ROM-D.</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<!--level 1 title start--><li class="title">Save/Clean Configuration to ROM-D</li><!--level 1 title end-->
+<li class="set2">
+<div class="w_text">
+<ul>
+<li class="all_table">Save configuration to ROM-D<span class="right_table">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span class="one_right" ><input name="Save" value="Save" onclick="saClick();" type="button" /></span>
+</span></li>
+<li class="all_table">Clean configuration to ROM-D<span class="right_table">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span class="one_right" ><input name="Clean" value="Clean" onclick="cleanClick();" type="button" /></span>
+</span></li>
+</ul>
+</div>
+</li>
+</ul></div>
+<!--Set area end-->
+<br>
+<br>
+<br>
+<br>
+</div>
+
+

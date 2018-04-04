@@ -1,0 +1,262 @@
+<script language="javascript">
+
+var ethWanEn = "<%ejGetOther(pmEthWanEn, all)%>";
+var dslEn = "<%ejGetOther(pmDslEn, all)%>";
+var lan1En = "<%ejGetOther(pmLanPort1En, all)%>";
+var lan2En = "<%ejGetOther(pmLanPort2En, all)%>";
+var lan3En = "<%ejGetOther(pmLanPort3En, all)%>";
+var lan4En = "<%ejGetOther(pmLanPort4En, all)%>";
+var ledEn = "<%ejGetOther(pmLedEn, all)%>";
+
+
+function powerSav_ethWan() {
+   with ( document.forms[0] ) {
+      if (ethWanPwrSave[0].checked == true)
+        pmEthWanEn.value = "1";
+	  else
+	  	pmEthWanEn.value = "0";
+   	}
+}
+
+function powerSav_dsl() {
+   with ( document.forms[0] ) {
+      if (dslPwrSave[0].checked == true)
+        pmDslEn.value = "1";
+	  else
+	  	pmDslEn.value = "0";
+   	}
+}
+
+function powerSav_lan1() {
+   with ( document.forms[0] ) {
+      if (lan1PwrSave[0].checked == true)
+        pmLanPort1En.value = "1";
+	  else
+	  	pmLanPort1En.value = "0";
+   	}
+}
+
+function powerSav_lan2() {
+   with ( document.forms[0] ) {
+      if (lan2PwrSave[0].checked == true)
+        pmLanPort2En.value = "1";
+	  else
+	  	pmLanPort2En.value = "0";
+   	}
+}
+
+function powerSav_lan3() {
+   with ( document.forms[0] ) {
+      if (lan3PwrSave[0].checked == true)
+        pmLanPort3En.value = "1";
+	  else
+	  	pmLanPort3En.value = "0";
+   	}
+}
+
+function powerSav_lan4() {
+   with ( document.forms[0] ) {
+      if (lan4PwrSave[0].checked == true)
+        pmLanPort4En.value = "1";
+	  else
+	  	pmLanPort4En.value = "0";
+   	}
+}
+
+function powerSav_led() {
+   with ( document.forms[0] ) {
+      if (ledPwrSave[0].checked == true)
+        pmLedEn.value = "1";
+	  else
+	  	pmLedEn.value = "0";
+   	}
+}
+
+
+function frmLoad() {
+   with ( document.forms[0] ) {
+
+      if(ethWanEn == '1')
+	  	 ethWanPwrSave[0].checked = 1;
+	  else
+	  	 ethWanPwrSave[1].checked = 1;
+
+	  if(dslEn == '1')
+	  	 dslPwrSave[0].checked = 1;
+	  else
+	  	 dslPwrSave[1].checked = 1;
+	  
+	  if(lan1En == '1')
+	  	 lan1PwrSave[0].checked = 1;
+	  else
+	  	 lan1PwrSave[1].checked = 1;
+
+	  if(lan2En == '1')
+	  	 lan2PwrSave[0].checked = 1;
+	  else
+	  	 lan2PwrSave[1].checked = 1;
+
+	  if(lan3En == '1')
+	  	 lan3PwrSave[0].checked = 1;
+	  else
+	  	 lan3PwrSave[1].checked = 1;
+
+      if(lan4En == '1')
+	  	 lan4PwrSave[0].checked = 1;
+	  else
+	  	 lan4PwrSave[1].checked = 1;
+
+	  if(ledEn == '1')
+	  	 ledPwrSave[0].checked = 1;
+	  else
+	  	 ledPwrSave[1].checked = 1;
+
+	  powerSav_ethWan();
+      powerSav_dsl();
+	  powerSav_lan1();
+	  powerSav_lan2();
+	  powerSav_lan3();
+	  powerSav_lan4();
+	  powerSav_led();
+
+   }
+}
+
+function btnApply() {
+   with ( document.forms[0] ) {
+      sessionKey.value = '<%ejGetOther(sessionKey)%>';
+
+   }
+
+   return true;
+}
+
+function doSubmit() {
+   if (btnApply()) {
+      document.forms[0].submit();
+      $.openLoadingMask(1);
+   }
+}
+
+$(document).ready(function() {
+   frmLoad();
+});
+// done hiding -->
+</script>
+ <form action="/pages/tabFW/powerManagement-powerManagement.cgi" method="post">
+      <div class="content_frame"><div class="explain"><div> <b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div> 
+      <div class="explain_text"><%ejGetML(MLG_Network_PowerMgt_Str1)%></div>
+      <div> <b class="r4"></b> <b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+         </div>
+         <div class="data_frame"><ul>
+            <li class="space"></li>
+            <li class="set1">
+               <div class="title"><%ejGetML(MLG_Network_PowerMgt_Str2)%>:</div>
+   
+                    <div class="w_text">	
+              			<ul>
+                     		<li class="left_table">DSL WAN: </li>
+                     		<li class="right_table">
+                       		  <input name="dslPwrSave" type="radio" onclick="powerSav_dsl()" value="1"><%ejGetML(MLG_Network_PowerMgt_Str3)%> &nbsp;&nbsp;
+                       		  <input name="dslPwrSave" type="radio" onclick="powerSav_dsl()" value="0"><%ejGetML(MLG_Network_PowerMgt_Str4)%>
+					 		</li>
+                  		</ul>
+              	    </div>
+            </li>
+
+            <li class="space"></li>
+            <li class="set1">
+                    <div class="w_text">	
+              			<ul>
+                     		<li class="left_table">Ethernet WAN: </li>
+                     		<li class="right_table">
+                       		  <input name="ethWanPwrSave" type="radio" onclick="powerSav_ethWan()" value="1"><%ejGetML(MLG_Network_PowerMgt_Str3)%> &nbsp;&nbsp;
+                       		  <input name="ethWanPwrSave" type="radio" onclick="powerSav_ethWan()" value="0"><%ejGetML(MLG_Network_PowerMgt_Str4)%>
+					 		</li>
+                  		</ul>
+              	    </div>
+            </li>
+            <li class="space"></li>
+            <li class="set1">
+
+                    <div class="w_text">	
+              			<ul>
+                     		<li class="left_table">LAN Port 1: </li>
+                     		<li class="right_table">
+                       		  <input name="lan1PwrSave" type="radio" onclick="powerSav_lan1()" value="1"><%ejGetML(MLG_Network_PowerMgt_Str3)%> &nbsp;&nbsp;
+                       		  <input name="lan1PwrSave" type="radio" onclick="powerSav_lan1()" value="0"><%ejGetML(MLG_Network_PowerMgt_Str4)%>
+					 		</li>
+                  		</ul>
+              	    </div>
+            </li>
+            <li class="space"></li>
+            <li class="set1">
+
+                    <div class="w_text">	
+              			<ul>
+                     		<li class="left_table">LAN Port 2: </li>
+                     		<li class="right_table">
+                       		  <input name="lan2PwrSave" type="radio" onclick="powerSav_lan2()" value="1"><%ejGetML(MLG_Network_PowerMgt_Str3)%> &nbsp;&nbsp;
+                       		  <input name="lan2PwrSave" type="radio" onclick="powerSav_lan2()" value="0"><%ejGetML(MLG_Network_PowerMgt_Str4)%>
+					 		</li>
+                  		</ul>
+              	    </div>
+            </li>
+            <li class="space"></li>
+            <li class="set1">
+
+                    <div class="w_text">	
+              			<ul>
+                     		<li class="left_table">LAN Port 3: </li>
+                     		<li class="right_table">
+                       		  <input name="lan3PwrSave" type="radio" onclick="powerSav_lan3()" value="1"><%ejGetML(MLG_Network_PowerMgt_Str3)%> &nbsp;&nbsp;
+                       		  <input name="lan3PwrSave" type="radio" onclick="powerSav_lan3()" value="0"><%ejGetML(MLG_Network_PowerMgt_Str4)%>
+					 		</li>
+                  		</ul>
+              	    </div>
+            </li>
+            <li class="space"></li>
+            <li class="set1">
+
+                    <div class="w_text">	
+              			<ul>
+                     		<li class="left_table">LAN Port 4: </li>
+                     		<li class="right_table">
+                       		  <input name="lan4PwrSave" type="radio" onclick="powerSav_lan4()" value="1"><%ejGetML(MLG_Network_PowerMgt_Str3)%> &nbsp;&nbsp;
+                       		  <input name="lan4PwrSave" type="radio" onclick="powerSav_lan4()" value="0"><%ejGetML(MLG_Network_PowerMgt_Str4)%>
+					 		</li>
+                  		</ul>
+              	    </div>
+            </li>
+            <li class="space"></li>
+            <li class="set1">
+
+                    <div class="w_text">	
+              			<ul>
+                     		<li class="left_table">LED: </li>
+                     		<li class="right_table">
+                       		  <input name="ledPwrSave" type="radio" onclick="powerSav_led()" value="1"><%ejGetML(MLG_Network_PowerMgt_Str3)%> &nbsp;&nbsp;
+                       		  <input name="ledPwrSave" type="radio" onclick="powerSav_led()" value="0"><%ejGetML(MLG_Network_PowerMgt_Str4)%>
+					 		</li>
+                  		</ul>
+              	    </div>
+            </li>
+
+            <input size="15" type="hidden" name="sessionKey" />
+            <!--input size="15" type="hidden" name="action" value="NONE" /-->
+            <input size="15" type="hidden" name="pmEthWanEn" />
+            <input size="15" type="hidden" name="pmDslEn" />
+            <input size="15" type="hidden" name="pmLanPort1En" />
+            <input size="15" type="hidden" name="pmLanPort2En" />
+            <input size="15" type="hidden" name="pmLanPort3En" />
+            <input size="15" type="hidden" name="pmLanPort4En" />
+            <input size="15" type="hidden" name="pmLedEn" />
+            <li class="space"></li>
+            <li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="doSubmit();" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+    <input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();' />
+               </div>
+            </li>
+         </ul>
+         </div>
+      </div>
+ </form><br/><br/>

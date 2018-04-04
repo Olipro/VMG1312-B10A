@@ -1,0 +1,102 @@
+<html>
+   <head>
+      <meta HTTP-EQUIV='Pragma' CONTENT='no-cache'>
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript">
+<!-- hide
+
+function frmLoad() {
+   var adslFlag = '<%ejGet(adslFlag)%>';
+
+   with ( document.forms[0] ) {
+      if (adslFlag & 1 && adslFlag & 2)
+         adslMod[0].checked = true;
+      else
+         adslMod[1].checked = true;
+
+      if (adslFlag & 0x01000000)
+         adslPair[1].checked = true;
+      else
+         adslPair[0].checked = true;
+         
+      if (adslFlag & 0x04000000)
+         adsBitmap[1].checked = true;
+      else
+         adsBitmap[0].checked = true;
+
+   }
+}
+
+function applyClick() {
+   var loc = 'adslcfgc.cgi?adslFlag=';
+   var adslFlag = 0;
+
+   with ( document.forms[0] ) {
+      adslFlag |= 1;
+      if (adslMod[0].checked)
+         adslFlag |= 2;
+
+      if ( adslPair[1].checked)
+         adslFlag |=  0x01000000;
+
+      if (adsBitmap[1].checked)
+         adslFlag |= 0x04000000;
+   }
+   loc += adslFlag;
+   loc += '&sessionKey=<%ejGetOther(sessionKey)%>';
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+// done hiding -->
+</script>
+   </head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <form>
+            <b>DSL Settings</b><br>
+            <br>
+            Select the modulation below.<br>
+            <table border="0" cellpadding="4" cellspacing="0">
+               <tr>
+                  <td width='20'>&nbsp;</td>
+                  <td><input type="radio" name="adslMod">G.Dmt or G.Lite</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+                  <td><input type="radio" name="adslMod">G.Dmt</td>
+               </tr>
+            </table>
+            <br>
+            Select the bitmap mode below.<br>
+            <table border="0" cellpadding="4" cellspacing="0">
+               <tr>
+                  <td width='20'>&nbsp;</td>
+                  <td><input type="radio" name="adsBitmap">DBM</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+                  <td><input type="radio" name="adsBitmap">FBM</td>
+               </tr>
+            </table>
+            <br>
+            Select the phone line pair below.<br>
+            <table border="0" cellpadding="4" cellspacing="0">
+               <tr>
+                  <td width='20'>&nbsp;</td>
+                  <td><input type="radio" name="adslPair">Inner pair</td>
+               </tr>
+               <tr>
+                  <td>&nbsp;</td>
+                  <td><input type="radio" name="adslPair">Outer pair</td>
+               </tr>
+            </table>
+            <br>
+            <center>
+               <input type='button' onClick='applyClick()' value='Save/Apply'> <input type='button' onClick='location.href="adslcfgadv.html"' value='Advanced Settings'>
+            </center>
+         </form>
+      </blockquote>
+   </body>
+</html>

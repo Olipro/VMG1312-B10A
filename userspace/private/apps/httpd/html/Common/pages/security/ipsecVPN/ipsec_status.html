@@ -1,0 +1,213 @@
+<!-- #BEGINZONE ipsec_begin_zone -->
+<script type="text/javascript" src="../js/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="../js/jquery.clickmenu.pack.js"></script>
+<script language='javascript'>
+var glbSessionKey = "<%ejGetOther(sessionKey)%>";
+var ipsecValue;
+var objIPSECInfoXMLHTTP = null;
+
+if (window.XMLHttpRequest) {
+	objIPSECInfoXMLHTTP=new XMLHttpRequest();
+}// code for IE
+else if (window.ActiveXObject) {
+	objIPSECInfoXMLHTTP=new ActiveXObject("Microsoft.XMLHTTP");
+}
+
+function updateipsecstatusInfo (req)
+{
+	var str = '';
+	var ipsecstatusInfo=req.responseText;
+	if ( ipsecstatusInfo != "" && ipsecstatusInfo != null ) {
+		var ipsecstatusInfos = ipsecstatusInfo.split('@');
+		for ( i = 0 ; i < ipsecstatusInfos.length ; i ++ ) {
+			if ( ipsecstatusInfos[i] != '' ) {
+				var cols = ipsecstatusInfos[i].split('|');
+				str += "<tr align=\"center\">\n";
+				if ( cols[0] == '1' )
+				{
+					str += "<td class=\"table_font\"><img src=\"../../images/i_connect_on.gif\" width=\"48\" height=\"18\"  title=\""+"<%ejGetML(MLG_Security_IPSecVPNSetting_Str49)%>"+"\"/> </td>\n";
+				}else{
+					str += "<td class=\"table_font\"><img src=\"../../images/i_connect_off.gif\" width=\"48\" height=\"18\"  title=\""+"<%ejGetML(MLG_Security_IPSecVPNSetting_Str50)%>"+"\"/> </td>\n";
+				}
+				str += "<td class=\"table_font\">" +cols[1]+ "</td>\n";
+				str += "<td class=\"table_font\">" +cols[2]+ "</td>\n";
+				str += "<td class=\"table_font\">" +cols[3]+ "</td>\n";
+				str += "<td class=\"table_font\">" +cols[4]+ "</td>\n";
+				if ( cols[5] == '1'	)		// connecting
+				{
+					str += "<td align='center'><input value='<%ejGetML(MLG_Security_IPSecVPNSetting_Str50)%>' type='button' style=\"cursor:pointer\" onclick=\"DisconClick('"+cols[1]+"');\"></td>\n";
+				}
+				else if( cols[5] == '2' )	// disconnecting
+				{
+					str += "<td align='center'><input value='<%ejGetML(MLG_Security_IPSecVPNMonitor_Str4)%>' type='button' style=\"cursor:pointer\" onclick=\"TriggerClick('"+cols[1]+"');\"></td>\n";
+				}else if( cols[5] == '3' ){
+					str += "<td class=\"table_font\">"+"<%ejGetML(MLG_Security_IPSecVPNMonitor_Str5)%>"+"</td>\n";
+				}
+				str += "</tr>\n";
+			}
+		}
+	}
+	$("#ipsecInfo").html(str);
+	$("#loading").removeClass("loading");
+
+	resetInterval();
+}
+
+function AutoRefresh()
+{
+	if ( objIPSECInfoXMLHTTP != null ) {
+		$("#loading").addClass("loading");
+		objIPSECInfoXMLHTTP.open("POST","/pages/security/ipsecVPN/Getipsecstatus.html",true);
+		objIPSECInfoXMLHTTP.onreadystatechange = function() 
+		{
+			if(objIPSECInfoXMLHTTP.readyState == 4)
+				updateipsecstatusInfo(objIPSECInfoXMLHTTP);
+		}
+		objIPSECInfoXMLHTTP.send(null);
+	}
+}
+
+<!-- hide
+function DisconClick(cname)
+{
+	with ( document.forms[0] ) {
+		action.value="discon";
+		connectname.value=cname + ",";
+		sessionKey.value = glbSessionKey;
+		resetInterval();
+		submit();
+	}
+}
+
+function TriggerClick(cname)
+{
+	with ( document.forms[0] ) {
+		action.value="trigger";
+		connectname.value=cname + ",";
+		sessionKey.value = glbSessionKey;
+		resetInterval();
+		$.openLoadingMask(1);
+		submit();
+	}
+}
+
+function resetInterval() {
+	var selecting;
+	clearTimeout(ipsecValue);
+	
+	selecting = $('#IPSec_RefreshList').val();
+	$.cookie("ipsecrefresh", selecting);
+    
+	if (selecting == 1)
+		ipsecValue = setTimeout('AutoRefresh()', 10000);
+	else if (selecting == 2)
+		ipsecValue = setTimeout('AutoRefresh()', 20000);
+	else if (selecting == 3)
+		ipsecValue = setTimeout('AutoRefresh()', 30000);
+	else if (selecting == 4)
+		ipsecValue = setTimeout('AutoRefresh()', 60000);
+    
+}
+
+$(document).ready(function() {
+        AutoRefresh();
+	if ( $.cookie("ipsecrefresh") != null ) {
+		$('#IPSec_RefreshList').val($.cookie("ipsecrefresh"));
+	}
+	else {
+		$('#IPSec_RefreshList').val(0);
+	}
+	resetInterval();
+});
+
+// done hiding -->
+</script>
+<div class="content_frame" >
+
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_Security_IPSecVPNMonitor_Str1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+
+<!--Set area start-->
+<form action="/pages/tabFW/ipsecVPN-ipsec.cmd" method="POST" onSubmit="return false;">
+<input type=hidden name="action" id="action" value="">
+<input type=hidden name="connectname" id="connectname" value="">
+<input type=hidden name="sessionKey" id="sessionKey" value="">
+<div class="data_frame"><ul>
+<!--level 1 title start-->
+      <li class="title"><%ejGetML(MLG_Common_Monitor)%></li>
+<!--level 1 title end-->
+<!--level 1 start-->
+      <li class="set1">
+        <div class="w_text">
+          <ul>
+            <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNMonitor_Str2)%>  :</li>
+            <li class="right_table">
+              <select id="IPSec_RefreshList" name="IPSec_RefreshList" size="1" onchange="resetInterval()">
+                <option value="0" selected="selected" ><%ejGetML(MLG_Security_IPSecVPNMonitor_Str7)%></option>
+                <option value="1">10 <%ejGetML(MLG_Common_Seconds)%> </option>
+                <option value="2">20 <%ejGetML(MLG_Common_Seconds)%> </option>
+                <option value="3">30 <%ejGetML(MLG_Common_Seconds)%> </option>
+                <option value="4">60 <%ejGetML(MLG_Common_Seconds)%> </option>
+              </select><span id="loading"></span>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li class="space"> </li>
+<!--level 1 end-->
+<!--level 1 title start-->
+      <li class="title"><%ejGetML(MLG_Common_Status)%> :</li>
+<!--level 1 title end-->
+<!--level 1 start-->
+<li class="set1">
+<!--Table define start-->
+<div class="w_table">
+  <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame">
+    <tr>
+      <td><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+          <td><table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td><table width="100%" cellpadding="0" cellspacing="0" >
+                <tr align="center">
+                  <td class="top_font"><%ejGetML(MLG_Common_Status)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Security_IPSecVPNSetting_Str3)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Security_IPSecVPNSetting_Str4)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Security_IPSecVPNSetting_Str5)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Security_IPSecVPNSetting_Str6)%></td>
+                  <td class="top_font"><%ejGetML(MLG_Common_Action)%></td>
+                </tr>
+                <tbody id="ipsecInfo">
+ <!-- #ENDZONE ipsec_begin_zone -->
+
+
+<!-- #BEGINZONE ipsec_end_zone -->
+                </tbody>
+              </table></td>
+            </tr>
+          </table></td>
+        </tr>
+      </table></td>
+    </tr>
+  </table>
+</div>
+<!--Table define end-->
+</li>
+<!--level 1 end-->
+
+
+<li class="space"> </li>
+
+<li class="noteframe"> <div class="w_text"><span class="i_note"><%ejGetML(MLG_Common_Note)%>:</span></div>
+<div class="note_text">&nbsp;&nbsp; <%ejGetML(MLG_Security_IPSecVPNMonitor_Str6)%>
+</div></li>
+</ul></div>
+
+</form> 
+<!--Set area end-->		
+</div>
+ <!-- #ENDZONE ipsec_end_zone -->

@@ -1,0 +1,1136 @@
+
+<script language="javascript">
+<!-- hide
+
+var enableService = '<%ejGet(enblSer)%>';
+var ipsTableIndexV = '<%ejGet(ipsTableIndex)%>';
+var ipsConnNameV = '<%ejGet(ipsConnName)%>';
+var ipsRemoteGWAddrV = '<%ejGet(ipsRemoteGWAddr)%>';
+var ipsLocalIPModeV = '<%ejGet(ipsLocalIPMode)%>';
+var ipsLocalIPV = '<%ejGet(ipsLocalIP)%>';
+var ipsLocalMaskV = '<%ejGet(ipsLocalMask)%>'; 
+var ipsLocalRangeLo = '<%ejGet(ipsLocalRangeLo)%>';
+var ipsLocalRangeHi = '<%ejGet(ipsLocalRangeHi)%>'; 
+var ipsRemoteIPModeV = '<%ejGet(ipsRemoteIPMode)%>';
+var ipsRemoteIPV = '<%ejGet(ipsRemoteIP)%>'; 
+var ipsRemoteMaskV = '<%ejGet(ipsRemoteMask)%>';
+var ipsRemoteRangeLo = '<%ejGet(ipsRemoteRangeLo)%>'; 
+var ipsRemoteRangeHi = '<%ejGet(ipsRemoteRangeHi)%>';
+//ID function johann
+var ipsLocalIDTypeV = '<%ejGet(ipsLocalIDType)%>';
+var ipsLocalIDContentV = '<%ejGet(ipsLocalIDContent)%>';
+var ipsRemoteIDTypeV = '<%ejGet(ipsRemoteIDType)%>';
+var ipsRemoteIDContentV = '<%ejGet(ipsRemoteIDContent)%>';
+var ipsProtocolselectV = '<%ejGet(ipsTunMode)%>';
+var ipsNATTraversalV = '<%ejGet(ipsNATTraversal)%>';
+//
+var ipsKeyExMV = '<%ejGet(ipsKeyExM)%>';
+var ipsAuthMV = '<%ejGet(ipsAuthM)%>';
+var ipsPSKV = '<%ejGet(ipsPSK)%>';
+var ipsCertificateNameV = '<%ejGet(ipsCertificateName)%>';
+var ipsPerfectFSEnV = '<%ejGet(ipsPerfectFSEn)%>';
+var ipsManualEncryptionAlgoV = '<%ejGet(ipsManualEncryptionAlgo)%>';
+var ipsManualEncryptionKeyV = '<%ejGet(ipsManualEncryptionKey)%>';
+var ipsManualAuthAlgoV = '<%ejGet(ipsManualAuthAlgo)%>';
+var ipsManualAuthKeyV = '<%ejGet(ipsManualAuthKey)%>';
+var ipsSPIV = '<%ejGet(ipsSPI)%>';
+var ipsPh1ModeV = '<%ejGet(ipsPh1Mode)%>';
+var ipsPh1EncryptionAlgoV = '<%ejGet(ipsPh1EncryptionAlgo)%>';
+var ipsPh1IntegrityAlgoV = '<%ejGet(ipsPh1IntegrityAlgo)%>';
+var ipsPh1DHGroupV = '<%ejGet(ipsPh1DHGroup)%>';
+var ipsPh1KeyTimeV = '<%ejGet(ipsPh1KeyTime)%>';
+var ipsPh2EncryptionAlgoV = '<%ejGet(ipsPh2EncryptionAlgo)%>';
+var ipsPh2IntegrityAlgoV = '<%ejGet(ipsPh2IntegrityAlgo)%>';
+var ipsPh2DHGroupV = '<%ejGet(ipsPh2DHGroup)%>';
+var ipsPh2KeyTimeV = '<%ejGet(ipsPh2KeyTime)%>';
+var ipsConnNames = '<%ejGetOtherBig(ipsConnNames)%>'
+var ipsecLst = '<%ejGetOtherBig(ipsecLst)%>';
+
+var showAdv = 0;
+
+function showhide(element, sh)
+{
+	var status;
+	if (sh == 1) {
+		status = "block";
+	}
+	else {
+		status = "none"
+	}
+	
+	if (document.getElementById)
+	{
+		// standard
+		document.getElementById(element).style.display = status;
+	}
+	else if (document.all)
+	{
+		// old IE
+		document.all[element].style.display = status;
+	}
+	else if (document.layers)
+	{
+		// Netscape 4
+		document.layers[element].display = status;
+	}
+}
+
+function setSelect(item, value)
+{
+	for (i=0; i<item.options.length; i++) {
+		if (item.options[i].value == value) {
+			item.selectedIndex = i;
+			break;
+		}
+	}
+}
+
+function getSelect(item)
+{
+	var idx;
+	if (item.options.length > 0) {
+		idx = item.selectedIndex;
+		return item.options[idx].value;
+	}
+	else {
+		return '';
+	}
+}
+
+function loadCertList()
+{
+	with ( document.forms[0] ) {
+<%ejGet(ipsCertList)%>
+	}
+}
+
+function localIPModeChange() {
+	with ( document.forms[0] ) {
+		var mode = ipsLocalIPMode[ipsLocalIPMode.selectedIndex].value;
+		switch ( mode ) {
+			case "subnet":
+				showhide("IP11", 1);
+				showhide("IP12", 1);
+				break; 
+			case "single":
+				showhide("IP11", 1);
+				showhide("IP12", 0);
+				break;
+			default:
+		}
+	}
+}
+
+function remoteIPModeChange() {
+   with ( document.forms[0] ) {
+      var mode = ipsRemoteIPMode[ipsRemoteIPMode.selectedIndex].value;
+      switch ( mode ) {
+      case "subnet":
+        showhide("IP21", 1);
+        showhide("IP22", 1);
+        break; 
+      case "single":
+        showhide("IP21", 1);
+        showhide("IP22", 0);
+        break;
+      default:
+    }
+  }
+}
+
+
+function keyauthChange() {
+	with ( document.forms[0] ) {
+		var keymode = ipsKeyExM[ipsKeyExM.selectedIndex].value;
+		var authmode = ipsAuthM[ipsAuthM.selectedIndex].value;
+		var enckey = ipsManualEncryptionAlgo[ipsManualEncryptionAlgo.selectedIndex].value;
+		var protocolmode = ipsProtocolselect[ipsProtocolselect.selectedIndex].value;
+		var locIDtype = ipsLocalIDType[ipsLocalIDType.selectedIndex].value;
+		var remIDtype = ipsRemoteIDType[ipsRemoteIDType.selectedIndex].value;
+		switch(protocolmode)
+	  {
+			case "esp":
+				showhide("ph2En", 1);
+				showhide("manualEncKey", 1);
+				showhide("manualEnc", 1);
+				switch (keymode) {
+					case "auto":
+						showhide("AutoKeyEx", 1);
+						showhide("ManualKey", 0);
+						showhide("NATTra", 1);
+						switch (authmode) {
+							case "pre_shared_key":
+								showhide("PSK", 1);
+								showhide("Certificate", 0);
+								//ID function johann
+								showhide("lIDTypeid", 1);
+								if(locIDtype == "asn1dn")
+								{		       
+									showhide("lIDContentid", 0);
+								}
+								else
+								{
+									showhide("lIDContentid", 1);
+								}
+								showhide("rIDTypeid", 1);
+								if(remIDtype == "asn1dn")
+								{		       
+									showhide("rIDContentid", 0);
+								}
+								else
+								{
+									showhide("rIDContentid", 1);
+								}
+								//
+								break;
+							case "certificate":
+								showhide("PSK", 0);
+								showhide("Certificate", 1);
+								//ID function johann
+								showhide("lIDTypeid", 1);
+								if(locIDtype == "asn1dn")
+								{		       
+									showhide("lIDContentid", 0);
+								}
+								else
+								{
+									showhide("lIDContentid", 1);
+								}
+								showhide("rIDTypeid", 1);
+								if(remIDtype == "asn1dn")
+								{		       
+									showhide("rIDContentid", 0);
+								}
+								else
+								{
+									showhide("rIDContentid", 1);
+								}
+								//
+								break;        
+							default:       
+						}
+						break; 
+					case "manual":
+						showhide("AutoKeyEx", 0);
+						showhide("ManualKey", 1);
+						showhide("PSK", 0);
+						showhide("Certificate", 0);
+						if (enckey == "null")
+						{
+							showhide("manualEncKey", 0);
+						}
+						else
+						{
+							showhide("manualEncKey", 1);
+						}
+						showAdv = 0;
+						showhideAdv(showAdv);
+						break;
+					default:
+				}
+				break;
+			case "ah":
+				showhide("ph2En", 1);
+				showhide("manualEncKey", 0);
+				showhide("manualEnc", 0);
+				switch (keymode) {
+					case "auto":
+						showhide("AutoKeyEx", 1);
+						showhide("ManualKey", 0);
+						showhide("NATTra", 0);
+						switch (authmode) {
+							case "pre_shared_key":
+								showhide("PSK", 1);
+								showhide("Certificate", 0);
+								//ID function johann
+								showhide("lIDTypeid", 1);
+								if(locIDtype == "asn1dn")
+								{		       
+									showhide("lIDContentid", 0);
+								}
+								else
+								{
+									showhide("lIDContentid", 1);
+								}
+								showhide("rIDTypeid", 1);
+								if(remIDtype == "asn1dn")
+								{		       
+									showhide("rIDContentid", 0);
+								}
+								else
+								{
+									showhide("rIDContentid", 1);
+								}
+								//
+								break;
+							case "certificate":
+								showhide("PSK", 0);
+								showhide("Certificate", 1);
+								//ID function johann
+								showhide("lIDTypeid", 1);
+								if(locIDtype == "asn1dn")
+								{		       
+									showhide("lIDContentid", 0);
+								}
+								else
+								{
+									showhide("lIDContentid", 1);
+								}
+								showhide("rIDTypeid", 1);
+								if(remIDtype == "asn1dn")
+								{		       
+									showhide("rIDContentid", 0);
+								}
+								else
+								{
+									showhide("rIDContentid", 1);
+								}
+								//
+								break;        
+							default:       
+						}
+						break; 
+					case "manual":
+						showhide("AutoKeyEx", 0);
+						showhide("ManualKey", 1);		   
+						showhide("PSK", 0);
+						showhide("Certificate", 0);
+						showAdv = 0;
+						showhideAdv(showAdv);
+						break;
+					default:
+				}
+				break;
+			default:	 
+		}
+	}
+}
+
+function switchAdv() {
+	with ( document.forms[0] ) {
+		showAdv = !showAdv;
+		showhideAdv(showAdv);
+	}
+}
+
+function showhideAdv(show) {
+	with ( document.forms[0] ) {
+		showhide("adv", show);
+		if (show) {
+			$('#advSWButton').html("<%ejGetML(MLG_Common_less)%>");
+		}
+		else {
+			$('#advSWButton').html("<%ejGetML(MLG_Common_more)%>"+"...");
+		}
+		showAdv = show;
+	}
+}
+
+//////////////////////////
+
+function frmLoad()
+{
+	loadCertList();
+	with ( document.forms[0] ) {
+	if (enableService == 1)
+		enableSrv.checked = true;
+	else
+		enableSrv.checked = false;
+	ipsConnName.value = ipsConnNameV;
+	ipsRemoteGWAddr.value = ipsRemoteGWAddrV;
+	setSelect(ipsLocalIPMode, ipsLocalIPModeV);
+	ipsLocalIP.value = ipsLocalIPV; 
+	ipsLocalMask.value = ipsLocalMaskV;
+	setSelect(ipsRemoteIPMode, ipsRemoteIPModeV);
+	ipsRemoteIP.value = ipsRemoteIPV;
+	ipsRemoteMask.value = ipsRemoteMaskV;
+	//ID function johann		
+	setSelect(ipsProtocolselect, ipsProtocolselectV);
+	setSelect(ipsNATTraversal, ipsNATTraversalV);
+	//
+	setSelect(ipsKeyExM, ipsKeyExMV);
+	setSelect(ipsAuthM, ipsAuthMV);
+	ipsPSK.value = ipsPSKV;
+	setSelect(ipsCertificateName, ipsCertificateNameV);
+	//perfectFSEn.value = ipsPerfectFSEn;
+	setSelect(ipsManualEncryptionAlgo, ipsManualEncryptionAlgoV);
+	ipsManualEncryptionKey.value = ipsManualEncryptionKeyV;
+	setSelect(ipsManualAuthAlgo, ipsManualAuthAlgoV)
+	ipsManualAuthKey.value = ipsManualAuthKeyV;
+	ipsSPI.value = ipsSPIV;
+	//ID function johann 
+	setSelect(ipsLocalIDType,ipsLocalIDTypeV);
+	ipsLocalIDContent.value = ipsLocalIDContentV;
+	setSelect(ipsRemoteIDType,ipsRemoteIDTypeV);
+	ipsRemoteIDContent.value = ipsRemoteIDContentV;
+	//
+	setSelect(ipsPh1Mode, ipsPh1ModeV);
+	setSelect(ipsPh1EncryptionAlgo, ipsPh1EncryptionAlgoV);
+	setSelect(ipsPh1IntegrityAlgo, ipsPh1IntegrityAlgoV);
+	setSelect(ipsPh1DHGroup, ipsPh1DHGroupV);
+	ipsPh1KeyTime.value = ipsPh1KeyTimeV;
+	setSelect(ipsPh2EncryptionAlgo, ipsPh2EncryptionAlgoV);
+	setSelect(ipsPh2IntegrityAlgo, ipsPh2IntegrityAlgoV);
+	setSelect(ipsPh2DHGroup, ipsPh2DHGroupV);
+	ipsPh2KeyTime.value = ipsPh2KeyTimeV;
+	}
+	
+	localIPModeChange();
+	remoteIPModeChange();
+	keyauthChange();
+	showhideAdv(showAdv);
+
+	$('#advSWButton').click(function(){
+		$('#adv').toggle(0);
+
+		var str1="<%ejGetML(MLG_Common_more)%>"+"...";
+
+		if ($(this).html() == "<%ejGetML(MLG_Common_less)%>")
+			$(this).html(str1);
+		else if ($(this).html() == str1)
+			$(this).html("<%ejGetML(MLG_Common_less)%>");
+	});
+
+}
+
+function applyClick() {
+	with ( document.forms[0] ) {
+		var verifyip;
+		var iptemp1;
+		var iptemp2;
+		var lanip = '<%ejGet(ethIpAddress)%>';
+		var counter = 0;
+		var i = 0;
+		var names = ipsConnNames.split('|');
+                var lists = ipsecLst.split('@');
+                var list;
+
+		action.value="editadd";
+
+		for ( i = 0 ; i < names.length ; i ++ ) {
+			if ( ipsConnName.value == names[i] && ipsConnName.value != ipsConnNameV) {
+				//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+				//hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str1)%>", ipsConnName.value),2);
+				hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str1)%>", ""),2);
+				return;
+			}
+		}
+
+      if ( isValidName(ipsConnName.value) == false ) {
+			//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+			//hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str18)%>", ipsConnName.value),2);
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str18)%>", ""),2);
+			return;
+		}
+
+      if (ipsRemoteGWAddr.value === "0.0.0.0") {
+         for (i = 0 ; i < lists.length ; i++) {
+            list = lists[i].split('|');
+            if (ipsRemoteGWAddr.value === list[2]) {
+               //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+               //hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str19)%>", ipsRemoteGWAddr.value),2);
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str19)%>", ""),2);
+               return;
+            }
+         }
+      } else {
+         var hostNameExp = /^([0-9a-zA-Z]|\:)+([0-9a-zA-Z]|\-|\.|:)+[0-9a-zA-Z]+$/;  /* string may contain IPv4 or IPv6 address. */
+         var ipv4AddrExp = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/;
+         if (ipsRemoteGWAddr.value.match(hostNameExp)) {
+            if (ipsRemoteGWAddr.value.match(ipv4AddrExp) && isValidIpAddress(ipsRemoteGWAddr.value) == false) {
+               //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+               hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str12)%>", ""),2);
+               return;
+            }
+         } else {
+            //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+            hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str12)%>", ""),2);
+            return;
+         }
+      }
+
+		if (ipsLocalIP.value != "0.0.0.0")
+		{
+		    if ( isValidIpSubnetAddress(ipsLocalIP.value) == false ) {
+			//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+			//hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str3)%>", ipsLocalIP.value),2);
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str3)%>", ""),2);
+			return;
+		    }
+		    if ( getSelect(ipsLocalIPMode) == "subnet" && isValidSubnetMask(ipsLocalMask.value) == false )
+                    {
+			//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+			//hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str4)%>", ipsLocalMask.value),2);
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str4)%>", ""),2);
+			return;
+		    }
+		}
+		else
+		{
+		    //__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+		    //hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str3)%>", ipsLocalIP.value),2);
+		    hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str3)%>", ""),2);
+		    return;
+		}
+
+		verifyip = ipsRemoteIP.value;
+		iptemp1=verifyip.split(".");
+		iptemp2=lanip.split(".");
+		for (i=0; i<3; i++ )    
+		{    
+			if(iptemp1[i]==iptemp2[i])
+			{
+				counter = counter + 1;
+			}
+		} 
+		if (counter >= 3)
+		{
+			//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+			//hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str5)%>", ipsRemoteIP.value),2);
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str5)%>", ""),2);
+			return; 
+		}
+
+		if (ipsRemoteIP.value != "0.0.0.0")
+		{
+			if ( isValidIpSubnetAddress(ipsRemoteIP.value) == false ) {
+				//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+				//hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str6)%>", ipsRemoteIP.value),2);
+				hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str6)%>", ""),2);
+				return;
+			}
+			if ( getSelect(ipsRemoteIPMode) == "subnet" && isValidSubnetMask(ipsRemoteMask.value) == false ) {
+				//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+				//hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str7)%>", ipsRemoteMask.value),2);
+				hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str7)%>", ""),2);
+				return;
+			}
+		}
+		else
+                {
+			//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+			//hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str6)%>", ipsRemoteIP.value),2);
+			hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str6)%>", ""),2);
+                        return;
+
+                }
+
+		if ( getSelect(ipsKeyExM) == "auto" ) {
+			val = parseInt(ipsPh1KeyTime.value);
+			if (  isNaN(val) == true || val < 0 || val > 2147483647) {
+				hciAlert("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str8)%>",2);
+				showhideAdv(1);
+				return;
+			}
+			val = parseInt(ipsPh2KeyTime.value);
+			if (  isNaN(val) == true || val < 0 || val > 2147483647 ) {
+				hciAlert("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str9)%>",2);
+				showhideAdv(1);
+				return;
+			}
+			if ( getSelect(ipsAuthM) == "certificate") {
+				if ( ipsCertificateName.options.length == 0) {
+					hciAlert("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str10)%>",2);
+					return;
+				}
+			}
+			// ID function johann
+			if ( getSelect(ipsAuthM) == "pre_shared_key") {
+				if ( getSelect(ipsLocalIDType) == "asn1dn")
+				{
+					hciAlert("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str11)%>",2);
+					return;
+				}
+				if ( getSelect(ipsRemoteIDType) == "asn1dn")
+				{
+					hciAlert("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str11)%>",2);
+					return;
+				}
+			}
+			
+			if ( getSelect(ipsLocalIDType) == "address"){
+				if ( (ipsLocalIDContent.value != "0.0.0.0") && (isValidIpAddress(ipsLocalIDContent.value) == false ))
+				{
+					//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+					//hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str13)%>", ipsLocalIDContent.value),2);
+					hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str13)%>", ""),2);
+					return;
+				}
+			}
+			if ( getSelect(ipsRemoteIDType) == "address"){
+				if ( (ipsRemoteIDContent.value != "0.0.0.0") && (isValidIpAddress(ipsRemoteIDContent.value) == false) ){
+					//__ZyXEL__, David, do not display message along with input value to prevent cross-site scripting.
+					//hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str14)%>", ipsRemoteIDContent.value),2);
+					hciAlert(MLG_Makestring("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str14)%>", ""),2);
+					return;
+				}
+			}
+		}
+		if ( getSelect(ipsKeyExM) == "manual" ) {
+			var ekeys;
+			//AH
+			if ( getSelect(ipsProtocolselect) == "esp")
+			{
+				if ( getSelect(ipsManualEncryptionAlgo) == "des-cbc") {
+					ekeys = 16;
+				}
+				else if ( getSelect(ipsManualEncryptionAlgo) == "3des-cbc") {
+					ekeys = 48;
+				}
+				else {
+					ekeys = -1;
+				}
+				if ( ekeys != -1 && isValidHexKey(ipsManualEncryptionKey.value, ekeys) == false) {
+					hciAlert("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str15)%>",2);
+					return;
+				}
+			}
+			//
+			var akeys;
+			if ( getSelect(ipsManualAuthAlgo) == "hmac-md5") {
+				akeys = 32;
+			}
+			else if ( getSelect(ipsManualAuthAlgo) == "hmac-sha1") {
+				akeys = 40;
+			}
+			else {
+				akeys = -1;
+			}
+			if ( akeys != -1 && isValidHexKey(ipsManualAuthKey.value, akeys) == false) {
+				hciAlert("<%ejGetML(MLG_Security_IPSecVPN_AlertMsg_Str16)%>",2);
+				return;
+			}
+		}
+
+		if (enableSrv.checked == true){
+			enblService.value='1';
+		}
+		else {
+			enblService.value='0';
+		}
+
+		if ( getSelect(ipsPh2DHGroup) == "none"){
+			ipsPerfectFSEn.value='disable';
+		}
+		else{
+			ipsPerfectFSEn.value='enable';
+		}
+		
+		sessionKey.value=mainFrame.glbSessionKey;
+		submit();
+	}
+
+	$('.ui-dialog-titlebar-close').trigger('click');
+	$.openLoadingMask(1);
+	return;
+}
+
+var db = $('.popup_frame').parents('.dialogContener'); 
+var ApplyBtn = db.parents('.ui-dialog').find('.ui-dialog-buttonpane').children('Button:nth-child(2)');
+ApplyBtn.click(function(){ applyClick(); });
+
+$(document).ready(function() {
+	frmLoad();
+});
+// done hiding -->
+</script>
+
+
+<form action="/pages/tabFW/ipsecVPN-ipsec.cmd" method="post" target="mainFrame">
+<input type=hidden name="ipsTableIndex" id="ipsTableIndex" value="">
+<input type=hidden name="ipsPerfectFSEn" id="ipsPerfectFSEn" value="">
+<input type=hidden name="enblService" id="enblService" value="">
+<input type=hidden name="sessionKey" id="sessionKey" value="">
+<input type=hidden name="action" id="action" value="">
+<div class="popup_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">
+<%ejGetML(MLG_Security_IPSecVPNSetting_Str9)%>
+</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->	
+
+
+<!--Set area start-->
+<div class="data_frame"><ul>
+
+<li class="set1"><div class="w_text">
+	<input type='checkbox' name="enableSrv" /><%ejGetML(MLG_Common_Active)%>	 
+</div></li>
+
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str10)%></li>
+    <li class="right_table">
+				<input name="ipsConnName" size="20" maxlength="32" type="text">
+    </li>
+  </ul>
+</div>
+</li>
+
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str11)%></li>
+    <li class="right_table">
+				<input name="ipsRemoteGWAddr" size="20" maxlength="255" type="text">
+    </li>
+  </ul>
+</div>
+</li>
+
+<br/>
+
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str12)%></li>
+    <li class="right_table">
+				<select name="ipsLocalIPMode" onchange="localIPModeChange();">
+        <option value="subnet"><%ejGetML(MLG_Security_IPSecVPNSetting_Str46)%></option>
+        <option value="single"><%ejGetML(MLG_Security_IPSecVPNSetting_Str47)%></option>
+        </select>
+    </li>
+  </ul>
+</div>
+</li>
+
+<li id = "IP11" class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str13)%></li>
+    <li class="right_table">
+      <input name="ipsLocalIP" type="text">
+    </li>
+  </ul>
+</div>
+</li>
+
+<li id = "IP12" class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str14)%></li>
+    <li class="right_table">
+      <input name="ipsLocalMask" type="text">
+    </li>
+  </ul>
+</div>
+</li>
+
+<br/>
+
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str15)%></li>
+    <li class="right_table">
+        <select name="ipsRemoteIPMode" onchange="remoteIPModeChange();">
+        <option value="subnet" selected><%ejGetML(MLG_Security_IPSecVPNSetting_Str46)%></option>
+        <option value="single"><%ejGetML(MLG_Security_IPSecVPNSetting_Str47)%></option>
+        </select>
+    </li>
+  </ul>
+</div>
+</li>
+
+<li id = "IP21" class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str13)%></li>
+    <li class="right_table">
+      <input name="ipsRemoteIP" type="text">
+    </li>
+  </ul>
+</div>
+</li>
+
+<li id = "IP22" class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str14)%></li>
+    <li class="right_table">
+      <input name="ipsRemoteMask" type="text">
+    </li>
+  </ul>
+</div>
+</li>
+
+<br/>
+
+<!-- ID function johann -->
+
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str16)%></li>
+    <li class="right_table">
+        <select name="ipsProtocolselect" onChange="keyauthChange();">
+        <option value="esp"><%ejGetML(MLG_Security_IPSecVPNSetting_Str53)%></option>
+        <option value="ah"><%ejGetML(MLG_Security_IPSecVPNSetting_Str54)%></option>
+        </select>
+    </li>
+  </ul>
+</div>
+</li>
+
+<!-- End ID function johann -->
+
+<li class="set1"> <div class="w_text">
+  <ul>
+    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str17)%></li>
+    <li class="right_table">
+        <select name="ipsKeyExM" onChange="keyauthChange();">
+        <option value="auto"><%ejGetML(MLG_Security_IPSecVPNSetting_Str18)%></option>
+        <option value="manual"><%ejGetML(MLG_Security_IPSecVPNSetting_Str19)%></option>
+        </select>
+    </li>
+  </ul>
+</div>
+</li>
+
+</ul></div>
+<div id="AutoKeyEx" class="data_frame"><ul>
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str20)%></li>
+	    <li class="right_table">
+	          <select name="ipsAuthM" onChange="keyauthChange();">
+	          <option value="pre_shared_key"><%ejGetML(MLG_Security_IPSecVPNSetting_Str21)%></option>
+	          <option value="certificate"><%ejGetML(MLG_Security_IPSecVPNSetting_Str22)%></option>
+	          </select>
+	    </li>
+	  </ul>
+	</div>
+	</li>
+	
+	<li id="PSK" class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str21)%></li>
+	    <li class="right_table">
+	      <input name="ipsPSK" size="20" maxlength="31">
+	    </li>
+	  </ul>
+	</div>
+	</li>
+	
+	<li id="Certificate" class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str23)%></li>
+	    <li class="right_table">
+	          <select name="ipsCertificateName">
+	          </select>
+	    </li>
+	  </ul>
+	</div>
+	</li>
+
+
+	<li id="lIDTypeid" class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str24)%></li>
+	    <li class="right_table">
+          <select name="ipsLocalIDType" onChange="keyauthChange();">
+            <option value="address"><%ejGetML(MLG_Common_IP)%></option>
+            <option value="user_fqdn"><%ejGetML(MLG_Security_IPSecVPNSetting_Str25)%></option>
+            <option value="fqdn"><%ejGetML(MLG_Common_DNS)%></option>
+            <option value="asn1dn"><%ejGetML(MLG_Security_IPSecVPNSetting_Str26)%></option>
+          </select>	    	
+	    </li>
+	  </ul>
+	</div>
+	</li>
+
+    <li id="lIDContentid" class="set1"> <div class="w_text">
+      <ul>
+        <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str27)%></li>
+        <li class="right_table">
+          <input name="ipsLocalIDContent" type="text" maxlength="32">
+        </li>
+      </ul>
+    </div>
+    </li>	
+
+    <li id="rIDTypeid" class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str28)%></li>
+	    <li class="right_table">
+          <select name="ipsRemoteIDType" onChange="keyauthChange();">
+            <option value="address"><%ejGetML(MLG_Common_IP)%></option>
+            <option value="user_fqdn"><%ejGetML(MLG_Security_IPSecVPNSetting_Str25)%></option>
+            <option value="fqdn"><%ejGetML(MLG_Common_DNS)%></option>
+            <option value="asn1dn"><%ejGetML(MLG_Security_IPSecVPNSetting_Str26)%></option>
+          </select>	    	
+	    </li>
+	  </ul>
+	</div>
+	</li>
+
+    <li id="rIDContentid" class="set1"> <div class="w_text">
+      <ul>
+        <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str29)%></li>
+        <li class="right_table">
+          <input name="ipsRemoteIDContent" type="text" maxlength="32">
+        </li>
+      </ul>
+    </div>
+    </li>
+
+
+  <br/>
+
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str30)%></li>
+	    <li class="right_table">
+	    	<span class="linking" id="advSWButton"><%ejGetML(MLG_Security_IPSecVPNSetting_Str31)%></span>
+	    </li>
+	  </ul>
+	</div>
+	</li>  
+  
+</ul></div><!-- id:AutoKeyEx -->
+
+
+<div id="ManualKey" class="data_frame"><ul>
+	
+	<li id="manualEnc" class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str32)%></li>
+	    <li class="right_table">
+          <select name="ipsManualEncryptionAlgo" onChange="keyauthChange();">
+          <option value="des-cbc"><%ejGetML(MLG_Security_IPSecVPNSetting_Str55)%></option>
+          <option value="3des-cbc" selected>3<%ejGetML(MLG_Security_IPSecVPNSetting_Str55)%></option>
+          <option value="null"><%ejGetML(MLG_Security_IPSecVPNSetting_Str56)%></option>
+          </select>
+	    </li>
+	  </ul>
+	</div>
+	</li> 
+
+	<li id="manualEncKey" class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str33)%></li>
+	    <li class="right_table">
+				<input name="ipsManualEncryptionKey", size = "40" maxlength = "48">  DES: 16 digit Hex, 3DES: 48 digit Hex
+	    </li>
+	  </ul>
+	</div>
+	</li> 	
+
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str34)%></li>
+	    <li class="right_table">
+          <select name="ipsManualAuthAlgo">
+           <option value="hmac-md5"><%ejGetML(MLG_Security_IPSecVPNSetting_Str57)%></option>
+           <option value="hmac-sha1"><%ejGetML(MLG_Security_IPSecVPNSetting_Str58)%></option>
+          </select>
+	    </li>
+	  </ul>
+	</div>
+	</li> 	
+
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str35)%></li>
+	    <li class="right_table">
+        <input name="ipsManualAuthKey" size="50" maxlength = "40"> <%ejGetML(MLG_Security_IPSecVPNSetting_Str57)%>: 32 <%ejGetML(MLG_Security_IPSecVPNSetting_Str59)%>, <%ejGetML(MLG_Security_IPSecVPNSetting_Str58)%>: 40 <%ejGetML(MLG_Security_IPSecVPNSetting_Str59)%>
+	    </li>
+	  </ul>
+	</div>
+	</li> 	
+
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str60)%></li>
+	    <li class="right_table">
+        <input name="ipsSPI" size="8" maxlength = "8"> <%ejGetML(MLG_Security_IPSecVPNSetting_Str61)%> 100-FFFFFFFF
+	    </li>
+	  </ul>
+	</div>
+	</li> 
+	
+</ul></div><!-- id:ManualKey -->
+
+<div id="adv" class="data_frame"><ul>
+
+<!-- ID function johann -->
+
+
+	<li id="NATTra" class="set1"> <div class="w_text">
+  	  <ul>
+    	<li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str36)%></li>
+    	<li class="right_table">
+          <select name="ipsNATTraversal" onChange="keyauthChange();">
+            <option value="1"><%ejGetML(MLG_Common_Enable)%></option>
+            <option value="0"><%ejGetML(MLG_Common_Disable)%></option>
+          </select>
+        </li>
+  	  </ul>
+	</div>
+	</li>
+
+<!-- end ID function johann -->
+
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="all_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str37)%></li>
+	  </ul>
+	</div>
+	</li> 
+
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Common_Mode)%></li>
+	    <li class="right_table">
+          <select name="ipsPh1Mode">
+            <option value="main"><%ejGetML(MLG_Security_IPSecVPNSetting_Str38)%></option>
+            <option value="aggressive"><%ejGetML(MLG_Security_IPSecVPNSetting_Str39)%></option>
+          </select>	    	
+	    </li>
+	  </ul>
+	</div>
+	</li> 
+
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str32)%></li>
+	    <li class="right_table">
+          <select name="ipsPh1EncryptionAlgo">
+          <option value="des"><%ejGetML(MLG_Security_IPSecVPNSetting_Str55)%></option>
+          <option value="3des" selected>3<%ejGetML(MLG_Security_IPSecVPNSetting_Str55)%></option>
+          <option value="aes128"><%ejGetML(MLG_Security_IPSecVPNSetting_Str62)%> - 128</option>
+          <option value="aes192"><%ejGetML(MLG_Security_IPSecVPNSetting_Str62)%> - 192</option>
+          <option value="aes256"><%ejGetML(MLG_Security_IPSecVPNSetting_Str62)%> - 256</option>          
+          </select>    	
+	    </li>
+	  </ul>
+	</div>
+	</li> 
+
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str40)%></li>
+	    <li class="right_table">
+          <select name="ipsPh1IntegrityAlgo">
+            <option value="md5"><%ejGetML(MLG_Security_IPSecVPNSetting_Str57)%></option>
+            <option value="sha1"><%ejGetML(MLG_Security_IPSecVPNSetting_Str58)%></option>
+          </select>   	
+	    </li>
+	  </ul>
+	</div>
+	</li> 	
+
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str41)%></li>
+	    <li class="right_table">
+          <select name="ipsPh1DHGroup">
+            <option value="modp768">768<%ejGetML(MLG_Security_IPSecVPNSetting_Str63)%>(<%ejGetML(MLG_Security_IPSecVPNSetting_Str64)%> 1)</option>
+            <option value="modp1024">1024<%ejGetML(MLG_Security_IPSecVPNSetting_Str63)%>(<%ejGetML(MLG_Security_IPSecVPNSetting_Str64)%> 2)</option>
+            <option value="modp1536">1536<%ejGetML(MLG_Security_IPSecVPNSetting_Str63)%>(<%ejGetML(MLG_Security_IPSecVPNSetting_Str64)%> 5)</option>
+            <option value="modp2048">2048<%ejGetML(MLG_Security_IPSecVPNSetting_Str63)%>(<%ejGetML(MLG_Security_IPSecVPNSetting_Str64)%> 14)</option>
+            <option value="modp3072">3072<%ejGetML(MLG_Security_IPSecVPNSetting_Str63)%>(<%ejGetML(MLG_Security_IPSecVPNSetting_Str64)%> 15)</option>
+            <option value="modp4096">4096<%ejGetML(MLG_Security_IPSecVPNSetting_Str63)%>(<%ejGetML(MLG_Security_IPSecVPNSetting_Str64)%> 16)</option>
+<!--
+            <option value="modp6144">6144bit(DH Group 17)</option>
+            <option value="modp8192">8192bit(DH Group 18)</option>
+-->
+          </select>  	
+	    </li>
+	  </ul>
+	</div>
+	</li> 	
+
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str42)%></li>
+	    <li class="right_table">
+				<input name="ipsPh1KeyTime" > &nbsp; <%ejGetML(MLG_Common_Seconds)%>	
+	    </li>
+	  </ul>
+	</div>
+	</li> 	
+
+  <br/>
+
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="all_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str43)%></li>
+	  </ul>
+	</div>
+	</li> 	  
+
+	<li id="ph2En" class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str32)%></li>
+  		<li class="right_table">
+          <select name="ipsPh2EncryptionAlgo">
+          <option value="des"><%ejGetML(MLG_Security_IPSecVPNSetting_Str55)%></option>
+          <option value="3des" selected >3<%ejGetML(MLG_Security_IPSecVPNSetting_Str55)%></option>
+          <OPTION value="null_enc"><%ejGetML(MLG_Security_IPSecVPNSetting_Str56)%></option>
+          <option value="aes128"><%ejGetML(MLG_Security_IPSecVPNSetting_Str62)%> - 128</option>
+          <option value="aes192"><%ejGetML(MLG_Security_IPSecVPNSetting_Str62)%> - 192</option>
+          <option value="aes256"><%ejGetML(MLG_Security_IPSecVPNSetting_Str62)%> - 256</option>
+        </select>
+  		</li>	    
+	  </ul>
+	</div>
+	</li> 	   
+
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str40)%></li>
+  		<li class="right_table">
+          <select name="ipsPh2IntegrityAlgo">
+           <option value="hmac_md5"><%ejGetML(MLG_Security_IPSecVPNSetting_Str57)%></option>
+           <option value="hmac_sha1"><%ejGetML(MLG_Security_IPSecVPNSetting_Str58)%></option>
+          </select>
+  		</li>	    
+	  </ul>
+	</div>
+	</li> 	 
+
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str44)%></li>
+  		<li class="right_table">
+          <select name="ipsPh2DHGroup">
+           <option value="none"><%ejGetML(MLG_Common_None)%></option>
+           <option value="modp768">768<%ejGetML(MLG_Security_IPSecVPNSetting_Str63)%>(<%ejGetML(MLG_Security_IPSecVPNSetting_Str64)%> 1)</option>
+           <option value="modp1024">1024<%ejGetML(MLG_Security_IPSecVPNSetting_Str63)%>(<%ejGetML(MLG_Security_IPSecVPNSetting_Str64)%> 2)</option>
+           <option value="modp1536">1536<%ejGetML(MLG_Security_IPSecVPNSetting_Str63)%>(<%ejGetML(MLG_Security_IPSecVPNSetting_Str64)%> 5)</option>
+           <option value="modp2048">2048<%ejGetML(MLG_Security_IPSecVPNSetting_Str63)%>(<%ejGetML(MLG_Security_IPSecVPNSetting_Str64)%> 14)</option>
+           <option value="modp3072">3072<%ejGetML(MLG_Security_IPSecVPNSetting_Str63)%>(<%ejGetML(MLG_Security_IPSecVPNSetting_Str64)%> 15)</option>
+           <option value="modp4096">4096<%ejGetML(MLG_Security_IPSecVPNSetting_Str63)%>(<%ejGetML(MLG_Security_IPSecVPNSetting_Str64)%> 16)</option>
+<!--
+           <option value="modp6144">6144bit(DH Group 17)</option>
+           <option value="modp8192">8192bit(DH Group 18)</option>
+-->	   
+         </select>
+  		</li>	    
+	  </ul>
+	</div>
+	</li> 	
+
+	<li class="set1"> <div class="w_text">
+	  <ul>
+	    <li class="left_table"><%ejGetML(MLG_Security_IPSecVPNSetting_Str42)%></li>
+  		<li class="right_table">
+				<input name="ipsPh2KeyTime" > &nbsp; <%ejGetML(MLG_Common_Seconds)%>
+  		</li>	    
+	  </ul>
+	</div>
+	</li> 	
+	
+</ul></div><!-- id:adv -->
+
+<div class="data_frame"><ul>
+
+
+<!--Button define start-->
+
+<!--Button define end-->
+
+
+</ul></div>	
+<!--Set area end-->	
+</form>
+</div>
+
+
+

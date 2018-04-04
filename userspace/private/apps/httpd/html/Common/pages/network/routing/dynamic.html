@@ -1,0 +1,23 @@
+ <form action="/pages/tabFW/wmm.wl" method="post" onSubmit="return btnApply();">
+      <div class="content_frame"><div class="explain"><div> <b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div> <div class="explain_text">Dynamic Routing describes routes through a network by valid paths.</div><div> <b class="r4"></b> <b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div>
+         </div>
+         <div class="data_frame"><ul>
+            <li class="set1">
+               <div class="w_text">
+<ul>
+<li class="left_table"><%ejGetML(MLG_Network_Dynamic_RoutingType)%>  :</li>
+<li class="right_table"><input name="ssid_state" id="radio" type="radio" value="enable" checked="checked" /> <%ejGetML(MLG_Network_Dynamic_Str1)%> 
+<input name="ssid_state" id="radio2" type="radio" value="disable" /> <%ejGetML(MLG_Network_Dynamic_Str2)%>  
+<input name="ssid_state" id="radio5" type="radio" value="disable" /> <%ejGetML(MLG_Network_Dynamic_Str3)%>  
+</li>
+</ul>
+</div>
+            </li>
+            <li class="space"></li>
+            <li class="buttonframe"><div class="button_position"><input name="sysSubmit" value="<%ejGetML(MLG_Common_Apply)%>" type="button" onClick="doSubmit();" />&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+    <input name="Cancel" value="<%ejGetML(MLG_Common_Cancel)%>" type="button" onClick='frmLoad();' />
+               </div>
+            </li>
+         </ul>
+         </div>
+      </div><br/><br/>

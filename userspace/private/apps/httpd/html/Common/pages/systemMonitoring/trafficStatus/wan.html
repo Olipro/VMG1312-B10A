@@ -1,0 +1,180 @@
+<script language="javascript">
+var timeValue;
+var sessionKey='<%ejGetOther(sessionKey)%>';
+
+function resetInterval() {
+	var selecting;
+	selecting = $('#dstWanIf').val();	
+	clearTimeout(timeValue);
+	$.cookie("refreshWAN", selecting);
+	if (selecting == 1)
+		timeValue = setTimeout('trafficWanRefresh()', 15000);
+	else if (selecting == 2)
+		timeValue = setTimeout('trafficWanRefresh()', 30000);
+	else if (selecting == 3)
+		timeValue = setTimeout('trafficWanRefresh()', 60000);
+}
+
+function trafficWanRefresh() {
+   var reload = 'trafficStatus-wan.cgi?';
+   reload += 'sessionKey=' + sessionKey;
+   var reload = 'location.assign("' + reload + '")';
+   eval(reload);
+}
+
+function frmLoad(){
+	var wanSts = '<%ejGetOther(stsZyWanGet)%>';
+	//var wanSts = '0|ADSL|atm0|0,0,0,0,0,0@0|VDSL|ptm0.1|0,0,0,0,0,0@0|ETHWAN|eth10.1|0,0,0,0,0,0@';
+	var wanEntry = wanSts.split('@');
+
+       $('#btn_wepmore').toggle(
+       function(){
+         $(this).html('<%ejGetML(MLG_System__TrafficStatus_Str1)%>');
+         $('#detailedInfo').slideDown(200);
+       }, function(){
+         $(this).html('<%ejGetML(MLG_System_TrafficStatusWAN_Str12)%>...');
+          $('#detailedInfo').slideUp(200);
+       });
+
+    var txTotal = '<%ejGetOther(stsZyWanGetSum, txByte)%>';
+    var rxTotal = '<%ejGetOther(stsZyWanGetSum, rxByte)%>';
+
+      $('#txByte').html(formatThousandths(txTotal));
+      $('#rxByte').html(formatThousandths(rxTotal));
+
+
+	for (i=0;i<wanEntry.length;i++)
+	{
+		if (wanEntry[i] == '' || wanEntry[i] == undefined)
+			break;
+
+		var wanItem = wanEntry[i].split('|');
+
+		if (wanItem[1] == undefined)
+			break;
+
+		if (wanItem[0] == '1')
+		{
+			var sts = wanItem[3].split(',');
+			var tempStr = '';
+	             tempStr += '<tr align="center">';
+	             tempStr += '<td align="left" class="table_font2">'+wanItem[1]+'</td>'; //name
+	             tempStr += '<td align="center" class="table_font">'+formatThousandths(sts[0])+'</td>';
+	             tempStr += '<td align="center" class="table_font">'+formatThousandths(sts[1])+'</td>';
+	             tempStr += '<td align="center" class="table_font">'+formatThousandths(sts[2])+'</td>';
+	             tempStr += '<td align="center" class="table_font">'+formatThousandths(sts[3])+'</td>';
+	             tempStr += '<td align="center" class="table_font">'+formatThousandths(sts[4])+'</td>';
+	             tempStr += '<td align="center" class="table_font">'+formatThousandths(sts[5])+'</td>';
+	             tempStr += '</tr>';
+			$('#wanTable1').append(tempStr)
+		}
+		else
+		{
+			var sts = wanItem[3].split(',');
+			var tempStr = '';
+
+	             tempStr += '<tr align="center">';
+	             tempStr += '<td align="left" class="table_font2">'+wanItem[1]+'</td>'; //name
+	             tempStr += '<td align="center" class="table_font">'+formatThousandths(sts[0])+'</td>';
+	             tempStr += '<td align="center" class="table_font">'+formatThousandths(sts[1])+'</td>';
+	             tempStr += '<td align="center" class="table_font">'+formatThousandths(sts[2])+'</td>';
+	             tempStr += '<td align="center" class="table_font">'+formatThousandths(sts[3])+'</td>';
+	             tempStr += '<td align="center" class="table_font">'+formatThousandths(sts[4])+'</td>';
+	             tempStr += '<td align="center" class="table_font">'+formatThousandths(sts[5])+'</td>';
+	             tempStr += '</tr>';
+			$('#wanTable2').append(tempStr)
+		}
+	}
+	if ($.cookie("refreshWAN") == null) {
+		$('#dstWanIf').val(1);
+	} 
+	else {
+		$('#dstWanIf').val($.cookie("refreshWAN"));
+	}
+	resetInterval();
+}
+
+$(document).ready(function() {
+	frmLoad();
+});
+</script>
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text"><%ejGetML(MLG_System_TrafficStatusHPNA_Str1)%></div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<div class="data_frame"><ul>
+<li class="set1"> 
+<div class="title"><%ejGetML(MLG_System_TrafficStatusWAN_Str2)%> </div>
+<div class="w_table">
+<table width="90%" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td height="120" align="center" valign="middle"><div class="sent"><%ejGetML(MLG_System_TrafficStatusWAN_Str3)%>:<span><a class="w_blue blod" id="txByte" style="text-decoration:none;" ></a><%ejGetML(MLG_System_TrafficStatusWAN_Str5)%></span></div></td>
+        <td width="250" valign="middle"><div class="nat_1">
+          <!-- div align="center"><img src="../../images/network/i_router.gif"><span><img src="../../images/network/i_internet.gif" width="55" height="55" /></span></div -->
+          <div align="center"><img src="<%ejGet(modeltype)%>"><span><img src="../../images/network/i_internet.gif" width="55" height="55" /></span></div>
+        </div></td>
+        <td width="35%" valign="middle"><div class="received"><%ejGetML(MLG_System_TrafficStatusWAN_Str4)%>:<span><a class="w_blue blod" id="rxByte" style="text-decoration:none;"></a><%ejGetML(MLG_System_TrafficStatusWAN_Str5)%></span></div></td>
+      </tr>
+    </table>
+    </div>
+<li class="set1">
+  <div class="w_text">
+     <ul>
+         <li class="all_table"><%ejGetML(MLG_Common_RefreshInterval)%> : 
+           <select name='dstWanIf' id='dstWanIf' onchange='resetInterval()'>
+              <option value="1">15 <%ejGetML(MLG_Common_Seconds)%></option>
+              <option value="2">30 <%ejGetML(MLG_Common_Seconds)%></option>
+              <option value="3">60 <%ejGetML(MLG_Common_Seconds)%></option>
+            </select>
+         </li>
+     </ul>
+  </div>
+ <div class="w_table">
+  <!--Table define start-->
+  <table width="100%" cellpadding="0" cellspacing="0" class="table_frame"  style="table-layout:fixed;" id="wanTable1">
+                <tr align="center">
+                  <td width="25%" rowspan="2" align="left" valign="top" class="top_font2"><%ejGetML(MLG_System_TrafficStatusWAN_Str6)%> </td>
+                  <td colspan="3" align="center" class="top_font"><%ejGetML(MLG_System_TrafficStatusHPNA_Str5)%></td>
+                  <td colspan="3" align="center" class="top_font"><%ejGetML(MLG_System_TrafficStatusHPNA_Str6)%></td>
+                  </tr>
+                <tr align="center">
+                  <td align="center"  class="table_font2"><%ejGetML(MLG_System_TrafficStatusWAN_Str9)%></td>
+                  <td align="center" class="table_font2"><%ejGetML(MLG_System_SystemLog_Str7)%></td>
+                  <td align="center" class="table_font2"><%ejGetML(MLG_System_TrafficStatusWAN_Str11)%></td>
+                  <td class="table_font2"><%ejGetML(MLG_System_TrafficStatusWAN_Str9)%></td>
+                  <td class="table_font2"><%ejGetML(MLG_System_SystemLog_Str7)%></td>
+                  <td align="center" class="table_font2" style="border-right:0px;"><%ejGetML(MLG_System_TrafficStatusWAN_Str11)%></td>
+                </tr>
+                </table>
+</div>
+<span class="linking moreBtn" id="btn_wepmore" style="float:right;"><%ejGetML(MLG_System_TrafficStatusWAN_Str12)%>...</span></li>
+<li class="space"> </li>
+<li class="set1" id='detailedInfo' style="display:none;">
+  <div class="w_table">
+    <!--Table define start-->
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="table_frame" id="wanTable2">
+                <tr align="center">
+                  <td width="25%" rowspan="2" align="left" valign="top" class="top_font2"><%ejGetML(MLG_System_TrafficStatusWAN_Str13)%></td>
+                  <td colspan="3" align="center" class="top_font"><%ejGetML(MLG_System_TrafficStatusHPNA_Str5)%></td>
+                  <td colspan="3" align="center" class="top_font"><%ejGetML(MLG_System_TrafficStatusHPNA_Str6)%></td>
+                  </tr>
+                <tr align="center">
+                  <td align="center"  class="table_font2"><%ejGetML(MLG_System_TrafficStatusWAN_Str9)%></td>
+                  <td align="center" class="table_font2"><%ejGetML(MLG_System_SystemLog_Str7)%></td>
+                  <td align="center" class="table_font2"><%ejGetML(MLG_System_TrafficStatusWAN_Str11)%></td>
+                  <td class="table_font2"><%ejGetML(MLG_System_TrafficStatusWAN_Str9)%></td>
+                  <td class="table_font2"><%ejGetML(MLG_System_SystemLog_Str7)%></td>
+                  <td align="center" class="table_font2" style="border-right:0px;"><%ejGetML(MLG_System_TrafficStatusWAN_Str11)%></td>
+                </tr>
+                </table>
+</div>
+</li>
+<li class="space"> </li>
+</ul>
+</div>
+<!--Set area end-->
+</div>
+<br/><br/>

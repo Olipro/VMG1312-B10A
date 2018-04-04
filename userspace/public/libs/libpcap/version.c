@@ -1,0 +1,1 @@
+char pcap_version[] = "current-cvs.tcpdump.org.2003.02.02";

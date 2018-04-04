@@ -1,0 +1,28 @@
+<script language="javascript">
+
+</script>
+   <form action="/pages/networkMap/wwan-Pin.cgi" method="post" target="mainFrame">
+      <div class="popup_frame" >
+         <div class="data_frame"><ul>
+<!--level 1 start-->
+            <li class="title"><%ejGetML(MLG_ConnStatus_Status_IS_PIN_str1)%></li>
+            <li class="set1">
+               <div class="w_text">
+                  <ul>
+                     <li><font color="#FF0000"><%ejGetML(MLG_ConnStatus_Status_IS_str3)%></font></li>
+                  </ul>
+               </div>
+               <div class="w_text">
+                  <ul>
+                     <li><font color="#FF0000"><%ejGetML(MLG_ConnStatus_Status_IS_str4)%></font></li>
+                  </ul>
+               </div>
+            </li>            
+         </ul></div>
+      </div>
+</form>
+<script language="JavaScript">
+with ( document.forms[0] ) {
+   str1.focus();
+}
+</script> 

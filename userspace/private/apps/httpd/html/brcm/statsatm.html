@@ -1,0 +1,154 @@
+<html>
+   <head>
+      <meta http-equiv='Pragma' content='no-cache'>
+      <meta http-equiv="refresh" content="15">
+      <link rel="stylesheet" href='stylemain.css' type='text/css'>
+         <link rel="stylesheet" href='colors.css' type='text/css'>
+            <script language="javascript">
+<!-- hide
+
+function frmLoad() {
+//   var update = '<%ejFncCmd(stsatmupdate)%>';
+}
+
+function btnReset() {
+   var loc = 'statsatmreset.html';
+
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+// done hiding -->
+</script>
+   </head>
+   <body onLoad='frmLoad()'>
+      <blockquote>
+         <center><form>
+               <b>Statistics -- ATM</b><br>
+               <table border="1" cellpadding="0" cellspacing="0">
+                  <tr>
+                     <td colspan="2" class='hd'><center>ATM Interface Statistics</center>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In Octets:</td>
+                     <td><%ejGetOther(stsatmifc, 0, 0)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>Out Octets:</td>
+                     <td><%ejGetOther(stsatmifc, 0, 1)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In Errors:</td>
+                     <td><%ejGetOther(stsatmifc, 0, 2)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In Unknown:</td>
+                     <td><%ejGetOther(stsatmifc, 0, 3)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In Hec Errors:</td>
+                     <td><%ejGetOther(stsatmifc, 0, 4)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In Invalid Vpi Vci Errors:</td>
+                     <td><%ejGetOther(stsatmifc, 0, 5)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In Port Not Enable Errors:</td>
+                     <td><%ejGetOther(stsatmifc, 0, 6)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In PTI Errors:</td>
+                     <td><%ejGetOther(stsatmifc, 0, 7)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In Idle Cells:</td>
+                     <td><%ejGetOther(stsatmifc, 0, 8)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In Circuit Type Errors:</td>
+                     <td><%ejGetOther(stsatmifc, 0, 9)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In OAM RM CRC Errors:</td>
+                     <td><%ejGetOther(stsatmifc, 0, 10)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In GFC Errors:</td>
+                     <td><%ejGetOther(stsatmifc, 0, 11)%></td>
+                  </tr>
+                  <tr>
+                     <td colspan="2">&nbsp</td>
+                  </tr>
+                  <tr>
+                     <td colspan="2" class='hd'><center>AAL5 Interface Statistics</center>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In Octets:</td>
+                     <td><%ejGetOther(stsatmifc, 1, 0)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>Out Octets:</td>
+                     <td><%ejGetOther(stsatmifc, 1, 1)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In Ucast Pkts:</td>
+                     <td><%ejGetOther(stsatmifc, 1, 2)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>Out Ucast Pkts:</td>
+                     <td><%ejGetOther(stsatmifc, 1, 3)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In Errors:</td>
+                     <td><%ejGetOther(stsatmifc, 1, 4)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>Out Errors:</td>
+                     <td><%ejGetOther(stsatmifc, 1, 5)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>In Discards:</td>
+                     <td><%ejGetOther(stsatmifc, 1, 6)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>Out Discards:</td>
+                     <td><%ejGetOther(stsatmifc, 1, 7)%></td>
+                  </tr>
+                  <tr>
+                     <td colspan="2">&nbsp</td>
+                  </tr>
+                  <tr>
+                     <td colspan="2" class='hd'><center>AAL5 VCC Statistics</center>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>CRC Errors:</td>
+                     <td><%ejGetOther(stsatmvcc, 0, 0)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>SAR Timeouts:</td>
+                     <td><%ejGetOther(stsatmvcc, 0, 1)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>Oversized SDUs:</td>
+                     <td><%ejGetOther(stsatmvcc, 0, 2)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>Short Packet Errors:</td>
+                     <td><%ejGetOther(stsatmvcc, 0, 3)%></td>
+                  </tr>
+                  <tr>
+                     <td class='hd'>Length Errors:</td>
+                     <td><%ejGetOther(stsatmvcc, 0, 4)%></td>
+                  </tr>
+               </table>
+               <p align="center">
+                  <input type='button' onClick='btnReset()' value='Reset'> <input type='button' onClick='window.close()' value='Close'>
+            </form>
+         </center>
+      </blockquote>
+   </body>
+</html>

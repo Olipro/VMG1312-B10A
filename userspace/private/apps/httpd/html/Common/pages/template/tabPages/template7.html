@@ -1,0 +1,97 @@
+
+<!--text overflow-->
+<script type="text/javascript" src="../../js/jquery.text-overflow.js"></script>
+
+<!--table sorting (had inclued by tabFW.html)-->
+<!--script src="../../js/jquery.tablesorter.min.js" type="text/javascript"></script-->
+
+<script type="text/javascript">
+    
+$(function(){
+$('.textOverflow').each(function(){ $(this).attr('title', $(this).text());} );    
+$('.textOverflow').ellipsis(true); 
+
+$("#tempTable").tablesorter(); 
+});
+
+
+</script> 
+<div class="content_frame" >
+<!--Unit Explain start-->
+<div class="explain">
+<div><b class="r1"></b><b class="r2"></b><b class="r3"></b><b class="r4"></b><b class="r4"></b></div>
+<div class="explain_text">Something about self-diagnostic page</div>
+<div><b class="r4"></b><b class="r4"></b><b class="r3"></b><b class="r2"></b><b class="r1"></b></div></div>
+<!--Unit Explain End-->
+<!--Set area start-->
+<div class="data_frame"><ul>
+<!--Table define start-->
+<li class="set1">
+<div class="title">Test Time: Nov 24 14:00:05</div>
+<div class="w_table">       
+<table  class='tablesorter table_frame' width="100%"cellpadding="0" cellspacing="0" id='testTable'>
+               <thead>
+                <tr align="center">
+                  <th width="5%" class="top_font textOverflow"><div class="sortImg">#</div></th>
+                  <th class="top_font textOverflow"><div class="sortImg"><%ejGetML(MLG_System_IGMPGroup_Str3)%></div></th>
+                  <td class="top_font textOverflow"><div class="sortImg"><%ejGetML(MLG_Common_Description)%></div></td>
+                  <th class="top_font textOverflow"><div class="sortImg"><%ejGetML(MLG_Common_Type)%></div></th>
+                  <th class="top_font textOverflow"><div class="sortImg"><%ejGetML(MLG_ConnStatus_Status_Str22)%></div></th>
+                  <th class="top_font textOverflow"><div class="sortImg">Vlan8021p</div></th>
+                  <th class="top_font textOverflow"><div class="sortImg">VlanMuxId</div></th>
+                  <th class="top_font textOverflow"><div class="sortImg">ConnId</div></th>
+                  <th class="top_font textOverflow"><div class="sortImg"><%ejGetML(MLG_Common_IGMP)%></div></th>
+                  <th class="top_font textOverflow"><div class="sortImg"><%ejGetML(MLG_WAN_Broadband_Str13)%></div></th>
+                  <th class="top_font textOverflow"><div class="sortImg"><%ejGetML(MLG_Menu_Firewall)%></div></th>
+                  <td width="60" class="top_font textOverflow" style="border-right:0px;"><div class="sortImg"><%ejGetML(MLG_Common_Modify)%> </div></td>
+                </tr>
+               </thead>
+                    <tbody>
+                <tr align="center">
+                  <td class="table_font textOverflow">1</td>
+                  <td class="table_font textOverflow">aaa</td>
+                  <td class="table_font textOverflow">ipoe_0_0_1_1</td>
+                  <td class="table_font textOverflow"><%ejGetML(MLG_Common_PTM)%>/<%ejGetML(MLG_Common_IPoE)%></td>
+                  <td class="table_font textOverflow"><%ejGetML(MLG_Common_NA)%></td>
+                  <td class="table_font textOverflow"><%ejGetML(MLG_Common_NA)%></td>
+                  <td class="table_font textOverflow"><%ejGetML(MLG_Common_NA)%></td>
+                  <td class="table_font textOverflow">1</td>
+                  <td class="table_font textOverflow"><%ejGetML(MLG_Common_Disabled)%></td>
+                  <td class="table_font textOverflow"><%ejGetML(MLG_Common_Enabled)%></td>
+                  <td class="table_font textOverflow"><button>aa</button></td>
+                  <td class="table_font textOverflow"><div class="i_modify"><ul><li><a href="#" class="edit" id='editBtn' title="<%ejGetML(MLG_Common_Edit)%>"></a></li><li ><a href="#"  id='deleteBtn' class="delete" title="<%ejGetML(MLG_Common_Delete)%>"></a></li></ul></div></td>
+                  </tr>
+                  <tr align="center">
+                  <td class="table_font textOverflow">3</td>
+                  <td class="table_font textOverflow">bbb</td>
+                  <td class="table_font">bhagfrddf tiejijifjijfijejfie</td>
+                  <td class="table_font textOverflow">asdgsag</td>
+                  <td class="table_font textOverflow">tsdgsg</td>
+                  <td class="table_font textOverflow">asdgasg</td>
+                  <td class="table_font textOverflow">hbndfgn</td>
+                  <td class="table_font textOverflow">ndnh</td>
+                  <td class="table_font textOverflow">ngn</td>
+                  <td class="table_font textOverflow">234gfgf</td>
+                  <td class="table_font textOverflow"><button>bb</button></td>
+                  <td class="table_font textOverflow"><div class="i_modify"><ul><li><a href="#" class="edit" id='editBtn' title="<%ejGetML(MLG_Common_Edit)%>"></a></li><li ><a href="#"  id='deleteBtn' class="delete" title="<%ejGetML(MLG_Common_Delete)%>"></a></li></ul></div></td>
+                  </tr>
+                   <tr align="center">
+                  <td class="table_font textOverflow">20</td>
+                  <td class="table_font textOverflow">ccc</td>
+                  <td class="table_font textOverflow">bhagfr</td>
+                  <td class="table_font textOverflow">asdgsag</td>
+                  <td class="table_font textOverflow">tsdgsg</td>
+                  <td class="table_font textOverflow">asdgasg</td>
+                  <td class="table_font textOverflow">hbndfgn</td>
+                  <td class="table_font textOverflow">ndnh</td>
+                  <td class="table_font textOverflow">ngn</td>
+                  <td class="table_font textOverflow">234gfgf</td>
+                  <td class="table_font textOverflow"><button>cc</button></td>
+                  <td class="table_font textOverflow"><div class="i_modify"><ul><li><a href="#" class="edit" id='editBtn' title="<%ejGetML(MLG_Common_Edit)%>"></a></li><li ><a href="#"  id='deleteBtn' class="delete" title="<%ejGetML(MLG_Common_Delete)%>"></a></li></ul></div></td>
+                  </tr>
+                    </tbody> 
+              </table>
+ </div>
+</li>
+</ul></div>
+</div><br /><br />                   

@@ -1,0 +1,83 @@
+  <script type="text/javascript">
+  $(function(){
+      function checkSip2(){
+          $("#sip2").hide();
+          var sip2Select = $("#sip2Check").attr('checked');
+          if (sip2Select == true) {
+              $("#sip2").show();
+          }
+          else {
+              $("#sip2").hide();
+          }
+      }
+      
+      
+      
+      
+      checkSip2();
+      
+      $("#sip2Check").click(function(){
+          checkSip2();
+      });
+  });
+            
+</script>
+  
+  
+  <!-- VoIP Beginning -->
+   <div id="voipsetting" class='state'>
+     <div class="qs_content">
+       <p><%ejGetML(MLG_ConnStatus_QuickStart_Str62)%></p>
+       <p class="item"><%ejGetML(MLG_ConnStatus_QuickStart_Str64)%></p>
+       <table width="100%" border="0" cellspacing="0" cellpadding="0">
+         <tr>
+           <td width="40%" class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str65)%></td>
+           <td><input name="sipNumber" type="text" id="textfield9" value="070123456789" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str66)%></td>
+           <td><input name="SIPServerAddress" type="text" id="textfield10" value="0.0.0.0" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str67)%></td>
+           <td><input name="SIPServiceDomain" type="text" id="textfield11" value="sip.aaa.ocm" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str68)%></td>
+           <td><input name="UserName" type="text" id="textfield12" value="zyxel" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str63)%></td>
+           <td><input name="Password" type="password" id="textfield13" value="1234" /></td>
+         </tr>
+       </table>
+       <p>&nbsp;</p>
+       <p class="item">
+         <input type="checkbox" name="sip2checkbox" id="sip2Check" />
+         <%ejGetML(MLG_ConnStatus_QuickStart_Str69)%></p>
+       <table width="100%" border="0" cellspacing="0" cellpadding="0" id="sip2">
+         <tr>
+           <td width="40%" class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str65)%></td>
+           <td><input name="SIPNumber" type="text" id="textfield14" value="070123456789" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str66)%></td>
+           <td><input name="SIPServerAddress" type="text" id="textfield15" value="0.0.0.0" disabled="disabled" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str67)%></td>
+           <td><input name="SIPServiceDomain" type="text" id="textfield16" value="sip.aaa.ocm" disabled="disabled" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str68)%></td>
+           <td><input name="UserName2" type="text" id="textfield17" value="zyxel" /></td>
+         </tr>
+         <tr>
+           <td class="indent"><%ejGetML(MLG_ConnStatus_QuickStart_Str63)%></td>
+           <td><input name="Password2" type="password" id="textfield18" value="1234" /></td>
+         </tr>
+       </table>
+       <p>&nbsp;</p>
+     </div>
+   </div>
+   <!-- VoIP Ending -->
