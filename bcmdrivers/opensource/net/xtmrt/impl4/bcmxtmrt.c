@@ -749,7 +749,8 @@ static int bcmxtmrt_atm_ioctl(struct socket *sock, unsigned int cmd,
                 {
                     pDevCtx->Chan.private = pDevCtx->pDev;
                     pDevCtx->Chan.ops = &g_PppoAtmOps;
-                    pDevCtx->Chan.mtu = 1500; /* TBD. Calc value. */
+                    // This is untested, should only apply to PPP terminated on-modem.
+                    pDevCtx->Chan.mtu = 1508;
                     pAtmVcc->user_back = pDevCtx;
                     if( ppp_register_channel(&pDevCtx->Chan) == 0 )
                         nRet = 0;
@@ -3228,6 +3229,7 @@ static int DoCreateDeviceReq( PXTMRT_CREATE_NETWORK_DEVICE pCnd )
 
         default:
             pDevCtx->ulEncapType = TYPE_ETH;    /* bridge, MER, PPPoE, PTM */
+            dev->mtu = 1508;                    /* Support RFC4638 */
             dev->flags = IFF_BROADCAST | IFF_MULTICAST;
             break;
         }
